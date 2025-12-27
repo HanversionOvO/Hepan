@@ -6,11 +6,19 @@
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "电科人自己的小红薯"
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "小红畔"
+    },
+    {
+      "name": "App_author",
+      "value": "MikannQAQ"
+    },
+    {
+      "name": "Splash_skip",
+      "value": "跳过"
     }
   ]
 }

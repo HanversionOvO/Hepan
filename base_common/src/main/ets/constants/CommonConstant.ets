@@ -24,12 +24,19 @@ export class CommonConstant {
   static readonly BorderSizeNormal: number = 1;
   static readonly BorderSizeLarge: number = 2;
   static readonly BorderSizeHuge: number = 4;
+  // 顶/底栏尺寸
+  static readonly TopBarHeight: number = 54;
+  static readonly BottomBarHeight: number = 60;
 
   // 间隔相关
   // 小型容器内部间隔
   static readonly SmallContainerInnerPadding: number = 4; // 容器内部控件间隔
   static readonly SmallContainerLRPadding: number = 14; // 小型容器内部左右间隔
   static readonly SmallContainerTBPadding: number = 8; // 小型容器内部上下间隔
+  // 普通容器内容间隔
+  static readonly NormalContainerInnterPadding: number = 12; // 普通容器内容间隔
+  // 页面内部间隔
+  static readonly PageLRPadding: number = 18; // 页面左右间隔
 
   // 动画相关
   // 动画速度

@@ -1,3 +1,4 @@
+import { ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, RouterUtil, VMManager } from 'base_common'
 import { GlassButton } from 'base_ui';
 import { SplashPageVM } from '../viewmodels/SplashPageVM'
@@ -6,6 +7,7 @@ import { SplashPageVM } from '../viewmodels/SplashPageVM'
 @ComponentV2
 struct SplashPage {
   @Local vm: SplashPageVM = VMManager.get(SplashPageVM, () => new SplashPageVM());
+  @Local logoSize: number = 96;
 
   aboutToAppear(): void {
     this.vm.startSplash();
@@ -19,12 +21,69 @@ struct SplashPage {
 
   build() {
     Navigation(RouterUtil.getStack()) {
-
       Column() {
-        GlassButton({
-          text: "test"
-        })
+        Row() {
+          GlassButton({
+            text: `${ResUtil.getStringSync($r('app.string.Splash_skip'))} ${this.vm.countDown}`,
+            innerFontSize: CommonConstant.TextSizeSmall
+          })
+        }
+        .width(CommonConstant.FullPercent)
+        .justifyContent(FlexAlign.End)
+
+        Row() {
+          Image($r('app.media.startIcon'))
+            .width(this.logoSize)
+            .height(this.logoSize)
+            .borderRadius(CommonConstant.RadiusUltraLarge)
+        }
+        .layoutWeight(1)
+        .width(CommonConstant.FullPercent)
+        .alignItems(VerticalAlign.Center)
+        .justifyContent(FlexAlign.Center)
+
+        Column({
+          space: CommonConstant.NormalContainerInnterPadding
+        }) {
+          Text($r('app.string.EntryAbility_label'))
+            .fontSize(CommonConstant.TextSizeUltraLarge)
+            .fontWeight(FontWeight.Bolder)
+            .fontColor($r('sys.color.font_primary'))
+            .letterSpacing(1)
+
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Divider()
+              .vertical(false)
+              .width(12)
+              .color($r('sys.color.font_secondary'))
+              .strokeWidth(1)
+            Text($r('app.string.EntryAbility_desc'))
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_secondary'))
+              .fontWeight(FontWeight.Medium)
+              .letterSpacing(2)
+            Divider()
+              .vertical(false)
+              .width(12)
+              .color($r('sys.color.font_secondary'))
+              .strokeWidth(1)
+          }
+
+          Text(`© 2025 ${ResUtil.getStringSync($r('app.string.App_author'))}`)
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor($r('sys.color.font_tertiary'))
+        }
+        .width(CommonConstant.FullPercent)
       }
+      .width(CommonConstant.FullPercent)
+      .height(CommonConstant.FullPercent)
+      .padding({
+        top: this.vm.window.windowTopPadding + CommonConstant.TopBarHeight,
+        bottom: this.vm.window.windowBottomPadding + CommonConstant.BottomBarHeight,
+        left: CommonConstant.PageLRPadding,
+        right: CommonConstant.PageLRPadding
+      })
+      .justifyContent(FlexAlign.SpaceBetween)
     }
     .hideTitleBar(true)
     .hideNavBar(this.vm.window.showNavigation)
