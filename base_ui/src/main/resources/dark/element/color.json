@@ -2,11 +2,11 @@
   "color": [
     {
       "name": "start_window_background",
-      "value": "#FFF1F3F5"
+      "value": "#FF191A1C"
     },
     {
       "name": "second_window_background",
-      "value": "#FFE5E5EA"
+      "value": "#FF202224"
     },
     {
       "name": "glass_background",

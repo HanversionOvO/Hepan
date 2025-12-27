@@ -19,6 +19,14 @@
     {
       "name": "Splash_skip",
       "value": "跳过"
+    },
+    {
+      "name": "Login_title",
+      "value": "欢迎回来~"
+    },
+    {
+      "name": "Login_subtitle",
+      "value": "登陆到小红畔"
     }
   ]
 }

@@ -27,6 +27,9 @@ struct SplashPage {
             text: `${ResUtil.getStringSync($r('app.string.Splash_skip'))} ${this.vm.countDown}`,
             innerFontSize: CommonConstant.TextSizeSmall
           })
+            .onClick(() => {
+              this.vm.onSkip()
+            })
         }
         .width(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.End)
@@ -43,7 +46,7 @@ struct SplashPage {
         .justifyContent(FlexAlign.Center)
 
         Column({
-          space: CommonConstant.NormalContainerInnterPadding
+          space: CommonConstant.NormalContainerInnerPadding
         }) {
           Text($r('app.string.EntryAbility_label'))
             .fontSize(CommonConstant.TextSizeUltraLarge)
@@ -86,7 +89,7 @@ struct SplashPage {
       .justifyContent(FlexAlign.SpaceBetween)
     }
     .hideTitleBar(true)
-    .hideNavBar(this.vm.window.showNavigation)
+    .hideNavBar(!this.vm.window.showNavigation)
     .height(CommonConstant.FullPercent)
     .width(CommonConstant.FullPercent)
     .mode(NavigationMode.Stack)

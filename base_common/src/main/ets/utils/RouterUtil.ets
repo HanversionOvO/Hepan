@@ -5,7 +5,9 @@ export enum StackEnum {
 }
 
 export enum RouterMap {
-  SPLASH = 'SplashPage'
+  SPLASH = 'SplashPage',
+  HOME = 'HomePage',
+  LOGIN = 'LoginPage'
 }
 
 @ObservedV2

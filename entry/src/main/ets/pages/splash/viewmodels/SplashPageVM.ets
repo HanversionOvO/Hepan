@@ -32,7 +32,7 @@ export class SplashPageVM extends BaseVM {
 
     // 使用 replacePathByName，销毁当前 Splash 页面，不可返回
     // 注意：请确保 RouterMap.HOME 已在 RouterUtil 中定义
-    // RouterUtil.replacePathByName(RouterMap.SPLASH);
+    RouterUtil.replacePathByName(RouterMap.LOGIN);
   }
 
   /**

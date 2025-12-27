@@ -4,6 +4,8 @@ export class CommonConstant {
   // 尺寸相关
   // 控件尺寸
   static readonly FullPercent: string = "100%"; // 全尺寸
+  static readonly AboveHalfPercent: string = "80%"; // 超半尺寸
+  static readonly HalfPercent: string = "50%"; // 半尺寸
   // 文字尺寸
   static readonly TextSizeUltraTiny: number = 8; // 超微小文字大小
   static readonly TextSizeTiny: number = 10; // 微小文字大小
@@ -34,7 +36,9 @@ export class CommonConstant {
   static readonly SmallContainerLRPadding: number = 14; // 小型容器内部左右间隔
   static readonly SmallContainerTBPadding: number = 8; // 小型容器内部上下间隔
   // 普通容器内容间隔
-  static readonly NormalContainerInnterPadding: number = 12; // 普通容器内容间隔
+  static readonly NormalContainerInnerPadding: number = 12; // 普通容器内容间隔
+  static readonly NormalContainerLRPadding: number = 16; // 普通容器左右间隔
+  static readonly NormalContainerTBPadding: number = 12; // 普通容器上下间隔
   // 页面内部间隔
   static readonly PageLRPadding: number = 18; // 页面左右间隔
 
@@ -50,4 +54,8 @@ export class CommonConstant {
   static readonly AnimationCurveSpring: curves.ICurve = curves.springMotion(0.4, 0.8);
   // 按压缩放尺寸
   static readonly PressedDownScaleNormal: number = 0.9;
+
+  // 颜色相关
+  // 主题颜色
+  static readonly ThemeColor: string = "#FFFF2442";
 }
