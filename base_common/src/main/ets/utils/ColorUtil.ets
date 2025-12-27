@@ -13,113 +13,165 @@ export interface ColorVariants {
 }
 
 /**
- * 内部使用的 RGB 类
- * 解决 arkts-no-obj-literals-as-types 错误
+ * ArkTS 内部使用的 RGBA/ARGB 颜色类
+ * 这里我们用 a/r/g/b 四通道，a 范围 0-255
  */
-class RGB {
+class ARGB {
+  a: number = 255;
   r: number = 0;
   g: number = 0;
   b: number = 0;
 }
 
 export class ColorUtil {
+
   /**
    * 生成颜色的变体（浅色、深色、暗色）
+   * lightLevel/darkLevel: 0~1，越大变化越明显
    */
-  public static generateVariants(colorHex: string, lightLevel: number = 0.2, darkLevel: number = 0.2): ColorVariants {
-    // 显式声明类型以符合 ArkTS 规范
-    const variants: ColorVariants = {
+  public static generateVariants(
+    colorHex: string,
+    lightLevel: number = 0.35,
+    darkLevel: number = 0.35
+  ): ColorVariants {
+    return {
       origin: colorHex,
       light: ColorUtil.lighten(colorHex, lightLevel),
       dark: ColorUtil.darken(colorHex, darkLevel),
-      dim: ColorUtil.darken(colorHex, darkLevel * 2.5)
+      dim: ColorUtil.darken(colorHex, Math.min(1, darkLevel * 2.0))
     };
-    return variants;
   }
 
   /**
    * 变浅颜色 (与白色混合)
    */
-  public static lighten(colorHex: string, amount: number = 0.8): string {
+  public static lighten(colorHex: string, amount: number = 0.85): string {
+    // 白色不需要 alpha（mix 会保留 colorHex 的 alpha）
     return ColorUtil.mix(colorHex, '#FFFFFF', amount);
   }
 
   /**
    * 变深颜色 (与黑色混合)
    */
-  public static darken(colorHex: string, amount: number = 0.8): string {
+  public static darken(colorHex: string, amount: number = 0.85): string {
     return ColorUtil.mix(colorHex, '#000000', amount);
   }
 
   /**
-   * 调整透明度
+   * 调整透明度（ARGB：#AARRGGBB）
+   * opacity: 0~1
    */
   public static opacity(colorHex: string, opacity: number): string {
-    let hex = colorHex.replace('#', '');
-    if (hex.length === 3) {
-      hex = hex.split('').map(c => c + c).join('');
-    }
-    if (hex.length !== 6) {
-      LogUtil.error(TAG, `Invalid color format for opacity: ${colorHex}`);
-      return colorHex;
-    }
+    const c = ColorUtil.parseColor(colorHex);
+    if (!c) return colorHex;
 
-    const alpha = Math.round(opacity * 255);
-    const alphaHex = (alpha | 1 << 8).toString(16).slice(1).toUpperCase();
-    return `#${hex}${alphaHex}`;
+    const a = Math.round(Math.max(0, Math.min(1, opacity)) * 255);
+    c.a = a;
+    return ColorUtil.toHex(c, true); // 强制 ARGB 输出更符合你的用法
   }
 
   /**
-   * 混合两种颜色
+   * 混合两种颜色（按 weight 线性插值）
+   * - 只混合 RGB
+   * - Alpha 保留 color1 的 alpha（更符合“明暗变化不改透明度”）
    */
   private static mix(color1: string, color2: string, weight: number): string {
-    weight = Math.max(0, Math.min(1, weight));
+    const w = Math.max(0, Math.min(1, weight));
+    const c1 = ColorUtil.parseColor(color1);
+    const c2 = ColorUtil.parseColor(color2);
 
-    const rgb1 = ColorUtil.hexToRgb(color1);
-    const rgb2 = ColorUtil.hexToRgb(color2);
+    if (!c1 || !c2) return color1;
 
-    if (!rgb1 || !rgb2) {
-      return color1;
-    }
+    const r = Math.round(c1.r + (c2.r - c1.r) * w);
+    const g = Math.round(c1.g + (c2.g - c1.g) * w);
+    const b = Math.round(c1.b + (c2.b - c1.b) * w);
 
-    const r = Math.round(rgb1.r + (rgb2.r - rgb1.r) * weight);
-    const g = Math.round(rgb1.g + (rgb2.g - rgb1.g) * weight);
-    const b = Math.round(rgb1.b + (rgb2.b - rgb1.b) * weight);
+    const out = new ARGB();
+    out.a = c1.a; // 保留原 alpha
+    out.r = r;
+    out.g = g;
+    out.b = b;
 
-    return ColorUtil.rgbToHex(r, g, b);
+    // 这里：如果你希望永远输出 ARGB，就传 true
+    return ColorUtil.toHex(out, true);
   }
 
   /**
-   * Hex 转 RGB
-   * 修改点：返回类型改为 RGB 类，解决 arkts-no-obj-literals-as-types
+   * 解析颜色字符串（支持 #RGB/#RRGGBB/#AARRGGBB 和 0xAARRGGBB）
+   * 约定：8位字符串一律视为 ARGB（AA RR GG BB）
    */
-  private static hexToRgb(hex: string): RGB | null {
-    hex = hex.replace('#', '');
+  private static parseColor(input: string): ARGB | null {
+    let s = input.trim();
 
+    // 支持 0xAARRGGBB
+    if (s.startsWith('0x') || s.startsWith('0X')) {
+      s = '#' + s.slice(2);
+    }
+
+    if (!s.startsWith('#')) {
+      // 没有 # 的情况，尽量容错
+      s = '#' + s;
+    }
+
+    let hex = s.slice(1);
+
+    // #RGB => #RRGGBB
     if (hex.length === 3) {
       hex = hex.split('').map(c => c + c).join('');
     }
 
-    if (hex.length !== 6) {
-      LogUtil.error(TAG, `Invalid hex color: ${hex}`);
-      return null;
+    // #RRGGBB => 默认 alpha=FF
+    if (hex.length === 6) {
+      const c = new ARGB();
+      c.a = 255;
+      c.r = parseInt(hex.slice(0, 2), 16);
+      c.g = parseInt(hex.slice(2, 4), 16);
+      c.b = parseInt(hex.slice(4, 6), 16);
+      if (Number.isNaN(c.r) || Number.isNaN(c.g) || Number.isNaN(c.b)) {
+        LogUtil.error(TAG, `Invalid hex color: ${input}`);
+        return null;
+      }
+      return c;
     }
 
-    const bigint = parseInt(hex, 16);
+    // #AARRGGBB（ARGB）
+    if (hex.length === 8) {
+      const c = new ARGB();
+      c.a = parseInt(hex.slice(0, 2), 16);
+      c.r = parseInt(hex.slice(2, 4), 16);
+      c.g = parseInt(hex.slice(4, 6), 16);
+      c.b = parseInt(hex.slice(6, 8), 16);
+      if (Number.isNaN(c.a) || Number.isNaN(c.r) || Number.isNaN(c.g) || Number.isNaN(c.b)) {
+        LogUtil.error(TAG, `Invalid hex color: ${input}`);
+        return null;
+      }
+      return c;
+    }
 
-    // 修改点：实例化 RGB 类，解决 arkts-no-untyped-obj-literals
-    let color = new RGB();
-    color.r = (bigint >> 16) & 255;
-    color.g = (bigint >> 8) & 255;
-    color.b = bigint & 255;
-
-    return color;
+    LogUtil.error(TAG, `Invalid color format: ${input} (expect #RGB/#RRGGBB/#AARRGGBB or 0xAARRGGBB)`);
+    return null;
   }
 
   /**
-   * RGB 转 Hex
+   * 输出 hex
+   * forceARGB=true：永远输出 #AARRGGBB
+   * forceARGB=false：alpha=FF 输出 #RRGGBB，否则 #AARRGGBB
    */
-  private static rgbToHex(r: number, g: number, b: number): string {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  private static toHex(c: ARGB, forceARGB: boolean = false): string {
+    const to2 = (n: number): string => {
+      const v = Math.max(0, Math.min(255, Math.round(n)));
+      return v.toString(16).padStart(2, '0').toUpperCase();
+    };
+
+    const a = to2(c.a);
+    const r = to2(c.r);
+    const g = to2(c.g);
+    const b = to2(c.b);
+
+    if (forceARGB) {
+      return `#${a}${r}${g}${b}`;
+    }
+
+    return (c.a >= 255) ? `#${r}${g}${b}` : `#${a}${r}${g}${b}`;
   }
 }

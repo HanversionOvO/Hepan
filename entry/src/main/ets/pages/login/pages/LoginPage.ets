@@ -1,4 +1,5 @@
 import { CommonConstant, VMManager } from 'base_common'
+import { LoginButton } from '../components/LoginButton';
 import { LoginInput } from '../components/LoginInput';
 import { LoginPageVM } from '../viewmodels/LoginPageVM'
 
@@ -38,14 +39,50 @@ struct LoginPage {
   MiddleArea() {
     Column({space: CommonConstant.NormalContainerInnerPadding}) {
       LoginInput({
-        placeHolder: $r("app.string.Login_login_placeHolder")
+        placeHolder: $r("app.string.Login_login_placeHolder"),
+        value: this.vm.username
       })
       LoginInput({
         placeHolder: $r("app.string.Login_password_placeHolder"),
-        isPassword: true
+        isPassword: true,
+        value: this.vm.password
       })
+      
+      Row() {
+        Text($r('app.string.Login_unable_login'))
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_secondary'))
+        
+        Text($r('app.string.Login_register'))
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_secondary'))
+      }
+      .width(CommonConstant.FullPercent)
+      .justifyContent(FlexAlign.SpaceBetween)
+      
+      LoginButton()
     }
-    .constraintSize({maxWidth:this.maxMiddleWidth})
+  }
+  
+  @Builder
+  BottomArea() {
+    Row({space: CommonConstant.SmallContainerTBPadding}) {
+      Row({space: CommonConstant.SmallContainerInnerPadding}) {
+        Divider()
+              .vertical(false)
+              .width(24)
+              .color($r('sys.color.font_secondary'))
+        
+        Text($r('app.string.Login_other_logins'))
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_tertiary'))
+        
+        Divider()
+              .vertical(false)
+              .width(24)
+              .color($r('sys.color.font_secondary'))
+      }
+    }
   }
 
   build() {
@@ -55,8 +92,11 @@ struct LoginPage {
           this.TopArea()
           
           this.MiddleArea()
+          
+          this.BottomArea()
         }
         .width(CommonConstant.AboveHalfPercent)
+        .constraintSize({maxWidth:this.maxMiddleWidth})
         .padding({
           left: CommonConstant.NormalContainerLRPadding,
           right: CommonConstant.NormalContainerLRPadding,

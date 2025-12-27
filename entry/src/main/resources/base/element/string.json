@@ -35,6 +35,22 @@
     {
       "name": "Login_password_placeHolder",
       "value": "请在此输入密码"
+    },
+    {
+      "name": "Login_unable_login",
+      "value": "无法登陆？"
+    },
+    {
+      "name": "Login_register",
+      "value": "注册河畔"
+    },
+    {
+      "name": "Login_login_button",
+      "value": "即刻开启河畔旅程"
+    },
+    {
+      "name": "Login_other_logins",
+      "value": "使用其他方式登陆"
     }
   ]
 }
