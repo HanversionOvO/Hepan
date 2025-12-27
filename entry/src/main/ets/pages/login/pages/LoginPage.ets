@@ -11,7 +11,9 @@ struct LoginPage {
   @Local vm: LoginPageVM = VMManager.get(LoginPageVM, () => new LoginPageVM());
 
   build() {
-    NavDestination()
+    NavDestination() {
+      
+    }
       .hideTitleBar(true)
   }
 }

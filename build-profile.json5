@@ -60,6 +60,10 @@
     {
       "name": "base_ui",
       "srcPath": "./base_ui"
+    },
+    {
+      "name": "feature_home",
+      "srcPath": "./feature_home"
     }
   ]
 }
