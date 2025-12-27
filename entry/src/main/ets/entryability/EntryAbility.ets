@@ -1,7 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { WindowManager } from 'base_common';
+import { WindowManager, BreakPointUtil, VMManager } from 'base_common';
 
 const TAG = '[EntryAbility]: ';
 
@@ -18,8 +18,10 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     LogUtil.info(TAG, '%{public}s', 'Ability onDestroy');
+    BreakPointUtil.getInstance().unRegister();
     WindowManager.offAvoidAreaChange();
     WindowManager.offWindowChange();
+    VMManager.clearAll();
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -27,6 +29,8 @@ export default class EntryAbility extends UIAbility {
     LogUtil.info(TAG, '%{public}s', 'Ability onWindowStageCreate');
 
     WindowManager.setWinConfig();
+    BreakPointUtil.getInstance().register();
+
     windowStage.loadContent('pages/splash/pages/SplashPage', (err) => {
       if (err.code) {
         LogUtil.error(TAG, 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));

@@ -6,6 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "base_common": "file:../base_common"
+    "base_common": "file:../base_common",
+    "base_ui": "file:../base_ui"
   }
 }

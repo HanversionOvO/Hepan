@@ -31,7 +31,18 @@ export class BreakpointType<T> {
    * @returns 对应的值
    */
   public getValue(bp: BreakpointNameEnum): T | undefined {
-    return this.options[bp];
+    switch (bp) {
+      case BreakpointNameEnum.SM:
+        return this.options.sm;
+      case BreakpointNameEnum.MD:
+        return this.options.md;
+      case BreakpointNameEnum.LG:
+        return this.options.lg;
+      case BreakpointNameEnum.XL:
+        return this.options.xl;
+      default:
+        return undefined;
+    }
   }
 }
 

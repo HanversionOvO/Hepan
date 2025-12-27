@@ -24,6 +24,10 @@ export abstract class BaseVM {
       this.breakPoint.currentBreakPoint === BreakpointNameEnum.XL;
   }
 
+  loadData() {
+
+  }
+
   showLoading() {
     this.uiState = UiState.LOADING;
   }

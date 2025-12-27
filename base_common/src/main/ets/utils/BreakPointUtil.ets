@@ -5,6 +5,16 @@ import { StorageManager } from './StorageManager'; // 导入之前的 StorageMan
 
 const TAG = '[BreakPointUtil]: ';
 
+class BreakpointQuery {
+  name: BreakpointNameEnum;
+  value: string;
+
+  constructor(name: BreakpointNameEnum, value: string) {
+    this.name = name;
+    this.value = value;
+  }
+}
+
 export class BreakPointUtil {
   // 单例实例
   private static instance: BreakPointUtil;
@@ -35,36 +45,20 @@ export class BreakPointUtil {
       return;
     }
 
-    // 定义断点配置，消除冗余代码
-    const queries: { name: BreakpointNameEnum, value: string }[] = [
-      {
-        name: BreakpointNameEnum.SM,
-        value: `(width < ${BreakpointValueEnum.SM})`
-      },
-      {
-        name: BreakpointNameEnum.MD,
-        value: `(width >= ${BreakpointValueEnum.SM}) and (width < ${BreakpointValueEnum.MD})`
-      },
-      {
-        name: BreakpointNameEnum.LG,
-        value: `(width >= ${BreakpointValueEnum.MD}) and (width < ${BreakpointValueEnum.LG})`
-      },
-      {
-        name: BreakpointNameEnum.XL,
-        value: `(width >= ${BreakpointValueEnum.LG})`
-      }
+    const queries: BreakpointQuery[] = [
+      new BreakpointQuery(BreakpointNameEnum.SM, `(width < ${BreakpointValueEnum.SM})`),
+      new BreakpointQuery(BreakpointNameEnum.MD, `(width >= ${BreakpointValueEnum.SM}) and (width < ${BreakpointValueEnum.MD})`),
+      new BreakpointQuery(BreakpointNameEnum.LG, `(width >= ${BreakpointValueEnum.MD}) and (width < ${BreakpointValueEnum.LG})`),
+      new BreakpointQuery(BreakpointNameEnum.XL, `(width >= ${BreakpointValueEnum.LG})`)
     ];
 
-    queries.forEach(query => {
+    queries.forEach((query: BreakpointQuery) => {
       const listener = mediaquery.matchMediaSync(query.value);
-
-      // 绑定回调
       listener.on('change', (result: mediaquery.MediaQueryResult) => {
         if (result.matches) {
           this.updateBreakpoint(query.name);
         }
       });
-
       this.listeners.push(listener);
     });
 
@@ -75,11 +69,7 @@ export class BreakPointUtil {
    * 取消注册
    */
   public unRegister(): void {
-    this.listeners.forEach(listener => {
-      // 注意：off 需要传递原本的 callback，但在 mediaquery 中完全销毁监听更复杂。
-      // 对于全局单例，通常不需要频繁 off，这里仅做清空引用的演示。
-      // 如果需要严格 off，需要将 callback 也就是上面的箭头函数单独保存引用。
-    });
+    // 注：ArkTS 中 listener.off 需要原始回调引用，此处简化处理，仅清空数组
     this.listeners = [];
     LogUtil.info(TAG, 'Breakpoint listeners unregistered.');
   }

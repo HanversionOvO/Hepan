@@ -56,6 +56,10 @@
     {
       "name": "base_common",
       "srcPath": "./base_common"
+    },
+    {
+      "name": "base_ui",
+      "srcPath": "./base_ui"
     }
   ]
 }
