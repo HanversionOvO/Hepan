@@ -1,0 +1,53 @@
+import { CommonConstant } from "base_common";
+
+@ComponentV2
+export struct GlassButton {
+  @Param text: ResourceStr | undefined = undefined; // 按钮文字
+  @Param symbol: Resource | undefined = undefined; // 按钮图标
+  @Param innerFontSize: number = CommonConstant.TextSizeNormal; // 文字大小
+  @Param innerFontWeight: FontWeight | number = FontWeight.Normal;
+  @Param innerFontColor: ResourceStr = $r('sys.color.font_secondary');
+  @Param enablePressedDownAnimation: boolean = true;
+  @Local scaleValue: number = 1;
+
+  build() {
+    Button() {
+      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        if (this.symbol) {
+          SymbolGlyph(this.symbol)
+            .fontSize(this.innerFontSize)
+            .fontColor([this.innerFontColor])
+            .fontWeight(this.innerFontWeight)
+        }
+
+        if (this.text) {
+          Text(this.text)
+            .fontSize(this.innerFontSize)
+            .fontColor(this.innerFontColor)
+            .fontWeight(this.innerFontWeight)
+        }
+      }
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding,
+        right: CommonConstant.SmallContainerLRPadding,
+        top: CommonConstant.SmallContainerTBPadding,
+        bottom: CommonConstant.SmallContainerTBPadding
+      })
+    }
+    .backgroundColor($r('app.color.glass_background'))
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+    .border({ width: CommonConstant.BorderSizeSmall, color: $r('app.color.glass_border') })
+    .borderRadius(CommonConstant.RadiusRound)
+    .scale({ x: this.scaleValue, y: this.scaleValue })
+    .onTouch((event: TouchEvent): void => {
+      if (event.type === TouchType.Down && this.enablePressedDownAnimation) {
+        this.scaleValue = CommonConstant.PressedDownScaleNormal;
+      } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
+        this.scaleValue = 1;
+      }
+    })
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal })
+  }
+}

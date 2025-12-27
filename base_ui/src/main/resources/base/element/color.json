@@ -1,0 +1,12 @@
+{
+  "color": [
+    {
+      "name": "glass_background",
+      "value": "#26FFFFFF"
+    },
+    {
+      "name": "glass_border",
+      "value": "#4DFFFFFF"
+    }
+  ]
+}
