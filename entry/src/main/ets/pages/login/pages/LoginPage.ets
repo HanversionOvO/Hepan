@@ -1,3 +1,4 @@
+import { DialogHub } from '@hadss/dialoghub';
 import { CommonConstant, VMManager } from 'base_common'
 import { LoginButton } from '../components/LoginButton';
 import { LoginInput } from '../components/LoginInput';
@@ -61,6 +62,8 @@ struct LoginPage {
       .justifyContent(FlexAlign.SpaceBetween)
       
       LoginButton()
+      .onClick(() => {
+      })
     }
   }
   

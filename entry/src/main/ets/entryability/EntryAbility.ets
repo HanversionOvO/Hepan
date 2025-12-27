@@ -1,3 +1,4 @@
+import { DialogHub } from '@hadss/dialoghub';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
@@ -9,6 +10,7 @@ export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     try {
       AppUtil.init(this.context);
+      DialogHub.init(AppUtil.getUIContext());
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     } catch (err) {
       LogUtil.error(TAG, 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
