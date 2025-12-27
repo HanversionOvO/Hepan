@@ -12,6 +12,8 @@ export { RouterUtil, RouterMap } from './src/main/ets/utils/RouterUtil';
 
 export { VMManager } from './src/main/ets/utils/VMManager';
 
+export { ColorUtil, ColorVariants } from './src/main/ets/utils/ColorUtil';
+
 export { BaseVM } from './src/main/ets/viewmodels/BaseVM';
 
 export { CommonConstant } from './src/main/ets/constants/CommonConstant';

@@ -27,6 +27,14 @@
     {
       "name": "Login_subtitle",
       "value": "登陆到小红畔"
+    },
+    {
+      "name": "Login_login_placeHolder",
+      "value": "请在此输入用户名"
+    },
+    {
+      "name": "Login_password_placeHolder",
+      "value": "请在此输入密码"
     }
   ]
 }

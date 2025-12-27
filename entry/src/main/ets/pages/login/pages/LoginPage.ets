@@ -36,8 +36,14 @@ struct LoginPage {
   
   @Builder
   MiddleArea() {
-    Column() {
-      LoginInput()
+    Column({space: CommonConstant.NormalContainerInnerPadding}) {
+      LoginInput({
+        placeHolder: $r("app.string.Login_login_placeHolder")
+      })
+      LoginInput({
+        placeHolder: $r("app.string.Login_password_placeHolder"),
+        isPassword: true
+      })
     }
     .constraintSize({maxWidth:this.maxMiddleWidth})
   }

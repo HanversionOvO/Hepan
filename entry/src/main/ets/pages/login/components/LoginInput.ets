@@ -1,10 +1,24 @@
-import { CommonConstant } from "base_common";
+import { ColorUtil, CommonConstant } from "base_common";
 
 @ComponentV2
 export struct LoginInput {
+  @Param placeHolder: ResourceStr = "";
+  @Param isPassword: boolean = false;
+  @Local brColor: ResourceColor = $r('app.color.glass_border');
+  @Local bgColor: ResourceColor = $r('app.color.second_window_background');
+
   build() {
-    TextInput()
+    TextInput({
+      placeholder: this.placeHolder
+    })
       .borderRadius(CommonConstant.RadiusSmall)
-      .backgroundColor($r('app.color.second_window_background'))
+      .backgroundColor(this.bgColor)
+      .border({ width: CommonConstant.BorderSizeNormal, color: this.brColor })
+      .caretColor(CommonConstant.ThemeColor)
+      .type(this.isPassword ? InputType.Password : InputType.Normal)
+      .onFocus(() => {
+        this.bgColor = ColorUtil.lighten(CommonConstant.ThemeColor)
+        this.brColor = CommonConstant.ThemeColor
+      })
   }
 }
