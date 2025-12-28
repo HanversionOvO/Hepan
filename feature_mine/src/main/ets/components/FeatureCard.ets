@@ -51,9 +51,9 @@ export struct FeatureCard {
         }) {
           SymbolGlyph(this.model.cardIcon)
             .fontColor([$r('sys.color.font_secondary')])
-            .fontSize(this.vm.isTabletView ? CommonConstant.TextSizeUltraLarge : CommonConstant.TextSizeNormal)
+            .fontSize(this.vm.isTabletView ? CommonConstant.TextSizeUltraLarge : CommonConstant.TextSizeLarge)
 
-          Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
             if (this.vm.isTabletView) {
               Text(this.model.cardTitle)
                 .fontSize(CommonConstant.TextSizeNormal)
@@ -61,7 +61,7 @@ export struct FeatureCard {
                 .fontColor($r('sys.color.font_secondary'))
             }
             Text(this.model.cardCount.toString())
-              .fontSize(CommonConstant.TextSizeSmall)
+              .fontSize(CommonConstant.TextSizeNormal)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('sys.color.font_secondary'))
           }

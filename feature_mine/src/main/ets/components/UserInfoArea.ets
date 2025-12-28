@@ -99,7 +99,7 @@ export struct UserInfoArea {
       .width(this.vm.isTabletView ? CommonConstant.HalfPercent : CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
 
-      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         FeatureCard({
           vm: this.vm,
           cardType: CardType.LV_CARD
