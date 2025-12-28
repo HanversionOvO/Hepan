@@ -111,9 +111,9 @@ struct LoginPage {
 
           this.BottomArea()
         }
-        .backgroundColor($r('app.color.start_window_background'))
+        .backgroundColor($r('app.color.glass_background'))
         .width(CommonConstant.AboveHalfPercent)
-        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
         .constraintSize({ maxWidth: this.maxMiddleWidth })
         .padding(CommonConstant.LargeContainerLRPadding)
         .borderRadius(CommonConstant.RadiusNormal)
