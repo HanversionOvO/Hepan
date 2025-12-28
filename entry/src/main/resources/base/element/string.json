@@ -67,6 +67,14 @@
     {
       "name": "Login_input_warn",
       "value": "请输入用户名和密码"
+    },
+    {
+      "name": "Home_please_login_title",
+      "value": "登录信息已过期"
+    },
+    {
+      "name": "Home_please_login_content",
+      "value": "您的登录信息已过期，请重新登录"
     }
   ]
 }

@@ -24,6 +24,10 @@ export { ApiClient } from './src/main/ets/api/ApiClient';
 
 export { AuthApi } from './src/main/ets/api/AuthApi';
 
+export { UserApi } from './src/main/ets/api/UserApi';
+
 export { AuthModel } from './src/main/ets/models/AuthModel';
+
+export { UserModel } from './src/main/ets/models/UserModel';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

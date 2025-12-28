@@ -5,6 +5,7 @@ import { LogUtil } from '@pura/harmony-utils';
 import { BreakPointModel } from '../models/BreakPointModel';
 import { AuthModel } from '../models/AuthModel';
 import { TabIndexModel } from '../models/TabIndexModel';
+import { UserModel } from '../models/UserModel';
 
 const TAG = '[StorageManager]: '
 
@@ -36,6 +37,13 @@ export class StorageManager {
    */
   public static get tabIndexModel(): TabIndexModel {
     return StorageManager.connect(TabIndexModel, () => new TabIndexModel());
+  }
+
+  /**
+   * 用户信息模型
+   */
+  public static get userModel(): UserModel {
+    return StorageManager.connect(UserModel, () => new UserModel());
   }
 
   /**
