@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Hepan.iml" filepath="$PROJECT_DIR$/.idea/modules/Hepan.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/base_common.iml" filepath="$PROJECT_DIR$/.idea/modules/base_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/base_ui.iml" filepath="$PROJECT_DIR$/.idea/modules/base_ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry.iml" filepath="$PROJECT_DIR$/.idea/modules/entry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/feature_home.iml" filepath="$PROJECT_DIR$/.idea/modules/feature_home.iml" />
+    </modules>
+  </component>
+</project>

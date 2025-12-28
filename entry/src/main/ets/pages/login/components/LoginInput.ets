@@ -21,21 +21,28 @@ export struct LoginInput {
       .caretColor(CommonConstant.ThemeColor)
       .type(this.isPassword ? InputType.Password : InputType.Normal)
       .width(CommonConstant.FullPercent)
-      .animation({
-        duration: CommonConstant.AnimationDurationNormal,
-        curve: CommonConstant.AnimationCurveNormal
-      })
       .onChange((value) => {
         this.$value(value);
       })
       .onFocus(() => {
-        this.bgColor = ColorUtil.opacity(CommonConstant.ThemeColor)
-        this.brColor = CommonConstant.ThemeColor
+        // [修复]：使用 animateTo 仅针对颜色变化应用动画
+        animateTo({
+          duration: CommonConstant.AnimationDurationNormal,
+          curve: CommonConstant.AnimationCurveNormal
+        }, () => {
+          this.bgColor = ColorUtil.opacity(CommonConstant.ThemeColor);
+          this.brColor = CommonConstant.ThemeColor;
+        })
       })
       .onBlur(() => {
-        // 失去焦点：恢复默认颜色
-        this.brColor = $r('app.color.glass_border');
-        this.bgColor = $r('app.color.second_window_background');
+        // [修复]：失去焦点恢复默认颜色
+        animateTo({
+          duration: CommonConstant.AnimationDurationNormal,
+          curve: CommonConstant.AnimationCurveNormal
+        }, () => {
+          this.brColor = $r('app.color.glass_border');
+          this.bgColor = $r('app.color.second_window_background');
+        })
       })
   }
 }
