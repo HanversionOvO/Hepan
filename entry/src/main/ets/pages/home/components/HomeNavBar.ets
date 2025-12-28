@@ -20,15 +20,24 @@ export struct HomeNavBar {
   }
 
   @Computed
+  get availableLength(): number {
+    if (this.vm.isTabletView) {
+      return this.vm.window.windowHeight - this.vm.window.windowTopPadding;
+    } else {
+      return this.vm.window.windowWidth;
+    }
+  }
+
+  @Computed
   get navRectWidth(): number {
     return this.vm.isTabletView ? CommonConstant.BottomBarHeight - (this.NavBarItemPadding * 2) :
-      (this.vm.window.windowWidth / this.vm.homeNavBarItem.length) - (this.NavBarItemPadding * 2)
+      (this.availableLength / this.vm.homeNavBarItem.length) - (this.NavBarItemPadding * 2)
   }
 
   @Computed
   get navRectHeight(): number {
     return this.vm.isTabletView ?
-      (this.vm.window.windowHeight / this.vm.homeNavBarItem.length) - (this.NavBarItemPadding * 2) :
+      (this.availableLength / this.vm.homeNavBarItem.length) - (this.NavBarItemPadding * 2) :
       CommonConstant.BottomBarHeight - (this.NavBarItemPadding * 2)
   }
 
@@ -42,9 +51,14 @@ export struct HomeNavBar {
     return $r("app.color.second_window_background");
   }
 
-  @Monitor("vm.isSideNav")
-  updateNavRectOffset() {
-    this.runChangeNavAnimation(this.vm.currentIndex);
+  @Monitor("vm.breakPoint.currentBreakPoint", "vm.window.windowWidth", "vm.window.windowHeight")
+  updateLayout() {
+    this.calculateOffset(this.vm.currentIndex);
+  }
+
+  private calculateOffset(index: number) {
+    const step = this.availableLength / this.vm.homeNavBarItem.length;
+    this.NavBarItemOffset = this.NavBarItemPadding + step * index;
   }
 
   private runChangeNavAnimation(index: number) {
@@ -53,13 +67,7 @@ export struct HomeNavBar {
       duration: CommonConstant.AnimationDurationNormal
     }, () => {
       this.vm.changeNavBar(index);
-      if (this.vm.isTabletView) {
-        this.NavBarItemOffset =
-          this.NavBarItemPadding + (this.vm.window.windowHeight / this.vm.homeNavBarItem.length) * index;
-      } else {
-        this.NavBarItemOffset =
-          this.NavBarItemPadding + (this.vm.window.windowWidth / this.vm.homeNavBarItem.length) * index;
-      }
+      this.calculateOffset(index);
     })
   }
 
@@ -71,9 +79,9 @@ export struct HomeNavBar {
         .radius(CommonConstant.RadiusNormal)
         .width(this.navRectWidth)
         .height(this.navRectHeight)
-        .fill(Color.Red)
+        .fill(CommonConstant.ThemeColor)
         .margin({
-          top: this.vm.isTabletView ? this.NavBarItemOffset : 0,
+          top: this.vm.isTabletView ? (this.NavBarItemOffset + this.vm.window.windowTopPadding) : 0,
           bottom: this.navRectMarginBottom,
           left: this.vm.isTabletView ? 0 : this.NavBarItemOffset
         })
@@ -81,15 +89,13 @@ export struct HomeNavBar {
       Flex({
         direction: this.vm.isTabletView ? FlexDirection.Column : FlexDirection.Row,
         alignItems: ItemAlign.Center,
-        justifyContent: this.vm.isTabletView ? FlexAlign.Center : FlexAlign.SpaceBetween
+        justifyContent: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.SpaceBetween
       }) {
         ForEach(this.vm.homeNavBarItem, (item: HomeNavBarItem, index: number) => {
           Column({ space: CommonConstant.SmallContainerInnerPadding / 2 }) {
             SymbolGlyph(item.icon)
               .fontSize(CommonConstant.IconSizeNormal)
               .fontWeight(FontWeight.Bold)
-              .fontColor(this.vm.currentIndex === index ? [$r('sys.color.font_on_primary')] :
-                [$r('sys.color.font_secondary')])
               .fontColor(this.vm.currentIndex === index ? [$r('sys.color.font_on_primary')] :
                 [$r('sys.color.font_secondary')])
               .animation({ duration: CommonConstant.AnimationDurationNormal })
@@ -100,17 +106,21 @@ export struct HomeNavBar {
                 $r('sys.color.font_secondary'))
               .animation({ duration: CommonConstant.AnimationDurationNormal })
           }
-          .width(CommonConstant.FullPercent)
-          .height('100%')
+          .layoutWeight(1)
+          .width(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
+          .height(this.vm.isTabletView ? undefined : CommonConstant.FullPercent)
           .justifyContent(FlexAlign.Center)
           .onClick(() => {
             this.runChangeNavAnimation(index);
           })
         })
       }
+      .margin({
+        top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
+      })
     }
     .width(this.vm.isTabletView ? CommonConstant.BottomBarHeight : CommonConstant.FullPercent)
-    .height(this.vm.isTabletView ? this.vm.window.windowHeight : this.navBarSize)
+    .height(this.vm.isTabletView ? CommonConstant.FullPercent : this.navBarSize)
     .padding({
       bottom: this.vm.isTabletView ? 0 : this.vm.window.windowBottomPadding,
     })
