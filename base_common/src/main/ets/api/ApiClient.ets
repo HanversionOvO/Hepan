@@ -1,5 +1,7 @@
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
+import { RouterMap, RouterUtil } from '../utils/RouterUtil';
+import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[ApiClient]: ';
 
@@ -9,7 +11,7 @@ export interface ApiRequestOptions<T = Object> {
   headers?: Record<string, string>;
   data?: T;
   expectJson?: boolean;
-  includeAuthorization?: boolean;
+  includeAuthorization?: boolean; // 默认为 true
   includeCookie?: boolean;
   requireNewApiHeader?: boolean;
 }
@@ -30,6 +32,7 @@ export class ApiClient {
   private readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
+  private isRedirecting: boolean = false; // 防止并发跳转
 
   private constructor() {
   }
@@ -42,10 +45,28 @@ export class ApiClient {
   }
 
   public setAuthorization(token: string): void {
-    if (token) {
-      this.authorization = token;
-    } else {
-      this.authorization = '';
+    this.authorization = token || '';
+  }
+
+  /**
+   * [新增] 从字符串恢复 Cookie (修复您的报错)
+   */
+  public setCookieString(cookieStr: string): void {
+    if (!cookieStr) {
+      this.cookieJar.clear();
+      return;
+    }
+    const pairs = cookieStr.split(';');
+    for (let pair of pairs) {
+      if (!pair.trim()) {
+        continue;
+      }
+      const parts = pair.split('=');
+      if (parts.length >= 2) {
+        const key = parts[0].trim();
+        const value = parts.slice(1).join('=').trim();
+        this.cookieJar.set(key, value);
+      }
     }
   }
 
@@ -69,30 +90,19 @@ export class ApiClient {
     return this.cookieJar.size > 0;
   }
 
-  public setCookieString(cookieStr: string): void {
-    if (!cookieStr) {
-      this.cookieJar.clear();
-      return;
-    }
-    // 解析分号分隔的 Cookie 字符串
-    const pairs = cookieStr.split(';');
-    for (let pair of pairs) {
-      if (!pair.trim()) {
-        continue;
-      }
-      const parts = pair.split('=');
-      if (parts.length >= 2) {
-        const key = parts[0].trim();
-        // 重新拼接 value，防止 value 中包含 = 号
-        const value = parts.slice(1).join('=').trim();
-        this.cookieJar.set(key, value);
-      }
-    }
-  }
-
   public async request<T = Object>(options: ApiRequestOptions): Promise<ApiResponse<T>> {
-    const httpRequest = http.createHttp();
     const requestUrl = this.buildUrl(options.path);
+
+    // 1. 请求前拦截：检查是否需要登录但本地无凭证
+    if (options.includeAuthorization !== false) {
+      if (!this.authorization || !this.hasCookie()) {
+        LogUtil.warn(TAG, `拦截请求 ${requestUrl}: 本地未登录`);
+        this.handleLoginRedirect('请先登录');
+        return Promise.reject(new Error('Local: Not logged in'));
+      }
+    }
+
+    const httpRequest = http.createHttp();
 
     try {
       const headers = this.composeHeaders(options);
@@ -115,6 +125,13 @@ export class ApiClient {
         this.mergeCookies(setCookies);
       }
 
+      // 2. 响应后拦截：检查 Token 是否过期 (401/403)
+      if (response.responseCode === 401 || response.responseCode === 403) {
+        LogUtil.warn(TAG, `请求鉴权失败 ${response.responseCode}: ${requestUrl}`);
+        this.handleLoginRedirect('登录状态已失效，请重新登录');
+        throw new Error(`Auth failed: ${response.responseCode}`);
+      }
+
       if (response.responseCode < 200 || response.responseCode >= 300) {
         throw new Error(`请求失败，状态码：${response.responseCode}`);
       }
@@ -125,10 +142,8 @@ export class ApiClient {
       }
       const parsedResult = this.parseResult<T>(response.result, expectJson);
 
-      // Handle headers safely for ArkTS
       let responseHeaders: Record<string, string | string[]> = {};
       if (response.header) {
-        // Cast to Record to allow indexed access: headerObj[key]
         let headerObj = response.header as Record<string, string | string[]>;
         let keys = Object.keys(headerObj);
         for (let i = 0; i < keys.length; i++) {
@@ -149,17 +164,28 @@ export class ApiClient {
       };
     } catch (error) {
       LogUtil.error(TAG, `Request failed for ${requestUrl}`, JSON.stringify(error));
-      throw new Error('网络请求失败');
+      throw new Error(error);
     } finally {
       httpRequest.destroy();
     }
+  }
+
+  private handleLoginRedirect(message: string): void {
+    if (this.isRedirecting) {
+      return;
+    }
+    this.isRedirecting = true;
+    ToastUtil.showInfo(message);
+    RouterUtil.pushPathByName(RouterMap.LOGIN);
+    setTimeout(() => {
+      this.isRedirecting = false;
+    }, 1000);
   }
 
   private parseResult<T>(payload: Object | string | ArrayBuffer, expectJson: boolean): T {
     if (!expectJson) {
       return payload as T;
     }
-
     if (typeof payload === 'string') {
       try {
         return JSON.parse(payload) as T;
@@ -167,7 +193,6 @@ export class ApiClient {
         return payload as T;
       }
     }
-
     return payload as T;
   }
 
@@ -229,12 +254,9 @@ export class ApiClient {
 
   private extractSetCookies(response: http.HttpResponse): string[] {
     const cookies: string[] = [];
-
     if (response.header) {
-      // Cast to Record to allow indexed access
       let headerObj = response.header as Record<string, string | string[]>;
       let setCookie = headerObj['Set-Cookie'] ?? headerObj['set-cookie'];
-
       if (setCookie) {
         if (typeof setCookie === 'string') {
           cookies.push(setCookie);
