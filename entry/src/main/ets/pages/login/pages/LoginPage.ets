@@ -41,12 +41,14 @@ struct LoginPage {
     Column({space: CommonConstant.NormalContainerInnerPadding}) {
       LoginInput({
         placeHolder: $r("app.string.Login_login_placeHolder"),
-        value: this.vm.username
+        value: this.vm.username,
+        $value: (val: string) => { this.vm.username = val }
       })
       LoginInput({
         placeHolder: $r("app.string.Login_password_placeHolder"),
         isPassword: true,
-        value: this.vm.password
+        value: this.vm.password,
+        $value: (val: string) => { this.vm.password = val }
       })
       
       Row() {

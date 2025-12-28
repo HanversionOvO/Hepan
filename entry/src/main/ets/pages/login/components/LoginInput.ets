@@ -7,11 +7,13 @@ export struct LoginInput {
   @Param value: string = "";
   @Local brColor: ResourceColor = $r('app.color.glass_border');
   @Local bgColor: ResourceColor = $r('app.color.second_window_background');
+  @Event $value: (val: string) => void = (val) => {
+  };
 
   build() {
     TextInput({
       placeholder: this.placeHolder,
-      text: $$this.value
+      text: this.value
     })
       .borderRadius(CommonConstant.RadiusSmall)
       .backgroundColor(this.bgColor)
@@ -22,6 +24,9 @@ export struct LoginInput {
       .animation({
         duration: CommonConstant.AnimationDurationNormal,
         curve: CommonConstant.AnimationCurveNormal
+      })
+      .onChange((value) => {
+        this.$value(value);
       })
       .onFocus(() => {
         this.bgColor = ColorUtil.lighten(CommonConstant.ThemeColor)
