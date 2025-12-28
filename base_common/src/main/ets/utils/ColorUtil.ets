@@ -24,7 +24,6 @@ class ARGB {
 }
 
 export class ColorUtil {
-
   /**
    * 生成颜色的变体（浅色、深色、暗色）
    * lightLevel/darkLevel: 0~1，越大变化越明显
@@ -61,9 +60,11 @@ export class ColorUtil {
    * 调整透明度（ARGB：#AARRGGBB）
    * opacity: 0~1
    */
-  public static opacity(colorHex: string, opacity: number): string {
+  public static opacity(colorHex: string, opacity: number = 0.15): string {
     const c = ColorUtil.parseColor(colorHex);
-    if (!c) return colorHex;
+    if (!c) {
+      return colorHex;
+    }
 
     const a = Math.round(Math.max(0, Math.min(1, opacity)) * 255);
     c.a = a;
@@ -80,7 +81,9 @@ export class ColorUtil {
     const c1 = ColorUtil.parseColor(color1);
     const c2 = ColorUtil.parseColor(color2);
 
-    if (!c1 || !c2) return color1;
+    if (!c1 || !c2) {
+      return color1;
+    }
 
     const r = Math.round(c1.r + (c2.r - c1.r) * w);
     const g = Math.round(c1.g + (c2.g - c1.g) * w);

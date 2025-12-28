@@ -58,4 +58,8 @@ export class CommonConstant {
   // 颜色相关
   // 主题颜色
   static readonly ThemeColor: string = "#FFFF2442";
+  static readonly SuccessColor: string = "#FF22C55E";
+  static readonly WarningColor: string = "#FFF59E0B";
+  static readonly ErrorColor: string = "#FFEF4444";
+  static readonly InfoColor: string = "#FF3B82F6";
 }

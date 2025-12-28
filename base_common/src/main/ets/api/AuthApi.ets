@@ -62,8 +62,6 @@ export class AuthApi {
       resultName = adoptResp.data.user.username;
     }
 
-    LogUtil.debug(TAG, `${username} login Success. Uid is ${uid}`);
-
     return {
       authorization: authorization,
       cookie: this.client.getCookieHeader(),

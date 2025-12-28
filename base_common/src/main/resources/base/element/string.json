@@ -1,8 +1,16 @@
 {
   "string": [
     {
-      "name": "page_show",
-      "value": "page from package"
+      "name": "CommonToast_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "CommonToast_confirm",
+      "value": "确定"
+    },
+    {
+      "name": "CommonToast_known",
+      "value": "好的"
     }
   ]
 }

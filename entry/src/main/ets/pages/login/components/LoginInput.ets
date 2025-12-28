@@ -1,4 +1,4 @@
-import { ColorUtil, CommonConstant } from "base_common";
+import { ColorUtil, CommonConstant } from 'base_common';
 
 @ComponentV2
 export struct LoginInput {
@@ -29,7 +29,7 @@ export struct LoginInput {
         this.$value(value);
       })
       .onFocus(() => {
-        this.bgColor = ColorUtil.lighten(CommonConstant.ThemeColor)
+        this.bgColor = ColorUtil.opacity(CommonConstant.ThemeColor)
         this.brColor = CommonConstant.ThemeColor
       })
       .onBlur(() => {
