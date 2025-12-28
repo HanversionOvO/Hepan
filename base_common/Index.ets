@@ -17,3 +17,9 @@ export { ColorUtil, ColorVariants } from './src/main/ets/utils/ColorUtil';
 export { BaseVM } from './src/main/ets/viewmodels/BaseVM';
 
 export { CommonConstant } from './src/main/ets/constants/CommonConstant';
+
+export { ApiClient } from './src/main/ets/api/ApiClient';
+
+export { AuthApi } from './src/main/ets/api/AuthApi';
+
+export { AuthModel } from './src/main/ets/models/AuthModel';

@@ -65,6 +65,7 @@ struct LoginPage {
       
       LoginButton()
       .onClick(() => {
+        this.vm.handleLogin();
       })
     }
   }

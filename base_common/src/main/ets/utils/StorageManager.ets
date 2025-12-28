@@ -3,6 +3,7 @@ import { AppStorageV2 } from "@kit.ArkUI";
 import { TypeConstructorWithArgs } from "@ohos.arkui.StateManagement";
 import { LogUtil } from "@pura/harmony-utils";
 import { BreakPointModel } from "../models/BreakPointModel";
+import { AuthModel } from "../models/AuthModel";
 
 const TAG = '[StorageManager]: '
 
@@ -21,6 +22,14 @@ export class StorageManager {
   public static get breakPointModel(): BreakPointModel {
     return StorageManager.connect(BreakPointModel, () => new BreakPointModel());
   }
+
+  /**
+ * 登录信息
+ */
+  public static get authModel(): AuthModel {
+    return StorageManager.connect(AuthModel, () => new AuthModel());
+  }
+
 
   /**
    * 私有通用连接方法，封装非空断言和错误处理
