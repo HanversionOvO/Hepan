@@ -2,7 +2,7 @@ import { DialogHub } from '@hadss/dialoghub';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { WindowManager, BreakPointUtil, VMManager } from 'base_common';
+import { VMManager, WindowManager } from 'base_common';
 
 const TAG = '[EntryAbility]: ';
 
@@ -20,7 +20,6 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     LogUtil.info(TAG, '%{public}s', 'Ability onDestroy');
-    BreakPointUtil.getInstance().unRegister();
     WindowManager.offAvoidAreaChange();
     WindowManager.offWindowChange();
     VMManager.clearAll();
@@ -31,7 +30,6 @@ export default class EntryAbility extends UIAbility {
     LogUtil.info(TAG, '%{public}s', 'Ability onWindowStageCreate');
 
     WindowManager.setWinConfig();
-    BreakPointUtil.getInstance().register();
 
     windowStage.loadContent('pages/splash/pages/SplashPage', (err) => {
       if (err.code) {

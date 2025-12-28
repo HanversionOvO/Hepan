@@ -1,17 +1,20 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { ApiClient, BaseVM, RouterMap, RouterUtil, StorageManager } from 'base_common';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { ApiClient, BaseVM, BreakPointUtil, RouterMap, RouterUtil, StorageManager } from 'base_common';
 
 const TAG = '[SplashPageVM]: ';
 
 @ObservedV2
 export class SplashPageVM extends BaseVM {
   @Trace countDown: number = 3;
+  bpUtil: BreakPointUtil | null = null;
   private timerId: number = -1;
 
   /**
    * 开始启动流程
    */
   startSplash() {
+    this.bpUtil = new BreakPointUtil(AppUtil.getUIContext().getMediaQuery());
+    this.bpUtil?.register();
     // 避免重复启动
     if (this.timerId !== -1) {
       return;

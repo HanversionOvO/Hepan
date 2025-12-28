@@ -1,84 +1,68 @@
-import { mediaquery } from '@kit.ArkUI';
-import { LogUtil } from '@pura/harmony-utils'; // 假设您有这个工具类
-import { BreakpointNameEnum, BreakpointValueEnum } from '../models/BreakPointModel';
-import { StorageManager } from './StorageManager'; // 导入之前的 StorageManager
+import { AppStorageV2, mediaquery, MediaQuery } from '@kit.ArkUI';
+import { LogUtil } from '@pura/harmony-utils';
+import { BreakPointModel, BreakpointNameEnum, BreakpointValueEnum } from '../models/BreakPointModel';
 
-const TAG = '[BreakPointUtil]: ';
-
-class BreakpointQuery {
-  name: BreakpointNameEnum;
-  value: string;
-
-  constructor(name: BreakpointNameEnum, value: string) {
-    this.name = name;
-    this.value = value;
-  }
-}
+const TAG = '[BreakPointUtil] :'
 
 export class BreakPointUtil {
-  // 单例实例
-  private static instance: BreakPointUtil;
+  private static readonly RANGE_SM: string = `(width<${BreakpointValueEnum.SM})`;
+  private static readonly RANGE_MD: string = `(width>=${BreakpointValueEnum.SM}) and (width<${BreakpointValueEnum.MD})`;
+  private static readonly RANGE_LG: string = `(width>=${BreakpointValueEnum.MD}) and (width<${BreakpointValueEnum.LG})`;
+  private static readonly RANGE_XL: string = `(width>=${BreakpointValueEnum.LG})`;
+  private mediaQuery: MediaQuery;
+  private smListen: mediaquery.MediaQueryListener;
+  private mdListen: mediaquery.MediaQueryListener;
+  private lgListen: mediaquery.MediaQueryListener;
+  private xlListen: mediaquery.MediaQueryListener;
+  private breakpointModel: BreakPointModel = new BreakPointModel();
 
-  // 引用 StorageManager 中的 Model，不再自己 Connect
-  private breakPointModel = StorageManager.breakPointModel;
-
-  // 存储监听器句柄，用于解绑
-  private listeners: mediaquery.MediaQueryListener[] = [];
-
-  // 私有构造函数
-  private constructor() {
+  constructor(mediaQuery: MediaQuery) {
+    this.mediaQuery = mediaQuery;
+    this.smListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_SM);
+    this.mdListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_MD);
+    this.lgListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_LG);
+    this.xlListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_XL);
+    this.breakpointModel = AppStorageV2.connect(BreakPointModel, () => new BreakPointModel())!;
   }
 
-  public static getInstance(): BreakPointUtil {
-    if (!BreakPointUtil.instance) {
-      BreakPointUtil.instance = new BreakPointUtil();
+  private updateBreakpoint: (value: string) => void = (value: string) => {
+    LogUtil.info(TAG, `updateBreakpoint: ${value}`);
+    this.breakpointModel.currentBreakPoint = value as BreakpointNameEnum;
+  }
+  private smFunc: (result: mediaquery.MediaQueryResult) => void = (result) => {
+    if (result.matches) {
+      this.updateBreakpoint(BreakpointNameEnum.SM);
     }
-    return BreakPointUtil.instance;
   }
-
-  /**
-   * 初始化并注册监听
-   */
-  public register(): void {
-    if (this.listeners.length > 0) {
-      LogUtil.info(TAG, 'Listeners already registered.');
-      return;
+  private mdFunc: (result: mediaquery.MediaQueryResult) => void = (result) => {
+    if (result.matches) {
+      this.updateBreakpoint(BreakpointNameEnum.MD);
     }
-
-    const queries: BreakpointQuery[] = [
-      new BreakpointQuery(BreakpointNameEnum.SM, `(width < ${BreakpointValueEnum.SM})`),
-      new BreakpointQuery(BreakpointNameEnum.MD, `(width >= ${BreakpointValueEnum.SM}) and (width < ${BreakpointValueEnum.MD})`),
-      new BreakpointQuery(BreakpointNameEnum.LG, `(width >= ${BreakpointValueEnum.MD}) and (width < ${BreakpointValueEnum.LG})`),
-      new BreakpointQuery(BreakpointNameEnum.XL, `(width >= ${BreakpointValueEnum.LG})`)
-    ];
-
-    queries.forEach((query: BreakpointQuery) => {
-      const listener = mediaquery.matchMediaSync(query.value);
-      listener.on('change', (result: mediaquery.MediaQueryResult) => {
-        if (result.matches) {
-          this.updateBreakpoint(query.name);
-        }
-      });
-      this.listeners.push(listener);
-    });
-
-    LogUtil.info(TAG, 'Breakpoint listeners registered successfully.');
   }
-
-  /**
-   * 取消注册
-   */
-  public unRegister(): void {
-    // 注：ArkTS 中 listener.off 需要原始回调引用，此处简化处理，仅清空数组
-    this.listeners = [];
-    LogUtil.info(TAG, 'Breakpoint listeners unregistered.');
-  }
-
-  private updateBreakpoint(bp: BreakpointNameEnum): void {
-    // 只有当状态真正改变时才更新，减少不必要的渲染
-    if (this.breakPointModel.currentBreakPoint !== bp) {
-      LogUtil.info(TAG, `Switch to: ${bp}`);
-      this.breakPointModel.currentBreakPoint = bp;
+  private lgFunc: (result: mediaquery.MediaQueryResult) => void = (result) => {
+    if (result.matches) {
+      this.updateBreakpoint(BreakpointNameEnum.LG);
     }
+  }
+  private xlFunc: (result: mediaquery.MediaQueryResult) => void = (result) => {
+    if (result.matches) {
+      this.updateBreakpoint(BreakpointNameEnum.XL);
+    }
+  }
+
+  register() {
+    LogUtil.info(TAG, 'register breakpoint listener.');
+    this.smListen.on('change', this.smFunc);
+    this.mdListen.on('change', this.mdFunc);
+    this.lgListen.on('change', this.lgFunc);
+    this.xlListen.on('change', this.xlFunc);
+  }
+
+  unRegister() {
+    LogUtil.info(TAG, 'unregister breakpoint listener.');
+    this.smListen.off('change', this.smFunc);
+    this.mdListen.off('change', this.mdFunc);
+    this.lgListen.off('change', this.lgFunc);
+    this.xlListen.off('change', this.xlFunc);
   }
 }
