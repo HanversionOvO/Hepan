@@ -51,7 +51,7 @@ export struct FeatureCard {
         }) {
           SymbolGlyph(this.model.cardIcon)
             .fontColor([$r('sys.color.font_secondary')])
-            .fontSize(this.vm.isTabletView ? CommonConstant.TextSizeUltraLarge : CommonConstant.TextSizeLarge)
+            .fontSize(CommonConstant.TextSizeUltraLarge)
 
           Column({ space: CommonConstant.SmallContainerInnerPadding }) {
             if (this.vm.isTabletView) {
