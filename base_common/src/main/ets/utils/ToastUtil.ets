@@ -26,7 +26,7 @@ export interface ToastOptions {
 
 export interface ToastParams {
   state: ToastState;
-  message: string;
+  message: ResourceStr;
   isShowConfirm: boolean;
   title?: ResourceStr;
   onCancel?: () => void;
@@ -190,7 +190,7 @@ export class ToastUtil {
 
   // ================= 核心方法 =================
 
-  static showToast(message: string, options?: ToastOptions) {
+  static showToast(message: ResourceStr, options?: ToastOptions) {
     const uiContext = AppUtil.getUIContext();
     if (!uiContext) {
       LogUtil.error(TAG, 'UIContext is null');
@@ -269,7 +269,7 @@ export class ToastUtil {
 
   // ================= 便捷封装方法 =================
 
-  static showSuccess(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
+  static showSuccess(message: ResourceStr, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.SUCCESS,
@@ -280,7 +280,7 @@ export class ToastUtil {
     });
   }
 
-  static showError(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
+  static showError(message: ResourceStr, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.ERROR,
@@ -291,7 +291,7 @@ export class ToastUtil {
     });
   }
 
-  static showWarn(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
+  static showWarn(message: ResourceStr, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.WARNING,
@@ -302,7 +302,7 @@ export class ToastUtil {
     });
   }
 
-  static showInfo(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
+  static showInfo(message: ResourceStr, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.INFO,

@@ -16,16 +16,22 @@ export class LoginPageVM extends BaseVM {
 
   async handleLogin() {
     if (!this.username || !this.password) {
+      ToastUtil.showWarn($r('app.string.Login_input_warn'));
       return;
     }
 
     try {
       const result = await this.authApi.login(this.username.trim(), this.password);
       const authModel = StorageManager.authModel;
+
+      // 更新内存数据
       authModel.authorization = result.authorization;
       authModel.cookie = result.cookie;
       authModel.uid = result.uid;
       authModel.username = result.username;
+
+      // 保存到本地磁盘
+      authModel.saveToDisk();
 
       ToastUtil.showSuccess(`欢迎回来, ${result.username}`);
 

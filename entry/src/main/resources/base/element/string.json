@@ -63,6 +63,10 @@
     {
       "name": "Login_idas_title",
       "value": "统一身份认证"
+    },
+    {
+      "name": "Login_input_warn",
+      "value": "请输入用户名和密码"
     }
   ]
 }

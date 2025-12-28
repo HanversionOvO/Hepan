@@ -1,4 +1,7 @@
-import { BaseVM, RouterMap, RouterUtil, StorageManager } from 'base_common';
+import { LogUtil } from '@pura/harmony-utils';
+import { ApiClient, BaseVM, RouterMap, RouterUtil, StorageManager } from 'base_common';
+
+const TAG = '[SplashPageVM]: ';
 
 @ObservedV2
 export class SplashPageVM extends BaseVM {
@@ -31,8 +34,10 @@ export class SplashPageVM extends BaseVM {
     // 获取全局 AuthModel 并检查登录状态
     const authModel = StorageManager.authModel;
 
+    LogUtil.debug(TAG, JSON.stringify(authModel));
+
     if (authModel.isLoggedIn) {
-      // 已登录 -> 跳转主页
+      ApiClient.getInstance().setAuthorization(authModel.authorization);
       RouterUtil.replacePathByName(RouterMap.HOME);
     } else {
       // 未登录 -> 跳转登录页

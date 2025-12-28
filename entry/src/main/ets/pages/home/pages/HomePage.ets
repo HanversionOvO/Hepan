@@ -14,5 +14,8 @@ struct HomePage {
     NavDestination()
       .hideTitleBar(true)
       .backgroundColor($r('app.color.start_window_background'))
+      .onShown(() => {
+        this.vm.startHome();
+      })
   }
 }
