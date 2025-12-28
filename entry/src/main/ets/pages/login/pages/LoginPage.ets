@@ -29,11 +29,12 @@ struct LoginPage {
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         Text($r('app.string.Login_title'))
           .fontSize(CommonConstant.TextSizeUltraLarge)
+          .fontColor($r('sys.color.font_on_primary'))
           .fontWeight(FontWeight.Bold)
 
         Text($r('app.string.Login_subtitle'))
           .fontSize(CommonConstant.TextSizeLarge)
-          .fontColor($r('sys.color.font_secondary'))
+          .fontColor($r('sys.color.font_on_secondary'))
       }
     }
     .width(CommonConstant.FullPercent)
@@ -63,11 +64,11 @@ struct LoginPage {
       Row() {
         Text($r('app.string.Login_unable_login'))
           .fontSize(CommonConstant.TextSizeSmall)
-          .fontColor($r('sys.color.font_secondary'))
+          .fontColor($r('sys.color.font_on_secondary'))
 
         Text($r('app.string.Login_register'))
           .fontSize(CommonConstant.TextSizeSmall)
-          .fontColor($r('sys.color.font_secondary'))
+          .fontColor($r('sys.color.font_on_secondary'))
       }
       .width(CommonConstant.FullPercent)
       .justifyContent(FlexAlign.SpaceBetween)
@@ -90,7 +91,7 @@ struct LoginPage {
 
         Text($r('app.string.Login_other_logins'))
           .fontSize(CommonConstant.TextSizeSmall)
-          .fontColor($r('sys.color.font_tertiary'))
+          .fontColor($r('sys.color.font_on_tertiary'))
 
         Divider()
           .vertical(false)

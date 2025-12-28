@@ -44,7 +44,7 @@ export struct LoginInput {
             duration: CommonConstant.AnimationDurationNormal,
             curve: CommonConstant.AnimationCurveNormal
           }, () => {
-            this.bgColor = ColorUtil.opacity(CommonConstant.ThemeColor);
+            this.bgColor = ColorUtil.opacity(CommonConstant.ThemeColor, 0.4);
             this.brColor = CommonConstant.ThemeColor;
             this.iconColor = CommonConstant.ThemeColor;
           })
