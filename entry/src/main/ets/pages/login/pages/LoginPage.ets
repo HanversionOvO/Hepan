@@ -103,6 +103,7 @@ struct LoginPage {
   build() {
     NavDestination() {
       Stack() {
+
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           this.TopArea()
 
@@ -110,16 +111,17 @@ struct LoginPage {
 
           this.BottomArea()
         }
+        .backgroundColor($r('app.color.start_window_background'))
         .width(CommonConstant.AboveHalfPercent)
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
         .constraintSize({ maxWidth: this.maxMiddleWidth })
-        .padding({
-          left: CommonConstant.NormalContainerLRPadding,
-          right: CommonConstant.NormalContainerLRPadding,
-          top: CommonConstant.NormalContainerTBPadding,
-          bottom: CommonConstant.NormalContainerTBPadding
-        })
+        .padding(CommonConstant.LargeContainerLRPadding)
         .borderRadius(CommonConstant.RadiusNormal)
       }
+      .backgroundImage("https://gips2.baidu.com/it/u=2055042668,1190219470&fm=3028&app=3028&f=JPEG&fmt=auto?w=960&h=1280")
+      .backgroundImageSize(ImageSize.Cover)
+      .backgroundImagePosition(Alignment.Center)
+      .backgroundBlurStyle(BlurStyle.Thin)
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
       .onClick(() => {
@@ -133,6 +135,9 @@ struct LoginPage {
     }
     .backgroundColor($r('app.color.start_window_background'))
     .hideTitleBar(true)
+    .animation({
+      duration: CommonConstant.AnimationDurationNormal
+    })
     .onShown(() => {
       this.vm.startLogin();
     })

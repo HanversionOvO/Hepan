@@ -1,4 +1,4 @@
-import { curves } from "@kit.ArkUI";
+import { curves } from '@kit.ArkUI';
 
 export class CommonConstant {
   // 尺寸相关
@@ -29,7 +29,6 @@ export class CommonConstant {
   // 顶/底栏尺寸
   static readonly TopBarHeight: number = 54;
   static readonly BottomBarHeight: number = 60;
-
   // 间隔相关
   // 小型容器内部间隔
   static readonly SmallContainerInnerPadding: number = 4; // 容器内部控件间隔
@@ -39,6 +38,10 @@ export class CommonConstant {
   static readonly NormalContainerInnerPadding: number = 12; // 普通容器内容间隔
   static readonly NormalContainerLRPadding: number = 16; // 普通容器左右间隔
   static readonly NormalContainerTBPadding: number = 12; // 普通容器上下间隔
+  // 大型容器内容间隔
+  static readonly LargeContainerInnerPadding: number = 16;
+  static readonly LargeContainerLRPadding: number = 20;
+  static readonly LargeContainerTBPadding: number = 16;
   // 页面内部间隔
   static readonly PageLRPadding: number = 18; // 页面左右间隔
 
@@ -54,7 +57,6 @@ export class CommonConstant {
   static readonly AnimationCurveSpring: curves.ICurve = curves.springMotion(0.4, 0.8);
   // 按压缩放尺寸
   static readonly PressedDownScaleNormal: number = 0.9;
-
   // 颜色相关
   // 主题颜色
   static readonly ThemeColor: string = "#FFFF2442";
