@@ -36,4 +36,36 @@ export class UserApi {
       return null;
     }
   }
+
+  /**
+   * [新增] 获取完整的用户个人资料
+   * 包含摘要、详细信息(邮箱/签名等)以及最近访客
+   * @param uid 用户ID，传 'me' 代表当前登录用户
+   */
+  public static async getFullUserProfile(uid: number | 'me'): Promise<UserProfileData | null> {
+    try {
+      // 拼接路径：使用 'me' 或具体数字，并请求摘要和访客信息
+      const idStr = uid === 'me' ? 'me' : uid.toString();
+      const path = `/_/user/${idStr}/profile?user_summary=1&visitors=1`;
+
+      LogUtil.info(TAG, `Fetching full profile for: ${idStr}`);
+
+      const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+        path: path,
+        method: http.RequestMethod.GET,
+        includeAuthorization: true, // 必须带 Token 才能获取 email 等敏感信息
+        includeCookie: true
+      });
+
+      if (response.status === 200 && response.data.code === 0 && response.data.data) {
+        return response.data.data;
+      } else {
+        LogUtil.warn(TAG, `Fetch full profile failed: ${response.data?.message || 'Unknown error'}`);
+        return null;
+      }
+    } catch (error) {
+      LogUtil.error(TAG, 'Fetch full profile exception', JSON.stringify(error));
+      return null;
+    }
+  }
 }

@@ -54,7 +54,7 @@ export class HomePageVM extends BaseVM {
     const data = await UserApi.getUserProfile(uid);
     if (data && data.user_summary) {
       // 更新全局用户模型
-      StorageManager.userModel.setUserSummary(data.user_summary);
+      StorageManager.userModel.setUserProfile(data);
       LogUtil.debug(TAG, `Fetched user info successful: \n ${JSON.stringify(data.user_summary)}`)
     } else {
       // 获取失败可选策略：提示用户或静默失败
