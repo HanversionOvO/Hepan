@@ -13,6 +13,7 @@ struct HomePage {
   build() {
     NavDestination() {
       Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Top }) {
+        Text(this.vm.isTabletView ? "test" : "ests")
 
       }
     }

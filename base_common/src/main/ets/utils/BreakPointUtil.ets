@@ -1,6 +1,7 @@
-import { AppStorageV2, mediaquery, MediaQuery } from '@kit.ArkUI';
+import { mediaquery, MediaQuery } from '@kit.ArkUI';
 import { LogUtil } from '@pura/harmony-utils';
 import { BreakPointModel, BreakpointNameEnum, BreakpointValueEnum } from '../models/BreakPointModel';
+import { StorageManager } from './StorageManager';
 
 const TAG = '[BreakPointUtil] :'
 
@@ -14,7 +15,7 @@ export class BreakPointUtil {
   private mdListen: mediaquery.MediaQueryListener;
   private lgListen: mediaquery.MediaQueryListener;
   private xlListen: mediaquery.MediaQueryListener;
-  private breakpointModel: BreakPointModel = new BreakPointModel();
+  private breakpointModel: BreakPointModel;
 
   constructor(mediaQuery: MediaQuery) {
     this.mediaQuery = mediaQuery;
@@ -22,7 +23,7 @@ export class BreakPointUtil {
     this.mdListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_MD);
     this.lgListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_LG);
     this.xlListen = this.mediaQuery.matchMediaSync(BreakPointUtil.RANGE_XL);
-    this.breakpointModel = AppStorageV2.connect(BreakPointModel, () => new BreakPointModel())!;
+    this.breakpointModel = StorageManager.breakPointModel;
   }
 
   private updateBreakpoint: (value: string) => void = (value: string) => {
