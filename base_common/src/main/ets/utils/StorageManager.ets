@@ -4,7 +4,7 @@ import { TypeConstructorWithArgs } from '@ohos.arkui.StateManagement';
 import { LogUtil } from '@pura/harmony-utils';
 import { BreakPointModel } from '../models/BreakPointModel';
 import { AuthModel } from '../models/AuthModel';
-import { HomePageIndexModel } from '../models/HomePageIndexModel';
+import { TabIndexModel } from '../models/TabIndexModel';
 
 const TAG = '[StorageManager]: '
 
@@ -32,10 +32,10 @@ export class StorageManager {
   }
 
   /**
-   * 主页页面当前序号
+   * Tab栏索引
    */
-  public static get homePageIndexModel(): HomePageIndexModel {
-    return StorageManager.connect(HomePageIndexModel, () => new HomePageIndexModel());
+  public static get tabIndexModel(): TabIndexModel {
+    return StorageManager.connect(TabIndexModel, () => new TabIndexModel());
   }
 
   /**

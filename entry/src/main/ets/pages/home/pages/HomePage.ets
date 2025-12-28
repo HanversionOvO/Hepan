@@ -1,4 +1,5 @@
-import { VMManager } from 'base_common'
+import { CommonConstant, VMManager } from 'base_common'
+import { HomeNavBar } from '../components/HomeNavBar'
 import { HomePageVM } from '../viewmodels/HomePageVM'
 
 @Builder
@@ -12,10 +13,37 @@ struct HomePage {
 
   build() {
     NavDestination() {
-      Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Top }) {
-        Text(this.vm.isTabletView ? "test" : "ests")
+      Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Bottom }) {
+        Tabs({ index: this.vm.currentIndex, controller: this.vm.controller }) {
+          TabContent() {
+            Text("Content 1")
+          }
 
+          TabContent() {
+            Text("Content 2")
+          }
+
+          TabContent() {
+            Text("Content 3")
+          }
+
+          TabContent() {
+            Text("Content 4")
+          }
+        }
+        .barHeight(0)
+        .scrollable(false)
+        .width("100%")
+        .height("100%")
+        .padding({
+          left: this.vm.isTabletView ? CommonConstant.BottomBarHeight : 0
+        })
+
+        HomeNavBar({ vm: this.vm })
       }
+      .width(CommonConstant.FullPercent)
+      .height(CommonConstant.FullPercent)
+      .animation({ duration: CommonConstant.AnimationDurationNormal })
     }
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
