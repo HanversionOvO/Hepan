@@ -88,7 +88,8 @@ export class AuthApi {
 
     if (!this.isLegacyLoginSuccess(response.data)) {
       LogUtil.error(TAG, 'Legacy login failed', JSON.stringify(response.data));
-      throw new Error('账号或密码错误，或触发了登录限制');
+      const errorMessage = this.parseLoginErrorMessage(response.data);
+      throw new Error(errorMessage);
     }
   }
 
@@ -97,5 +98,29 @@ export class AuthApi {
       return false;
     }
     return payload.includes('succeedmessage') || payload.includes('欢迎您回来');
+  }
+
+  /**
+   * 解析登录失败时的 XML 错误信息
+   * XML 格式示例: <root><![CDATA[登录失败，您还可以尝试 3 次<script...
+   */
+  private parseLoginErrorMessage(content: string): string {
+    try {
+      // 1. 提取 CDATA 中的内容
+      const cdataRegex = /<!\[CDATA\[([\s\S]*?)\]\]>/;
+      const match = content.match(cdataRegex);
+
+      if (match && match[1]) {
+        let rawMessage = match[1];
+        const messageParts = rawMessage.split('<script');
+        if (messageParts.length > 0) {
+          return messageParts[0].trim();
+        }
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Failed to parse error message', JSON.stringify(e));
+    }
+    // 解析失败时的默认提示
+    return '账号或密码错误，或触发了登录限制';
   }
 }

@@ -51,6 +51,10 @@
     {
       "name": "Login_other_logins",
       "value": "使用其他方式登陆"
+    },
+    {
+      "name": "Login_failed_title",
+      "value": "登录失败"
     }
   ]
 }

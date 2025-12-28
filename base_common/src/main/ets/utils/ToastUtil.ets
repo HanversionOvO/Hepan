@@ -19,7 +19,7 @@ export interface ToastOptions {
   type?: ToastShowType;
   state?: ToastState;
   isShowConfirm?: boolean;
-  title?: string;
+  title?: ResourceStr;
   onCancel?: () => void;
   onConfirm?: () => void;
 }
@@ -28,7 +28,7 @@ export interface ToastParams {
   state: ToastState;
   message: string;
   isShowConfirm: boolean;
-  title?: string;
+  title?: ResourceStr;
   onCancel?: () => void;
   onConfirm?: () => void;
 }
@@ -71,7 +71,7 @@ function CommonToastBuilder(params: ToastParams) {
     // 2. 内容区域 (Scrollable Body)
     // 使用 Scroll 包裹内容，并限制最大高度
     Scroll() {
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         if (params.title) {
           Text(params.title)
             .fontSize(CommonConstant.TextSizeLarge)
@@ -269,7 +269,7 @@ export class ToastUtil {
 
   // ================= 便捷封装方法 =================
 
-  static showSuccess(message: string, isShowConfirm: boolean = false, title?: string, onConfirm?: () => void,
+  static showSuccess(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.SUCCESS,
@@ -280,7 +280,7 @@ export class ToastUtil {
     });
   }
 
-  static showError(message: string, isShowConfirm: boolean = false, title?: string, onConfirm?: () => void,
+  static showError(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.ERROR,
@@ -291,7 +291,7 @@ export class ToastUtil {
     });
   }
 
-  static showWarn(message: string, isShowConfirm: boolean = false, title?: string, onConfirm?: () => void,
+  static showWarn(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.WARNING,
@@ -302,7 +302,7 @@ export class ToastUtil {
     });
   }
 
-  static showInfo(message: string, isShowConfirm: boolean = false, title?: string, onConfirm?: () => void,
+  static showInfo(message: string, isShowConfirm: boolean = false, title?: ResourceStr, onConfirm?: () => void,
     onCancel?: () => void) {
     ToastUtil.showToast(message, {
       state: ToastState.INFO,

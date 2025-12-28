@@ -27,12 +27,19 @@ export class LoginPageVM extends BaseVM {
       authModel.uid = result.uid;
       authModel.username = result.username;
 
-      ToastUtil.showSuccess(JSON.stringify(authModel), true)
+      ToastUtil.showSuccess(`欢迎回来, ${result.username}`);
 
       this.showSuccess();
       RouterUtil.replacePathByName(RouterMap.HOME);
     } catch (error) {
-      ToastUtil.showError(error)
+      let message = '';
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === 'string') {
+        message = error;
+      }
+
+      ToastUtil.showError(message, false, $r('app.string.Login_failed_title'));
       this.showError();
     }
   }
