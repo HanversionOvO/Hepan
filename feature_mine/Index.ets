@@ -1,0 +1,1 @@
+export { MinePageImpl } from './src/main/ets/pages/MinePageImpl';

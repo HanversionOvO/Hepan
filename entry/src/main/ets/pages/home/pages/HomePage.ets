@@ -1,4 +1,5 @@
 import { CommonConstant, VMManager } from 'base_common'
+import { MinePageImpl } from 'feature_mine'
 import { HomeNavBar } from '../components/HomeNavBar'
 import { HomePageVM } from '../viewmodels/HomePageVM'
 
@@ -28,7 +29,7 @@ struct HomePage {
           }
 
           TabContent() {
-            Text("Content 4")
+            MinePageImpl()
           }
         }
         .barHeight(0)
