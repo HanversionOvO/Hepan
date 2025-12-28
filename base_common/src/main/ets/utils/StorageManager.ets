@@ -1,9 +1,10 @@
-import { WindowModel } from "../models/WindowModel";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { TypeConstructorWithArgs } from "@ohos.arkui.StateManagement";
-import { LogUtil } from "@pura/harmony-utils";
-import { BreakPointModel } from "../models/BreakPointModel";
-import { AuthModel } from "../models/AuthModel";
+import { WindowModel } from '../models/WindowModel';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { TypeConstructorWithArgs } from '@ohos.arkui.StateManagement';
+import { LogUtil } from '@pura/harmony-utils';
+import { BreakPointModel } from '../models/BreakPointModel';
+import { AuthModel } from '../models/AuthModel';
+import { HomePageIndexModel } from '../models/HomePageIndexModel';
 
 const TAG = '[StorageManager]: '
 
@@ -17,19 +18,25 @@ export class StorageManager {
   }
 
   /**
- * 获取断点信息
- */
+   * 获取断点信息
+   */
   public static get breakPointModel(): BreakPointModel {
     return StorageManager.connect(BreakPointModel, () => new BreakPointModel());
   }
 
   /**
- * 登录信息
- */
+   * 登录信息
+   */
   public static get authModel(): AuthModel {
     return StorageManager.connect(AuthModel, () => new AuthModel());
   }
 
+  /**
+   * 主页页面当前序号
+   */
+  public static get homePageIndexModel(): HomePageIndexModel {
+    return StorageManager.connect(HomePageIndexModel, () => new HomePageIndexModel());
+  }
 
   /**
    * 私有通用连接方法，封装非空断言和错误处理

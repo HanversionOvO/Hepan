@@ -33,6 +33,12 @@
       <excludeFolder url="file://$MODULE_DIR$/../../feature_home/build" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_home/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_home/oh_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/.cxx" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/.preview" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/.test" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_mine/oh_modules" />
       <excludeFolder url="file://$MODULE_DIR$/../../node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/../../oh_modules" />
     </content>

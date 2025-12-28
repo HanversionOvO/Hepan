@@ -62,8 +62,8 @@
       "srcPath": "./base_ui"
     },
     {
-      "name": "feature_home",
-      "srcPath": "./feature_home"
+      "name": "feature_mine",
+      "srcPath": "./feature_mine",
     }
   ]
 }

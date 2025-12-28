@@ -25,3 +25,5 @@ export { ApiClient } from './src/main/ets/api/ApiClient';
 export { AuthApi } from './src/main/ets/api/AuthApi';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
+
+export { HomePageIndexEnum, HomePageIndexModel } from './src/main/ets/models/HomePageIndexModel';

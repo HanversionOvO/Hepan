@@ -7,6 +7,7 @@
   "license": "",
   "dependencies": {
     "base_common": "file:../base_common",
-    "base_ui": "file:../base_ui"
+    "base_ui": "file:../base_ui",
+    "feature_mine": "file:../feature_mine"
   }
 }

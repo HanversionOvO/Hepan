@@ -33,8 +33,6 @@ export class LoginPageVM extends BaseVM {
       // 保存到本地磁盘
       authModel.saveToDisk();
 
-      ToastUtil.showSuccess(`欢迎回来, ${result.username}`);
-
       this.showSuccess();
       RouterUtil.replacePathByName(RouterMap.HOME);
     } catch (error) {

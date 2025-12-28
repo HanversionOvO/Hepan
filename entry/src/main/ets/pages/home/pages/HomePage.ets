@@ -11,11 +11,15 @@ struct HomePage {
   @Local vm: HomePageVM = VMManager.get(HomePageVM, () => new HomePageVM())
 
   build() {
-    NavDestination()
-      .hideTitleBar(true)
-      .backgroundColor($r('app.color.start_window_background'))
-      .onShown(() => {
-        this.vm.startHome();
-      })
+    NavDestination() {
+      Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Top }) {
+
+      }
+    }
+    .hideTitleBar(true)
+    .backgroundColor($r('app.color.start_window_background'))
+    .onShown(() => {
+      this.vm.startHome();
+    })
   }
 }
