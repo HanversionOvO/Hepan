@@ -44,7 +44,7 @@ export struct FeatureCard {
         Flex({
           direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.Column,
           space: {
-            main: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
+            main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding)
           },
           alignItems: ItemAlign.Center,
           justifyContent: FlexAlign.Center
