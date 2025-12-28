@@ -96,7 +96,7 @@ export struct UserInfoArea {
         .width("100%")
         .justifyContent(FlexAlign.SpaceBetween)
       }
-      .width(this.vm.isTabletView ? CommonConstant.HalfPercent : CommonConstant.FullPercent)
+      .width(this.vm.isTabletView ? CommonConstant.BelowHalfPercent : CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {

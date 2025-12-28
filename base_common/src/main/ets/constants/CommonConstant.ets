@@ -6,6 +6,7 @@ export class CommonConstant {
   static readonly FullPercent: string = "100%"; // 全尺寸
   static readonly AboveHalfPercent: string = "80%"; // 超半尺寸
   static readonly HalfPercent: string = "50%"; // 半尺寸
+  static readonly BelowHalfPercent: string = "30%"; // 小半尺寸
   // 文字尺寸
   static readonly TextSizeUltraTiny: number = 8; // 超微小文字大小
   static readonly TextSizeTiny: number = 10; // 微小文字大小

@@ -3,16 +3,16 @@
     "signingConfigs": [
       {
         "name": "default",
-        "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
+          "storePassword": "00000020E3128A07BE521D13DD84485FE40A2A18A5A477B7EF06BC18A2938290EC17F3B7E473FE9526985938883E38BD",
+          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B058F779172E43F5CB40393298B922F7731B2A63A6C012FC18CACDAA2ED55E16EEE29DED38E476A",
-          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
+          "keyPassword": "00000020E3128A07BE521D13DD84485FE40A2A18A5A477B7EF06BC18A2938290EC17F3B7E473FE9526985938883E38BD",
+          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001B3FAD936A083F9B59BC5369F3BF13F67182CEB7CC15940B82E77BEAB078EB6AFA2F8B4BDCBAA54D"
-        }
+          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p12"
+        },
+        "type": "HarmonyOS"
       }
     ],
     "products": [
@@ -63,7 +63,7 @@
     },
     {
       "name": "feature_mine",
-      "srcPath": "./feature_mine",
+      "srcPath": "./feature_mine"
     }
   ]
 }
