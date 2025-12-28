@@ -1,5 +1,6 @@
 import { preferences } from '@kit.ArkData';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { ApiClient } from '../api/ApiClient';
 
 const TAG = '[AuthModel]';
 const PREF_NAME = 'auth_data_pref'; // 首选项文件名
@@ -29,8 +30,11 @@ export class AuthModel {
     this.cookie = '';
     this.uid = 0;
     this.username = '';
-    // 重置时也需要清空本地存储
     this.saveToDisk();
+
+    // [新增] 同步清空 ApiClient
+    ApiClient.getInstance().clearAuthorization();
+    ApiClient.getInstance().clearCookies();
   }
 
   /**
@@ -64,7 +68,22 @@ export class AuthModel {
       this.uid = pref.getSync(KEY_UID, 0) as number;
       this.username = pref.getSync(KEY_USERNAME, '') as string;
 
-      LogUtil.info(TAG, 'Auth data loaded from disk.');
+      // =====================================================
+      // [关键修复] 加载完成后，立即同步给 ApiClient
+      // =====================================================
+      const client = ApiClient.getInstance();
+
+      // 1. 恢复 Authorization
+      if (this.authorization) {
+        client.setAuthorization(this.authorization);
+      }
+
+      // 2. 恢复 Cookie
+      if (this.cookie) {
+        client.setCookieString(this.cookie);
+      }
+
+      LogUtil.info(TAG, `Auth data loaded and synced. UID: ${this.uid}, Auth len: ${this.authorization.length}`);
     } catch (err) {
       LogUtil.error(TAG, 'Failed to load auth data', JSON.stringify(err));
     }

@@ -69,6 +69,27 @@ export class ApiClient {
     return this.cookieJar.size > 0;
   }
 
+  public setCookieString(cookieStr: string): void {
+    if (!cookieStr) {
+      this.cookieJar.clear();
+      return;
+    }
+    // 解析分号分隔的 Cookie 字符串
+    const pairs = cookieStr.split(';');
+    for (let pair of pairs) {
+      if (!pair.trim()) {
+        continue;
+      }
+      const parts = pair.split('=');
+      if (parts.length >= 2) {
+        const key = parts[0].trim();
+        // 重新拼接 value，防止 value 中包含 = 号
+        const value = parts.slice(1).join('=').trim();
+        this.cookieJar.set(key, value);
+      }
+    }
+  }
+
   public async request<T = Object>(options: ApiRequestOptions): Promise<ApiResponse<T>> {
     const httpRequest = http.createHttp();
     const requestUrl = this.buildUrl(options.path);
