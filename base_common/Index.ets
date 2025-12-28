@@ -8,6 +8,8 @@ export { StorageManager } from './src/main/ets/utils/StorageManager';
 
 export { WindowManager } from './src/main/ets/utils/WindowManager';
 
+export { UserAvatarUtil } from './src/main/ets/utils/UserAvatarUtil';
+
 export { RouterUtil, RouterMap } from './src/main/ets/utils/RouterUtil';
 
 export { VMManager } from './src/main/ets/utils/VMManager';

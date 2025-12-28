@@ -13,8 +13,20 @@ export struct MinePageImpl {
   build() {
     Navigation() {
       Stack({ alignContent: Alignment.Top }) {
+        Column()
+          .width(CommonConstant.FullPercent)
+          .height(CommonConstant.FullPercent)
+          .backgroundColor(Color.Black)
+          .opacity(0.2)
+
         Scroll(this.vm.outerScrollScroller) {
           UserInfoArea({ vm: this.vm })
+            .padding({
+              left: CommonConstant.NormalContainerLRPadding,
+              right: CommonConstant.NormalContainerLRPadding,
+              top: CommonConstant.NormalContainerTBPadding,
+              bottom: CommonConstant.NormalContainerTBPadding
+            })
         }
         .scrollBar(BarState.Off)
       }

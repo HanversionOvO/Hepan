@@ -7,6 +7,26 @@
     {
       "name": "MinePage_check_profile",
       "value": "查看资料"
+    },
+    {
+      "name": "MinePage_friends",
+      "value": "好友数"
+    },
+    {
+      "name": "MinePage_views",
+      "value": "访问数"
+    },
+    {
+      "name": "MinePage_level",
+      "value": "等级"
+    },
+    {
+      "name": "MinePage_water",
+      "value": "水滴数"
+    },
+    {
+      "name": "MinePage_medal",
+      "value": "勋章数"
     }
   ]
 }

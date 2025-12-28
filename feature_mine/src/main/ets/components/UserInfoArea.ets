@@ -1,9 +1,10 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics } from '@kit.ArkUI';
-import { CommonConstant } from 'base_common';
+import { CommonConstant, UserAvatarUtil } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
 import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
+import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 
 @ComponentV2
 export struct UserInfoArea {
@@ -22,14 +23,14 @@ export struct UserInfoArea {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         Row({ space: CommonConstant.NormalContainerLRPadding }) {
           if (!this.vm.isSticky) {
-            Image(`https://bbs.uestc.edu.cn/uc_server/avatar.php?uid=${this.vm.user?.user_summary?.uid}&size=middle`)
+            Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
               .width(this.userAvatarSize)
               .height(this.userAvatarSize)
               .borderRadius(CommonConstant.RadiusRound)
               .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
               .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
           } else {
-            Image(`https://bbs.uestc.edu.cn/uc_server/avatar.php?uid=${this.vm.user?.user_summary?.uid}&size=middle`)
+            Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
               .width(this.userAvatarSize)
               .height(this.userAvatarSize)
               .borderRadius(CommonConstant.RadiusRound)
@@ -97,10 +98,24 @@ export struct UserInfoArea {
       }
       .width(this.vm.isTabletView ? CommonConstant.HalfPercent : CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
+
+      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        FeatureCard({
+          vm: this.vm,
+          cardType: CardType.LV_CARD
+        })
+
+        ForEach(this.vm.featureCards, (item: FeatureCardModel) => {
+          FeatureCard({
+            vm: this.vm,
+            model: item
+          })
+        })
+      }
     }
     .width(CommonConstant.FullPercent)
     .padding({
-      top: CommonConstant.TopBarHeight * 2 + this.vm.window.windowTopPadding
+      top: CommonConstant.TopBarHeight + this.vm.window.windowTopPadding
     })
   }
 }
