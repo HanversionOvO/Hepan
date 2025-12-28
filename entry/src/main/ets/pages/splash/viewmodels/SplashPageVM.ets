@@ -1,17 +1,18 @@
-import { BaseVM, RouterMap, RouterUtil } from 'base_common';
+import { BaseVM, RouterMap, RouterUtil, StorageManager } from 'base_common';
 
 @ObservedV2
 export class SplashPageVM extends BaseVM {
   @Trace countDown: number = 3;
   private timerId: number = -1;
 
-
   /**
    * 开始启动流程
    */
   startSplash() {
     // 避免重复启动
-    if (this.timerId !== -1) return;
+    if (this.timerId !== -1) {
+      return;
+    }
 
     this.timerId = setInterval(() => {
       this.countDown--;
@@ -27,12 +28,16 @@ export class SplashPageVM extends BaseVM {
   jumpToNext() {
     this.stopSplash();
 
-    // 示例：判断是否登录 (假设 globalStore 中有相关状态)
-    // if (this.globalStore.isLogin) { ... }
+    // 获取全局 AuthModel 并检查登录状态
+    const authModel = StorageManager.authModel;
 
-    // 使用 replacePathByName，销毁当前 Splash 页面，不可返回
-    // 注意：请确保 RouterMap.HOME 已在 RouterUtil 中定义
-    RouterUtil.replacePathByName(RouterMap.LOGIN);
+    if (authModel.isLoggedIn) {
+      // 已登录 -> 跳转主页
+      RouterUtil.replacePathByName(RouterMap.HOME);
+    } else {
+      // 未登录 -> 跳转登录页
+      RouterUtil.replacePathByName(RouterMap.LOGIN);
+    }
   }
 
   /**

@@ -55,6 +55,14 @@
     {
       "name": "Login_failed_title",
       "value": "登录失败"
+    },
+    {
+      "name": "Login_webvpn_title",
+      "value": "WebVPN"
+    },
+    {
+      "name": "Login_idas_title",
+      "value": "统一身份认证"
     }
   ]
 }

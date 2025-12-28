@@ -29,6 +29,12 @@ export class CommonConstant {
   // 顶/底栏尺寸
   static readonly TopBarHeight: number = 54;
   static readonly BottomBarHeight: number = 60;
+  // 图标尺寸
+  static readonly IconSizeTiny: number = 16;
+  static readonly IconSizeSmall: number = 18;
+  static readonly IconSizeNormal: number = 24;
+  static readonly IconSizeLarge: number = 32;
+  static readonly IconSizeUltraLarge: number = 48;
   // 间隔相关
   // 小型容器内部间隔
   static readonly SmallContainerInnerPadding: number = 4; // 容器内部控件间隔

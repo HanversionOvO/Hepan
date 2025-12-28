@@ -82,12 +82,12 @@ struct LoginPage {
 
   @Builder
   BottomArea() {
-    Row({ space: CommonConstant.SmallContainerTBPadding }) {
+    Column({ space: CommonConstant.SmallContainerTBPadding }) {
       Row({ space: CommonConstant.SmallContainerInnerPadding }) {
         Divider()
           .vertical(false)
           .width(24)
-          .color($r('sys.color.font_secondary'))
+          .color($r('sys.color.font_on_tertiary'))
 
         Text($r('app.string.Login_other_logins'))
           .fontSize(CommonConstant.TextSizeSmall)
@@ -96,8 +96,33 @@ struct LoginPage {
         Divider()
           .vertical(false)
           .width(24)
-          .color($r('sys.color.font_secondary'))
+          .color($r('sys.color.font_on_tertiary'))
       }
+
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        this.OtherLoginMethod("https://webvpn.uestc.edu.cn/favicon.ico", $r('app.string.Login_webvpn_title'))
+
+        this.OtherLoginMethod("https://www.uestc.edu.cn/favicon.ico", $r('app.string.Login_idas_title'))
+      }
+    }
+  }
+
+  @Builder
+  OtherLoginMethod(icon: ResourceStr, title: ResourceStr) {
+    Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Image(icon)
+        .width(CommonConstant.IconSizeNormal)
+        .height(CommonConstant.IconSizeNormal)
+        .borderRadius(CommonConstant.RadiusRound)
+        .border({
+          width: CommonConstant.BorderSizeNormal,
+          color: $r('app.color.glass_border'),
+        })
+
+      Text(title)
+        .fontSize(CommonConstant.TextSizeTiny)
+        .fontColor($r('sys.color.font_on_tertiary'))
+        .fontWeight(FontWeight.Medium)
     }
   }
 
