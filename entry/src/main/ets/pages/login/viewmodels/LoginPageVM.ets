@@ -32,6 +32,7 @@ export class LoginPageVM extends BaseVM {
       this.showSuccess();
       RouterUtil.replacePathByName(RouterMap.HOME);
     } catch (error) {
+      ToastUtil.showError(JSON.stringify(error))
       this.showError();
     }
   }

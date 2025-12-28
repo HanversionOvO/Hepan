@@ -1,5 +1,5 @@
-import { VMManager } from "base_common"
-import { HomePageVM } from "../viewmodels/HomePageVM"
+import { VMManager } from 'base_common'
+import { HomePageVM } from '../viewmodels/HomePageVM'
 
 @Builder
 export function HomePageBuilder() {
@@ -9,9 +9,10 @@ export function HomePageBuilder() {
 @ComponentV2
 struct HomePage {
   @Local vm: HomePageVM = VMManager.get(HomePageVM, () => new HomePageVM())
-  
+
   build() {
     NavDestination()
-    .hideTitleBar(true)
+      .hideTitleBar(true)
+      .backgroundColor($r('app.color.start_window_background'))
   }
 }

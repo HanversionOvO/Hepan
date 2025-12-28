@@ -43,6 +43,7 @@ struct LoginPage {
   MiddleArea() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       LoginInput({
+        icon: $r('sys.symbol.person'),
         placeHolder: $r("app.string.Login_login_placeHolder"),
         value: this.vm.username,
         $value: (val: string) => {
@@ -50,6 +51,7 @@ struct LoginPage {
         }
       })
       LoginInput({
+        icon: $r('sys.symbol.lock'),
         placeHolder: $r("app.string.Login_password_placeHolder"),
         isPassword: true,
         value: this.vm.password,
