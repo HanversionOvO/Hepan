@@ -81,7 +81,8 @@ export struct UserInfoArea {
           Row({ space: CommonConstant.SmallContainerInnerPadding }) {
             GlassButton({
               text: ResUtil.getStringSync($r('app.string.MinePage_check_profile')),
-              innerFontColor: $r('sys.color.font_on_primary')
+              innerFontColor: $r('sys.color.font_on_primary'),
+              innerFontSize: CommonConstant.TextSizeSmall
             })
               .onClick(() => {
 
