@@ -86,4 +86,9 @@ export class MinePageVM extends BaseVM {
       return;
     }
   }
+
+  // 获取过滤用户信息
+  getFilteredUserProfile(): Record<string, string>[] {
+    return [];
+  }
 }
