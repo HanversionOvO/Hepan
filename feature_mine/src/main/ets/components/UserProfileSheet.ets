@@ -6,28 +6,10 @@ export interface UserProfileSheetItem {
   value: ResourceStr | number;
 }
 
-export interface UserProfileFiltered {
-  uid: number;
-  username: string;
-  group_title: string;
-  credits: number;
-  friends: number;
-  threads: number;
-  replies: number;
-  digests: number;
-  views: number;
-  email?: string;
-  register_time?: number;
-  introduction?: string;
-  custom_title?: string;
-  signature?: string;
-  signature_format?: string;
-  online_time: number;
-  last_visit?: number;
-  last_activity?: number;
-  last_post?: number;
-  register_ip?: string;
-  last_ip?: string;
+export interface UserProfileMapping {
+  val: string | number | undefined;
+  suffix: ResourceStr;
+  isDate: boolean;
 }
 
 @Builder
@@ -38,12 +20,12 @@ export function userProfileSheetBuilder(vm: MinePageVM) {
 @ComponentV2
 struct UserProfileSheet {
   @Param @Require vm: MinePageVM;
-  @Local userProfileFiltered: Record<string, string>[] = [];
-  
+  @Local userProfileFiltered: UserProfileSheetItem[] = [];
+
   aboutToAppear(): void {
     this.userProfileFiltered = this.vm.getFilteredUserProfile();
   }
-    
+
   @Builder
   userInfoItem(index: number, title: ResourceStr, content: string) {
     Row() {
@@ -55,7 +37,7 @@ struct UserProfileSheet {
         .fontSize(CommonConstant.TextSizeSmall)
         .fontColor($r('sys.color.font_secondary'))
     }
-    .width("100%")
+    .width(CommonConstant.FullPercent)
     .alignItems(VerticalAlign.Center)
     .justifyContent(FlexAlign.SpaceBetween)
     .padding({
@@ -64,17 +46,11 @@ struct UserProfileSheet {
       top: CommonConstant.NormalContainerTBPadding,
       bottom: CommonConstant.NormalContainerTBPadding
     })
-    .borderRadius({
-      topLeft: index === 0 ? CommonConstant.RadiusNormal : 0,
-      topRight: index === 0 ? CommonConstant.RadiusNormal : 0,
-      bottomLeft: index === this.userProfileFiltered.length - 1 ? CommonConstant.RadiusNormal : 0,
-      bottomRight: index === this.userProfileFiltered.length - 1 ? CommonConstant.RadiusNormal : 0
-    })
     .backgroundColor($r('app.color.second_window_background'))
   }
   
   build() {
-    Scroll() {
+    Column() {
     List() {
         ForEach(this.userProfileFiltered, (item: UserProfileSheetItem, index: number) => {
           ListItem() {
@@ -82,20 +58,21 @@ struct UserProfileSheet {
           }
         }, (item: UserProfileSheetItem, index: number) => index.toString())
 
-
         if (!this.vm.isTabletView) {
           ListItem()
             .height(this.vm.window.windowBottomPadding)
         }
       }
-      .padding({
+      .width(CommonConstant.FullPercent)
+      .height(CommonConstant.FullPercent)
+      .borderRadius(CommonConstant.RadiusNormal)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.None)
+    }
+          .padding({
         left: CommonConstant.PageLRPadding,
         right: CommonConstant.PageLRPadding,
-        top: CommonConstant.PageLRPadding,
         bottom: CommonConstant.PageLRPadding
       })
-      .width("100%")
-      
-    }
   }
 }

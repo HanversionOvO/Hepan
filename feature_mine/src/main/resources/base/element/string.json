@@ -43,6 +43,86 @@
     {
       "name": "MinePage_user_profile",
       "value": "详情资料"
+    },
+    {
+      "name": "MinePage_userprofile_uid",
+      "value": "河畔ID"
+    },
+    {
+      "name": "MinePage_userprofile_username",
+      "value": "昵称"
+    },
+    {
+      "name": "MinePage_userprofile_group_title",
+      "value": "等级"
+    },
+    {
+      "name": "MinePage_userprofile_credits",
+      "value": "积分"
+    },
+    {
+      "name": "MinePage_userprofile_friends",
+      "value": "好友数"
+    },
+    {
+      "name": "MinePage_userprofile_threads",
+      "value": "发帖量"
+    },
+    {
+      "name": "MinePage_userprofile_replies",
+      "value": "回复量"
+    },
+    {
+      "name": "MinePage_userprofile_digests",
+      "value": "点评量"
+    },
+    {
+      "name": "MinePage_userprofile_views",
+      "value": "访问量"
+    },
+    {
+      "name": "MinePage_userprofile_email",
+      "value": "邮箱"
+    },
+    {
+      "name": "MinePage_userprofile_register_time",
+      "value": "注册时间"
+    },
+    {
+      "name": "MinePage_userprofile_introduction",
+      "value": "介绍"
+    },
+    {
+      "name": "MinePage_userprofile_custom_title",
+      "value": "自定义头衔"
+    },
+    {
+      "name": "MinePage_userprofile_signature",
+      "value": "签名"
+    },
+    {
+      "name": "MinePage_userprofile_online_time",
+      "value": "在线时长"
+    },
+    {
+      "name": "MinePage_userprofile_last_visit",
+      "value": "最后访问时间"
+    },
+    {
+      "name": "MinePage_userprofile_last_activity",
+      "value": "最后访问时间"
+    },
+    {
+      "name": "MinePage_userprofile_last_post",
+      "value": "最后发帖时间"
+    },
+    {
+      "name": "MinePage_userprofile_register_ip",
+      "value": "注册IP"
+    },
+    {
+      "name": "MinePage_userprofile_last_ip",
+      "value": "最后登陆IP"
     }
   ]
 }

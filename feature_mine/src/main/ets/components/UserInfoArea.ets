@@ -98,7 +98,7 @@ export struct UserInfoArea {
               innerFontSize: CommonConstant.TextSizeSmall
             })
               .onClick(() => {
-
+                this.vm.isShowUserProfileSheet = true;
               })
               .bindSheet($$this.vm.isShowUserProfileSheet, userProfileSheetBuilder(this.vm), {
                 showClose: true,
