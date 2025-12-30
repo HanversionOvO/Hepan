@@ -49,7 +49,7 @@ export class MinePageVM extends BaseVM {
     this.featureCards = [];
 
     const summary = this.user?.user_summary;
-    if (summary) {
+    if (this.user && summary) {
       // 填充统计数据 (好友、访客)
       this.userStats.push({
         label: $r("app.string.MinePage_friends"),
@@ -59,17 +59,21 @@ export class MinePageVM extends BaseVM {
         label: $r("app.string.MinePage_views"),
         count: summary.views
       });
+      this.userStats.push({
+        label: $r("app.string.MinePage_online_time"),
+        count: this.user.online_time
+      })
 
       // 填充功能卡片 (积分、勋章)
       this.featureCards.push({
         cardIcon: $r('sys.symbol.drop_fill'),
         cardTitle: $r('app.string.MinePage_water'),
-        cardCount: summary.credits || 0,
+        cardCount: summary.ext_credits["水滴"],
       });
       this.featureCards.push({
         cardIcon: $r('sys.symbol.medal'),
         cardTitle: $r('app.string.MinePage_medal'),
-        cardCount: summary.medals?.length || 0
+        cardCount: summary.medals.length
       });
     }
   }

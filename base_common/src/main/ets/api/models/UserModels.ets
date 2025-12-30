@@ -46,7 +46,7 @@ export interface UserSummary {
   group_icon?: string;
   credits: number;
   ext_credits: ExtCredits;
-  medals?: number[]; // 勋章ID列表
+  medals: number[]; // 勋章ID列表
   friends: number;
   threads: number;
   replies: number;
@@ -81,7 +81,7 @@ export interface UserProfileData {
   custom_title?: string; // 自定义头衔
   signature?: string; // 签名
   signature_format?: string; // 签名格式 (如 'html')
-  online_time?: number; // 在线时间 (小时或秒，视具体实现，通常为小时)
+  online_time: number; // 在线时间 (小时或秒，视具体实现，通常为小时)
   last_visit?: number; // 最后访问时间戳
   last_activity?: number; // 最后活动时间戳
   last_post?: number; // 最后发帖时间戳
