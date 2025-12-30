@@ -40,12 +40,7 @@ struct UserProfileSheet {
     .width(CommonConstant.FullPercent)
     .alignItems(VerticalAlign.Center)
     .justifyContent(FlexAlign.SpaceBetween)
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding
-    })
+    .padding(CommonConstant.NormalContainerLRPadding)
     .backgroundColor($r('app.color.second_window_background'))
   }
   
@@ -67,7 +62,6 @@ struct UserProfileSheet {
       .height(CommonConstant.FullPercent)
       .borderRadius(CommonConstant.RadiusNormal)
       .scrollBar(BarState.Off)
-      .edgeEffect(EdgeEffect.None)
     }
           .padding({
         left: CommonConstant.PageLRPadding,

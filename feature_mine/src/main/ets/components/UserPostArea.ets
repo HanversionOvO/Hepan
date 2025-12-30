@@ -5,10 +5,11 @@ import { MinePageVM } from '../viewmodels/MinePageVM';
 @ComponentV2
 export struct UserPostArea {
   @Param @Require vm: MinePageVM;
+  private listScrollers: Scroller[] = [new Scroller(), new Scroller(), new Scroller()];
 
   @Builder
   TabsInternal(index: number) {
-    List() {
+    List({ scroller: this.listScrollers[index - 1] }) {
       ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (i: number) => {
         ListItem()
           .height(CommonConstant.TopBarHeight)
@@ -31,8 +32,12 @@ export struct UserPostArea {
       scrollBackward: NestedScrollMode.SELF_FIRST
     })
     .onDidScroll((scrollOffset: number, scrollState: ScrollState) => {
-      if (scrollOffset > 0 && !this.vm.isTabBarGlass) {
+      const yOffset = this.listScrollers[index - 1].currentOffset().yOffset;
+      if (yOffset > 0 && !this.vm.isTabBarGlass) {
         this.vm.isTabBarGlass = true;
+      }
+      else if (yOffset <= 0 && this.vm.isTabBarGlass) {
+        this.vm.isTabBarGlass = false;
       }
     })
     .onReachStart(() => {
