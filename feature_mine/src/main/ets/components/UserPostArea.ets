@@ -10,6 +10,9 @@ export struct UserPostArea {
   TabsInternal(index: number) {
     List() {
       ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (i: number) => {
+        ListItem()
+          .height(CommonConstant.TopBarHeight)
+
         ListItem() {
           Text(`Content ${index} - Item ${i}`)
         }
@@ -25,6 +28,11 @@ export struct UserPostArea {
     .nestedScroll({
       scrollForward: NestedScrollMode.PARENT_FIRST,
       scrollBackward: NestedScrollMode.SELF_FIRST
+    })
+    .onReachStart(() => {
+      if (this.vm.isTabBarGlass) {
+        this.vm.isTabBarGlass = false;
+      }
     })
   }
 

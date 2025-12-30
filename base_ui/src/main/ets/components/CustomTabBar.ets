@@ -96,5 +96,6 @@ export struct CustomTabBar {
     .borderRadius(this.barBorderRadius)
     .backgroundBlurStyle(this.isGlassStyle ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE)
     .border(this.isGlassStyle ? { width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') } : {})
+    .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }
