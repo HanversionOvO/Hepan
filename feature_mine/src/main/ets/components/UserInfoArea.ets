@@ -1,6 +1,6 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics } from '@kit.ArkUI';
-import { CommonConstant, UserAvatarUtil } from 'base_common';
+import { CommonConstant, UserAvatarUtil, TransitionMap } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
 import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
@@ -30,6 +30,7 @@ export struct UserInfoArea {
               .height(this.userAvatarSize)
               .borderRadius(CommonConstant.RadiusRound)
               .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
+              .geometryTransition(TransitionMap.FeatureMineUserAvatar, { follow: true })
               .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
           } else {
             Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
@@ -47,6 +48,7 @@ export struct UserInfoArea {
                 .fontSize(CommonConstant.TextSizeUltraLarge)
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('sys.color.font_on_primary'))
+                .geometryTransition(TransitionMap.FeatureMineUserName, { follow: true })
                 .transition(
                   TransitionEffect.OPACITY.animation(
                     {

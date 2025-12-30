@@ -22,6 +22,8 @@ export { BaseVM, UiState } from './src/main/ets/viewmodels/BaseVM';
 
 export { CommonConstant } from './src/main/ets/constants/CommonConstant';
 
+export { TransitionMap } from './src/main/ets/constants/TransitionMap';
+
 export { ApiClient } from './src/main/ets/api/ApiClient';
 
 export { AuthApi } from './src/main/ets/api/AuthApi';

@@ -1,4 +1,4 @@
-import { CommonConstant, UserAvatarUtil } from 'base_common';
+import { CommonConstant, UserAvatarUtil, TransitionMap } from 'base_common';
 import { MinePageVM } from '../viewmodels/MinePageVM';
 
 @ComponentV2
@@ -19,10 +19,12 @@ export struct StickyNavBar {
             .width(CommonConstant.IconSizeNormal)
             .height(CommonConstant.IconSizeNormal)
             .borderRadius(CommonConstant.RadiusRound)
+            .geometryTransition(TransitionMap.FeatureMineUserAvatar, { follow: true })
 
           Text(this.vm.user.user_summary.username)
             .fontSize(CommonConstant.TextSizeNormal)
             .fontWeight(FontWeight.Bold)
+            .geometryTransition(TransitionMap.FeatureMineUserName, { follow: true })
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
