@@ -33,5 +33,6 @@ export struct StickyNavBar {
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.TopBarHeight + this.vm.window.windowTopPadding)
+    .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
   }
 }

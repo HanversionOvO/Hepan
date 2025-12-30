@@ -63,8 +63,8 @@ export struct UserPostArea {
     .constraintSize(
       {
         maxHeight: this.vm.window.windowHeight -
-        CommonConstant.TopBarHeight -
-        this.vm.window.windowTopPadding
+          CommonConstant.TopBarHeight -
+          this.vm.window.windowTopPadding
       }
     )
     .backgroundColor($r('app.color.start_window_background'))
@@ -74,8 +74,9 @@ export struct UserPostArea {
       top: CommonConstant.NormalContainerTBPadding,
     })
     .borderRadius({
-      topLeft: CommonConstant.RadiusNormal,
-      topRight: CommonConstant.RadiusNormal
+      topLeft: this.vm.isSticky ? 0 : CommonConstant.RadiusNormal,
+      topRight: this.vm.isSticky ? 0 : CommonConstant.RadiusNormal,
     })
+    .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }

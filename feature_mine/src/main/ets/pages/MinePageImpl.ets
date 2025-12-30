@@ -36,8 +36,24 @@ export struct MinePageImpl {
         }
         .scrollBar(BarState.Off)
         .height(CommonConstant.FullPercent)
+        .onReachEnd(() => {
+          if (!this.vm.isSticky) {
+            this.vm.isSticky = true;
+          }
+        })
+        .onDidScroll(() => {
+          const isAtEnd = this.vm.outerScrollScroller.isAtEnd();
+          if (this.vm.isSticky && !isAtEnd) {
+            this.vm.isSticky = false;
+          }
+          if (!this.vm.isSticky && isAtEnd) {
+            this.vm.isSticky = true;
+          }
+        })
 
-        StickyNavBar({ vm: this.vm })
+        if (this.vm.isSticky) {
+          StickyNavBar({ vm: this.vm })
+        }
       }
       .backgroundImage("https://gips2.baidu.com/it/u=2055042668,1190219470&fm=3028&app=3028&f=JPEG&fmt=auto?w=960&h=1280")
       .backgroundImageSize(ImageSize.Cover)

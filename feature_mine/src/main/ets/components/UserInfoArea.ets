@@ -37,7 +37,7 @@ export struct UserInfoArea {
               .height(this.userAvatarSize)
               .borderRadius(CommonConstant.RadiusRound)
               .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-              .opacity(0) // 占位隐藏
+              .opacity(0)
           }
 
           Column({ space: CommonConstant.NormalContainerTBPadding }) {
@@ -47,8 +47,14 @@ export struct UserInfoArea {
                 .fontSize(CommonConstant.TextSizeUltraLarge)
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('sys.color.font_on_primary'))
+                .transition(
+                  TransitionEffect.OPACITY.animation(
+                    {
+                      duration: CommonConstant.AnimationDurationNormal
+                    }
+                  )
+                )
             } else {
-              // 占位文本
               Text(this.vm.user?.user_summary?.username)
                 .fontSize(CommonConstant.TextSizeUltraLarge)
                 .fontWeight(FontWeight.Bold)
