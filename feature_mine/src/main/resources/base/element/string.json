@@ -123,6 +123,18 @@
     {
       "name": "MinePage_userprofile_last_ip",
       "value": "最后登陆IP"
+    },
+    {
+      "name": "MinePage_mine_post",
+      "value": "帖子"
+    },
+    {
+      "name": "MinePage_mine_reply",
+      "value": "回复"
+    },
+    {
+      "name": "MinePage_mine_star",
+      "value": "收藏"
     }
   ]
 }

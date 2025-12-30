@@ -19,8 +19,9 @@ export class MinePageVM extends BaseVM {
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
   @Trace userPostTabItems: CustomTabItem[] = [
-    { label: "test", icon: $r('sys.symbol.person') },
-    { label: "test", icon: $r('sys.symbol.person') },
+    { label: $r('app.string.MinePage_mine_post'), icon: $r('sys.symbol.book_closed_right_left') },
+    { label: $r('app.string.MinePage_mine_reply'), icon: $r('sys.symbol.message') },
+    { label: $r('app.string.MinePage_mine_star'), icon: $r('sys.symbol.star') },
   ]
   @Trace currentUserPostTabIndex: number = 0;
 

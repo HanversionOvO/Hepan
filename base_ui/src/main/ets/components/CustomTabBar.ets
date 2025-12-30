@@ -1,6 +1,6 @@
 import { BaseVM, CommonConstant } from 'base_common';
 export interface CustomTabItem {
-  label: string;
+  label: ResourceStr;
   icon: Resource;
 }
 

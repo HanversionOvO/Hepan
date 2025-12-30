@@ -32,6 +32,8 @@ export struct MinePageImpl {
 
             UserPostArea({ vm: this.vm })
           }
+          .width(CommonConstant.FullPercent)
+          .height(CommonConstant.FullPercent)
         }
         .scrollBar(BarState.Off)
         .height(CommonConstant.FullPercent)
@@ -41,7 +43,7 @@ export struct MinePageImpl {
       .backgroundImagePosition(Alignment.Center)
       .backgroundBlurStyle(BlurStyle.Regular)
       .width(CommonConstant.FullPercent)
-      .height(CommonConstant.AboveHalfPercent)
+      .height(CommonConstant.FullPercent)
     }
     .hideTitleBar(true)
     .mode(NavigationMode.Stack)

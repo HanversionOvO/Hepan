@@ -30,16 +30,6 @@ export struct UserPostArea {
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
-      CustomTabBar({
-        vm: this.vm,
-        tabItems: this.vm.userPostTabItems,
-        currentIndex: this.vm.currentUserPostTabIndex,
-        changeTab: (index: number) => {
-          this.vm.changeUserPostTab(index);
-        },
-        alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
-      })
-
       Tabs({ index: this.vm.currentUserPostTabIndex, controller: this.vm.userPostTabController }) {
         TabContent() {
           this.TabsInternal(1)
@@ -57,6 +47,16 @@ export struct UserPostArea {
       .scrollable(false)
       .height(CommonConstant.FullPercent)
       .width(CommonConstant.FullPercent)
+
+      CustomTabBar({
+        vm: this.vm,
+        tabItems: this.vm.userPostTabItems,
+        currentIndex: this.vm.currentUserPostTabIndex,
+        changeTab: (index: number) => {
+          this.vm.changeUserPostTab(index);
+        },
+        alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
+      })
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
