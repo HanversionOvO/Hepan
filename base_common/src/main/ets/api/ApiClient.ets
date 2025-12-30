@@ -1,6 +1,8 @@
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
+import { LegacyUtil } from '../utils/LegacyUtil';
 import { RouterMap, RouterUtil } from '../utils/RouterUtil';
+import { StorageManager } from '../utils/StorageManager';
 import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[ApiClient]: ';
@@ -32,6 +34,7 @@ export interface ApiResponse<T = Object> {
 export class ApiClient {
   private static instance: ApiClient | null = null;
   private readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
+  private readonly legacyBaseUrl: string = 'http://bbs.uestc.edu.cn/mobcent/app/web/index.php';
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
   private isRedirecting: boolean = false; // 防止并发跳转
@@ -292,5 +295,105 @@ export class ApiClient {
       }
     }
     return cookies;
+  }
+
+  public async requestLegacy<T = Object>(
+    module: string,
+    action: string,
+    params: Record<string, Object> = {}
+  ): Promise<ApiResponse<T>> {
+    const requestUrl = this.legacyBaseUrl;
+    const rParam = `${module}/${action}`;
+
+    // 1. 获取基础校验参数
+    const apphash = await LegacyUtil.getAppHashValue();
+    const authModel = StorageManager.authModel;
+
+    // [修复Error 2] ArkTS 不支持对象展开运算符 (...params)，需要手动合并
+    let bodyParams: Record<string, Object> = {
+      'r': rParam,
+      'apphash': apphash,
+      'platType': '1',
+      'forumKey': 'CBQJazn9Wws8Ivhr6U',
+      'sdkVersion': '2.4.0.2'
+    };
+
+    // 手动遍历 params 进行赋值
+    let keys = Object.keys(params);
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      bodyParams[key] = params[key];
+    }
+
+    // 注入旧版认证参数
+    if (authModel.accessToken && authModel.accessSecret) {
+      bodyParams['accessToken'] = authModel.accessToken;
+      bodyParams['accessSecret'] = authModel.accessSecret;
+    }
+
+    // 构造 URLSearchParams 格式的字符串
+    const paramKeys = Object.keys(bodyParams);
+    let urlParamsArr: string[] = [];
+    for (let i = 0; i < paramKeys.length; i++) {
+      let key = paramKeys[i];
+      let val = bodyParams[key];
+      urlParamsArr.push(`${key}=${encodeURIComponent(String(val))}`);
+    }
+    const urlParams = urlParamsArr.join('&');
+
+    const httpRequest = http.createHttp();
+
+    try {
+      // [修复Error 1] 显式定义 header 和 options 类型，避免字面量类型推断错误
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Cookie': this.getCookieHeader()
+      };
+
+      let requestOptions: http.HttpRequestOptions = {
+        method: http.RequestMethod.POST,
+        header: headers,
+        extraData: urlParams
+      };
+
+      const response: http.HttpResponse = await httpRequest.request(requestUrl, requestOptions);
+
+      const setCookies = this.extractSetCookies(response);
+      if (setCookies.length > 0) {
+        this.mergeCookies(setCookies);
+      }
+
+      // [修复Error 3 & 4] 去除 <any>，使用泛型 <T>，parseResult 本身支持泛型
+      const parsedResult = this.parseResult<T>(response.result, true);
+
+      // 构造返回头 (ArkTS 中处理 Record 需要小心)
+      let responseHeaders: Record<string, string | string[]> = {};
+      if (response.header) {
+        let headerObj = response.header as Record<string, string | string[]>;
+        let hKeys = Object.keys(headerObj);
+        for (let i = 0; i < hKeys.length; i++) {
+          let key = hKeys[i];
+          let value = headerObj[key];
+          if (value !== undefined) {
+            responseHeaders[key] = value;
+          }
+        }
+      }
+
+      return {
+        status: response.responseCode,
+        data: parsedResult,
+        headers: responseHeaders,
+        cookies: setCookies,
+        raw: response
+      };
+
+    } catch (error) {
+      LogUtil.error(TAG, `Legacy Request failed: ${rParam}`, JSON.stringify(error));
+      // 这里的 error 类型在 catch 中默认为 Object，为了抛出 Error 需要处理
+      throw new Error(String(error));
+    } finally {
+      httpRequest.destroy();
+    }
   }
 }

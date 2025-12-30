@@ -3,12 +3,14 @@ import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from '../api/ApiClient';
 
 const TAG = '[AuthModel]';
-const PREF_NAME = 'auth_data_pref'; // 首选项文件名
+const PREF_NAME = 'auth_data_pref';
 const KEY_AUTH = 'authorization';
 const KEY_COOKIE = 'cookie';
 const KEY_UID = 'uid';
 const KEY_USERNAME = 'username';
-const KEY_PASSWORD = 'password'; // [新增] 密码Key
+const KEY_PASSWORD = 'password';
+const KEY_ACCESS_TOKEN = 'access_token';
+const KEY_ACCESS_SECRET = 'access_secret';
 
 @ObservedV2
 export class AuthModel {
@@ -16,7 +18,9 @@ export class AuthModel {
   @Trace cookie: string = '';
   @Trace uid: number = 0;
   @Trace username: string = '';
-  @Trace password: string = ''; // [新增] 密码字段
+  @Trace password: string = '';
+  @Trace accessToken: string = '';
+  @Trace accessSecret: string = '';
 
   constructor() {
     // 初始化时从本地加载数据
@@ -32,7 +36,9 @@ export class AuthModel {
     this.cookie = '';
     this.uid = 0;
     this.username = '';
-    this.password = ''; // [新增] 重置密码
+    this.password = '';
+    this.accessToken = '';
+    this.accessSecret = '';
     this.saveToDisk();
 
     // 同步清空 ApiClient
@@ -51,7 +57,9 @@ export class AuthModel {
       pref.putSync(KEY_COOKIE, this.cookie);
       pref.putSync(KEY_UID, this.uid);
       pref.putSync(KEY_USERNAME, this.username);
-      pref.putSync(KEY_PASSWORD, this.password); // [新增] 保存密码
+      pref.putSync(KEY_PASSWORD, this.password);
+      pref.putSync(KEY_ACCESS_TOKEN, this.accessToken);
+      pref.putSync(KEY_ACCESS_SECRET, this.accessSecret);
       pref.flush(); // 强制刷盘
       LogUtil.info(TAG, 'Auth data saved to disk.');
     } catch (err) {
@@ -72,6 +80,8 @@ export class AuthModel {
       this.uid = pref.getSync(KEY_UID, 0) as number;
       this.username = pref.getSync(KEY_USERNAME, '') as string;
       this.password = pref.getSync(KEY_PASSWORD, '') as string;
+      this.accessToken = pref.getSync(KEY_ACCESS_TOKEN, '') as string;
+      this.accessSecret = pref.getSync(KEY_ACCESS_SECRET, '') as string;
 
       const client = ApiClient.getInstance();
 
