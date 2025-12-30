@@ -1,5 +1,5 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { ApiClient, BaseVM, BreakPointUtil, RouterMap, RouterUtil, StorageManager } from 'base_common';
+import { AuthApi, BaseVM, BreakPointUtil, RouterMap, RouterUtil, StorageManager } from 'base_common';
 
 const TAG = '[SplashPageVM]: ';
 
@@ -31,7 +31,7 @@ export class SplashPageVM extends BaseVM {
   /**
    * 跳转逻辑 (可根据业务扩展：判断是否登录、是否同意隐私协议等)
    */
-  jumpToNext() {
+  async jumpToNext() {
     this.stopSplash();
 
     // 获取全局 AuthModel 并检查登录状态
@@ -39,11 +39,18 @@ export class SplashPageVM extends BaseVM {
 
     LogUtil.debug(TAG, JSON.stringify(authModel));
 
-    if (authModel.isLoggedIn) {
-      ApiClient.getInstance().setAuthorization(authModel.authorization);
-      RouterUtil.replacePathByName(RouterMap.HOME);
+    if (authModel.username && authModel.password) {
+      try {
+        // 尝试使用存储的密码自动登录以获取最新凭证
+        await AuthApi.getInstance().login(authModel.username, authModel.password);
+        // 登录成功，跳转首页
+        RouterUtil.replacePathByName(RouterMap.HOME);
+      } catch (e) {
+        LogUtil.warn(TAG, '启动页自动登录失败，跳转登录页');
+        RouterUtil.replacePathByName(RouterMap.LOGIN);
+      }
     } else {
-      // 未登录 -> 跳转登录页
+      // 未登录/无密码记录 -> 跳转登录页
       RouterUtil.replacePathByName(RouterMap.LOGIN);
     }
   }

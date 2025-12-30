@@ -5,6 +5,8 @@ import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[ApiClient]: ';
 
+type ReLoginHandler = () => Promise<boolean>;
+
 export interface ApiRequestOptions<T = Object> {
   path: string;
   method?: http.RequestMethod;
@@ -33,6 +35,7 @@ export class ApiClient {
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
   private isRedirecting: boolean = false; // 防止并发跳转
+  private reLoginHandler: ReLoginHandler | null = null;
 
   private constructor() {
   }
@@ -44,13 +47,14 @@ export class ApiClient {
     return ApiClient.instance;
   }
 
+  public setReloginHandler(handler: ReLoginHandler) {
+    this.reLoginHandler = handler;
+  }
+
   public setAuthorization(token: string): void {
     this.authorization = token || '';
   }
 
-  /**
-   * [新增] 从字符串恢复 Cookie (修复您的报错)
-   */
   public setCookieString(cookieStr: string): void {
     if (!cookieStr) {
       this.cookieJar.clear();
@@ -90,13 +94,22 @@ export class ApiClient {
     return this.cookieJar.size > 0;
   }
 
-  public async request<T = Object>(options: ApiRequestOptions): Promise<ApiResponse<T>> {
+  public async request<T = Object>(options: ApiRequestOptions, isRetry: boolean = false): Promise<ApiResponse<T>> {
     const requestUrl = this.buildUrl(options.path);
 
     // 1. 请求前拦截：检查是否需要登录但本地无凭证
     if (options.includeAuthorization !== false) {
       if (!this.authorization || !this.hasCookie()) {
-        LogUtil.warn(TAG, `拦截请求 ${requestUrl}: 本地未登录`);
+        // [修改] 如果没有凭证，尝试调用一次重登录（可能是因为App刚启动内存被回收，但本地有密码）
+        if (!isRetry && this.reLoginHandler) {
+          LogUtil.warn(TAG, `本地无凭证，尝试自动登录: ${requestUrl}`);
+          const success = await this.reLoginHandler();
+          if (success) {
+            return this.request<T>(options, true);
+          }
+        }
+
+        LogUtil.warn(TAG, `拦截请求 ${requestUrl}: 本地未登录且自动登录失败`);
         this.handleLoginRedirect('请先登录');
         return Promise.reject(new Error('Local: Not logged in'));
       }
@@ -125,9 +138,19 @@ export class ApiClient {
         this.mergeCookies(setCookies);
       }
 
-      // 2. 响应后拦截：检查 Token 是否过期 (401/403)
       if (response.responseCode === 401 || response.responseCode === 403) {
         LogUtil.warn(TAG, `请求鉴权失败 ${response.responseCode}: ${requestUrl}`);
+
+        // [新增] 尝试使用永久存储的账号密码获取新的凭证
+        if (!isRetry && this.reLoginHandler) {
+          LogUtil.info(TAG, '尝试自动重新登录...');
+          const success = await this.reLoginHandler();
+          if (success) {
+            LogUtil.info(TAG, '自动重登录成功，重试原请求');
+            return this.request<T>(options, true);
+          }
+        }
+
         this.handleLoginRedirect('登录状态已失效，请重新登录');
         throw new Error(`Auth failed: ${response.responseCode}`);
       }
@@ -176,7 +199,7 @@ export class ApiClient {
     }
     this.isRedirecting = true;
     ToastUtil.showInfo(message);
-    RouterUtil.pushPathByName(RouterMap.LOGIN);
+    RouterUtil.replacePathByName(RouterMap.LOGIN); // 使用 replace 防止返回
     setTimeout(() => {
       this.isRedirecting = false;
     }, 1000);

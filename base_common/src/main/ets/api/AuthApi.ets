@@ -2,6 +2,7 @@ import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from './ApiClient';
 import { AdoptLegacyAuthResponse, LoginResult } from './models/AuthModels';
+import { StorageManager } from '../utils/StorageManager'; // [新增]
 
 const TAG = '[AuthApi]: ';
 
@@ -13,6 +14,10 @@ export class AuthApi {
   private readonly client = ApiClient.getInstance();
 
   private constructor() {
+    // [新增] 初始化时注册自动登录处理器给 ApiClient
+    this.client.setReloginHandler(async () => {
+      return await this.executeAutoLogin();
+    });
   }
 
   public static getInstance(): AuthApi {
@@ -24,8 +29,10 @@ export class AuthApi {
 
   /**
    * 统一登录流程
+   * 成功后会自动更新 AuthModel 并持久化
    */
   public async login(username: string, password: string): Promise<LoginResult> {
+    // 登录前清除临时凭证，但保留 AuthModel 中的记录（稍后覆盖）
     this.client.clearAuthorization();
     this.client.clearCookies();
 
@@ -39,7 +46,6 @@ export class AuthApi {
       requireNewApiHeader: true
     });
 
-    // Fix: No destructuring
     let data = adoptResp.data.data;
     let authorization = '';
     if (data) {
@@ -62,12 +68,48 @@ export class AuthApi {
       resultName = adoptResp.data.user.username;
     }
 
+    const cookie = this.client.getCookieHeader();
+
+    // [新增] 登录成功，更新并持久化 AuthModel (包含密码)
+    const authModel = StorageManager.authModel;
+    authModel.authorization = authorization;
+    authModel.cookie = cookie;
+    authModel.uid = uid;
+    authModel.username = resultName;
+    authModel.password = password; // 保存密码
+    authModel.saveToDisk();
+
     return {
       authorization: authorization,
-      cookie: this.client.getCookieHeader(),
+      cookie: cookie,
       uid: uid,
       username: resultName
     };
+  }
+
+  /**
+   * [新增] 内部自动登录逻辑
+   * 使用 AuthModel 中持久化存储的密码进行尝试
+   */
+  private async executeAutoLogin(): Promise<boolean> {
+    const authModel = StorageManager.authModel;
+    const username = authModel.username;
+    const password = authModel.password;
+
+    if (!username || !password) {
+      LogUtil.warn(TAG, '自动登录失败: 本地无账号或密码记录');
+      return false;
+    }
+
+    try {
+      LogUtil.info(TAG, `正在尝试自动登录: ${username}`);
+      await this.login(username, password);
+      LogUtil.info(TAG, '自动登录成功');
+      return true;
+    } catch (e) {
+      LogUtil.error(TAG, '自动登录失败', JSON.stringify(e));
+      return false;
+    }
   }
 
   private async requestLegacyLogin(username: string, password: string): Promise<void> {
@@ -100,13 +142,8 @@ export class AuthApi {
     return payload.includes('succeedmessage') || payload.includes('欢迎您回来');
   }
 
-  /**
-   * 解析登录失败时的 XML 错误信息
-   * XML 格式示例: <root><![CDATA[登录失败，您还可以尝试 3 次<script...
-   */
   private parseLoginErrorMessage(content: string): string {
     try {
-      // 1. 提取 CDATA 中的内容
       const cdataRegex = /<!\[CDATA\[([\s\S]*?)\]\]>/;
       const match = content.match(cdataRegex);
 
@@ -120,7 +157,6 @@ export class AuthApi {
     } catch (e) {
       LogUtil.error(TAG, 'Failed to parse error message', JSON.stringify(e));
     }
-    // 解析失败时的默认提示
     return '账号或密码错误，或触发了登录限制';
   }
 }
