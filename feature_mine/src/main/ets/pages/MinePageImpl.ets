@@ -32,8 +32,6 @@ export struct MinePageImpl {
 
             UserPostArea({ vm: this.vm })
           }
-          .width(CommonConstant.FullPercent)
-          .height(CommonConstant.FullPercent)
         }
         .scrollBar(BarState.Off)
         .height(CommonConstant.FullPercent)
