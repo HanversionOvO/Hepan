@@ -1,8 +1,8 @@
 import { CommonConstant } from 'base_common';
-
 export interface UserStatsModel {
   label: ResourceStr,
   count: number,
+  onClick?: () => void,
 }
 
 @ComponentV2
@@ -19,5 +19,10 @@ export struct UserStats {
         .fontSize(CommonConstant.TextSizeSmall)
         .fontColor($r('sys.color.font_on_primary'))
     }
+    .onClick(() => {
+      if (this.userStatsModel.onClick) {
+        this.userStatsModel.onClick();
+      }
+    })
   }
 }

@@ -6,7 +6,10 @@ export function FansPageBuilder() {
 @ComponentV2
 struct FansPage {
   build() {
-    NavDestination()
+    NavDestination() {
+      
+    }
     .hideTitleBar(true)
+    .backgroundColor($r('app.color.start_window_background'))
   }
 }

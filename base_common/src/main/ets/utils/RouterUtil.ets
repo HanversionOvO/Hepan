@@ -7,7 +7,8 @@ export enum StackEnum {
 export enum RouterMap {
   SPLASH = 'SplashPage',
   HOME = 'HomePage',
-  LOGIN = 'LoginPage'
+  LOGIN = 'LoginPage',
+  FANS = 'FansPage',
 }
 
 @ObservedV2

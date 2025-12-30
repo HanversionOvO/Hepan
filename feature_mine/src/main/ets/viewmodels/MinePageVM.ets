@@ -69,7 +69,10 @@ export class MinePageVM extends BaseVM {
       // 填充统计数据 (好友、访客)
       this.userStats.push({
         label: $r("app.string.MinePage_friends"),
-        count: summary.friends
+        count: summary.friends,
+        onClick: () => {
+          RouterUtil.pushPathByName(RouterMap.FANS);
+        }
       });
       this.userStats.push({
         label: $r("app.string.MinePage_views"),
