@@ -60,7 +60,13 @@ export struct UserPostArea {
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
-    .constraintSize({ maxHeight: this.vm.window.windowHeight - CommonConstant.TopBarHeight })
+    .constraintSize(
+      {
+        maxHeight: this.vm.window.windowHeight -
+        CommonConstant.TopBarHeight -
+        this.vm.window.windowTopPadding
+      }
+    )
     .backgroundColor($r('app.color.start_window_background'))
     .padding({
       left: CommonConstant.NormalContainerLRPadding,
