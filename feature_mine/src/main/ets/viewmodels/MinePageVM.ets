@@ -84,6 +84,7 @@ export class MinePageVM extends BaseVM {
   // 修改签名
   async editSignature(signature: ResourceStr) {
     if (!signature) {
+      this.isShowSignatureSheet = false;
       return;
     }
   }
@@ -120,7 +121,7 @@ export class MinePageVM extends BaseVM {
       { val: user.register_ip, suffix: 'register_ip', isDate: false },
       { val: user.last_ip, suffix: 'last_ip', isDate: false }
     ];
-    
+
     mapping.forEach(item => {
       const value = item.val;
       // 检查值是否有效 (不为 null, undefined, 空字符串)
