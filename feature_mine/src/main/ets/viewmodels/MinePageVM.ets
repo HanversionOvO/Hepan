@@ -75,7 +75,7 @@ export class MinePageVM extends BaseVM {
       this.featureCards.push({
         cardIcon: $r('sys.symbol.medal'),
         cardTitle: $r('app.string.MinePage_medal'),
-        cardCount: summary.medals.length
+        cardCount: summary.medals?.length ?? 0
       });
     }
   }

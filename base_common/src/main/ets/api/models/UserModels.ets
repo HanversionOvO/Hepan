@@ -46,7 +46,7 @@ export interface UserSummary {
   group_icon?: string;
   credits: number;
   ext_credits: ExtCredits;
-  medals: number[]; // 勋章ID列表
+  medals?: number[]; // 勋章ID列表
   friends: number;
   threads: number;
   replies: number;
