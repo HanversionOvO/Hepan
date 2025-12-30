@@ -71,7 +71,7 @@ export struct CustomTabBar {
           Row()
             .width(this.tabButtonWidth)
             .height(this.tabButtonHeight)
-            .backgroundColor(this.indicatorColor)
+            .backgroundColor(this.isGlassStyle ? $r('app.color.sub_color') : this.indicatorColor)
             .borderRadius(CommonConstant.RadiusRound)
             .translate({ x: this.indicatorOffset })
             .animation({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal })
@@ -88,14 +88,24 @@ export struct CustomTabBar {
       }
       .constraintSize(this.isMax ? { minWidth: CommonConstant.FullPercent } : undefined)
     }
-    .padding(this.isGlassStyle ? CommonConstant.NormalContainerTBPadding : 0)
+    .padding(this.isGlassStyle ? CommonConstant.SmallContainerInnerPadding : 0)
     .scrollable(ScrollDirection.Horizontal)
     .scrollBar(BarState.Off)
     .align(Alignment.Start)
     .backgroundColor(this.barBackgroundColor)
     .borderRadius(this.barBorderRadius)
     .backgroundBlurStyle(this.isGlassStyle ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE)
-    .border(this.isGlassStyle ? { width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') } : {})
+    .border(
+      this.isGlassStyle
+        ? {
+          width: CommonConstant.BorderSizeNormal,
+          color: $r('app.color.glass_border')
+        }
+        : {
+          width: CommonConstant.BorderSizeNormal,
+          color: Color.Transparent
+        }
+    )
     .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }

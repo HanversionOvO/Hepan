@@ -25,9 +25,15 @@ export struct UserPostArea {
     .width('100%')
     .height('100%')
     .padding({ left: 12, right: 12 })
+    .scrollBar(BarState.Off)
     .nestedScroll({
       scrollForward: NestedScrollMode.PARENT_FIRST,
       scrollBackward: NestedScrollMode.SELF_FIRST
+    })
+    .onDidScroll((scrollOffset: number, scrollState: ScrollState) => {
+      if (scrollOffset > 0 && !this.vm.isTabBarGlass) {
+        this.vm.isTabBarGlass = true;
+      }
     })
     .onReachStart(() => {
       if (this.vm.isTabBarGlass) {
@@ -65,8 +71,7 @@ export struct UserPostArea {
         },
         alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
         isGlassStyle: this.vm.isTabBarGlass,
-        indicatorColor: this.vm.isTabBarGlass ? $r('app.color.sub_color') : CommonConstant.ThemeColor,
-        barBackgroundColor: this.vm.isTabBarGlass ? $r('app.color.glass_background') : Color.Transparent
+        isMax: this.vm.isTabletView
       })
     }
     .width(CommonConstant.FullPercent)
