@@ -63,7 +63,10 @@ export struct UserPostArea {
         changeTab: (index: number) => {
           this.vm.changeUserPostTab(index);
         },
-        alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
+        alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
+        isGlassStyle: this.vm.isTabBarGlass,
+        indicatorColor: this.vm.isTabBarGlass ? $r('app.color.sub_color') : CommonConstant.ThemeColor,
+        barBackgroundColor: this.vm.isTabBarGlass ? $r('app.color.glass_background') : Color.Transparent
       })
     }
     .width(CommonConstant.FullPercent)
