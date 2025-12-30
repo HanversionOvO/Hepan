@@ -9,6 +9,11 @@
       "name": "HomePage",
       "pageSourceFile": "src/main/ets/pages/home/pages/HomePage.ets",
       "buildFunction": "HomePageBuilder"
+    },
+    {
+      "name": "FansPage",
+      "pageSourceFile": "src/main/../../../feature_mine/src/main/ets/pages/FansPage.ets",
+      "buildFunction": "FansPageBuilder"
     }
   ]
 }
