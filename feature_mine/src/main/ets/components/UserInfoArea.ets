@@ -24,44 +24,18 @@ export struct UserInfoArea {
     }) {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         Row({ space: CommonConstant.NormalContainerLRPadding }) {
-          if (!this.vm.isSticky) {
-            Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
-              .width(this.userAvatarSize)
-              .height(this.userAvatarSize)
-              .borderRadius(CommonConstant.RadiusRound)
-              .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-              .geometryTransition(TransitionMap.FeatureMineUserAvatar, { follow: true })
-              .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
-          } else {
-            Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
-              .width(this.userAvatarSize)
-              .height(this.userAvatarSize)
-              .borderRadius(CommonConstant.RadiusRound)
-              .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-              .opacity(0)
-          }
+          Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
+            .width(this.userAvatarSize)
+            .height(this.userAvatarSize)
+            .borderRadius(CommonConstant.RadiusRound)
+            .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
 
           Column({ space: CommonConstant.NormalContainerTBPadding }) {
             // 修改：昵称部分
-            if (!this.vm.isSticky) {
-              Text(this.vm.user?.user_summary?.username)
-                .fontSize(CommonConstant.TextSizeUltraLarge)
-                .fontWeight(FontWeight.Bold)
-                .fontColor($r('sys.color.font_on_primary'))
-                .geometryTransition(TransitionMap.FeatureMineUserName, { follow: true })
-                .transition(
-                  TransitionEffect.OPACITY.animation(
-                    {
-                      duration: CommonConstant.AnimationDurationNormal
-                    }
-                  )
-                )
-            } else {
-              Text(this.vm.user?.user_summary?.username)
-                .fontSize(CommonConstant.TextSizeUltraLarge)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(Color.Transparent)
-            }
+            Text(this.vm.user?.user_summary?.username)
+              .fontSize(CommonConstant.TextSizeUltraLarge)
+              .fontWeight(FontWeight.Bold)
+              .fontColor($r('sys.color.font_on_primary'))
 
             Text(`${ResUtil.getStringSync($r('app.string.MinePage_uid'))}: ${this.vm.user?.user_summary?.uid}`)
               .fontSize(CommonConstant.TextSizeSmall)
