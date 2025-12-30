@@ -34,7 +34,7 @@ export interface ApiResponse<T = Object> {
 export class ApiClient {
   private static instance: ApiClient | null = null;
   private readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
-  private readonly legacyBaseUrl: string = 'http://bbs.uestc.edu.cn/mobcent/app/web/index.php';
+  private readonly legacyBaseUrl: string = 'https://bbs.uestc.edu.cn/mobcent/app/web/index.php';
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
   private isRedirecting: boolean = false; // 防止并发跳转
@@ -297,46 +297,53 @@ export class ApiClient {
     return cookies;
   }
 
+  /**
+   * [修正版] 旧版 API 请求方法
+   * 修复问题：将 r 参数移至 URL Query 中，确保服务器能正确识别路由
+   */
   public async requestLegacy<T = Object>(
     module: string,
     action: string,
     params: Record<string, Object> = {}
   ): Promise<ApiResponse<T>> {
-    const requestUrl = this.legacyBaseUrl;
+    // [关键修改] 构造带 query 参数的 URL，例如 .../index.php?r=user/login
+    // 这样服务器才能知道你要访问哪个接口，而不是返回 index.php 的首页
     const rParam = `${module}/${action}`;
+    const requestUrl = `${this.legacyBaseUrl}?r=${rParam}`;
 
-    // 1. 获取基础校验参数
     const apphash = await LegacyUtil.getAppHashValue();
     const authModel = StorageManager.authModel;
 
-    // [修复Error 2] ArkTS 不支持对象展开运算符 (...params)，需要手动合并
+    // 组装 POST Body 参数 (ArkTS 兼容写法)
+    // 注意：这里不再放入 'r' 参数，因为它已经在 URL 里了
     let bodyParams: Record<string, Object> = {
-      'r': rParam,
       'apphash': apphash,
       'platType': '1',
       'forumKey': 'CBQJazn9Wws8Ivhr6U',
       'sdkVersion': '2.4.0.2'
     };
 
-    // 手动遍历 params 进行赋值
+    // 手动合并业务参数 params 到 bodyParams
     let keys = Object.keys(params);
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
       bodyParams[key] = params[key];
     }
 
-    // 注入旧版认证参数
+    // 注入旧版认证参数 (如果存在)
+    LogUtil.debug(TAG, authModel.accessToken, " | ", authModel.accessSecret)
     if (authModel.accessToken && authModel.accessSecret) {
       bodyParams['accessToken'] = authModel.accessToken;
       bodyParams['accessSecret'] = authModel.accessSecret;
     }
 
-    // 构造 URLSearchParams 格式的字符串
+    // 将 Body 参数序列化为 URL 编码格式 (key=val&key2=val2)
     const paramKeys = Object.keys(bodyParams);
     let urlParamsArr: string[] = [];
     for (let i = 0; i < paramKeys.length; i++) {
       let key = paramKeys[i];
       let val = bodyParams[key];
+      // 务必进行 encodeURIComponent，防止特殊字符破坏格式
       urlParamsArr.push(`${key}=${encodeURIComponent(String(val))}`);
     }
     const urlParams = urlParamsArr.join('&');
@@ -344,29 +351,33 @@ export class ApiClient {
     const httpRequest = http.createHttp();
 
     try {
-      // [修复Error 1] 显式定义 header 和 options 类型，避免字面量类型推断错误
+      // 显式定义 headers 类型
       let headers: Record<string, string> = {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        'Cookie': this.getCookieHeader()
+        'Cookie': this.getCookieHeader() // 复用 Cookie，确保 Session 延续
       };
 
+      // 显式定义请求选项
       let requestOptions: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: headers,
-        extraData: urlParams
+        extraData: urlParams // 序列化后的参数字符串
       };
 
+      // 发送请求
       const response: http.HttpResponse = await httpRequest.request(requestUrl, requestOptions);
 
+      // 处理 Set-Cookie
       const setCookies = this.extractSetCookies(response);
       if (setCookies.length > 0) {
         this.mergeCookies(setCookies);
       }
 
-      // [修复Error 3 & 4] 去除 <any>，使用泛型 <T>，parseResult 本身支持泛型
+      // 解析结果
+      // 注意：response.result 可能是 JSON 字符串，也可能是对象，parseResult 会处理
       const parsedResult = this.parseResult<T>(response.result, true);
 
-      // 构造返回头 (ArkTS 中处理 Record 需要小心)
+      // 提取响应头
       let responseHeaders: Record<string, string | string[]> = {};
       if (response.header) {
         let headerObj = response.header as Record<string, string | string[]>;
@@ -390,7 +401,6 @@ export class ApiClient {
 
     } catch (error) {
       LogUtil.error(TAG, `Legacy Request failed: ${rParam}`, JSON.stringify(error));
-      // 这里的 error 类型在 catch 中默认为 Object，为了抛出 Error 需要处理
       throw new Error(String(error));
     } finally {
       httpRequest.destroy();

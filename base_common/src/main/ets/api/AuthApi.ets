@@ -1,7 +1,10 @@
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from './ApiClient';
-import { AdoptLegacyAuthResponse, LoginResult } from './models/AuthModels';
+import {
+  AdoptLegacyAuthResponse,
+  LegacyLoginData, LegacyLoginResponse, LoginResult
+} from './models/AuthModels';
 import { StorageManager } from '../utils/StorageManager'; // [新增]
 
 const TAG = '[AuthApi]: ';
@@ -68,14 +71,21 @@ export class AuthApi {
       resultName = adoptResp.data.user.username;
     }
 
+    try {
+      await this.loginToMobcent(username, password);
+    } catch (e) {
+      // 旧版登录失败不应阻塞新版登录流程，但需要记录日志
+      LogUtil.error(TAG, '旧版 API 登录失败 (部分功能可能不可用)', JSON.stringify(e));
+    }
+
     const cookie = this.client.getCookieHeader();
 
     // [新增] 登录成功，更新并持久化 AuthModel (包含密码)
     const authModel = StorageManager.authModel;
     authModel.authorization = authorization;
     authModel.cookie = cookie;
-    authModel.uid = uid;
-    authModel.username = resultName;
+    authModel.uid = adoptResp.data.user.uid;
+    authModel.username = adoptResp.data.user.username;
     authModel.password = password; // 保存密码
     authModel.saveToDisk();
 
@@ -85,6 +95,34 @@ export class AuthApi {
       uid: uid,
       username: resultName
     };
+  }
+
+  private async loginToMobcent(username: string, password: string): Promise<void> {
+    // 调用 ApiClient 的 requestLegacy 方法
+    // 此时 AuthModel 中还没有 Token，requestLegacy 会发送不带 Token 的请求，这对于 'user/login' 是正确的
+
+    LogUtil.debug(TAG, username, password)
+
+    const response = await this.client.requestLegacy<LegacyLoginResponse>('user', 'login', {
+      "username": username,
+      "password": password,
+      "type": "login"
+    });
+
+    LogUtil.debug(TAG, JSON.stringify(response.data))
+
+    const body = response.data.body;
+    const rs = response.data.rs;
+
+    if (rs === 1 && body) {
+      LogUtil.info(TAG, `旧版登录成功, Token: ${response.data.token}`);
+      // 将获取到的 token 和 secret 存入 AuthModel
+      // 注意：API 返回的是 token/secret，请求时对应 accessToken/accessSecret
+      StorageManager.authModel.accessToken = response.data.token;
+      StorageManager.authModel.accessSecret = response.data.secret;
+    } else {
+      throw new Error(`旧版登录返回错误: ${response.data.errcode}`);
+    }
   }
 
   /**

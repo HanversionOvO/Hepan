@@ -1,7 +1,7 @@
 import { ApiClient } from './ApiClient';
 import { BaseResponse, UserProfileData } from './models/UserModels';
 import http from '@ohos.net.http';
-import { LogUtil } from '@pura/harmony-utils';
+import { LogUtil, ResUtil } from '@pura/harmony-utils';
 
 const TAG = '[UserApi]: ';
 
@@ -60,5 +60,14 @@ export class UserApi {
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
+  }
+
+  // 修改签名
+  public static async editSignature(signature: ResourceStr): Promise<boolean> {
+    const result = await ApiClient.getInstance().requestLegacy('message', 'pmsessionlist');
+
+    LogUtil.debug(TAG, JSON.stringify(result.data));
+
+    return true;
   }
 }

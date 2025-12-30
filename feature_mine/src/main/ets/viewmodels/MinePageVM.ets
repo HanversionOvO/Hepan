@@ -87,6 +87,8 @@ export class MinePageVM extends BaseVM {
       this.isShowSignatureSheet = false;
       return;
     }
+
+    await UserApi.editSignature(signature);
   }
 
   // 获取过滤用户信息

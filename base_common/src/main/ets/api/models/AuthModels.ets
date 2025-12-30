@@ -34,3 +34,18 @@ export interface LoginResult {
   uid: number;
   username: string;
 }
+
+export interface LegacyLoginData {
+  token: string;
+  secret: string;
+  uid: number;
+  userName: string;
+}
+
+export interface LegacyLoginResponse {
+  token: string;
+  secret: string;
+  rs: number;
+  errcode: string;
+  body: LegacyLoginData
+}

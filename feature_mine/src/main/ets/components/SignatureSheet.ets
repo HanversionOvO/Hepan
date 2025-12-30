@@ -13,7 +13,7 @@ struct SignatureSheet {
   
   build() {
         Column({ space: CommonConstant.LargeContainerInnerPadding }) {
-      TextArea({ placeholder: this.vm.user?.signature || $r('app.string.MinePage_signature_placeHolder'), text:this.signature })
+      TextArea({ placeholder: this.vm.user?.signature || $r('app.string.MinePage_signature_placeHolder'), text:$$this.signature })
         .height(CommonConstant.TextInputSizeNormal)
         .width(CommonConstant.FullPercent)
         .borderRadius(CommonConstant.RadiusNormal)
@@ -24,8 +24,8 @@ struct SignatureSheet {
         .fontSize(CommonConstant.TextSizeNormal)
         .backgroundColor(CommonConstant.ThemeColor)
         .fontColor($r('sys.color.font_on_primary'))
-        .onClick(() => {
-          this.vm.editSignature(this.signature)
+        .onClick(async () => {
+          await this.vm.editSignature(this.signature)
         })
     }
     .padding({
