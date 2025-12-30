@@ -4,18 +4,25 @@ import { UserProfileData } from 'base_common/src/main/ets/api/models/UserModels'
 import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
 import { UserStatsModel } from '../components/UserStats';
+import { CustomTabItem } from 'base_ui';
 
 const TAG = '[MinePageVM]: '
 
 @ObservedV2
 export class MinePageVM extends BaseVM {
   @Trace outerScrollScroller: Scroller = new Scroller();
+  @Trace userPostTabController: TabsController = new TabsController();
   @Trace isSticky: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
   @Trace user: UserProfileData | null = StorageManager.userModel.userProfile;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
+  @Trace userPostTabItems: CustomTabItem[] = [
+    { label: "test", icon: $r('sys.symbol.person') },
+    { label: "test", icon: $r('sys.symbol.person') },
+  ]
+  @Trace currentUserPostTabIndex: number = 0;
 
   async startMine() {
     await this.refreshData();
@@ -163,5 +170,9 @@ export class MinePageVM extends BaseVM {
     } catch (e) {
       return timestamp.toString();
     }
+  }
+
+  changeUserPostTab(index: number) {
+    this.currentUserPostTabIndex = index;
   }
 }
