@@ -5,6 +5,18 @@ import { LogUtil, ResUtil } from '@pura/harmony-utils';
 
 const TAG = '[UserApi]: ';
 
+interface LegacyResponse {
+  rs: number; // 成功标记: 1 为成功, 0 为失败
+  errcode: string; // 错误码
+  head?: LegacyHead; // 响应头信息
+  body?: Object; // 响应体
+}
+
+interface LegacyHead {
+  errInfo?: string; // 错误描述信息
+  version?: string;
+}
+
 export class UserApi {
   /**
    * 获取用户资料 (基础版)
@@ -62,12 +74,25 @@ export class UserApi {
     }
   }
 
-  // 修改签名
-  public static async editSignature(signature: ResourceStr): Promise<boolean> {
-    const result = await ApiClient.getInstance().requestLegacy('message', 'pmsessionlist');
+  /**
+     * 修改个性签名 (使用旧版 API)
+     * @param signature 新的签名内容
+     */
+  public static async editSignature(signature: string): Promise<boolean> {
+    // [修复] 传入泛型 LegacyResponse，明确告知编译器返回数据的结构
+    const result = await ApiClient.getInstance().requestLegacy<LegacyResponse>('user', 'updateuserinfo', {
+      'type': 'info',
+      'sign': signature
+    });
 
-    LogUtil.debug(TAG, JSON.stringify(result.data));
-
-    return true;
+    // [修复] 使用点符号访问属性，符合 ArkTS 规范
+    if (result.data.rs === 1) {
+      return true;
+    } else {
+      // 安全访问可选属性
+      const errInfo = result.data.head?.errInfo || 'Unknown error';
+      LogUtil.warn(TAG, `Update signature failed: ${result.data.errcode} - ${errInfo}`);
+      return false;
+    }
   }
 }

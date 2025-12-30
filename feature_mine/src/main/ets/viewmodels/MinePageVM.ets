@@ -18,6 +18,10 @@ export class MinePageVM extends BaseVM {
   @Trace featureCards: FeatureCardModel[] = [];
 
   async startMine() {
+    await this.refreshData();
+  }
+
+  async refreshData() {
     try {
       // 1. 请求最新用户信息
       const fullProfile = await UserApi.getFullUserProfile('me');
@@ -88,7 +92,12 @@ export class MinePageVM extends BaseVM {
       return;
     }
 
-    await UserApi.editSignature(signature);
+    const result: boolean = await UserApi.editSignature(signature.toString());
+
+    if (result) {
+      this.isShowSignatureSheet = false;
+      this.refreshData();
+    }
   }
 
   // 获取过滤用户信息
