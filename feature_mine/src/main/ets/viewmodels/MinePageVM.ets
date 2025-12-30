@@ -10,6 +10,7 @@ const TAG = '[MinePageVM]: '
 export class MinePageVM extends BaseVM {
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace isSticky: boolean = false;
+  @Trace isShowSignatureSheet: boolean = false;
   @Trace user: UserProfileData | null = StorageManager.userModel.userProfile;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
@@ -75,6 +76,13 @@ export class MinePageVM extends BaseVM {
         cardTitle: $r('app.string.MinePage_medal'),
         cardCount: summary.medals.length
       });
+    }
+  }
+
+  // 修改签名
+  async editSignature(signature: ResourceStr) {
+    if (!signature) {
+      return;
     }
   }
 }

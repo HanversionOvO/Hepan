@@ -31,6 +31,14 @@
     {
       "name": "MinePage_medal",
       "value": "勋章数"
+    },
+    {
+      "name": "MinePage_signature_placeHolder",
+      "value": "这个人很懒，什么都没有写~"
+    },
+    {
+      "name": "MinePage_edit_sig",
+      "value": "编辑签名"
     }
   ]
 }

@@ -36,6 +36,10 @@ export class CommonConstant {
   static readonly IconSizeNormal: number = 24;
   static readonly IconSizeLarge: number = 32;
   static readonly IconSizeUltraLarge: number = 48;
+  // 输入框尺寸
+  static readonly TextInputSizeSmall: number = 60;
+  static readonly TextInputSizeNormal: number = 80;
+  static readonly TextInputSizeLarge: number = 100;
   // 间隔相关
   // 小型容器内部间隔
   static readonly SmallContainerInnerPadding: number = 4; // 容器内部控件间隔

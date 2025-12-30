@@ -5,6 +5,7 @@ import { ResUtil } from '@pura/harmony-utils';
 import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
+import { signatureSheetBuilder } from './SignatureSheet';
 
 @ComponentV2
 export struct UserInfoArea {
@@ -60,7 +61,7 @@ export struct UserInfoArea {
           .alignItems(HorizontalAlign.Start)
         }
 
-        Text(this.vm.user?.signature)
+        Text(this.vm.user?.signature || $r('app.string.MinePage_signature_placeHolder'))
           .width(CommonConstant.FullPercent)
           .fontColor($r('sys.color.font_on_primary'))
           .fontSize(CommonConstant.TextSizeNormal)
@@ -68,7 +69,18 @@ export struct UserInfoArea {
             bottom: CommonConstant.NormalContainerTBPadding
           })
           .onClick(() => {
-
+            this.vm.isShowSignatureSheet = true;
+          })
+          .bindSheet($$this.vm.isShowSignatureSheet, signatureSheetBuilder(this.vm), {
+            showClose: true,
+            detents: [SheetSize.FIT_CONTENT],
+            enableOutsideInteractive: false,
+            preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+            backgroundColor: $r('app.color.start_window_background'),
+            blurStyle: BlurStyle.BACKGROUND_THICK,
+            title: {
+              title: $r('app.string.MinePage_edit_sig')
+            }
           })
 
         Row() {
