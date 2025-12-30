@@ -11,6 +11,7 @@ export class MinePageVM extends BaseVM {
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace isSticky: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
+  @Trace isShowUserProfileSheet: boolean = false;
   @Trace user: UserProfileData | null = StorageManager.userModel.userProfile;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];

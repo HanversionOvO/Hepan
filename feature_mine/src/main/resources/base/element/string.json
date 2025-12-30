@@ -39,6 +39,10 @@
     {
       "name": "MinePage_edit_sig",
       "value": "编辑签名"
+    },
+    {
+      "name": "MinePage_user_profile",
+      "value": "详情资料"
     }
   ]
 }

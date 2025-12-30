@@ -6,6 +6,7 @@ import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 import { signatureSheetBuilder } from './SignatureSheet';
+import { userProfileSheetBuilder } from './UserProfileSheet';
 
 @ComponentV2
 export struct UserInfoArea {
@@ -98,6 +99,17 @@ export struct UserInfoArea {
             })
               .onClick(() => {
 
+              })
+              .bindSheet($$this.vm.isShowUserProfileSheet, userProfileSheetBuilder(this.vm), {
+                showClose: true,
+                detents: [SheetSize.FIT_CONTENT],
+                enableOutsideInteractive: false,
+                preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+                backgroundColor: $r('app.color.start_window_background'),
+                blurStyle: BlurStyle.BACKGROUND_THICK,
+                title: {
+                  title: $r('app.string.MinePage_user_profile')
+                }
               })
 
             GlassButton({
