@@ -39,6 +39,7 @@ export class FansPageVM extends BaseVM {
 
   changeFansTab(index: number) {
     this.currentFansTabIndex = index;
+    this.toggleHeader(false);
   }
 
   toggleHeader(hide: boolean) {
