@@ -133,13 +133,14 @@ export class UserApi {
   }
 
   /**
-   * 获取用户访客
+   * 获取用户访客 (已修改支持指定 UID)
    * 包含摘要、详细信息(邮箱/签名等)以及最近访客
-   * @param uid 用户ID，传 'me' 代表当前登录用户
-   * @throws Error 当网络请求失败或业务码不为0时抛出
+   * @param uid 用户ID，传 'me' 代表当前登录用户，默认为 'me'
    */
-  public static async getUserVisitors(): Promise<RecentVisitor[]> {
-    const path = `/_/user/me/profile?visitors=1`;
+  public static async getUserVisitors(uid: number | 'me' = 'me'): Promise<RecentVisitor[]> {
+    // 修改点：支持动态构造 URL
+    const idStr = uid === 'me' ? 'me' : uid.toString();
+    const path = `/_/user/${idStr}/profile?visitors=1`;
     const recentVisitors: RecentVisitor[] = [];
 
     const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
@@ -181,13 +182,6 @@ export class UserApi {
     });
 
     if (result.data.rs === 1) {
-      // 注意：Legacy接口 rs=1 通常是成功，但这里原逻辑似乎有些混淆，
-      // 如果rs=1是成功，下面抛错是不对的；如果rs=1是失败，则没问题。
-      // 假设原逻辑有误，这里通常 rs=1 是成功。
-      // 为了保持与原文件一致，这里暂不修改逻辑，仅保留结构。
-      // 如果原代码逻辑是 rs!=1 才是成功，请按实际API调整。
-      // *修正建议*：通常 rs=1 是成功。原代码在 rs===1 时抛错可能是写反了。
-      // 这里我保持原文件逻辑结构，仅修改调用处
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
