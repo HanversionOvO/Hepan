@@ -1,4 +1,4 @@
-import { UserProfileData, UserSummary } from '../api/models/UserModels';
+import { FriendUser, UserProfileData, UserSummary } from '../api/models/UserModels';
 import { LogUtil } from '@pura/harmony-utils';
 
 const TAG = '[UserModel]';
@@ -7,6 +7,7 @@ const TAG = '[UserModel]';
 export class UserModel {
   @Trace userSummary: UserSummary | null = null;
   @Trace userProfile: UserProfileData | null = null;
+  @Trace userFriends: FriendUser | null = null;
 
   /**
    * 更新用户摘要信息

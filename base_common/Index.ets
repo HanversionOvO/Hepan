@@ -30,6 +30,8 @@ export { AuthApi } from './src/main/ets/api/AuthApi';
 
 export { UserApi } from './src/main/ets/api/UserApi';
 
+export { FriendUser } from './src/main/ets/api/models/UserModels';
+
 export { AuthModel } from './src/main/ets/models/AuthModel';
 
 export { UserModel } from './src/main/ets/models/UserModel';
