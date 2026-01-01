@@ -99,10 +99,10 @@ export class FansPageVM extends BaseVM {
 
         if (result) {
           ToastUtil.showSuccess(`${ResUtil.getStringSync($r('app.string.FansUserItem_delete_friend_success'))} ${username}`)
+
+          await this.refreshFansPage();
         }
       });
-
-    await this.refreshFansPage();
   }
 
   changeFansTab(index: number) {
