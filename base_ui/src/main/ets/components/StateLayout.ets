@@ -1,4 +1,6 @@
+import { LottieView } from '@ohos/lottie-turbo';
 import { CommonConstant, UiState } from 'base_common'; // 确保引用到你的 BaseVM 中的枚举
+import { GlassButton } from './GlassButton';
 
 @ComponentV2
 export struct StateLayout {
@@ -13,10 +15,11 @@ export struct StateLayout {
       // 1. 加载中状态
       if (this.uiState === UiState.LOADING) {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          LoadingProgress()
-            .width(CommonConstant.IconSizeUltraLarge)
-            .height(CommonConstant.IconSizeUltraLarge)
-            .color(CommonConstant.ThemeColor) // 假设有主题色
+          LottieView({
+            lottieId: 'loading',
+            path: $rawfile('loading_lottie.json')
+          })
+            .height(CommonConstant.LottieSizeSmall)
           Text($r('app.string.StateLayout_loading'))
             .fontColor($r('sys.color.font_secondary'))
             .fontSize(CommonConstant.TextSizeNormal)
@@ -30,18 +33,18 @@ export struct StateLayout {
       // 2. 错误状态
       else if (this.uiState === UiState.ERROR) {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          Image($r('sys.media.ohos_ic_public_fail')) // 使用系统图标或自定义
-            .width(CommonConstant.TextSizeUltraLarge)
-            .height(64)
-            .fillColor($r('sys.color.ohos_id_color_text_tertiary'))
-          Text('加载失败，请重试')
-            .fontColor($r('sys.color.ohos_id_color_text_secondary'))
-            .fontSize(14)
-          Button('重试')
-            .onClick(() => {
-              this.onRetry();
-            })
-            .margin({ top: 10 })
+          LottieView({
+            lottieId: 'error',
+            path: $rawfile('error_lottie.json')
+          })
+            .height(CommonConstant.LottieSizeNormal)
+          Text($r('app.string.StateLayout_error'))
+            .fontColor($r('sys.color.font_secondary'))
+            .fontSize(CommonConstant.TextSizeNormal)
+          GlassButton({
+            symbol: $r('sys.symbol.arrow_clockwise'),
+            text: $r('app.string.StateLayout_retry'),
+          })
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)

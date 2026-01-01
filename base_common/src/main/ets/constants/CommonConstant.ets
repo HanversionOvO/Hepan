@@ -40,6 +40,10 @@ export class CommonConstant {
   static readonly TextInputSizeSmall: number = 60;
   static readonly TextInputSizeNormal: number = 80;
   static readonly TextInputSizeLarge: number = 100;
+  // Lottie动画尺寸
+  static readonly LottieSizeSmall: number = 140;
+  static readonly LottieSizeNormal: number = 240;
+  static readonly LottieSizeLarge: number = 340;
   // 间隔相关
   // 小型容器内部间隔
   static readonly SmallContainerInnerPadding: number = 4; // 容器内部控件间隔

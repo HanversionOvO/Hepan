@@ -19,6 +19,14 @@
     {
       "name": "StateLayout_loading",
       "value": "正在连接河畔星球..."
+    },
+    {
+      "name": "StateLayout_error",
+      "value": "好像与河畔星球失去联系了..."
+    },
+    {
+      "name": "StateLayout_retry",
+      "value": "重新连接"
     }
   ]
 }
