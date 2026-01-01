@@ -68,6 +68,8 @@ export class CommonConstant {
   static readonly AnimationCurveSpring: curves.ICurve = curves.springMotion(0.4, 0.8);
   // 按压缩放尺寸
   static readonly PressedDownScaleNormal: number = 0.9;
+  // 滑动阈值
+  static readonly ScrollAnimationThreshold: number = 2;
   // 颜色相关
   // 主题颜色
   static readonly ThemeColor: string = "#FFFF2442";

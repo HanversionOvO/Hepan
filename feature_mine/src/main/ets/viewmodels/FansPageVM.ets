@@ -1,4 +1,5 @@
-import { BaseVM, RecentVisitor, UserApi, UserFriends } from 'base_common';
+import { AppUtil } from '@pura/harmony-utils';
+import { BaseVM, CommonConstant, RecentVisitor, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
 const TAG = '[FansPageVM]: '
@@ -38,5 +39,13 @@ export class FansPageVM extends BaseVM {
 
   changeFansTab(index: number) {
     this.currentFansTabIndex = index;
+  }
+
+  toggleHeader(hide: boolean) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isHideTitleBar = hide;
+        })
   }
 }

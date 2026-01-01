@@ -18,6 +18,17 @@ export struct FansUserSection {
     return this.lanesOptions.getValue(this.vm.breakPoint.currentBreakPoint);
   }
 
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      // 手指向上滑是正值
+      if (yOffset > CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(true);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(false);
+      }
+    }
+  }
+
   build() {
     Refresh({
       refreshing: $$this.vm.isFansTabRefreshing
@@ -85,12 +96,12 @@ export struct FansUserSection {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
 
-      // .onWillScroll((yOffset, scrollState) => {
-      //   this.handleScroll(yOffset, scrollState);
-      // })
-      // .onReachStart(() => {
-      //   this.toggleHeader(false);
-      // })
+      .onWillScroll((yOffset, scrollState) => {
+        this.handleScroll(yOffset, scrollState);
+      })
+      .onReachStart(() => {
+        this.vm.toggleHeader(false);
+      })
     }
     .onRefreshing(async () => {
       this.vm.refreshFansPage();
