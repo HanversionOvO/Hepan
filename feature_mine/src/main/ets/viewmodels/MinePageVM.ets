@@ -12,6 +12,7 @@ const TAG = '[MinePageVM]: '
 export class MinePageVM extends BaseVM {
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace userPostTabController: TabsController = new TabsController();
+  @Trace isMe: boolean = true;
   @Trace isSticky: boolean = false;
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;

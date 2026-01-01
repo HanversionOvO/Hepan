@@ -137,6 +137,10 @@
       "value": "收藏"
     },
     {
+      "name": "FansPage_Title",
+      "value": "好友与访客"
+    },
+    {
       "name": "FansPage_friends",
       "value": "好友"
     },

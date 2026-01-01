@@ -21,7 +21,7 @@ export struct FansTitleBar {
       if (!this.vm.isHideTitleBar) {
         Column() {
           Row() {
-            Text("Mono")
+            Text($r('app.string.FansPage_Title'))
               .fontWeight(FontWeight.Bold)
               .fontSize(CommonConstant.TextSizeNormal)
               .fontColor($r('sys.color.font_primary'))
