@@ -101,20 +101,23 @@ export class UserApi {
     });
 
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      response.data.data.rows.forEach(async (friend: FriendUser) => {
+      const tasks = response.data.data.rows.map(async (friend: FriendUser) => {
+        // 在这里进行详情获取
         let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid);
+
+        // 组装数据并返回
         let friendData: UserFriends = {
           uid: friend.uid,
           username: friend.username,
-          signature: friendProfile.signature || $r('app.string.UserApi_no_signature'),
+          signature: friendProfile.signature ?? $r('app.string.UserApi_no_signature'),
           avatar: UserAvatarUtil.getAvatarUrl(friend.uid),
           level: friendProfile.user_summary?.group_title!,
           last_visit: friendProfile.last_visit!
-        }
+        };
+        return friendData;
+      });
 
-        userFriends.push(friendData);
-      })
-
+      const userFriends = await Promise.all(tasks);
       return userFriends;
     } else {
       const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
