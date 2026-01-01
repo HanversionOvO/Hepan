@@ -37,16 +37,6 @@ export struct FansPage {
             RouterUtil.pop()
           })
           .zIndex(2)
-
-        Button("Click").onClick((event: ClickEvent) => {
-          animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
-            () => {
-              this.vm.isHideTitleBar = !this.vm.isHideTitleBar
-            })
-        })
-          .position({
-            top: 200
-          })
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
