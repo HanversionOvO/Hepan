@@ -181,12 +181,10 @@ export class UserApi {
       'sign': signature
     });
 
+    // 修复点：rs === 1 表示成功，返回 true
     if (result.data.rs === 1) {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
+      return true;
     } else {
-      // 安全访问可选属性
       const errInfo = result.data.head?.errInfo || 'Unknown error';
       LogUtil.warn(TAG, `Update signature failed: ${result.data.errcode} - ${errInfo}`);
       return false;

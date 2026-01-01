@@ -1,6 +1,6 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics } from '@kit.ArkUI';
-import { CommonConstant, UserAvatarUtil, TransitionMap } from 'base_common';
+import { CommonConstant, UserAvatarUtil } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
 import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
@@ -31,7 +31,7 @@ export struct UserInfoArea {
             .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
 
           Column({ space: CommonConstant.NormalContainerTBPadding }) {
-            // 修改：昵称部分
+            // 昵称部分
             Text(this.vm.user?.user_summary?.username)
               .fontSize(CommonConstant.TextSizeUltraLarge)
               .fontWeight(FontWeight.Bold)
@@ -52,7 +52,10 @@ export struct UserInfoArea {
             bottom: CommonConstant.NormalContainerTBPadding
           })
           .onClick(() => {
-            this.vm.isShowSignatureSheet = true;
+            // 修复点：仅本人 (isMe) 可以点击打开签名修改面板
+            if (this.vm.isMe) {
+              this.vm.isShowSignatureSheet = true;
+            }
           })
           .bindSheet($$this.vm.isShowSignatureSheet, signatureSheetBuilder(this.vm), {
             showClose: true,

@@ -34,8 +34,8 @@ struct HomePage {
         }
         .barHeight(0)
         .scrollable(false)
-        .width("100%")
-        .height("100%")
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
         .padding({
           left: this.vm.isTabletView ? CommonConstant.BottomBarHeight : 0
         })
