@@ -11,6 +11,14 @@
     {
       "name": "CustomSearch_search",
       "value": "搜索"
+    },
+    {
+      "name": "StateLayout_empty",
+      "value": "河畔星球空空如也~"
+    },
+    {
+      "name": "StateLayout_loading",
+      "value": "正在连接河畔星球..."
     }
   ]
 }

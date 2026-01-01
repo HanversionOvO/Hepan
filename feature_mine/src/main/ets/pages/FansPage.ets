@@ -72,9 +72,8 @@ export struct FansPage {
           this.vm.currentFansTabIndex = 0
         }
       }
-    })
-    .onShown(async () => {
-      await this.vm.loadData();
+
+      this.vm.loadData(true);
     })
   }
 }
