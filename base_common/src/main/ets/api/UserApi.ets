@@ -2,6 +2,7 @@ import { ApiClient } from './ApiClient';
 import {
   BaseResponse,
   FriendUser,
+  InterestingUser,
   PaginationData,
   RecentVisitor,
   UserFriends,
@@ -19,6 +20,7 @@ interface LegacyResponse {
   errcode: string; // 错误码
   head?: LegacyHead; // 响应头信息
   body?: Object; // 响应体
+  pois?: Record<string, string>[];
 }
 
 interface LegacyHead {
@@ -177,12 +179,45 @@ export class UserApi {
 
     // [修复] 使用点符号访问属性，符合 ArkTS 规范
     if (result.data.rs === 1) {
-      return true;
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
     } else {
       // 安全访问可选属性
       const errInfo = result.data.head?.errInfo || 'Unknown error';
       LogUtil.warn(TAG, `Update signature failed: ${result.data.errcode} - ${errInfo}`);
       return false;
+    }
+  }
+
+  // 获取感兴趣的人
+  public static async getInterestedUser(): Promise<InterestingUser[]> {
+    const interestedUser: InterestingUser[] = [];
+
+    const result =
+      await ApiClient.getInstance().requestLegacy<LegacyResponse>('square', 'surrounding', {
+        'longitude': '103.93',
+        'latitude': '30.74',
+        'poi': 'user',
+        'page': 1,
+        'pageSize': '15'
+      });
+
+    if (result.data.rs === 1) {
+      result.data.pois?.forEach((poi: Record<string, Object>) => {
+        interestedUser.push({
+          uid: poi.uid as number,
+          username: poi.nickname as string,
+          avatar: poi.icon as string,
+          isFriend: poi.is_friend as number === 0 ? false : true
+        })
+      });
+
+      return interestedUser;
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
     }
   }
 }

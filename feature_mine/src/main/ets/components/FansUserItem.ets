@@ -1,4 +1,4 @@
-import { CommonConstant, DateUtil } from 'base_common';
+import { CommonConstant, DateUtil, InterestingUser } from 'base_common';
 import { CustomBadge } from 'base_ui';
 
 export enum FansUserItemType {
@@ -13,46 +13,60 @@ export interface FansUserItems {
   avatar: string;
   level?: string;
   date: number;
+  isFriend?: boolean;
 }
 
 @ComponentV2
 export struct FansUserItem {
-  @Param @Require user: FansUserItems;
+  @Param user: FansUserItems | undefined = undefined;
+  @Param recommendUser: InterestingUser | undefined = undefined;
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
 
   build() {
-    if (this.type === FansUserItemType.CARD) {
+    if (this.type === FansUserItemType.CARD && this.recommendUser) {
       // === 横向推荐卡片样式 ===
-      // Column({ space: CommonConstants.ComponentWithinPadding }) {
-      //   SymbolGlyph($r('sys.symbol.person'))
-      //     .fontSize(this.avatarSize)
-      //     .fontColor([$r('sys.color.font_tertiary')])
-      //     .borderRadius(CommonConstants.ComponentRadiusRound)
-      //   Column({ space: CommonConstants.ComponentInnerPadding / 2 }) {
-      //     Text(`用户 ${this.index + 1}`)
-      //       .fontWeight(FontWeight.Medium)
-      //       .fontColor($r('sys.color.font_primary'))
-      //       .fontSize(CommonConstants.PageTextNormal)
-      //     Text($r('app.string.might_interested'))
-      //       .fontSize(CommonConstants.PageTextSmall)
-      //       .fontColor($r('sys.color.font_tertiary'))
-      //   }
-      //
-      //   Button($r('app.string.subscribe'))
-      //     .backgroundColor($r('app.color.brand_color'))
-      //     .fontColor($r('sys.color.font_on_primary'))
-      //     .fontWeight(FontWeight.Bold)
-      //     .width("100%")
-      //     .height(32)
-      //     .fontSize(CommonConstants.PageTextNormal)
-      // }
-      // .borderRadius(CommonConstants.ComponentRadiusNormal)
-      // .width(this.listCardSize)
-      // .alignItems(HorizontalAlign.Center)
-      // .justifyContent(FlexAlign.Center)
-      // .backgroundColor($r('app.color.background_secondary'))
-      // .padding(CommonConstants.ComponentWithinPadding)
-    } else {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Image(this.recommendUser.avatar)
+          .height(CommonConstant.IconSizeLarge)
+          .width(CommonConstant.IconSizeLarge)
+          .borderRadius(CommonConstant.RadiusRound)
+          .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+        Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+          Text(this.recommendUser.username)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('sys.color.font_primary'))
+            .fontSize(CommonConstant.TextSizeNormal)
+          Text($r('app.string.FansUserItem_might_interested'))
+            .fontSize(CommonConstant.TextSizeSmall)
+            .fontColor($r('sys.color.font_tertiary'))
+        }
+
+        Button() {
+          Text(this.recommendUser.isFriend ? $r('app.string.FansUserItem_is_friend') :
+            $r('app.string.FansUserItem_add_friend'))
+            .fontColor(this.recommendUser.isFriend ? $r('sys.color.font_tertiary') : $r('sys.color.font_on_primary'))
+            .fontWeight(FontWeight.Bold)
+            .fontSize(CommonConstant.TextSizeSmall)
+        }
+        .backgroundColor(this.recommendUser.isFriend ? $r('app.color.start_window_background') :
+          CommonConstant.ThemeColor)
+        .width(CommonConstant.IconSizeLarge * 3)
+        .padding({
+          top: CommonConstant.SmallContainerTBPadding,
+          bottom: CommonConstant.SmallContainerTBPadding,
+        })
+      }
+      .borderRadius(CommonConstant.RadiusLarge)
+      .alignItems(HorizontalAlign.Center)
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor($r('app.color.second_window_background'))
+      .padding({
+        left: CommonConstant.LargeContainerLRPadding,
+        right: CommonConstant.LargeContainerLRPadding,
+        top: CommonConstant.LargeContainerTBPadding,
+        bottom: CommonConstant.LargeContainerTBPadding,
+      })
+    } else if (this.user) {
       Row() {
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {
           Image(this.user.avatar)

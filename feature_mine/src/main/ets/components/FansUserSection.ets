@@ -1,6 +1,6 @@
-import { BreakpointType, CommonConstant, RecentVisitor, UserFriends } from 'base_common';
+import { BreakpointType, CommonConstant, InterestingUser, RecentVisitor, UserFriends } from 'base_common';
 import { FansPageVM } from '../viewmodels/FansPageVM';
-import { FansUserItem } from './FansUserItem';
+import { FansUserItem, FansUserItemType } from './FansUserItem';
 
 @ComponentV2
 export struct FansUserSection {
@@ -37,10 +37,10 @@ export struct FansUserSection {
         // 1. 关注列表顶部横向卡片
         if (this.isFollowList) {
           GridItem() {
-            List({ space: CommonConstant.SmallContainerInnerPadding }) {
-              ForEach(this.vm.recommendList, (item: number) => {
+            List({ space: CommonConstant.NormalContainerInnerPadding }) {
+              ForEach(this.vm.recommendList, (recommendUser: InterestingUser) => {
                 ListItem() {
-                  // FansUserItem({ index: item, type: FansUserItemType.CARD })
+                  FansUserItem({ recommendUser: recommendUser, type: FansUserItemType.CARD })
                 }
               })
             }

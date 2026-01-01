@@ -1,5 +1,5 @@
-import { AppUtil } from '@pura/harmony-utils';
-import { BaseVM, CommonConstant, RecentVisitor, UserApi, UserFriends } from 'base_common';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { BaseVM, CommonConstant, InterestingUser, RecentVisitor, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
 const TAG = '[FansPageVM]: '
@@ -16,7 +16,7 @@ export class FansPageVM extends BaseVM {
     { label: $r('app.string.FansPage_friends'), icon: $r('sys.symbol.person_badge_plus') },
     { label: $r('app.string.FansPage_visitor'), icon: $r('sys.symbol.person_2') },
   ];
-  @Trace recommendList: Record<string, string>[] = [];
+  @Trace recommendList: InterestingUser[] = [];
   @Trace friendsList: UserFriends[] = [];
   @Trace visitorsList: RecentVisitor[] = [];
 
@@ -24,6 +24,8 @@ export class FansPageVM extends BaseVM {
     try {
       this.friendsList = await UserApi.getUserFriends(this.currentFriendsPage);
       this.visitorsList = await UserApi.getUserVisitors();
+      this.recommendList = await UserApi.getInterestedUser();
+      LogUtil.debug(TAG, JSON.stringify(this.recommendList))
     } catch (error) {
     }
   }

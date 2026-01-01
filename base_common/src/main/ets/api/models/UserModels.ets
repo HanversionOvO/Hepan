@@ -152,3 +152,11 @@ export interface AddFriendRequest {
 export interface AddFriendResult {
   friend_status: string; // e.g., 'requested'
 }
+
+// 感兴趣的人
+export interface InterestingUser {
+  uid: number;
+  username: string;
+  avatar: string;
+  isFriend: boolean;
+}

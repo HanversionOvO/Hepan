@@ -143,6 +143,18 @@
     {
       "name": "FansPage_visitor",
       "value": "访客"
+    },
+    {
+      "name": "FansUserItem_might_interested",
+      "value": "可能感兴趣的人"
+    },
+    {
+      "name": "FansUserItem_add_friend",
+      "value": "加为好友"
+    },
+    {
+      "name": "FansUserItem_is_friend",
+      "value": "已加好友"
     }
   ]
 }
