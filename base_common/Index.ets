@@ -1,4 +1,4 @@
-export { BreakPointModel } from './src/main/ets/models/BreakPointModel';
+export { BreakPointModel, BreakpointType } from './src/main/ets/models/BreakPointModel';
 
 export { WindowModel } from './src/main/ets/models/WindowModel';
 

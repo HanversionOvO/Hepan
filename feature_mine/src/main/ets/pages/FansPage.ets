@@ -12,8 +12,23 @@ export struct FansPage {
       Stack({ alignContent: Alignment.Top }) {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           FansTitleBar({ vm: this.vm })
+
+          Tabs({ controller: this.vm.fansPageTabController, index: this.vm.currentFansTabIndex }) {
+            TabContent() {
+              Text("Content1")
+            }
+
+            TabContent() {
+              Text("Content2")
+            }
+          }
+          .width(CommonConstant.FullPercent)
+          .height(CommonConstant.FullPercent)
+          .barHeight(1)
+          .scrollable(false)
         }
         .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
 
         if (this.vm.isHideTitleBar) {
           FloatButton({ isFloating: this.vm.isHideTitleBar, floatIcon: $r('sys.symbol.magnifyingglass') })
