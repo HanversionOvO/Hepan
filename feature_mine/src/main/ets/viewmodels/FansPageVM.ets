@@ -1,4 +1,4 @@
-import { AppUtil } from '@pura/harmony-utils';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { BaseVM, CommonConstant, InterestingUser, RecentVisitor, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
@@ -10,7 +10,6 @@ export class FansPageVM extends BaseVM {
   @Trace currentFansTabIndex: number = 0;
   @Trace currentFriendsPage: number = 1;
   @Trace isFansTabRefreshing: boolean = false;
-  @Trace fansTabScroller: Scroller = new Scroller();
   @Trace fansPageTabController: TabsController = new TabsController();
   @Trace fansPageTabItems: CustomTabItem[] = [
     { label: $r('app.string.FansPage_friends'), icon: $r('sys.symbol.person_badge_plus') },
@@ -21,14 +20,25 @@ export class FansPageVM extends BaseVM {
   @Trace visitorsList: RecentVisitor[] = [];
 
   async loadData() {
+    // 加载好友列表和推荐列表
     try {
-      if (this.currentFansTabIndex === 0) {
-        this.recommendList = await UserApi.getInterestedUser();
-        this.friendsList = await UserApi.getUserFriends(this.currentFriendsPage);
-      } else {
-        this.visitorsList = await UserApi.getUserVisitors();
-      }
+      // 可以并行请求以提高速度
+      const friendsPromise = UserApi.getUserFriends(this.currentFriendsPage);
+      const recommendPromise = UserApi.getInterestedUser();
+
+      this.friendsList = await friendsPromise;
+      this.recommendList = await recommendPromise;
+      LogUtil.debug(TAG, 'Friends loaded')
     } catch (error) {
+      LogUtil.error(TAG, 'Failed to load friends: ' + JSON.stringify(error));
+    }
+
+    // 加载访客列表（独立 try-catch）
+    try {
+      this.visitorsList = await UserApi.getUserVisitors();
+      LogUtil.debug(TAG, 'Visitors loaded')
+    } catch (error) {
+      LogUtil.error(TAG, 'Failed to load visitors: ' + JSON.stringify(error));
     }
   }
 
