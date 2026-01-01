@@ -1,5 +1,10 @@
-import { BaseVM } from 'base_common';
+import { LogUtil } from '@pura/harmony-utils';
+import { BaseVM, UserApi } from 'base_common';
+import { FriendUser } from 'base_common/src/main/ets/api/models/UserModels';
 import { CustomTabItem } from 'base_ui';
+import { JSON } from '@kit.ArkTS';
+
+const TAG = '[FansPageVM]: '
 
 @ObservedV2
 export class FansPageVM extends BaseVM {
@@ -13,8 +18,21 @@ export class FansPageVM extends BaseVM {
     { label: $r('app.string.FansPage_visitor'), icon: $r('sys.symbol.person_2') },
   ];
   @Trace recommendList: Record<string, string>[] = [];
-  @Trace friendsList: Record<string, string>[] = [];
+  @Trace friendsList: FriendUser[] = [];
   @Trace visitorsList: Record<string, string>[] = [];
+
+  async loadData(): Promise<void> {
+    try {
+      this.friendsList = await UserApi.getUserFriends();
+      LogUtil.info(TAG, JSON.stringify(this.friendsList))
+    } catch (error) {
+
+    }
+  }
+
+  async startFansPage() {
+    await this.loadData();
+  }
 
   changeFansTab(index: number) {
     this.currentFansTabIndex = index;

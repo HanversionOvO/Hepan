@@ -1,7 +1,7 @@
 import { ApiClient } from './ApiClient';
-import { BaseResponse, UserProfileData } from './models/UserModels';
+import { BaseResponse, FriendUser, PaginationData, UserProfileData } from './models/UserModels';
 import http from '@ohos.net.http';
-import { LogUtil, ResUtil } from '@pura/harmony-utils';
+import { LogUtil } from '@pura/harmony-utils';
 
 const TAG = '[UserApi]: ';
 
@@ -75,9 +75,35 @@ export class UserApi {
   }
 
   /**
-     * 修改个性签名 (使用旧版 API)
-     * @param signature 新的签名内容
-     */
+   * 获取用户好友
+   * 包含摘要、详细信息(邮箱/签名等)以及最近访客
+   * @param uid 用户ID，传 'me' 代表当前登录用户
+   * @throws Error 当网络请求失败或业务码不为0时抛出
+   */
+  public static async getUserFriends(page: number = 1, user_summary: boolean = true,
+    visitors: boolean = true): Promise<FriendUser[]> {
+    const path = `/_/user/me/friends?page=${page}&user_summary`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<FriendUser>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      return response.data.data.rows;
+    } else {
+      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  /**
+   * 修改个性签名 (使用旧版 API)
+   * @param signature 新的签名内容
+   */
   public static async editSignature(signature: string): Promise<boolean> {
     // [修复] 传入泛型 LegacyResponse，明确告知编译器返回数据的结构
     const result = await ApiClient.getInstance().requestLegacy<LegacyResponse>('user', 'updateuserinfo', {

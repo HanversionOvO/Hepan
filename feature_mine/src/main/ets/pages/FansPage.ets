@@ -58,5 +58,8 @@ export struct FansPage {
     }
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
+    .onShown(async () => {
+      await this.vm.startFansPage();
+    })
   }
 }
