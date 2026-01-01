@@ -3,6 +3,7 @@ import {
   BaseResponse,
   FriendUser,
   InterestingUser,
+  Medal,
   PaginationData,
   RecentVisitor,
   UserFriends,
@@ -243,10 +244,10 @@ export class UserApi {
   }
 
   // 获取勋章
-  public static async getMedals(): Promise<void> {
+  public static async getMedals(): Promise<Medal[]> {
     const path = `/_/system/settings/medals`;
 
-    const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Record<string, Object>>>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
@@ -254,7 +255,7 @@ export class UserApi {
     });
 
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      LogUtil.info(TAG, JSON.stringify(response.data.data));
+      return response.data.data.medals.value as Medal[];
     } else {
       const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);

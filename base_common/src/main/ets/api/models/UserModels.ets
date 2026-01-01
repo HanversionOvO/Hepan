@@ -90,6 +90,19 @@ export interface UserProfileData {
   last_ip?: string; // 最后IP (敏感信息)
 }
 
+// 勋章信息
+export interface Medal {
+  id: number;
+  name: string;
+  image_path: string;
+  type: number;
+  display_order: number;
+  description: string;
+  expiration_days: number;
+  ext_credit: string;
+  price: number;
+}
+
 
 // ==========================================
 // 好友 (Friends) 相关
