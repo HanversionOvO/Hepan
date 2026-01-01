@@ -1,3 +1,4 @@
+import { LottieView } from '@ohos/lottie-turbo';
 import { ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, ToastUtil } from 'base_common';
 import { Medal } from 'base_common/src/main/ets/api/models/UserModels';
@@ -174,11 +175,15 @@ struct UserMedalSheet {
   // --- 列表加载中视图 ---
   @Builder
   LoadingView() {
-    Column() {
-      LoadingProgress()
-        .width(32)
-        .height(32)
-        .color(CommonConstant.ThemeColor)
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      LottieView({
+        lottieId: 'loading_medal',
+        path: $rawfile('loading_lottie.json')
+      })
+        .height(CommonConstant.LottieSizeSmall)
+      Text($r('app.string.StateLayout_loading'))
+        .fontColor($r('sys.color.font_secondary'))
+        .fontSize(CommonConstant.TextSizeNormal)
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
