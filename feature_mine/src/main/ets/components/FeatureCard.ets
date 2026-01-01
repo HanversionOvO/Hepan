@@ -11,6 +11,8 @@ export interface FeatureCardModel {
   cardIcon: Resource;
   cardTitle: ResourceStr;
   cardCount: number;
+  // 新增：点击回调
+  onClick?: () => void;
 }
 
 @ComponentV2
@@ -117,5 +119,11 @@ export struct FeatureCard {
     .borderRadius(CommonConstant.RadiusNormal)
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Center)
+    // 新增：点击事件绑定
+    .onClick(() => {
+      if (this.model && this.model.onClick) {
+        this.model.onClick();
+      }
+    })
   }
 }

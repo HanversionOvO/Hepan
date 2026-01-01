@@ -7,6 +7,7 @@ import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 import { signatureSheetBuilder } from './SignatureSheet';
 import { userProfileSheetBuilder } from './UserProfileSheet';
+import { userMedalSheetBuilder } from './UserMedalSheet'; // 新增
 
 @ComponentV2
 export struct UserInfoArea {
@@ -52,7 +53,6 @@ export struct UserInfoArea {
             bottom: CommonConstant.NormalContainerTBPadding
           })
           .onClick(() => {
-            // 修复点：仅本人 (isMe) 可以点击打开签名修改面板
             if (this.vm.isMe) {
               this.vm.isShowSignatureSheet = true;
             }
@@ -109,6 +109,7 @@ export struct UserInfoArea {
       .width(this.vm.isTabletView ? CommonConstant.BelowHalfPercent : CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
 
+      // 功能卡片区域
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         FeatureCard({
           vm: this.vm,
@@ -122,6 +123,19 @@ export struct UserInfoArea {
           })
         })
       }
+      // 新增：将勋章 Sheet 绑定到功能卡片区域的 Row 上
+      // 只要 isShowMedalSheet 变为 true，这里就会弹出 sheet
+      .bindSheet($$this.vm.isShowMedalSheet, userMedalSheetBuilder(this.vm), {
+        showClose: true,
+        detents: [SheetSize.MEDIUM, SheetSize.LARGE], // 支持中等和全屏高度
+        enableOutsideInteractive: false,
+        preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+        backgroundColor: $r('app.color.start_window_background'),
+        blurStyle: BlurStyle.BACKGROUND_THICK,
+        title: {
+          title: $r('app.string.MinePage_medal_center') // 确保 string.json 中有这个 key，或者使用 Resource
+        }
+      })
     }
     .width(CommonConstant.FullPercent)
     .padding({
