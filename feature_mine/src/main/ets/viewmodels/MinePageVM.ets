@@ -1,5 +1,5 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, RouterMap, RouterUtil, UserApi } from 'base_common';
+import { BaseVM, DateUtil, RouterMap, RouterUtil, UserApi } from 'base_common';
 import { Medal, UserProfileData } from 'base_common/src/main/ets/api/models/UserModels';
 import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
@@ -16,12 +16,10 @@ export class MinePageVM extends BaseVM {
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
-
   // 新增：勋章 Sheet 显示状态
   @Trace isShowMedalSheet: boolean = false;
   // 新增：所有勋章列表
   @Trace allMedals: Medal[] = [];
-
   @Trace isRefreshing: boolean = false;
   @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
@@ -179,7 +177,7 @@ export class MinePageVM extends BaseVM {
       if (value !== null && value !== undefined && value !== '') {
         let displayValue: string | number = value;
         if (item.isDate && typeof value === 'number') {
-          displayValue = this.formatDate(value);
+          displayValue = DateUtil.getRelativeTime(value);
         }
         list.push({
           title: $r(`app.string.MinePage_userprofile_${item.suffix}`),
@@ -188,18 +186,6 @@ export class MinePageVM extends BaseVM {
       }
     });
     return list;
-  }
-
-  private formatDate(timestamp: number): string {
-    if (!timestamp) {
-      return '';
-    }
-    try {
-      const date = new Date(timestamp * 1000);
-      return date.toLocaleString();
-    } catch (e) {
-      return timestamp.toString();
-    }
   }
 
   changeUserPostTab(index: number) {

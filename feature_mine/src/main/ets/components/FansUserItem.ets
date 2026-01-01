@@ -102,13 +102,17 @@ export struct FansUserItem {
                 .fontSize(CommonConstant.TextSizeNormal)
                 .fontColor($r('sys.color.font_secondary'))
                 .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
 
             Text(DateUtil.getRelativeTime(this.user.date))
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_tertiary'))
-          }.alignItems(HorizontalAlign.Start)
+          }
+          .alignItems(HorizontalAlign.Start)
+          .layoutWeight(1)
         }
+        .layoutWeight(1)
 
         if (this.isShowDeleteButton) {
           GlassButton({
