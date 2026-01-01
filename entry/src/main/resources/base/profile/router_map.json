@@ -12,7 +12,7 @@
     },
     {
       "name": "FansPage",
-      "pageSourceFile": "src/main/../../../feature_mine/src/main/ets/pages/FansPage.ets",
+      "pageSourceFile": "src/main/ets/pages/mine/pages/FansPage.ets",
       "buildFunction": "FansPageBuilder"
     }
   ]
