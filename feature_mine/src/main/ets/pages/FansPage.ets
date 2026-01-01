@@ -1,4 +1,4 @@
-import { CommonConstant, RouterUtil, TransitionMap, VMManager } from 'base_common';
+import { CommonConstant, RouterUtil, TransitionMap } from 'base_common';
 import { FloatButton } from 'base_ui';
 import { FansTitleBar } from '../components/FansTitleBar';
 import { FansUserSection } from '../components/FansUserSection';
@@ -6,7 +6,7 @@ import { FansPageVM } from '../viewmodels/FansPageVM';
 
 @ComponentV2
 export struct FansPage {
-  @Local vm: FansPageVM = VMManager.get(FansPageVM, () => new FansPageVM());
+  @Local vm: FansPageVM = new FansPageVM();
 
   build() {
     NavDestination() {

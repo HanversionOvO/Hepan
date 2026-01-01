@@ -54,13 +54,16 @@ export struct StateLayout {
       // 3. 空数据状态
       else if (this.uiState === UiState.EMPTY) {
         Column({ space: 10 }) {
-          Image($r('sys.media.ohos_ic_public_cancel')) // 使用系统图标或自定义
-            .width(64)
-            .height(64)
-            .fillColor($r('sys.color.ohos_id_color_text_tertiary'))
-          Text(this.emptyStr)
-            .fontColor($r('sys.color.ohos_id_color_text_secondary'))
-            .fontSize(14)
+          Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+            LottieView({
+              lottieId: 'empty',
+              path: $rawfile('empty_lottie.json')
+            })
+              .height(CommonConstant.LottieSizeNormal)
+            Text(this.emptyStr)
+              .fontColor($r('sys.color.font_secondary'))
+              .fontSize(CommonConstant.TextSizeNormal)
+          }
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
