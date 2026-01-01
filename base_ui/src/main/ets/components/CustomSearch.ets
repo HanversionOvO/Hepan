@@ -13,6 +13,7 @@ export struct CustomSearch {
   build() {
     Search({ placeholder: this.placeHolder })
       .id(this.searchKey)
+      .textFont({ size: this.fontSize })
       .width(CommonConstant.FullPercent)
       .height(this.searchHeight)
       .placeholderFont({ size: this.fontSize })
