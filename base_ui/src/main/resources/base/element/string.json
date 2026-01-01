@@ -7,6 +7,10 @@
     {
       "name": "CommonToast_confirm",
       "value": "确定"
+    },
+    {
+      "name": "CustomSearch_search",
+      "value": "搜索"
     }
   ]
 }

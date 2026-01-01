@@ -1,0 +1,30 @@
+import { CommonConstant, TransitionMap } from 'base_common';
+
+@ComponentV2
+export struct CustomSearch {
+  @Param placeHolder: string = '';
+  @Param searchHeight: number = CommonConstant.IconSizeLarge;
+  @Param fontSize: number = CommonConstant.TextSizeNormal;
+  @Param searchKey: string = "common_search_input";
+  @Param geometryId: string = TransitionMap.FeatureMineFansSearch;
+  @Event onSubmit: (value: string) => void = () => {
+  };
+
+  build() {
+    Search({ placeholder: this.placeHolder })
+      .id(this.searchKey)
+      .width(CommonConstant.FullPercent)
+      .height(this.searchHeight)
+      .placeholderFont({ size: this.fontSize })
+      .geometryTransition(this.geometryId)
+      .transition(TransitionEffect.OPACITY.animation({
+        duration: CommonConstant.AnimationDurationNormal,
+        curve: CommonConstant.AnimationCurveNormal
+      }))
+      .searchButton($r('app.string.CustomSearch_search'),
+        { fontSize: this.fontSize, fontColor: CommonConstant.ThemeColor })
+      .onSubmit((value) => {
+        this.onSubmit(value);
+      })
+  }
+}

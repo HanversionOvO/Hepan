@@ -135,6 +135,14 @@
     {
       "name": "MinePage_mine_star",
       "value": "收藏"
+    },
+    {
+      "name": "FansPage_friends",
+      "value": "好友"
+    },
+    {
+      "name": "FansPage_visitor",
+      "value": "访客"
     }
   ]
 }
