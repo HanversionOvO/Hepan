@@ -4,7 +4,7 @@ import { CommonConstant, TransitionMap } from 'base_common';
 export struct CustomSearch {
   @Param placeHolder: string = '';
   @Param searchHeight: number = CommonConstant.IconSizeLarge;
-  @Param fontSize: number = CommonConstant.TextSizeNormal;
+  @Param fontSize: number = CommonConstant.TextSizeSmall;
   @Param searchKey: string = "common_search_input";
   @Param geometryId: string = TransitionMap.FeatureMineFansSearch;
   @Event onSubmit: (value: string) => void = () => {
@@ -21,6 +21,7 @@ export struct CustomSearch {
         duration: CommonConstant.AnimationDurationNormal,
         curve: CommonConstant.AnimationCurveNormal
       }))
+      .caretStyle({ color: CommonConstant.ThemeColor })
       .searchButton($r('app.string.CustomSearch_search'),
         { fontSize: this.fontSize, fontColor: CommonConstant.ThemeColor })
       .onSubmit((value) => {

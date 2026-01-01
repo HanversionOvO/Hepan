@@ -24,7 +24,7 @@ export struct FansPage {
           }
           .width(CommonConstant.FullPercent)
           .height(CommonConstant.FullPercent)
-          .barHeight(1)
+          .barHeight(0)
           .scrollable(false)
         }
         .width(CommonConstant.FullPercent)
