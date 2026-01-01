@@ -1,5 +1,6 @@
-import { BreakpointType, CommonConstant } from 'base_common';
+import { BreakpointType, CommonConstant, RecentVisitor, UserFriends } from 'base_common';
 import { FansPageVM } from '../viewmodels/FansPageVM';
+import { FansUserItem } from './FansUserItem';
 
 @ComponentV2
 export struct FansUserSection {
@@ -42,11 +43,35 @@ export struct FansUserSection {
         }
 
         // 2. 列表主体
-        ForEach(this.vm.friendsList, (item: number) => {
-          GridItem() {
-            // FansUserItem({ index: item, type: FansUserItemType.LIST })
-          }
-        })
+        if (this.isFollowList) {
+          ForEach(this.vm.friendsList, (friend: UserFriends) => {
+            GridItem() {
+              FansUserItem({
+                user: {
+                  uid: friend.uid,
+                  username: friend.username,
+                  avatar: friend.avatar,
+                  signature: friend.signature,
+                  level: friend.level,
+                  date: friend.last_visit
+                }
+              })
+            }
+          })
+        } else {
+          ForEach(this.vm.visitorsList, (visitor: RecentVisitor) => {
+            GridItem() {
+              FansUserItem({
+                user: {
+                  uid: visitor.uid,
+                  username: visitor.username,
+                  avatar: visitor.avatar,
+                  date: visitor.dateline
+                }
+              })
+            }
+          })
+        }
 
         // 3. 底部垫片
         GridItem()
@@ -55,10 +80,8 @@ export struct FansUserSection {
           .columnEnd(this.gridLanes - 1)
       }
       .columnsTemplate('1fr '.repeat(this.gridLanes)) // 使用 gridLanes
-      .columnsGap(CommonConstant.SmallContainerInnerPadding)
-      .rowsGap(CommonConstant.SmallContainerInnerPadding)
-      .width(CommonConstant.FullPercent)
-      .height(CommonConstant.FullPercent)
+      .columnsGap(CommonConstant.NormalContainerInnerPadding)
+      .rowsGap(CommonConstant.NormalContainerInnerPadding)
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
 
@@ -69,8 +92,10 @@ export struct FansUserSection {
       //   this.toggleHeader(false);
       // })
     }
-    .onRefreshing(() => {
-      // this.vm.refreshSubs();
+    .onRefreshing(async () => {
+      this.vm.refreshFansPage();
     })
+    .width(CommonConstant.FullPercent)
+    .height(CommonConstant.FullPercent)
   }
 }

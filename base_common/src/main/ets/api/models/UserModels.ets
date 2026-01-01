@@ -59,8 +59,9 @@ export interface UserSummary {
  */
 export interface RecentVisitor {
   uid: number;
+  avatar: string;
   username: string;
-  dateline: number; // 访问时间戳 (秒)
+  dateline: number;
 }
 
 /**
@@ -82,7 +83,7 @@ export interface UserProfileData {
   signature?: string; // 签名
   signature_format?: string; // 签名格式 (如 'html')
   online_time: number; // 在线时间 (小时或秒，视具体实现，通常为小时)
-  last_visit?: number; // 最后访问时间戳
+  last_visit: number; // 最后访问时间戳
   last_activity?: number; // 最后活动时间戳
   last_post?: number; // 最后发帖时间戳
   register_ip?: string; // 注册IP (敏感信息)

@@ -30,7 +30,7 @@ export { AuthApi } from './src/main/ets/api/AuthApi';
 
 export { UserApi } from './src/main/ets/api/UserApi';
 
-export { UserFriends } from './src/main/ets/api/models/UserModels';
+export { UserFriends, RecentVisitor } from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
 

@@ -1,7 +1,5 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, UserApi, UserFriends } from 'base_common';
+import { BaseVM, RecentVisitor, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
-import { JSON } from '@kit.ArkTS';
 
 const TAG = '[FansPageVM]: '
 
@@ -9,6 +7,7 @@ const TAG = '[FansPageVM]: '
 export class FansPageVM extends BaseVM {
   @Trace isHideTitleBar: boolean = false;
   @Trace currentFansTabIndex: number = 0;
+  @Trace currentFriendsPage: number = 1;
   @Trace isFansTabRefreshing: boolean = false;
   @Trace fansTabScroller: Scroller = new Scroller();
   @Trace fansPageTabController: TabsController = new TabsController();
@@ -18,18 +17,22 @@ export class FansPageVM extends BaseVM {
   ];
   @Trace recommendList: Record<string, string>[] = [];
   @Trace friendsList: UserFriends[] = [];
-  @Trace visitorsList: Record<string, string>[] = [];
+  @Trace visitorsList: RecentVisitor[] = [];
 
-  async loadData(): Promise<void> {
+  async loadData() {
     try {
-      this.friendsList = await UserApi.getUserFriends();
-      LogUtil.info(TAG, JSON.stringify(this.friendsList));
+      this.friendsList = await UserApi.getUserFriends(this.currentFriendsPage);
+      this.visitorsList = await UserApi.getUserVisitors();
     } catch (error) {
-
     }
   }
 
-  async startFansPage() {
+  async refreshFansPage() {
+    await this.loadData();
+    this.isFansTabRefreshing = false;
+  }
+
+  async startFansPage(param: string) {
     await this.loadData();
   }
 

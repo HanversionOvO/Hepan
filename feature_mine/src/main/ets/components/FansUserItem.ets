@@ -1,13 +1,23 @@
 import { CommonConstant } from 'base_common';
+import { CustomBadge } from 'base_ui';
 
 export enum FansUserItemType {
   CARD,
   LIST
 }
 
+export interface FansUserItems {
+  uid: number;
+  username: string;
+  signature?: ResourceStr;
+  avatar: string;
+  level?: string;
+  date: number;
+}
+
 @ComponentV2
 export struct FansUserItem {
-  @Param index: number = 0;
+  @Param @Require user: FansUserItems;
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
 
   build() {
@@ -45,32 +55,54 @@ export struct FansUserItem {
     } else {
       Row() {
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-          Image($r('sys.symbol.person'))
-            .fontSize(CommonConstant.IconSizeLarge)
-            .fontColor([$r('sys.color.font_tertiary')])
-            .borderRadius(CommonConstants.ComponentRadiusRound)
-          Column({ space: CommonConstants.ComponentInnerPadding / 2 }) {
-            Text(`用户 ${this.index + 1}`)
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('sys.color.font_primary'))
-            Text("保持热爱，奔赴山海")
-              .fontSize(CommonConstants.PageTextSmall)
-              .fontColor($r('sys.color.font_secondary'))
-            Text("在线")
-              .fontSize(CommonConstants.PageTextTiny)
+          Image(this.user.avatar)
+            .height(CommonConstant.IconSizeLarge)
+            .width(CommonConstant.IconSizeLarge)
+            .borderRadius(CommonConstant.RadiusRound)
+            .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+              Text(this.user.username)
+                .fontWeight(FontWeight.Medium)
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor($r('sys.color.font_primary'))
+
+              if (this.user.level) {
+                CustomBadge({
+                  text: this.user.level,
+                  fontSize: CommonConstant.TextSizeUltraTiny,
+                  bgColor: CommonConstant.ThemeColor,
+                  textColor: $r('sys.color.font_on_primary'),
+                  badgeBorderRadius: CommonConstant.RadiusTiny,
+                  paddingLR: CommonConstant.SmallContainerInnerPadding,
+                  paddingTB: CommonConstant.SmallContainerInnerPadding
+                })
+              }
+            }
+
+            if (this.user.signature) {
+              Text(this.user.signature)
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor($r('sys.color.font_secondary'))
+                .maxLines(1)
+            }
+
+            Text(this.user.date.toString())
+              .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_tertiary'))
           }.alignItems(HorizontalAlign.Start)
         }
-
-        GlassButton({
-          text: $r('app.string.subscribed')
-        })
       }
-      .width("100%")
-      .padding(CommonConstants.ComponentWithinPadding)
-      .backgroundColor($r('app.color.background_secondary'))
-      .borderRadius(CommonConstants.ComponentRadiusNormal)
-      .justifyContent(FlexAlign.SpaceBetween)
+      .width(CommonConstant.FullPercent)
+      .padding({
+        left: CommonConstant.NormalContainerLRPadding,
+        right: CommonConstant.NormalContainerLRPadding,
+        top: CommonConstant.NormalContainerTBPadding,
+        bottom: CommonConstant.NormalContainerTBPadding,
+      })
+      .backgroundColor($r('app.color.second_window_background'))
+      .borderRadius(CommonConstant.RadiusLarge)
+      .justifyContent(FlexAlign.Start)
     }
   }
 }

@@ -1,6 +1,7 @@
 import { CommonConstant, RouterUtil, TransitionMap, VMManager } from 'base_common';
 import { FloatButton } from 'base_ui';
 import { FansTitleBar } from '../components/FansTitleBar';
+import { FansUserSection } from '../components/FansUserSection';
 import { FansPageVM } from '../viewmodels/FansPageVM';
 
 @ComponentV2
@@ -15,13 +16,17 @@ export struct FansPage {
 
           Tabs({ controller: this.vm.fansPageTabController, index: this.vm.currentFansTabIndex }) {
             TabContent() {
-              Text("Content1")
+              FansUserSection({ vm: this.vm, isFollowList: true })
             }
 
             TabContent() {
-              Text("Content2")
+              FansUserSection({ vm: this.vm, isFollowList: false })
             }
           }
+          .padding({
+            left: CommonConstant.PageLRPadding,
+            right: CommonConstant.PageLRPadding,
+          })
           .width(CommonConstant.FullPercent)
           .height(CommonConstant.FullPercent)
           .barHeight(0)
@@ -58,8 +63,18 @@ export struct FansPage {
     }
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
+    .onReady(async (context: NavDestinationContext) => {
+      const params = context.pathInfo.param as Record<string, Object>;
+      if (params) {
+        if (params["tab"] === 'visitor') {
+          this.vm.currentFansTabIndex = 1
+        } else {
+          this.vm.currentFansTabIndex = 0
+        }
+      }
+    })
     .onShown(async () => {
-      await this.vm.startFansPage();
+      await this.vm.loadData();
     })
   }
 }

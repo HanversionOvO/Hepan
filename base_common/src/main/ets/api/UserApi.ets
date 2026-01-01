@@ -3,6 +3,7 @@ import {
   BaseResponse,
   FriendUser,
   PaginationData,
+  RecentVisitor,
   UserFriends,
   UserProfileData,
   UserSummary
@@ -88,8 +89,7 @@ export class UserApi {
    * @param uid 用户ID，传 'me' 代表当前登录用户
    * @throws Error 当网络请求失败或业务码不为0时抛出
    */
-  public static async getUserFriends(page: number = 1, user_summary: boolean = true,
-    visitors: boolean = true): Promise<UserFriends[]> {
+  public static async getUserFriends(page: number = 1): Promise<UserFriends[]> {
     const path = `/_/user/me/friends?page=${page}&user_summary`;
     const userFriends: UserFriends[] = [];
 
@@ -105,20 +105,60 @@ export class UserApi {
         // 在这里进行详情获取
         let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid);
 
+        LogUtil.debug(TAG, friendProfile.signature)
+
         // 组装数据并返回
         let friendData: UserFriends = {
           uid: friend.uid,
           username: friend.username,
-          signature: friendProfile.signature ?? $r('app.string.UserApi_no_signature'),
+          signature: friendProfile.signature === "" ? $r('app.string.UserApi_no_signature') : friendProfile.signature!,
           avatar: UserAvatarUtil.getAvatarUrl(friend.uid),
           level: friendProfile.user_summary?.group_title!,
-          last_visit: friendProfile.last_visit!
+          last_visit: friendProfile.last_visit
         };
         return friendData;
       });
 
       const userFriends = await Promise.all(tasks);
       return userFriends;
+    } else {
+      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  /**
+   * 获取用户访客
+   * 包含摘要、详细信息(邮箱/签名等)以及最近访客
+   * @param uid 用户ID，传 'me' 代表当前登录用户
+   * @throws Error 当网络请求失败或业务码不为0时抛出
+   */
+  public static async getUserVisitors(): Promise<RecentVisitor[]> {
+    const path = `/_/user/me/profile?visitors=1`;
+    const recentVisitors: RecentVisitor[] = [];
+
+    const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data &&
+    response.data.data.recent_visitors) {
+      response.data.data.recent_visitors.forEach((visitor: RecentVisitor) => {
+        let visitor_map: RecentVisitor = {
+          uid: visitor.uid,
+          username: visitor.username,
+          avatar: UserAvatarUtil.getAvatarUrl(visitor.uid),
+          dateline: visitor.dateline
+        }
+
+        recentVisitors.push(visitor_map);
+      })
+
+      return recentVisitors;
     } else {
       const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);

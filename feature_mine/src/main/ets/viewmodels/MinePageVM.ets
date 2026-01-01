@@ -64,12 +64,15 @@ export class MinePageVM extends BaseVM {
         label: $r("app.string.MinePage_friends"),
         count: summary.friends,
         onClick: () => {
-          RouterUtil.pushPathByName(RouterMap.FANS);
+          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "fan" } as Record<string, Object>);
         }
       });
       this.userStats.push({
         label: $r("app.string.MinePage_views"),
-        count: summary.views
+        count: summary.views,
+        onClick: () => {
+          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "visitor" } as Record<string, Object>);
+        }
       });
       this.userStats.push({
         label: $r("app.string.MinePage_online_time"),

@@ -5,3 +5,5 @@ export { CustomTabItem, CustomTabBar } from './src/main/ets/components/CustomTab
 export { FloatButton } from './src/main/ets/components/FloatButton';
 
 export { CustomSearch } from './src/main/ets/components/CustomSearch';
+
+export { CustomBadge } from './src/main/ets/components/CustomBadage';
