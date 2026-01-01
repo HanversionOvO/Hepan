@@ -35,8 +35,7 @@ export struct UserPostArea {
       const yOffset = this.listScrollers[index - 1].currentOffset().yOffset;
       if (yOffset > 0 && !this.vm.isTabBarGlass) {
         this.vm.isTabBarGlass = true;
-      }
-      else if (yOffset <= 0 && this.vm.isTabBarGlass) {
+      } else if (yOffset <= 0 && this.vm.isTabBarGlass) {
         this.vm.isTabBarGlass = false;
       }
     })
@@ -84,8 +83,8 @@ export struct UserPostArea {
     .constraintSize(
       {
         maxHeight: this.vm.window.windowHeight -
-          CommonConstant.TopBarHeight -
-          this.vm.window.windowTopPadding
+        CommonConstant.TopBarHeight -
+        this.vm.window.windowTopPadding
       }
     )
     .backgroundColor($r('app.color.start_window_background'))
@@ -95,8 +94,8 @@ export struct UserPostArea {
       top: CommonConstant.NormalContainerTBPadding,
     })
     .borderRadius({
-      topLeft: this.vm.isSticky ? 0 : CommonConstant.RadiusNormal,
-      topRight: this.vm.isSticky ? 0 : CommonConstant.RadiusNormal,
+      topLeft: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
+      topRight: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
     })
     .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
