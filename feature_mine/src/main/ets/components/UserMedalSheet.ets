@@ -1,5 +1,5 @@
 import { LottieView } from '@ohos/lottie-turbo';
-import { ResUtil } from '@pura/harmony-utils';
+import { AppUtil, ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, ToastUtil } from 'base_common';
 import { Medal } from 'base_common/src/main/ets/api/models/UserModels';
 import { MinePageVM } from '../viewmodels/MinePageVM';
@@ -13,55 +13,77 @@ export function userMedalSheetBuilder(vm: MinePageVM) {
 struct UserMedalSheet {
   @Param @Require vm: MinePageVM;
   @Local selectedMedal: Medal | null = null;
-  // 修正 BASE_URL
+  // 新增：控制预览区是否为紧凑模式
+  @Local isCompact: boolean = false;
+  // 新增：列表滚动控制器
+  @Local scroller: Scroller = new Scroller();
   private readonly BASE_URL = 'https://bbs.uestc.edu.cn/static/image/common/';
 
-  // 判断是否拥有勋章
   private isMedalOwned(medalId: number): boolean {
     return this.vm.user?.user_summary?.medals?.includes(medalId) ?? false;
   }
 
-  // 1. 初始化时尝试选中（针对有缓存的情况）
   aboutToAppear(): void {
     if (this.vm.allMedals.length > 0) {
       this.selectedMedal = this.vm.allMedals[0];
     }
   }
 
-  // 2. 监听数据变化（针对第一次加载，网络数据滞后返回的情况）
   @Monitor("vm.allMedals")
   onMedalsChange() {
-    // 如果当前没有选中勋章，且数据列表不为空，默认选中第一个
     if (this.selectedMedal === null && this.vm.allMedals.length > 0) {
       this.selectedMedal = this.vm.allMedals[0];
+    }
+  }
+
+  // 新增：处理滚动事件，参考 FansUserSection 逻辑
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      // 手指向上滑是正值（内容下移），进入紧凑模式
+      if (yOffset > CommonConstant.ScrollAnimationThreshold && !this.isCompact) {
+        AppUtil.getUIContext()
+          .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
+            () => {
+              this.isCompact = true;
+            })
+      }
+      // 手指向下滑是负值（内容上移），恢复展开模式
+      else if (yOffset < -CommonConstant.ScrollAnimationThreshold && this.isCompact) {
+        AppUtil.getUIContext()
+          .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
+            () => {
+              this.isCompact = false;
+            })
+      }
     }
   }
 
   build() {
     Column() {
       // === 上部：预览详情区 ===
-      // 使用显式动画容器，使高度变化平滑
       Column() {
         this.MedalDetailView()
       }
       .width(CommonConstant.FullPercent)
-      .padding({ bottom: CommonConstant.NormalContainerTBPadding })
-      .zIndex(1) // 保证投影在列表上方
+      // 移除原有的底部 padding，由内部布局控制
+      .padding({ bottom: this.isCompact ? 0 : CommonConstant.NormalContainerTBPadding })
+      .zIndex(1)
 
       // === 下部：勋章列表区 ===
       if (this.vm.allMedals.length === 0) {
         this.LoadingView()
       } else {
-        Grid() {
+        // 绑定 scroller
+        Grid(this.scroller) {
           ForEach(this.vm.allMedals, (medal: Medal) => {
             GridItem() {
               this.MedalGridItem(medal)
             }
             .onClick(() => {
-              // 点击切换上方预览
-              animateTo({ curve: Curve.FastOutSlowIn, duration: CommonConstant.AnimationDurationNormal }, () => {
-                this.selectedMedal = medal;
-              })
+              AppUtil.getUIContext()
+                .animateTo({ curve: Curve.FastOutSlowIn, duration: CommonConstant.AnimationDurationNormal }, () => {
+                  this.selectedMedal = medal;
+                })
             })
           }, (item: Medal) => item.id.toString())
         }
@@ -74,6 +96,18 @@ struct UserMedalSheet {
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
         .margin({ top: CommonConstant.NormalContainerTBPadding })
+        // 绑定滚动事件
+        .onWillScroll((yOffset, state) => {
+          this.handleScroll(yOffset, state);
+        })
+        // 触顶时强制展开
+        .onReachStart(() => {
+          AppUtil.getUIContext()
+            .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
+              () => {
+                this.isCompact = false;
+              })
+        })
       }
     }
     .width(CommonConstant.FullPercent)
@@ -84,95 +118,105 @@ struct UserMedalSheet {
   @Builder
   MedalDetailView() {
     if (this.selectedMedal) {
-      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        // 1. 顶部大图与光晕
+      // 增加动画属性，使高度变化更平滑
+      Column({ space: this.isCompact ? 0 : CommonConstant.NormalContainerInnerPadding }) {
+        // 1. 顶部大图与光晕 (紧凑模式下变小)
         Stack({ alignContent: Alignment.Center }) {
           Circle()
-            .width(CommonConstant.IconSizeUltraLarge * 3)
-            .height(CommonConstant.IconSizeUltraLarge * 3)
+            .width(this.isCompact ? CommonConstant.IconSizeLarge : CommonConstant.IconSizeUltraLarge * 3)
+            .height(this.isCompact ? CommonConstant.IconSizeLarge : CommonConstant.IconSizeUltraLarge * 3)
             .fill(this.isMedalOwned(this.selectedMedal.id) ? CommonConstant.ThemeColor :
               $r('app.color.glass_background'))
-            .opacity(0.1) // 淡淡的光晕背景
+            .opacity(0.1)
             .blur(20)
+            .animation({ duration: CommonConstant.AnimationDurationNormal }) // 显式动画
 
           Image(this.BASE_URL + this.selectedMedal.image_path)
-            .width(CommonConstant.IconSizeUltraLarge * 2)
-            .height(CommonConstant.IconSizeUltraLarge * 2)
+            .width(this.isCompact ? CommonConstant.IconSizeLarge : CommonConstant.IconSizeUltraLarge * 2)
+            .height(this.isCompact ? CommonConstant.IconSizeLarge : CommonConstant.IconSizeUltraLarge * 2)
             .objectFit(ImageFit.Contain)
+            .animation({ duration: CommonConstant.AnimationDurationNormal }) // 显式动画
         }
         .margin({ top: CommonConstant.NormalContainerTBPadding })
 
         // 2. 基本信息
         Text(this.selectedMedal.name)
-          .fontSize(CommonConstant.TextSizeLarge)
+          .fontSize(this.isCompact ? CommonConstant.TextSizeNormal : CommonConstant.TextSizeLarge)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('sys.color.font_primary'))
-
-        Text(this.selectedMedal.description || $r('app.string.MinePage_medal_no_desc'))
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontColor($r('sys.color.font_secondary'))
-          .textAlign(TextAlign.Center)
-          .maxLines(2)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-        // 3. 属性标签
-        Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-          this.InfoTag($r('sys.symbol.drop'),
-            this.selectedMedal.price > 0 ? `${this.selectedMedal.price}` : $r('app.string.MinePage_medal_cant_buy'))
-
-          if (this.selectedMedal.expiration_days > 0) {
-            this.InfoTag($r('sys.symbol.clock'),
-              `${this.selectedMedal.expiration_days}${ResUtil.getStringSync($r('app.string.MinePage_medal_day'))}`)
-          }
-        }
-
-        // 4. 操作按钮
-        // 只有查看自己主页时，且未拥有时，才显示购买
-        if (this.vm.isMe && !this.isMedalOwned(this.selectedMedal.id)) {
-          Button() {
-            Text($r('app.string.MinePage_medal_buy'))
-              .fontSize(CommonConstant.TextSizeNormal)
-              .fontColor(Color.White)
-              .fontWeight(FontWeight.Medium)
-          }
-          .type(ButtonType.Capsule)
-          .backgroundColor(CommonConstant.ThemeColor)
           .margin({
-            top: CommonConstant.NormalContainerInnerPadding
+            top: this.isCompact ? CommonConstant.NormalContainerTBPadding : 0,
+            bottom: this.isCompact ? CommonConstant.NormalContainerTBPadding : 0
           })
-          .width('50%')
-          .height(CommonConstant.IconSizeLarge)
-          .onClick(() => {
-            ToastUtil.showToast("购买功能开发中");
-          })
-        } else if (this.isMedalOwned(this.selectedMedal.id)) {
-          // 已拥有状态展示
-          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-            SymbolGlyph($r('sys.symbol.checkmark_circle'))
-              .fontColor([CommonConstant.ThemeColor])
-              .fontSize(CommonConstant.TextSizeSmall)
-            Text($r('app.string.MinePage_medal_has'))
-              .fontColor(CommonConstant.ThemeColor)
-              .fontSize(CommonConstant.TextSizeSmall)
+
+        // 3. 详细信息区 (描述、标签、按钮) - 紧凑模式下隐藏
+        if (!this.isCompact) {
+          Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+            Text(this.selectedMedal.description || $r('app.string.MinePage_medal_no_desc'))
+              .fontSize(CommonConstant.TextSizeNormal)
+              .fontColor($r('sys.color.font_secondary'))
+              .textAlign(TextAlign.Center)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+              this.InfoTag($r('sys.symbol.drop'),
+                this.selectedMedal.price > 0 ? `${this.selectedMedal.price}` : $r('app.string.MinePage_medal_cant_buy'))
+
+              if (this.selectedMedal.expiration_days > 0) {
+                this.InfoTag($r('sys.symbol.clock'),
+                  `${this.selectedMedal.expiration_days}${ResUtil.getStringSync($r('app.string.MinePage_medal_day'))}`)
+              }
+            }
+            .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+
+            // 操作按钮
+            if (this.vm.isMe && !this.isMedalOwned(this.selectedMedal.id)) {
+              Button() {
+                Text($r('app.string.MinePage_medal_buy'))
+                  .fontSize(CommonConstant.TextSizeNormal)
+                  .fontColor(Color.White)
+                  .fontWeight(FontWeight.Medium)
+              }
+              .type(ButtonType.Capsule)
+              .backgroundColor(CommonConstant.ThemeColor)
+              .width('50%')
+              .height(CommonConstant.IconSizeLarge)
+              .onClick(() => {
+                ToastUtil.showToast("购买功能开发中");
+              })
+              .transition(TransitionEffect.move(TransitionEdge.BOTTOM).combine(TransitionEffect.OPACITY))
+            } else if (this.isMedalOwned(this.selectedMedal.id)) {
+              Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+                SymbolGlyph($r('sys.symbol.checkmark_circle'))
+                  .fontColor([CommonConstant.ThemeColor])
+                  .fontSize(CommonConstant.TextSizeSmall)
+                Text($r('app.string.MinePage_medal_has'))
+                  .fontColor(CommonConstant.ThemeColor)
+                  .fontSize(CommonConstant.TextSizeSmall)
+              }
+              .padding({
+                top: CommonConstant.SmallContainerTBPadding,
+                bottom: CommonConstant.SmallContainerTBPadding,
+                left: CommonConstant.SmallContainerLRPadding,
+                right: CommonConstant.SmallContainerLRPadding
+              })
+              .backgroundColor($r('app.color.glass_background'))
+              .borderRadius(CommonConstant.RadiusRound)
+              .transition(TransitionEffect.OPACITY)
+            }
           }
-          .margin({ top: CommonConstant.NormalContainerInnerPadding })
-          .padding({
-            top: CommonConstant.SmallContainerTBPadding,
-            bottom: CommonConstant.SmallContainerTBPadding,
-            left: CommonConstant.SmallContainerLRPadding,
-            right: CommonConstant.SmallContainerLRPadding
-          })
-          .backgroundColor($r('app.color.glass_background'))
-          .borderRadius(CommonConstant.RadiusRound)
+          .width(CommonConstant.FullPercent)
+          .alignItems(HorizontalAlign.Center)
         }
       }
       .width(CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Center)
-      .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+      .animation({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.FastOutSlowIn }) // 容器高度变化的平滑动画
     }
   }
 
-  // --- 列表加载中视图 ---
   @Builder
   LoadingView() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -190,11 +234,9 @@ struct UserMedalSheet {
     .justifyContent(FlexAlign.Center)
   }
 
-  // --- 网格单项视图 ---
   @Builder
   MedalGridItem(medal: Medal) {
     Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-      // 图片容器
       Stack({ alignContent: Alignment.Center }) {
         Image(this.BASE_URL + medal.image_path)
           .width(CommonConstant.IconSizeLarge)
@@ -207,12 +249,10 @@ struct UserMedalSheet {
       .height(CommonConstant.IconSizeLarge * 2)
       .backgroundColor($r('app.color.glass_background'))
       .borderRadius(CommonConstant.RadiusNormal)
-      // 选中态：加粗边框
       .border({
         width: this.selectedMedal?.id === medal.id ? CommonConstant.BorderSizeLarge : 0,
         color: this.selectedMedal?.id === medal.id ? CommonConstant.ThemeColor : Color.Transparent
       })
-      // 动画效果
       .scale({
         x: this.selectedMedal?.id === medal.id ? 1.05 : 1.0,
         y: this.selectedMedal?.id === medal.id ? 1.05 : 1.0
@@ -221,7 +261,6 @@ struct UserMedalSheet {
 
       Text(medal.name)
         .fontSize(CommonConstant.TextSizeTiny)
-        // 已拥有的文字深色，未拥有的浅色
         .fontColor(this.isMedalOwned(medal.id) ? $r('sys.color.font_secondary') : $r('sys.color.font_tertiary'))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -231,7 +270,6 @@ struct UserMedalSheet {
     .alignItems(HorizontalAlign.Center)
   }
 
-  // --- 通用标签组件 ---
   @Builder
   InfoTag(icon: Resource, text: ResourceStr) {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
