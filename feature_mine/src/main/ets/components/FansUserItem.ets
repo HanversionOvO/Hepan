@@ -1,5 +1,5 @@
 import { CommonConstant, DateUtil, InterestingUser } from 'base_common';
-import { CustomBadge } from 'base_ui';
+import { CustomBadge, GlassButton } from 'base_ui';
 
 export enum FansUserItemType {
   CARD,
@@ -21,6 +21,9 @@ export struct FansUserItem {
   @Param user: FansUserItems | undefined = undefined;
   @Param recommendUser: InterestingUser | undefined = undefined;
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
+  @Param isShowDeleteButton: boolean = false;
+  @Param deleteFriends: () => void = () => {
+  };
 
   build() {
     if (this.type === FansUserItemType.CARD && this.recommendUser) {
@@ -106,6 +109,18 @@ export struct FansUserItem {
               .fontColor($r('sys.color.font_tertiary'))
           }.alignItems(HorizontalAlign.Start)
         }
+
+        if (this.isShowDeleteButton) {
+          GlassButton({
+            text: $r('app.string.FansUserItem_delete_friend'),
+            innerFontSize: CommonConstant.TextSizeSmall
+          })
+            .onClick(() => {
+              if (this.deleteFriends) {
+                this.deleteFriends();
+              }
+            })
+        }
       }
       .width(CommonConstant.FullPercent)
       .padding({
@@ -116,7 +131,7 @@ export struct FansUserItem {
       })
       .backgroundColor($r('app.color.second_window_background'))
       .borderRadius(CommonConstant.RadiusLarge)
-      .justifyContent(FlexAlign.Start)
+      .justifyContent(FlexAlign.SpaceBetween)
     }
   }
 }

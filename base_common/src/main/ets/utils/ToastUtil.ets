@@ -45,7 +45,7 @@ interface ToastIcon {
 
 @Builder
 function CommonToastBuilder(params: ToastParams) {
-  Column() { // 移除 space，改由内部 Padding 控制布局，以消除顶部间隙
+  Column() {
     // 1. 顶部图标区域 (Header)
     Stack({ alignContent: Alignment.Center }) {
       // 背景层：填充并设置透明度
@@ -101,7 +101,7 @@ function CommonToastBuilder(params: ToastParams) {
     .edgeEffect(EdgeEffect.Spring) // 添加回弹效果优化体验
 
     // 3. 按钮区域 (Footer)
-    Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+    Row({ space: CommonConstant.LargeContainerInnerPadding }) {
       ToastButton({
         bgColor: $r('sys.color.font_on_tertiary'),
         fontColor: $r('sys.color.font_secondary'),
@@ -121,8 +121,8 @@ function CommonToastBuilder(params: ToastParams) {
     .padding({
       left: CommonConstant.NormalContainerLRPadding,
       right: CommonConstant.NormalContainerLRPadding,
+      top: CommonConstant.NormalContainerTBPadding,
       bottom: CommonConstant.NormalContainerTBPadding,
-      // 顶部留一点间距，或者由 Scroll 的 padding.bottom 处理
     })
     .width(CommonConstant.FullPercent)
     .flexShrink(0) // 防止被压缩

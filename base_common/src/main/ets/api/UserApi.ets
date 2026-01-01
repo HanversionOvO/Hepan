@@ -220,4 +220,24 @@ export class UserApi {
       throw new Error(errorMsg);
     }
   }
+
+  // 删除好友
+  public static async deleteFriend(uid: number): Promise<boolean> {
+    const path = `/_/user/friend/${uid}`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+      path: path,
+      method: http.RequestMethod.DELETE,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      return true;
+    } else {
+      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
 }

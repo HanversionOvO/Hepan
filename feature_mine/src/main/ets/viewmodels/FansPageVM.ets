@@ -1,5 +1,5 @@
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { BaseVM, CommonConstant, InterestingUser, RecentVisitor, UserApi, UserFriends } from 'base_common';
+import { AppUtil, LogUtil, ResUtil } from '@pura/harmony-utils';
+import { BaseVM, CommonConstant, InterestingUser, RecentVisitor, ToastUtil, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
 const TAG = '[FansPageVM]: '
@@ -90,6 +90,19 @@ export class FansPageVM extends BaseVM {
       }
     } catch (error) {
     }
+  }
+
+  async deleteFriend(uid: number, username: string) {
+    ToastUtil.showInfo(`${ResUtil.getStringSync($r('app.string.FansUserItem_is_delete_friend'))} ${username}`, true,
+      $r('app.string.FansUserItem_delete_friend'), async () => {
+        const result: boolean = await UserApi.deleteFriend(uid);
+
+        if (result) {
+          ToastUtil.showSuccess(`${ResUtil.getStringSync($r('app.string.FansUserItem_delete_friend_success'))} ${username}`)
+        }
+      });
+
+    await this.refreshFansPage();
   }
 
   changeFansTab(index: number) {

@@ -77,6 +77,10 @@ export struct FansUserSection {
                     signature: friend.signature,
                     level: friend.level,
                     date: friend.last_visit
+                  },
+                  isShowDeleteButton: true,
+                  deleteFriends: () => {
+                    this.vm.deleteFriend(friend.uid, friend.username);
                   }
                 })
               }

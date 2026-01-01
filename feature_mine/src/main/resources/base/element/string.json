@@ -159,6 +159,18 @@
     {
       "name": "FansUserItem_no_friends",
       "value": "快去和河畔星人建立连接吧！"
+    },
+    {
+      "name": "FansUserItem_delete_friend",
+      "value": "删除好友"
+    },
+    {
+      "name": "FansUserItem_is_delete_friend",
+      "value": "是否删除好友"
+    },
+    {
+      "name": "FansUserItem_delete_friend_success",
+      "value": "成功删除好友"
     }
   ]
 }
