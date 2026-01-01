@@ -1,4 +1,4 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, DateUtil } from 'base_common';
 import { CustomBadge } from 'base_ui';
 
 export enum FansUserItemType {
@@ -87,7 +87,7 @@ export struct FansUserItem {
                 .maxLines(1)
             }
 
-            Text(this.user.date.toString())
+            Text(DateUtil.getRelativeTime(this.user.date))
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_tertiary'))
           }.alignItems(HorizontalAlign.Start)

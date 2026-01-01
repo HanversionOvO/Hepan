@@ -28,7 +28,7 @@ export struct FansPage {
             right: CommonConstant.PageLRPadding,
           })
           .width(CommonConstant.FullPercent)
-          .height(CommonConstant.FullPercent)
+          .layoutWeight(1)
           .barHeight(0)
           .scrollable(false)
         }

@@ -15,6 +15,26 @@
     {
       "name": "UserApi_no_signature",
       "value": "这个人很懒，没有签名哦~"
+    },
+    {
+      "name": "DateUtil_justnow",
+      "value": "刚刚"
+    },
+    {
+      "name": "DateUtil_second_before",
+      "value": "秒前"
+    },
+    {
+      "name": "DateUtil_min_before",
+      "value": "分钟前"
+    },
+    {
+      "name": "DateUtil_hour_before",
+      "value": "小时前"
+    },
+    {
+      "name": "DateUtil_day_before",
+      "value": "天前"
     }
   ]
 }

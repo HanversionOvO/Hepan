@@ -18,6 +18,8 @@ export { ColorUtil, ColorVariants } from './src/main/ets/utils/ColorUtil';
 
 export { ToastShowType, ToastState, ToastOptions, ToastParams, ToastUtil } from './src/main/ets/utils/ToastUtil';
 
+export { DateUtil } from './src/main/ets/utils/DateUtil';
+
 export { BaseVM, UiState } from './src/main/ets/viewmodels/BaseVM';
 
 export { CommonConstant } from './src/main/ets/constants/CommonConstant';
