@@ -1,5 +1,5 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, RouterMap, RouterUtil, StorageManager, UserApi } from 'base_common';
+import { BaseVM, RouterMap, RouterUtil, UserApi } from 'base_common';
 import { UserProfileData } from 'base_common/src/main/ets/api/models/UserModels';
 import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
@@ -16,7 +16,7 @@ export class MinePageVM extends BaseVM {
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
-  @Trace user: UserProfileData | null = StorageManager.userModel.userProfile;
+  @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
   @Trace userPostTabItems: CustomTabItem[] = [
@@ -36,14 +36,7 @@ export class MinePageVM extends BaseVM {
       const fullProfile = await UserApi.getFullUserProfile('me');
 
       if (fullProfile && fullProfile.user_summary) {
-        // 1. 更新完整的 Profile 数据 (给 this.user 使用)
-        StorageManager.userModel.setUserProfile(fullProfile);
-
-        // 2. 更新全局状态 (StorageManager 会处理持久化)
-        StorageManager.userModel.setUserSummary(fullProfile.user_summary);
-
-        // 3. 更新当前 ViewModel 状态
-        this.user = StorageManager.userModel.userProfile;
+        this.user = fullProfile;
 
         // 4. 刷新界面数据
         this.refreshDisplayData();
@@ -168,7 +161,9 @@ export class MinePageVM extends BaseVM {
   }
 
   private formatDate(timestamp: number): string {
-    if (!timestamp) return '';
+    if (!timestamp) {
+      return '';
+    }
     try {
       const date = new Date(timestamp * 1000);
       return date.toLocaleString(); // 或使用自定义格式逻辑

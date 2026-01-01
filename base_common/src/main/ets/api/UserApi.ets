@@ -1,7 +1,15 @@
 import { ApiClient } from './ApiClient';
-import { BaseResponse, FriendUser, PaginationData, UserProfileData } from './models/UserModels';
+import {
+  BaseResponse,
+  FriendUser,
+  PaginationData,
+  UserFriends,
+  UserProfileData,
+  UserSummary
+} from './models/UserModels';
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
+import { UserAvatarUtil } from '../utils/UserAvatarUtil';
 
 const TAG = '[UserApi]: ';
 
@@ -23,12 +31,12 @@ export class UserApi {
    * @param uid 用户ID
    * @throws Error 当网络请求失败或业务码不为0时抛出
    */
-  public static async getUserProfile(uid: number): Promise<UserProfileData> {
+  public static async getUserProfile(uid: number): Promise<UserSummary> {
     // 构造请求路径
     const path = `/_/user/${uid}/profile?user_summary=1`;
 
     // 直接调用 ApiClient，不包裹 try-catch，让底层错误（如 401、网络超时）冒泡给 ViewModel
-    const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<UserSummary>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
@@ -81,10 +89,11 @@ export class UserApi {
    * @throws Error 当网络请求失败或业务码不为0时抛出
    */
   public static async getUserFriends(page: number = 1, user_summary: boolean = true,
-    visitors: boolean = true): Promise<FriendUser[]> {
+    visitors: boolean = true): Promise<UserFriends[]> {
     const path = `/_/user/me/friends?page=${page}&user_summary`;
+    const userFriends: UserFriends[] = [];
 
-    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<FriendUser>>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFriends>>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
@@ -92,7 +101,21 @@ export class UserApi {
     });
 
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      return response.data.data.rows;
+      response.data.data.rows.forEach(async (friend: FriendUser) => {
+        let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid);
+        let friendData: UserFriends = {
+          uid: friend.uid,
+          username: friend.username,
+          signature: friendProfile.signature || $r('app.string.UserApi_no_signature'),
+          avatar: UserAvatarUtil.getAvatarUrl(friend.uid),
+          level: friendProfile.user_summary?.group_title!,
+          last_visit: friendProfile.last_visit!
+        }
+
+        userFriends.push(friendData);
+      })
+
+      return userFriends;
     } else {
       const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);

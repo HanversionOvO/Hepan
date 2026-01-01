@@ -1,6 +1,5 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, UserApi } from 'base_common';
-import { FriendUser } from 'base_common/src/main/ets/api/models/UserModels';
+import { BaseVM, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 import { JSON } from '@kit.ArkTS';
 
@@ -18,13 +17,13 @@ export class FansPageVM extends BaseVM {
     { label: $r('app.string.FansPage_visitor'), icon: $r('sys.symbol.person_2') },
   ];
   @Trace recommendList: Record<string, string>[] = [];
-  @Trace friendsList: FriendUser[] = [];
+  @Trace friendsList: UserFriends[] = [];
   @Trace visitorsList: Record<string, string>[] = [];
 
   async loadData(): Promise<void> {
     try {
       this.friendsList = await UserApi.getUserFriends();
-      LogUtil.info(TAG, JSON.stringify(this.friendsList))
+      LogUtil.info(TAG, JSON.stringify(this.friendsList));
     } catch (error) {
 
     }

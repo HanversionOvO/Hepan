@@ -17,7 +17,7 @@ export interface PaginationData<T> {
   total: number;
   page_size: number;
   page: number;
-  rows: T[];
+  rows: FriendUser[];
   hidden?: boolean; // 部分接口（如好友、留言板）可能包含此字段
 }
 
@@ -89,6 +89,7 @@ export interface UserProfileData {
   last_ip?: string; // 最后IP (敏感信息)
 }
 
+
 // ==========================================
 // 好友 (Friends) 相关
 // ==========================================
@@ -124,6 +125,15 @@ export interface FriendUser {
 
   // 好友列表特有字段
   latest_thread?: SimpleThreadInfo;
+}
+
+export interface UserFriends {
+  uid: number;
+  username: string;
+  signature: ResourceStr;
+  avatar: string;
+  level: string;
+  last_visit: number;
 }
 
 /**

@@ -1,7 +1,5 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, RouterMap, RouterUtil, StorageManager, ToastUtil, UserApi } from 'base_common';
+import { BaseVM, StorageManager } from 'base_common';
 import { HomeNavBarItem } from '../components/HomeNavBar';
-import { JSON } from '@kit.ArkTS';
 
 const TAG = '[HomePageVM]: ';
 
