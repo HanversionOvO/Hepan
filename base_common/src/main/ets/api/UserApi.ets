@@ -61,9 +61,9 @@ export class UserApi {
    * @param uid 用户ID，传 'me' 代表当前登录用户
    * @throws Error 当网络请求失败或业务码不为0时抛出
    */
-  public static async getFullUserProfile(uid: number | 'me'): Promise<UserProfileData> {
+  public static async getFullUserProfile(uid: number | 'me', hideVisit: boolean = false): Promise<UserProfileData> {
     const idStr = uid === 'me' ? 'me' : uid.toString();
-    const path = `/_/user/${idStr}/profile?user_summary=1&visitors=1`;
+    const path = `/_/user/${idStr}/profile?user_summary=1&visitors=1${hideVisit ? '&additional=removevlog' : ''}`;
 
     LogUtil.info(TAG, `Fetching full profile for: ${idStr}`);
 
@@ -103,9 +103,7 @@ export class UserApi {
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
       const tasks = response.data.data.rows.map(async (friend: FriendUser) => {
         // 在这里进行详情获取
-        let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid);
-
-        LogUtil.debug(TAG, friendProfile.signature)
+        let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid, true);
 
         // 组装数据并返回
         let friendData: UserFriends = {
