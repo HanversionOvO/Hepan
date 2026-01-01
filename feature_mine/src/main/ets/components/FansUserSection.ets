@@ -1,4 +1,12 @@
-import { BreakpointType, CommonConstant, InterestingUser, RecentVisitor, UserFriends } from 'base_common';
+import {
+  BreakpointType,
+  CommonConstant,
+  InterestingUser,
+  RecentVisitor,
+  RouterMap,
+  RouterUtil,
+  UserFriends
+} from 'base_common';
 import { StateLayout } from 'base_ui';
 import { FansPageVM } from '../viewmodels/FansPageVM';
 import { FansUserItem, FansUserItemType } from './FansUserItem';
@@ -7,7 +15,6 @@ import { FansUserItem, FansUserItemType } from './FansUserItem';
 export struct FansUserSection {
   @Param @Require vm: FansPageVM;
   @Param isFollowList: boolean = false;
-  // 修改点1：在组件内部定义独立的 Scroller，不使用 VM 中的共享 Scroller
   @Local scroller: Scroller = new Scroller();
   @Local lanesOptions: BreakpointType<number> = new BreakpointType<number>({
     sm: 1,
@@ -43,7 +50,6 @@ export struct FansUserSection {
           this.vm.loadData(true);
         }
       }) {
-        // 修改点2：绑定本地的 scroller
         Grid(this.scroller) {
           // 1. 关注列表顶部横向卡片
           if (this.isFollowList) {
@@ -53,6 +59,10 @@ export struct FansUserSection {
                   ListItem() {
                     FansUserItem({ recommendUser: recommendUser, type: FansUserItemType.CARD })
                   }
+                  // 点击推荐用户也可以跳转到详情页
+                  .onClick(() => {
+                    RouterUtil.pushPathByName(RouterMap.USER_PROFILE, recommendUser.uid);
+                  })
                 })
               }
               .width(CommonConstant.FullPercent)
@@ -66,7 +76,6 @@ export struct FansUserSection {
 
           // 2. 列表主体
           if (this.isFollowList) {
-            // 建议添加 key 生成函数以提高性能，这里假设 friend.uid 是唯一的
             ForEach(this.vm.friendsList, (friend: UserFriends) => {
               GridItem() {
                 FansUserItem({
@@ -78,13 +87,18 @@ export struct FansUserSection {
                     level: friend.level,
                     date: friend.last_visit
                   },
-                  isShowDeleteButton: true,
+                  // 关键修改：只有当前是查看自己的主页时 (isMe)，才显示删除按钮
+                  isShowDeleteButton: this.vm.isMe,
                   deleteFriends: () => {
                     this.vm.deleteFriend(friend.uid, friend.username);
                   }
                 })
               }
-            }, (friend: UserFriends) => friend.uid.toString()) // 建议添加 key
+              .onClick(() => {
+                // 点击好友头像/信息跳转到用户主页
+                RouterUtil.pushPathByName(RouterMap.USER_PROFILE, friend.uid);
+              })
+            }, (friend: UserFriends) => friend.uid.toString())
           } else {
             ForEach(this.vm.visitorsList, (visitor: RecentVisitor) => {
               GridItem() {
@@ -97,7 +111,11 @@ export struct FansUserSection {
                   }
                 })
               }
-            }, (visitor: RecentVisitor) => visitor.uid.toString()) // 建议添加 key
+              .onClick(() => {
+                // 点击访客头像/信息跳转到用户主页
+                RouterUtil.pushPathByName(RouterMap.USER_PROFILE, visitor.uid);
+              })
+            }, (visitor: RecentVisitor) => visitor.uid.toString())
           }
 
           // 3. 底部垫片

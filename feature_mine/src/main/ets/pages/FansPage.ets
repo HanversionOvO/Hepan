@@ -67,6 +67,13 @@ export struct FansPage {
     .onReady(async (context: NavDestinationContext) => {
       const params = context.pathInfo.param as Record<string, Object>;
       if (params) {
+        // 获取传递的 UID，如果没有则默认为 'me'
+        if (params["uid"] !== undefined) {
+          this.vm.uid = params["uid"] as number;
+        } else {
+          this.vm.uid = 'me';
+        }
+
         if (params["tab"] === 'visitor') {
           this.vm.currentFansTabIndex = 1
         } else {

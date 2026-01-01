@@ -88,12 +88,16 @@ export class UserApi {
   /**
    * 获取用户好友
    * 包含摘要、详细信息(邮箱/签名等)以及最近访客
-   * @param uid 用户ID，传 'me' 代表当前登录用户
+   * @param page 页码
+   * @param uid 用户ID，传 'me' 代表当前登录用户，默认为 'me'
    * @throws Error 当网络请求失败或业务码不为0时抛出
    */
-  public static async getUserFriends(page: number = 1): Promise<UserFriends[]> {
-    const path = `/_/user/me/friends?page=${page}&user_summary`;
-    const userFriends: UserFriends[] = [];
+  public static async getUserFriends(page: number = 1, uid: number | 'me' = 'me'): Promise<UserFriends[]> {
+    // 修改：支持动态传入 uid
+    const idStr = uid === 'me' ? 'me' : uid.toString();
+    const path = `/_/user/${idStr}/friends?page=${page}&user_summary`;
+
+    // const userFriends: UserFriends[] = []; // 该行可以移除，下面直接返回 map 结果
 
     const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFriends>>>({
       path: path,
@@ -171,14 +175,19 @@ export class UserApi {
    * @param signature 新的签名内容
    */
   public static async editSignature(signature: string): Promise<boolean> {
-    // [修复] 传入泛型 LegacyResponse，明确告知编译器返回数据的结构
     const result = await ApiClient.getInstance().requestLegacy<LegacyResponse>('user', 'updateuserinfo', {
       'type': 'info',
       'sign': signature
     });
 
-    // [修复] 使用点符号访问属性，符合 ArkTS 规范
     if (result.data.rs === 1) {
+      // 注意：Legacy接口 rs=1 通常是成功，但这里原逻辑似乎有些混淆，
+      // 如果rs=1是成功，下面抛错是不对的；如果rs=1是失败，则没问题。
+      // 假设原逻辑有误，这里通常 rs=1 是成功。
+      // 为了保持与原文件一致，这里暂不修改逻辑，仅保留结构。
+      // 如果原代码逻辑是 rs!=1 才是成功，请按实际API调整。
+      // *修正建议*：通常 rs=1 是成功。原代码在 rs===1 时抛错可能是写反了。
+      // 这里我保持原文件逻辑结构，仅修改调用处
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);

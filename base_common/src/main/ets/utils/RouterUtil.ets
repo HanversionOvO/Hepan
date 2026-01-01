@@ -9,6 +9,7 @@ export enum RouterMap {
   HOME = 'HomePage',
   LOGIN = 'LoginPage',
   FANS = 'FansPage',
+  USER_PROFILE = 'UserProfilePage',
 }
 
 @ObservedV2
@@ -18,10 +19,10 @@ export class RouterUtil {
   ]);
 
   /**
-     * 创建新栈 (显式创建)
-     * @param stackName
-     * @param isNew 是否强制新建
-     */
+   * 创建新栈 (显式创建)
+   * @param stackName
+   * @param isNew 是否强制新建
+   */
   public static createStack(stackName: string, isNew: boolean = false): NavPathStack {
     if (isNew || !RouterUtil.stackMap.has(stackName)) {
       RouterUtil.stackMap.set(stackName, new NavPathStack());
@@ -30,9 +31,9 @@ export class RouterUtil {
   }
 
   /**
-     * 删除栈
-     * @param stackName
-     */
+   * 删除栈
+   * @param stackName
+   */
   public static deleteStack(stackName: string): void {
     if (RouterUtil.stackMap.has(stackName)) {
       RouterUtil.stackMap.delete(stackName);
@@ -42,10 +43,10 @@ export class RouterUtil {
   }
 
   /**
-     * 获取栈 (懒加载模式，确保返回实例)
-     * @param name 栈名称，默认为 MAIN
-     * @returns NavPathStack 实例
-     */
+   * 获取栈 (懒加载模式，确保返回实例)
+   * @param name 栈名称，默认为 MAIN
+   * @returns NavPathStack 实例
+   */
   public static getStack(name: string = StackEnum.MAIN): NavPathStack {
     let stack = RouterUtil.stackMap.get(name);
     // 如果不存在，自动创建并缓存
@@ -57,13 +58,13 @@ export class RouterUtil {
   }
 
   /**
-     * 跳转页面
-     * @param name 路由名称
-     * @param param 路由参数 (泛型 T)
-     * @param onPop 返回回调
-     * @param animated 是否动画
-     * @param stackName 栈名称
-     */
+   * 跳转页面
+   * @param name 路由名称
+   * @param param 路由参数 (泛型 T)
+   * @param onPop 返回回调
+   * @param animated 是否动画
+   * @param stackName 栈名称
+   */
   public static pushPathByName<T extends Object>(
     name: RouterMap | string, // 允许传入字符串以增强灵活性
     param: T | null = null,
@@ -81,8 +82,8 @@ export class RouterUtil {
   }
 
   /**
-     * 更换页面 (Replace)
-     */
+   * 更换页面 (Replace)
+   */
   public static replacePathByName<T extends Object>(
     name: RouterMap | string,
     param: T | null = null,
@@ -94,8 +95,8 @@ export class RouterUtil {
   }
 
   /**
-     * 返回上一级 (Pop)
-     */
+   * 返回上一级 (Pop)
+   */
   public static pop<T extends Object>(
     result?: T,
     animated: boolean = true,
@@ -110,8 +111,8 @@ export class RouterUtil {
   }
 
   /**
-     * 返回指定页面 (PopToName)
-     */
+   * 返回指定页面 (PopToName)
+   */
   public static popToName<T extends Object>(
     name: RouterMap | string,
     result?: T,
@@ -127,10 +128,10 @@ export class RouterUtil {
   }
 
   /**
-     * 获取路由参数
-     * @param name
-     * @returns T | null
-     */
+   * 获取路由参数
+   * @param name
+   * @returns T | null
+   */
   public static getParamByName<T>(name: RouterMap | string, stackName: string = StackEnum.MAIN): T | null {
     const stack = RouterUtil.getStack(stackName);
     const params = stack.getParamByName(name as string) as T[];
@@ -142,8 +143,8 @@ export class RouterUtil {
   }
 
   /**
-     * 清空栈
-     */
+   * 清空栈
+   */
   public static clearStack(animated?: boolean, stackName: string = StackEnum.MAIN): void {
     const stack = RouterUtil.getStack(stackName);
     stack.clear(animated);

@@ -14,6 +14,11 @@
       "name": "FansPage",
       "pageSourceFile": "src/main/ets/pages/mine/pages/FansPage.ets",
       "buildFunction": "FansPageBuilder"
+    },
+    {
+      "name": "UserProfilePage",
+      "pageSourceFile": "src/main/ets/pages/mine/pages/UserProfilePage.ets",
+      "buildFunction": "UserProfilePageBuilder"
     }
   ]
 }

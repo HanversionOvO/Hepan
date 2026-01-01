@@ -12,7 +12,6 @@ const TAG = '[MinePageVM]: '
 export class MinePageVM extends BaseVM {
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace userPostTabController: TabsController = new TabsController();
-  @Trace isMe: boolean = true;
   @Trace isSticky: boolean = false;
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
@@ -27,14 +26,26 @@ export class MinePageVM extends BaseVM {
   ]
   @Trace currentUserPostTabIndex: number = 0;
 
+  // 新增：用户ID，支持查看他人
+  @Trace uid: number | 'me' = 'me';
+
+  @Computed
+  get isMe(): boolean {
+    return this.uid === 'me';
+  }
+
+  init(uid: number | 'me') {
+    this.uid = uid;
+  }
+
   async startMine() {
     await this.refreshData();
   }
 
   async refreshData() {
     try {
-      // 1. 请求最新用户信息
-      const fullProfile = await UserApi.getFullUserProfile('me');
+      // 修改：使用 this.uid
+      const fullProfile = await UserApi.getFullUserProfile(this.uid);
 
       if (fullProfile && fullProfile.user_summary) {
         this.user = fullProfile;
@@ -46,7 +57,6 @@ export class MinePageVM extends BaseVM {
       }
     } catch (error) {
       LogUtil.error(TAG, 'Failed to fetch full user profile.', JSON.stringify(error));
-      // ApiClient 已处理 401/未登录 跳转，这里只需处理其他网络错误（如提示重试）
     }
   }
 
@@ -65,14 +75,22 @@ export class MinePageVM extends BaseVM {
         label: $r("app.string.MinePage_friends"),
         count: summary.friends,
         onClick: () => {
-          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "fan" } as Record<string, Object>);
+          // 修改：携带 uid 跳转，这样 FansPage 知道显示谁的好友
+          RouterUtil.pushPathByName(RouterMap.FANS, {
+            "tab": "fan",
+            "uid": this.uid
+          } as Record<string, Object>);
         }
       });
       this.userStats.push({
         label: $r("app.string.MinePage_views"),
         count: summary.views,
         onClick: () => {
-          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "visitor" } as Record<string, Object>);
+          // 修改：携带 uid 跳转
+          RouterUtil.pushPathByName(RouterMap.FANS, {
+            "tab": "visitor",
+            "uid": this.uid
+          } as Record<string, Object>);
         }
       });
       this.userStats.push({
@@ -96,6 +114,12 @@ export class MinePageVM extends BaseVM {
 
   // 修改签名
   async editSignature(signature: ResourceStr) {
+    // 权限校验：仅本人可修改
+    if (!this.isMe) {
+      this.isShowSignatureSheet = false;
+      return;
+    }
+
     if (!signature) {
       this.isShowSignatureSheet = false;
       return;
@@ -144,12 +168,9 @@ export class MinePageVM extends BaseVM {
 
     mapping.forEach(item => {
       const value = item.val;
-      // 检查值是否有效 (不为 null, undefined, 空字符串)
-      // 注意：数字 0 是有效值，需要保留
       if (value !== null && value !== undefined && value !== '') {
         let displayValue: string | number = value;
 
-        // 处理日期格式化
         if (item.isDate && typeof value === 'number') {
           displayValue = this.formatDate(value);
         }
@@ -170,7 +191,7 @@ export class MinePageVM extends BaseVM {
     }
     try {
       const date = new Date(timestamp * 1000);
-      return date.toLocaleString(); // 或使用自定义格式逻辑
+      return date.toLocaleString();
     } catch (e) {
       return timestamp.toString();
     }
