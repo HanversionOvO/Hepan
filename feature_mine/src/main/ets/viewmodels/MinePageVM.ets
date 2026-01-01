@@ -16,6 +16,8 @@ export class MinePageVM extends BaseVM {
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
+  // 新增：刷新状态
+  @Trace isRefreshing: boolean = false;
   @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
@@ -25,7 +27,6 @@ export class MinePageVM extends BaseVM {
     { label: $r('app.string.MinePage_mine_star'), icon: $r('sys.symbol.star') },
   ]
   @Trace currentUserPostTabIndex: number = 0;
-
   // 新增：用户ID，支持查看他人
   @Trace uid: number | 'me' = 'me';
 
@@ -44,7 +45,7 @@ export class MinePageVM extends BaseVM {
 
   async refreshData() {
     try {
-      // 修改：使用 this.uid
+      // 使用 this.uid 获取数据
       const fullProfile = await UserApi.getFullUserProfile(this.uid);
 
       if (fullProfile && fullProfile.user_summary) {
@@ -57,6 +58,9 @@ export class MinePageVM extends BaseVM {
       }
     } catch (error) {
       LogUtil.error(TAG, 'Failed to fetch full user profile.', JSON.stringify(error));
+    } finally {
+      // 新增：无论成功失败，都关闭刷新状态
+      this.isRefreshing = false;
     }
   }
 
@@ -75,7 +79,7 @@ export class MinePageVM extends BaseVM {
         label: $r("app.string.MinePage_friends"),
         count: summary.friends,
         onClick: () => {
-          // 修改：携带 uid 跳转，这样 FansPage 知道显示谁的好友
+          // 携带 uid 跳转
           RouterUtil.pushPathByName(RouterMap.FANS, {
             "tab": "fan",
             "uid": this.uid
@@ -86,7 +90,7 @@ export class MinePageVM extends BaseVM {
         label: $r("app.string.MinePage_views"),
         count: summary.views,
         onClick: () => {
-          // 修改：携带 uid 跳转
+          // 携带 uid 跳转
           RouterUtil.pushPathByName(RouterMap.FANS, {
             "tab": "visitor",
             "uid": this.uid

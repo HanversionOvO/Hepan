@@ -16,35 +16,44 @@ export struct UserProfileView {
         .backgroundColor(Color.Black)
         .opacity(0.2)
 
-      Scroll(this.vm.outerScrollScroller) {
-        Column() {
-          UserInfoArea({ vm: this.vm })
-            .padding({
-              left: CommonConstant.NormalContainerLRPadding,
-              right: CommonConstant.NormalContainerLRPadding,
-              top: CommonConstant.NormalContainerTBPadding,
-              bottom: CommonConstant.NormalContainerTBPadding
-            })
+      // 新增：使用 Refresh 包裹 Scroll
+      Refresh({ refreshing: $$this.vm.isRefreshing }) {
+        Scroll(this.vm.outerScrollScroller) {
+          Column() {
+            UserInfoArea({ vm: this.vm })
+              .padding({
+                left: CommonConstant.NormalContainerLRPadding,
+                right: CommonConstant.NormalContainerLRPadding,
+                top: CommonConstant.NormalContainerTBPadding,
+                bottom: CommonConstant.NormalContainerTBPadding
+              })
 
-          UserPostArea({ vm: this.vm })
+            UserPostArea({ vm: this.vm })
+          }
         }
+        .scrollBar(BarState.Off)
+        .height(CommonConstant.FullPercent)
+        .onReachEnd(() => {
+          if (!this.vm.isSticky) {
+            this.vm.isSticky = true;
+          }
+        })
+        .onDidScroll(() => {
+          const isAtEnd = this.vm.outerScrollScroller.isAtEnd();
+          if (this.vm.isSticky && !isAtEnd) {
+            this.vm.isSticky = false;
+          }
+          if (!this.vm.isSticky && isAtEnd) {
+            this.vm.isSticky = true;
+          }
+        })
       }
-      .scrollBar(BarState.Off)
+      .onRefreshing(() => {
+        // 触发刷新数据
+        this.vm.refreshData();
+      })
+      .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
-      .onReachEnd(() => {
-        if (!this.vm.isSticky) {
-          this.vm.isSticky = true;
-        }
-      })
-      .onDidScroll(() => {
-        const isAtEnd = this.vm.outerScrollScroller.isAtEnd();
-        if (this.vm.isSticky && !isAtEnd) {
-          this.vm.isSticky = false;
-        }
-        if (!this.vm.isSticky && isAtEnd) {
-          this.vm.isSticky = true;
-        }
-      })
 
       if (this.vm.isSticky) {
         StickyNavBar({ vm: this.vm })
