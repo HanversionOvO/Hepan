@@ -52,7 +52,7 @@ export struct FansUserSection {
       }) {
         Grid(this.scroller) {
           // 1. 关注列表顶部横向卡片
-          if (this.isFollowList) {
+          if (this.isFollowList && this.vm.recommendList.length > 0) {
             GridItem() {
               List({ space: CommonConstant.NormalContainerInnerPadding }) {
                 ForEach(this.vm.recommendList, (recommendUser: InterestingUser) => {
@@ -135,6 +135,11 @@ export struct FansUserSection {
         })
         .onReachStart(() => {
           this.vm.toggleHeader(false);
+        })
+        .onReachEnd(() => {
+          if (this.isFollowList) {
+            this.vm.loadMore();
+          }
         })
       }
     }
