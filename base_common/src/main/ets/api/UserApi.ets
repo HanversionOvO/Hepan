@@ -241,4 +241,24 @@ export class UserApi {
       throw new Error(errorMsg);
     }
   }
+
+  // 获取勋章
+  public static async getMedals(): Promise<void> {
+    const path = `/_/system/settings/medals`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      LogUtil.info(TAG, JSON.stringify(response.data.data));
+    } else {
+      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
 }
