@@ -70,6 +70,16 @@ export class CommonConstant {
   static readonly PressedDownScaleNormal: number = 0.9;
   // 滑动阈值
   static readonly ScrollAnimationThreshold: number = 2;
+  // 入场动画配置
+  static readonly CONF_TRANSITION = TransitionEffect.OPACITY
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Friction }) // 基础渐变
+    .combine(
+      TransitionEffect.translate({ y: 20 }) // 稍微向下偏移 20vp，入场时会上浮
+        .animation({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Friction })
+    );
+  // 出场动画配置
+  static readonly FADE_TRANSITION = TransitionEffect.OPACITY
+    .animation({ duration: CommonConstant.AnimationDurationFast, curve: Curve.EaseInOut });
   // 颜色相关
   // 主题颜色
   static readonly ThemeColor: string = "#FFFF2442";

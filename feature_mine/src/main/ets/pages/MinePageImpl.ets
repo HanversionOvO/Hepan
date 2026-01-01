@@ -61,6 +61,7 @@ export struct MinePageImpl {
       .backgroundBlurStyle(BlurStyle.Regular)
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
+      .transition(CommonConstant.CONF_TRANSITION)
     }
     .hideTitleBar(true)
     .mode(NavigationMode.Stack)

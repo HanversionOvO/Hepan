@@ -24,6 +24,7 @@ export struct StateLayout {
         .width(CommonConstant.FullPercent)
         .layoutWeight(1)
         .justifyContent(FlexAlign.Center)
+        .transition(CommonConstant.FADE_TRANSITION)
       }
 
       // 2. 错误状态
@@ -42,8 +43,8 @@ export struct StateLayout {
             })
             .margin({ top: 10 })
         }
-        .width('100%')
-        .height('100%')
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.Center)
       }
 
@@ -58,17 +59,22 @@ export struct StateLayout {
             .fontColor($r('sys.color.ohos_id_color_text_secondary'))
             .fontSize(14)
         }
-        .width('100%')
-        .height('100%')
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.Center)
       }
 
       // 4. 成功状态（显示实际内容）
       else if (this.uiState === UiState.SUCCESS) {
-        this.content()
+        Column() {
+          this.content()
+        }
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
+        .transition(CommonConstant.CONF_TRANSITION)
       }
     }
-    .width('100%')
-    .height('100%')
+    .width(CommonConstant.FullPercent)
+    .height(CommonConstant.FullPercent)
   }
 }
