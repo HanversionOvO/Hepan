@@ -95,12 +95,14 @@ export struct FansUserSection {
       .rowsGap(CommonConstant.NormalContainerInnerPadding)
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
-
       .onWillScroll((yOffset, scrollState) => {
         this.handleScroll(yOffset, scrollState);
       })
       .onReachStart(() => {
         this.vm.toggleHeader(false);
+      })
+      .onReachEnd(() => {
+        this.vm.loadMore();
       })
     }
     .onRefreshing(async () => {

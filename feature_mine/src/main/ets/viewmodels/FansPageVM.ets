@@ -1,4 +1,4 @@
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { AppUtil } from '@pura/harmony-utils';
 import { BaseVM, CommonConstant, InterestingUser, RecentVisitor, UserApi, UserFriends } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
@@ -22,10 +22,12 @@ export class FansPageVM extends BaseVM {
 
   async loadData() {
     try {
-      this.friendsList = await UserApi.getUserFriends(this.currentFriendsPage);
-      this.visitorsList = await UserApi.getUserVisitors();
-      this.recommendList = await UserApi.getInterestedUser();
-      LogUtil.debug(TAG, JSON.stringify(this.recommendList))
+      if (this.currentFansTabIndex === 0) {
+        this.recommendList = await UserApi.getInterestedUser();
+        this.friendsList = await UserApi.getUserFriends(this.currentFriendsPage);
+      } else {
+        this.visitorsList = await UserApi.getUserVisitors();
+      }
     } catch (error) {
     }
   }
@@ -37,6 +39,19 @@ export class FansPageVM extends BaseVM {
 
   async startFansPage(param: string) {
     await this.loadData();
+  }
+
+  async loadMore() {
+    try {
+      if (this.currentFansTabIndex === 0) {
+        const moreFriends: UserFriends[] = await UserApi.getUserFriends(this.currentFriendsPage + 1);
+        if (moreFriends.length > 0) {
+          this.friendsList = this.friendsList.concat(moreFriends);
+          this.currentFriendsPage++;
+        }
+      }
+    } catch (error) {
+    }
   }
 
   changeFansTab(index: number) {
