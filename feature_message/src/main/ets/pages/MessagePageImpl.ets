@@ -8,7 +8,7 @@ import { MessagePageVM } from '../viewmodels/MessagePageVM';
 export struct MessagePageImpl {
   @Local vm: MessagePageVM = VMManager.get(MessagePageVM, () => new MessagePageVM());
   @Local minNavBarWidth: number = 340;
-  @Local gridLanes: number = 2;
+  @Local gridLanes: number = this.vm.isTabletView ? 2 : 1;
 
   async aboutToAppear() {
     await this.vm.startMessage();
