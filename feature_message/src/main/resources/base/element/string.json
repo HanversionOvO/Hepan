@@ -15,6 +15,10 @@
     {
       "name": "MessagePage_notification",
       "value": "通知"
+    },
+    {
+      "name": "ChatPage_send_placeholder",
+      "value": "说点什么吧..."
     }
   ]
 }

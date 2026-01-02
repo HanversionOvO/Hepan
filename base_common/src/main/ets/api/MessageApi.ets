@@ -89,7 +89,6 @@ export class MessageApi {
   public static async getChat(uid: number, start_time: number = 0, stop_time: number = 0): Promise<Chat[]> {
     const pmlist: Record<string, Record<string, Record<string, Object> | Array<Record<string, Object>>>> = {
       'body': {
-        "externInfo": { "onlyFromUid": 1 },
         'pmInfos': [
           {
             'startTime': start_time,

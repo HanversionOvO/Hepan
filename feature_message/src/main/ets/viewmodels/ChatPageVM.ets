@@ -7,10 +7,13 @@ const TAG = '[ChatPageVM]: ';
 export class ChatPageVM extends BaseVM {
   @Trace isHideNavBar: boolean = false;
   @Trace recentMessage: RecentMessage | undefined = undefined;
+  @Trace richEditorController: RichEditorController = new RichEditorController();
+  @Trace chats: Chat[] = [];
 
   async loadData() {
     if (this.recentMessage) {
-      const chat: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, 0);
+      const chats: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, 0);
+      this.chats = chats;
     }
   }
 
