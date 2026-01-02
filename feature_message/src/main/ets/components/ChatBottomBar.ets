@@ -5,6 +5,7 @@ import { FloatButton } from 'base_ui';
 export struct ChatBottomBar {
   @Param @Require controller: RichEditorController;
   @Local hasContent: boolean = false;
+  @Event onFaceClick: () => void;
 
   checkContent() {
     let hasTextOrImage = false;
@@ -98,6 +99,9 @@ export struct ChatBottomBar {
         isFloating: true,
         floatIcon: $r('sys.symbol.capture_smiles')
       })
+        .onClick(() => {
+          this.onFaceClick();
+        })
     }
     .width(CommonConstant.FullPercent)
     .justifyContent(FlexAlign.SpaceBetween)

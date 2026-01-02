@@ -8,6 +8,7 @@ export class ChatPageVM extends BaseVM {
   @Trace isHideNavBar: boolean = false;
   @Trace isLoadingHistory: boolean = false;
   @Trace showNewMessageTip: boolean = false;
+  @Trace isShowFacePanel: boolean = false;
   @Trace chatScroller: Scroller = new Scroller();
   @Trace recentMessage: RecentMessage | undefined = undefined;
   @Trace richEditorController: RichEditorController = new RichEditorController();

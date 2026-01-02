@@ -1,10 +1,11 @@
 import { Chat, CommonConstant, RecentMessage } from 'base_common';
-import { FloatButton } from 'base_ui';
+import { CustomFacePanel, FloatButton } from 'base_ui';
 import { ChatBottomBar } from '../components/ChatBottomBar';
 import { ChatBubble } from '../components/ChatBubble';
 import { ChatNavBar } from '../components/ChatNavBar';
 import { ChatNewMessageTip } from '../components/ChatNewMessageTip';
 import { ChatPageVM } from '../viewmodels/ChatPageVM';
+import { AppUtil } from '@pura/harmony-utils';
 
 const TAG = '[ChatPageImpl]: ';
 
@@ -29,6 +30,7 @@ export struct ChatPageImpl {
           ChatNavBar({
             vm: this.vm
           })
+            .zIndex(2)
         }
 
         List({
@@ -48,7 +50,11 @@ export struct ChatPageImpl {
 
           ListItem()
             .height(this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
-            CommonConstant.IconSizeLarge)
+            CommonConstant.IconSizeLarge + (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0))
+            .animation({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            })
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
@@ -74,10 +80,56 @@ export struct ChatPageImpl {
         })
         .maintainVisibleContentPosition(true)
 
-        ChatBottomBar({ controller: this.vm.richEditorController })
+        if (this.vm.isShowFacePanel) {
+          Column()
+            .width(CommonConstant.FullPercent)
+            .height(CommonConstant.FullPercent)
+            .backgroundColor(Color.Transparent)
+            .zIndex(3)
+            .onClick(() => {
+              AppUtil.getUIContext().animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.isShowFacePanel = false;
+              });
+            })
+        }
+
+        ChatBottomBar({
+          controller: this.vm.richEditorController,
+          onFaceClick: () => {
+            AppUtil.getUIContext().animateTo({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            }, () => {
+              this.vm.isShowFacePanel = !this.vm.isShowFacePanel;
+            });
+          }
+        })
           .position({
-            bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
+            bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
+              (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0)
           })
+          .zIndex(4)
+
+        if (this.vm.isShowFacePanel) {
+          CustomFacePanel({
+            vm: this.vm,
+            onFaceClick: (url: string) => {
+              this.vm.richEditorController.addImageSpan(url, {
+                imageStyle: {
+                  size: [CommonConstant.IconSizeLarge, CommonConstant.IconSizeLarge],
+                  objectFit: ImageFit.Contain
+                }
+              })
+            }
+          })
+            .height(this.vm.window.windowHeight * 0.4)
+            .transition(TransitionEffect.move(TransitionEdge.BOTTOM))
+            .position({ bottom: 0 })
+            .zIndex(4)
+        }
 
         if (this.vm.showNewMessageTip) {
           ChatNewMessageTip({
@@ -86,8 +138,10 @@ export struct ChatPageImpl {
             .position({
               right: CommonConstant.PageLRPadding,
               bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
-              CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding
+              CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding +
+                (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0)
             })
+            .zIndex(4)
         }
 
         FloatButton({ isFloating: this.vm.isHideNavBar })
@@ -117,6 +171,16 @@ export struct ChatPageImpl {
       this.vm.stopListen();
     })
     .onBackPressed(() => {
+      // 物理返回键处理：如果面板打开，先关闭面板
+      if (this.vm.isShowFacePanel) {
+        AppUtil.getUIContext().animateTo({
+          duration: CommonConstant.AnimationDurationNormal,
+          curve: CommonConstant.AnimationCurveSpring
+        }, () => {
+          this.vm.isShowFacePanel = false;
+        });
+        return true;
+      }
       this.vm.backPage();
       return true;
     })
