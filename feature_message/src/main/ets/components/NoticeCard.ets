@@ -22,6 +22,15 @@ export struct NoticeCard {
     return null;
   }
 
+  private formatReplyContent(content: string): string {
+    if (!content) {
+      return '';
+    }
+    const lines = content.split(/\r?\n/);
+    const filteredLines = lines.filter(line => !line.trim().startsWith('>'));
+    return filteredLines.join('\n').trim();
+  }
+
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       // 1. 左侧头像区
@@ -75,9 +84,10 @@ export struct NoticeCard {
             .fontColor($r('sys.color.font_primary'))
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         } else if (this.anpMsg) {
-          Text(this.anpMsg.reply_content)
+          Text(this.formatReplyContent(this.anpMsg.reply_content))
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor($r('sys.color.font_primary'))
+            .maxLines(4)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
 
