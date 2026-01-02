@@ -53,12 +53,14 @@ export class NoticePageVM extends BaseVM {
 
   async loadMore() {
     try {
-      if (this.currentPage === 0 && this.messageNotifyCard) {
+      if (this.messageNotifyCard) {
         const type = this.messageNotifyCard.type;
         if (type === "system") {
 
         } else {
           const messageCards: AnPNotification[] = await MessageApi.getNotificationList(type, this.currentPage + 1);
+          LogUtil.debug(TAG, JSON.stringify(messageCards))
+
           if (messageCards.length > 0) {
             this.messageCards = this.messageCards.concat(messageCards);
             this.currentPage++;
