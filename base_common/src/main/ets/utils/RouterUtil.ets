@@ -11,7 +11,8 @@ export enum RouterMap {
   LOGIN = 'LoginPage',
   FANS = 'FansPage',
   USER_PROFILE = 'UserProfilePage',
-  NOTICE_PAGE = 'NoticePage'
+  NOTICE_PAGE = 'NoticePage',
+  CHAT_PAGE = 'ChatPage',
 }
 
 @ObservedV2

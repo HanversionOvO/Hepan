@@ -24,6 +24,11 @@
       "name": "NoticePage",
       "pageSourceFile": "src/main/ets/pages/message/pages/NoticePage.ets",
       "buildFunction": "NoticePageBuilder"
+    },
+    {
+      "name": "ChatPage",
+      "pageSourceFile": "src/main/ets/pages/message/pages/ChatPage.ets",
+      "buildFunction": "ChatPageBuilder"
     }
   ]
 }
