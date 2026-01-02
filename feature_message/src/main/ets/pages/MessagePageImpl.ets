@@ -66,7 +66,7 @@ export struct MessagePageImpl {
                       })
                   }
                 }, (item: RecentMessage) => {
-                  return `${item.plid}_${item.lastDateline}_${item.isNew}`;
+                  return `${item.plid}_${item.lastDateline}_${item.isNew}_${Date.now().toString()}`;
                 })
 
                 GridItem()
