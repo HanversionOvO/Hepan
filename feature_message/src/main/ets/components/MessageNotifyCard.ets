@@ -1,4 +1,4 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, TransitionMap } from 'base_common';
 import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
 @ObservedV2
