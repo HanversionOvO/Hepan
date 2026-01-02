@@ -103,7 +103,7 @@ export struct UserInfoArea {
             })
           }
         }
-        .width("100%")
+        .width(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.SpaceBetween)
       }
       .width(this.vm.isTabletView ? CommonConstant.BelowHalfPercent : CommonConstant.FullPercent)
