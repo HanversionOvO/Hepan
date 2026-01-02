@@ -15,6 +15,23 @@ export struct HomeNavBar {
   @Local NavBarItemOffset: number = this.NavBarItemPadding;
 
   @Computed
+  get navBarTransition(): TransitionEffect {
+    const baseEffect = TransitionEffect.translate({ y: this.navBarSize })
+      .combine(TransitionEffect.opacity(0));
+
+    return TransitionEffect.asymmetric(
+      baseEffect.animation({
+        curve: CommonConstant.AnimationCurveSpring,
+        duration: CommonConstant.AnimationDurationNormal
+      }),
+      baseEffect.animation({
+        curve: Curve.EaseOut,
+        duration: CommonConstant.AnimationDurationNormal
+      })
+    );
+  }
+
+  @Computed
   get navBarSize(): number {
     return this.vm.window.windowBottomPadding + CommonConstant.BottomBarHeight;
   }
@@ -72,61 +89,62 @@ export struct HomeNavBar {
   }
 
   build() {
-    Stack({
-      alignContent: this.vm.isTabletView ? Alignment.Top : Alignment.BottomStart
-    }) {
-      Rect()
-        .radius(CommonConstant.RadiusNormal)
-        .width(this.navRectWidth)
-        .height(this.navRectHeight)
-        .fill(CommonConstant.ThemeColor)
-        .margin({
-          top: this.vm.isTabletView ? (this.NavBarItemOffset + this.vm.window.windowTopPadding) : 0,
-          bottom: this.navRectMarginBottom,
-          left: this.vm.isTabletView ? 0 : this.NavBarItemOffset
-        })
-
-      Flex({
-        direction: this.vm.isTabletView ? FlexDirection.Column : FlexDirection.Row,
-        alignItems: ItemAlign.Center,
-        justifyContent: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.SpaceBetween
+    if (this.vm.isNavBarVisible) {
+      Stack({
+        alignContent: this.vm.isTabletView ? Alignment.Top : Alignment.BottomStart
       }) {
-        ForEach(this.vm.homeNavBarItem, (item: HomeNavBarItem, index: number) => {
-          Column({ space: CommonConstant.SmallContainerInnerPadding / 2 }) {
-            SymbolGlyph(item.icon)
-              .fontSize(CommonConstant.IconSizeNormal)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.vm.currentIndex === index ? [$r('sys.color.font_on_primary')] :
-                [$r('sys.color.font_secondary')])
-              .animation({ duration: CommonConstant.AnimationDurationNormal })
-            Text(item.title)
-              .fontSize(CommonConstant.TextSizeTiny)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.vm.currentIndex === index ? $r('sys.color.font_on_primary') :
-                $r('sys.color.font_secondary'))
-              .animation({ duration: CommonConstant.AnimationDurationNormal })
-          }
-          .layoutWeight(1)
-          .width(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
-          .height(this.vm.isTabletView ? undefined : CommonConstant.FullPercent)
-          .justifyContent(FlexAlign.Center)
-          .onClick(() => {
-            this.runChangeNavAnimation(index);
+        Rect()
+          .radius(CommonConstant.RadiusNormal)
+          .width(this.navRectWidth)
+          .height(this.navRectHeight)
+          .fill(CommonConstant.ThemeColor)
+          .margin({
+            top: this.vm.isTabletView ? (this.NavBarItemOffset + this.vm.window.windowTopPadding) : 0,
+            bottom: this.navRectMarginBottom,
+            left: this.vm.isTabletView ? 0 : this.NavBarItemOffset
           })
+
+        Flex({
+          direction: this.vm.isTabletView ? FlexDirection.Column : FlexDirection.Row,
+          alignItems: ItemAlign.Center,
+          justifyContent: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.SpaceBetween
+        }) {
+          ForEach(this.vm.homeNavBarItem, (item: HomeNavBarItem, index: number) => {
+            Column({ space: CommonConstant.SmallContainerInnerPadding / 2 }) {
+              SymbolGlyph(item.icon)
+                .fontSize(CommonConstant.IconSizeNormal)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(this.vm.currentIndex === index ? [$r('sys.color.font_on_primary')] :
+                  [$r('sys.color.font_secondary')])
+                .animation({ duration: CommonConstant.AnimationDurationNormal })
+              Text(item.title)
+                .fontSize(CommonConstant.TextSizeTiny)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(this.vm.currentIndex === index ? $r('sys.color.font_on_primary') :
+                  $r('sys.color.font_secondary'))
+                .animation({ duration: CommonConstant.AnimationDurationNormal })
+            }
+            .layoutWeight(1)
+            .width(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
+            .height(this.vm.isTabletView ? undefined : CommonConstant.FullPercent)
+            .justifyContent(FlexAlign.Center)
+            .onClick(() => {
+              this.runChangeNavAnimation(index);
+            })
+          })
+        }
+        .margin({
+          top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
         })
       }
-      .margin({
-        top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
+      .width(this.vm.isTabletView ? CommonConstant.BottomBarHeight : CommonConstant.FullPercent)
+      .height(this.vm.isTabletView ? CommonConstant.FullPercent : this.navBarSize)
+      .padding({
+        bottom: this.vm.isTabletView ? 0 : this.vm.window.windowBottomPadding,
       })
+      .backgroundColor(this.navBarBgColor)
+      .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
+      .transition(this.vm.isTabletView ? undefined : this.navBarTransition)
     }
-    .width(this.vm.isTabletView ? CommonConstant.BottomBarHeight : CommonConstant.FullPercent)
-    .height(this.vm.isTabletView ? CommonConstant.FullPercent : this.navBarSize)
-    .padding({
-      bottom: this.vm.isTabletView ? 0 : this.vm.window.windowBottomPadding,
-    })
-    .backgroundColor(this.navBarBgColor)
-    .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
-    .visibility(this.vm.isNavBarVisible ? Visibility.Visible : Visibility.None)
-    .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }
