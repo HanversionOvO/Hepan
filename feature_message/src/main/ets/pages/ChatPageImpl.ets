@@ -60,8 +60,8 @@ export struct ChatPageImpl {
         .onDidScroll((scrollOffset, scrollState) => {
           this.handleScroll(scrollOffset, scrollState);
         })
-        .onReachStart(() => {
-
+        .onReachStart(async () => {
+          await this.vm.loadHistory();
         })
         .onReachEnd(async () => {
           this.vm.toggleHeader(false);
