@@ -34,6 +34,9 @@ export struct ChatPageImpl {
         List({
           space: CommonConstant.NormalContainerInnerPadding
         }) {
+          ListItem()
+            .height(this.vm.window.windowTopPadding + CommonConstant.TopBarHeight)
+
           ForEach(this.vm.chats, (chat: Chat) => {
             ListItem() {
               ChatBubble({
