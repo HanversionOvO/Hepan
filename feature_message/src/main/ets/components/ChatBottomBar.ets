@@ -86,9 +86,34 @@ export struct ChatBottomBar {
                 curve: CommonConstant.AnimationCurveSpring
               })
           )
-          .onClick(() => {
-            // TODO: 构造发送内容
-            this.vm.sendMessage()
+          .onClick(async () => {
+            const spans = this.controller.getSpans();
+            this.controller.deleteSpans();
+            this.checkContent();
+
+            for (const span of spans) {
+              const textSpan = span as RichEditorTextSpanResult;
+              const imageSpan = span as RichEditorImageSpanResult;
+              
+              if (imageSpan.imageStyle) {
+                if (imageSpan.valueResourceStr && typeof imageSpan.valueResourceStr === 'string') {
+                  await this.vm.sendMessage({
+                    type: 'image',
+                    content: imageSpan.valueResourceStr
+                  });
+                }
+              } else {
+                if (typeof textSpan.value === 'string') {
+                  const text = textSpan.value;
+                  if (text.trim().length > 0) {
+                    await this.vm.sendMessage({
+                      type: 'text',
+                      content: text
+                    });
+                  }
+                }
+              }
+            }
           })
         }
       }

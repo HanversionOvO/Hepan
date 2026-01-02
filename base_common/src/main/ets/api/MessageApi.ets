@@ -11,6 +11,7 @@ import {
   SystemNotification
 } from './models/MessageModels';
 import { LegacyResponse } from './models/ApiModels';
+import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[MessageApi]: ';
 
@@ -152,16 +153,15 @@ export class MessageApi {
     const result =
       await ApiClient.getInstance()
         .requestLegacy<LegacyResponse>('message', 'pmadmin', {
-          'json': json
+          'json': JSON.stringify(json)
         });
-
-    LogUtil.debug(TAG, JSON.stringify(result.data))
 
     if (result.data.rs === 1) {
       return;
     } else {
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);
+      ToastUtil.showError(errorMsg);
       throw new Error(errorMsg);
     }
   }
