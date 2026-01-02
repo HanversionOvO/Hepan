@@ -1,5 +1,5 @@
 import { AnPNotification, CommonConstant, RouterUtil, StackEnum } from 'base_common'
-import { FloatButton } from 'base_ui'
+import { FloatButton, StateLayout } from 'base_ui'
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard'
 import { NoticeCard } from '../components/NoticeCard'
 import { NoticeNavBar } from '../components/NoticeNavBar'
@@ -31,41 +31,51 @@ export struct NoticePageImpl {
             })
           }
 
-          Refresh({ refreshing: $$this.vm.isRefreshingNotice }) {
-            Grid(new Scroller()) {
-              ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {
-                GridItem() {
-                  NoticeCard({
-                    vm: this.vm,
-                    messageCard: messageCard
-                  })
-                }
-              }, (messageCard: AnPNotification) => messageCard.reply_remind_id.toString())
+          StateLayout({
+            uiState: this.vm.uiState
+          }) {
+            Refresh({ refreshing: $$this.vm.isRefreshingNotice }) {
+              Grid(new Scroller()) {
+                ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {
+                  GridItem() {
+                    NoticeCard({
+                      vm: this.vm,
+                      messageCard: messageCard
+                    })
+                  }
+                }, (messageCard: AnPNotification) => messageCard.reply_remind_id.toString())
 
-              GridItem()
-                .height(this.vm.isTabletView ?
-                  this.vm.window.windowBottomPadding :
-                  CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
-                  CommonConstant.NormalContainerTBPadding)
+                GridItem()
+                  .height(this.vm.isTabletView ?
+                    this.vm.window.windowBottomPadding :
+                    CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
+                    CommonConstant.NormalContainerTBPadding)
+              }
+              .columnsTemplate('1fr')
+              .rowsGap(CommonConstant.NormalContainerInnerPadding)
+              .width(CommonConstant.FullPercent)
+              .height(CommonConstant.FullPercent)
+              .padding({
+                left: CommonConstant.PageLRPadding,
+                right: CommonConstant.PageLRPadding,
+              })
+              .scrollBar(BarState.Off)
+              .edgeEffect(EdgeEffect.Spring)
+              .onWillScroll((yOffset, scrollState) => {
+                this.handleScroll(yOffset, scrollState);
+              })
+              .onReachStart(() => {
+                this.vm.toggleHeader(false);
+              })
+              .onReachEnd(async () => {
+                await this.vm.loadMore();
+              })
             }
-            .columnsTemplate('1fr')
-            .rowsGap(CommonConstant.NormalContainerInnerPadding)
-            .width(CommonConstant.FullPercent)
-            .height(CommonConstant.FullPercent)
-            .padding({
-              left: CommonConstant.PageLRPadding,
-              right: CommonConstant.PageLRPadding,
+            .onRefreshing(async () => {
+              await this.vm.refreshData();
             })
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
-            .onWillScroll((yOffset, scrollState) => {
-              this.handleScroll(yOffset, scrollState);
-            })
-            .onReachStart(() => {
-              this.vm.toggleHeader(false);
-            })
+            .layoutWeight(1)
           }
-          .layoutWeight(1)
         }
 
         FloatButton({ isFloating: this.vm.isHideNavBar, floatIconColor: $r('sys.color.font_on_primary') })
@@ -89,7 +99,7 @@ export struct NoticePageImpl {
       if (params) {
         this.vm.messageNotifyCard = params;
 
-        await this.vm.startNoticePage();
+        await this.vm.loadData();
       }
     })
   }
