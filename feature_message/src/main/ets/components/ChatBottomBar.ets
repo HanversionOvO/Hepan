@@ -32,5 +32,7 @@ export struct ChatBottomBar {
       left: CommonConstant.PageLRPadding,
       right: CommonConstant.PageLRPadding
     })
+    .transition(TransitionEffect.move(TransitionEdge.BOTTOM).combine(TransitionEffect.opacity(0)))
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
   }
 }

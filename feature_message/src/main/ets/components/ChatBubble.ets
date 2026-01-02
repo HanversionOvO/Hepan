@@ -43,10 +43,10 @@ export struct ChatBubble {
           })
           .backgroundColor(this.chat.type === 'image' ? Color.Transparent : CommonConstant.ThemeColor)
           .borderRadius({
-            topLeft: CommonConstant.RadiusLarge,
+            topLeft: CommonConstant.RadiusUltraLarge,
             topRight: CommonConstant.RadiusTiny,
-            bottomLeft: CommonConstant.RadiusLarge,
-            bottomRight: CommonConstant.RadiusLarge
+            bottomLeft: CommonConstant.RadiusUltraLarge,
+            bottomRight: CommonConstant.RadiusUltraLarge
           })
           .constraintSize({ maxWidth: CommonConstant.AboveHalfPercent })
 
@@ -73,9 +73,9 @@ export struct ChatBubble {
           .backgroundColor(this.chat.type === 'image' ? Color.Transparent : $r('app.color.second_window_background'))
           .borderRadius({
             topLeft: CommonConstant.RadiusTiny,
-            topRight: CommonConstant.RadiusLarge,
-            bottomLeft: CommonConstant.RadiusLarge,
-            bottomRight: CommonConstant.RadiusLarge
+            topRight: CommonConstant.RadiusUltraLarge,
+            bottomLeft: CommonConstant.RadiusUltraLarge,
+            bottomRight: CommonConstant.RadiusUltraLarge
           })
           .constraintSize({ maxWidth: CommonConstant.AboveHalfPercent })
 
