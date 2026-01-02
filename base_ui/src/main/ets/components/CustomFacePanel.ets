@@ -20,6 +20,7 @@ export struct CustomFacePanel {
   @Local tabItems: CustomTabItem[] = [];
   // 当前选中的 Tab 索引
   @Local currentIndex: number = 0;
+  @Event onFaceClick: (url: string) => void;
 
   aboutToAppear(): void {
     this.loadFaceData();
@@ -85,6 +86,11 @@ export struct CustomFacePanel {
                       .height(CommonConstant.IconSizeLarge)
                       .objectFit(ImageFit.Contain)
                   }
+                  .onClick(() => {
+                    // 拼接完整URL并传出
+                    const fullUrl = collection.base_url + imgName;
+                    this.onFaceClick(fullUrl);
+                  })
                 })
               }
               .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr') // 5列展示
