@@ -79,7 +79,6 @@ export struct ChatPageImpl {
             bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
           })
 
-
         if (this.vm.showNewMessageTip) {
           ChatNewMessageTip({
             vm: this.vm
@@ -91,7 +90,7 @@ export struct ChatPageImpl {
             })
         }
 
-        FloatButton({ isFloating: this.vm.isHideNavBar, floatIconColor: $r('sys.color.font_on_primary') })
+        FloatButton({ isFloating: this.vm.isHideNavBar })
           .position({
             top: this.vm.window.windowTopPadding + (CommonConstant.TopBarHeight - CommonConstant.IconSizeLarge) / 2,
             left: CommonConstant.PageLRPadding

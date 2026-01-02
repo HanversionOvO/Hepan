@@ -1,0 +1,22 @@
+[
+    {
+        "collection_name": "阿鲁",
+        "collection_icon": "$r('sys.symbol.person')",
+        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/alu/",
+        "collections": [
+            "68.gif",
+            "69.gif",
+            "22.gif"
+        ]
+    },
+    {
+        "collection_name": "洋葱头",
+        "collection_icon": "$r('sys.symbol.person')",
+        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley//yang/",
+        "collections": [
+            "59.gif",
+            "45.gif",
+            "68.gif"
+        ]
+    }
+]
