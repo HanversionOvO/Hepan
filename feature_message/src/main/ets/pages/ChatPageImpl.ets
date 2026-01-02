@@ -4,6 +4,7 @@ import { FloatButton } from 'base_ui';
 import { ChatBottomBar } from '../components/ChatBottomBar';
 import { ChatBubble } from '../components/ChatBubble';
 import { ChatNavBar } from '../components/ChatNavBar';
+import { ChatNewMessageTip } from '../components/ChatNewMessageTip';
 import { ChatPageVM } from '../viewmodels/ChatPageVM';
 
 const TAG = '[ChatPageImpl]: ';
@@ -32,7 +33,8 @@ export struct ChatPageImpl {
         }
 
         List({
-          space: CommonConstant.NormalContainerInnerPadding
+          space: CommonConstant.NormalContainerInnerPadding,
+          scroller: this.vm.chatScroller
         }) {
           ListItem()
             .height(this.vm.window.windowTopPadding + CommonConstant.TopBarHeight)
@@ -67,10 +69,21 @@ export struct ChatPageImpl {
           this.vm.toggleHeader(false);
         })
 
-        ChatBottomBar({ controller: this.vm.richEditorController })
-          .position({
-            bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          ChatNewMessageTip({
+            vm: this.vm
           })
+
+          ChatBottomBar({ controller: this.vm.richEditorController })
+        }
+        .padding({
+          left: CommonConstant.PageLRPadding,
+          right: CommonConstant.PageLRPadding
+        })
+        .alignItems(HorizontalAlign.End)
+        .position({
+          bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
+        })
 
         FloatButton({ isFloating: this.vm.isHideNavBar, floatIconColor: $r('sys.color.font_on_primary') })
           .position({

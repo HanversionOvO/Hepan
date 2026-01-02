@@ -19,6 +19,10 @@
     {
       "name": "ChatPage_send_placeholder",
       "value": "说点什么吧..."
+    },
+    {
+      "name": "ChatPage_new_message",
+      "value": "有新消息来咯"
     }
   ]
 }
