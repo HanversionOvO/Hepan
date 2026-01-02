@@ -1,4 +1,4 @@
-import { AuthApi, BaseVM, RouterMap, RouterUtil, StorageManager, ToastUtil } from 'base_common';
+import { AuthApi, BaseVM, MessageManager, RouterMap, RouterUtil, ToastUtil } from 'base_common';
 
 const TAG = '[LoginPageVM]: ';
 
@@ -25,6 +25,8 @@ export class LoginPageVM extends BaseVM {
       // 注意：现在的 AuthApi.login 内部会自动更新 AuthModel 并将账号密码持久化到本地
       // 所以这里不再需要手动操作 StorageManager.authModel
       await this.authApi.login(this.username.trim(), this.password);
+
+      MessageManager.getInstance().start();
 
       // 3. 登录成功处理
       this.showSuccess();
