@@ -1,4 +1,4 @@
-import { BaseVM, StorageManager } from 'base_common';
+import { BaseVM, RouterUtil, StorageManager } from 'base_common';
 import { HomeNavBarItem } from '../components/HomeNavBar';
 
 const TAG = '[HomePageVM]: ';
@@ -13,6 +13,23 @@ export class HomePageVM extends BaseVM {
   ];
   @Trace currentIndex: number = StorageManager.tabIndexModel.homeTabIndex;
   @Trace controller: TabsController = new TabsController();
+
+  @Computed
+  get isNavBarVisible(): boolean {
+    if (this.isTabletView) {
+      return true;
+    }
+
+    if (this.currentIndex === 0 || this.currentIndex === 3) {
+      return true;
+    }
+
+    if (RouterUtil.routerModel.messageStackSize > 0) {
+      return false;
+    }
+
+    return true;
+  }
 
   startHome() {
     setTimeout(() => {

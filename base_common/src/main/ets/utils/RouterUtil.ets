@@ -15,10 +15,23 @@ export enum RouterMap {
 }
 
 @ObservedV2
+export class RouterModel {
+  @Trace messageStackSize: number = 0; // 监控 MESSAGE 栈的页面数量
+}
+
+@ObservedV2
 export class RouterUtil {
   private static stackMap: Map<string, NavPathStack> = new Map([
     [StackEnum.MAIN, new NavPathStack()]
   ]);
+  public static readonly routerModel: RouterModel = new RouterModel();
+
+  private static updateStackSize(stackName: string) {
+    if (stackName === StackEnum.MESSAGE) {
+      const stack = RouterUtil.getStack(stackName);
+      RouterUtil.routerModel.messageStackSize = stack.size();
+    }
+  }
 
   /**
    * 创建新栈 (显式创建)
@@ -39,8 +52,10 @@ export class RouterUtil {
   public static deleteStack(stackName: string): void {
     if (RouterUtil.stackMap.has(stackName)) {
       RouterUtil.stackMap.delete(stackName);
-    } else {
-
+      // [新增] 删除栈时也要更新状态
+      if (stackName === StackEnum.MESSAGE) {
+        RouterUtil.routerModel.messageStackSize = 0;
+      }
     }
   }
 
@@ -51,7 +66,6 @@ export class RouterUtil {
    */
   public static getStack(name: string = StackEnum.MAIN): NavPathStack {
     let stack = RouterUtil.stackMap.get(name);
-    // 如果不存在，自动创建并缓存
     if (!stack) {
       stack = new NavPathStack();
       RouterUtil.stackMap.set(name, stack);
@@ -68,19 +82,20 @@ export class RouterUtil {
    * @param stackName 栈名称
    */
   public static pushPathByName<T extends Object>(
-    name: RouterMap | string, // 允许传入字符串以增强灵活性
+    name: RouterMap | string,
     param: T | null = null,
     onPop?: Callback<PopInfo>,
     animated: boolean = true,
     stackName: StackEnum = StackEnum.MAIN
   ): void {
     const stack = RouterUtil.getStack(stackName);
-    // NavPathStack 内部重载处理较为严格，保持分支调用是安全的，但逻辑更清晰
     if (onPop) {
       stack.pushPathByName(name as string, param, onPop, animated);
     } else {
       stack.pushPathByName(name as string, param, animated);
     }
+    // [新增] 更新状态
+    RouterUtil.updateStackSize(stackName);
   }
 
   /**
@@ -94,6 +109,8 @@ export class RouterUtil {
   ): void {
     const stack = RouterUtil.getStack(stackName);
     stack.replacePathByName(name as string, param, animated);
+    // [新增] 更新状态 (Replace 不改变栈大小，但为了保险起见可以加上，或者忽略)
+    RouterUtil.updateStackSize(stackName);
   }
 
   /**
@@ -110,6 +127,8 @@ export class RouterUtil {
     } else {
       stack.pop(animated);
     }
+    // [新增] 更新状态
+    RouterUtil.updateStackSize(stackName);
   }
 
   /**
@@ -127,6 +146,8 @@ export class RouterUtil {
     } else {
       stack.popToName(name as string, animated);
     }
+    // [新增] 更新状态
+    RouterUtil.updateStackSize(stackName);
   }
 
   /**
@@ -150,5 +171,7 @@ export class RouterUtil {
   public static clearStack(animated?: boolean, stackName: string = StackEnum.MAIN): void {
     const stack = RouterUtil.getStack(stackName);
     stack.clear(animated);
+    // [新增] 更新状态
+    RouterUtil.updateStackSize(stackName);
   }
 }

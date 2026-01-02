@@ -126,6 +126,7 @@ export struct HomeNavBar {
     })
     .backgroundColor(this.navBarBgColor)
     .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
+    .visibility(this.vm.isNavBarVisible ? Visibility.Visible : Visibility.None)
     .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }
