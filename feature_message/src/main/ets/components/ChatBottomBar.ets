@@ -110,7 +110,7 @@ export struct ChatBottomBar {
 
             if (msgContent.length > 0) {
               await this.vm.sendMessage({
-                type: 'text', // 统一使用 text 类型发送，包含表情代码
+                type: 'text',
                 content: msgContent
               });
             }
