@@ -1,7 +1,8 @@
-import { CommonConstant, VMManager } from 'base_common'
-import { MinePageImpl } from 'feature_mine'
-import { HomeNavBar } from '../components/HomeNavBar'
-import { HomePageVM } from '../viewmodels/HomePageVM'
+import { CommonConstant, VMManager } from 'base_common';
+import { MinePageImpl } from 'feature_mine';
+import { HomeNavBar } from '../components/HomeNavBar';
+import { HomePageVM } from '../viewmodels/HomePageVM';
+import { MessagePageImpl } from 'feature_message';
 
 @Builder
 export function HomePageBuilder() {
@@ -25,7 +26,7 @@ struct HomePage {
           }
 
           TabContent() {
-            Text("Content 3")
+            MessagePageImpl()
           }
 
           TabContent() {

@@ -1,8 +1,20 @@
 {
   "string": [
     {
-      "name": "page_show",
-      "value": "page from package"
+      "name": "MessagePage_title",
+      "value": "消息中心"
+    },
+    {
+      "name": "MessagePage_at_me",
+      "value": "@我"
+    },
+    {
+      "name": "MessagePage_reply",
+      "value": "回复"
+    },
+    {
+      "name": "MessagePage_notification",
+      "value": "通知"
     }
   ]
 }

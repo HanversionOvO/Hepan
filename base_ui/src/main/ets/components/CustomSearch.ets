@@ -1,4 +1,4 @@
-import { CommonConstant, TransitionMap } from 'base_common';
+import { CommonConstant } from 'base_common';
 
 @ComponentV2
 export struct CustomSearch {
@@ -6,7 +6,7 @@ export struct CustomSearch {
   @Param searchHeight: number = CommonConstant.IconSizeLarge;
   @Param fontSize: number = CommonConstant.TextSizeSmall;
   @Param searchKey: string = "common_search_input";
-  @Param geometryId: string = TransitionMap.FeatureMineFansSearch;
+  @Param geometryId: string = "default";
   @Event onSubmit: (value: string) => void = () => {
   };
 

@@ -1,0 +1,1 @@
+export { MessagePageImpl } from './src/main/ets/pages/MessagePageImpl';

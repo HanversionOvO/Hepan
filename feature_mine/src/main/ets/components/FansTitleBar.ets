@@ -1,4 +1,4 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, TransitionMap } from 'base_common';
 import { CustomSearch, CustomTabBar } from 'base_ui';
 import { FansPageVM } from '../viewmodels/FansPageVM';
 
@@ -32,7 +32,7 @@ export struct FansTitleBar {
           .height(CommonConstant.TopBarHeight)
           .alignItems(VerticalAlign.Center)
 
-          CustomSearch({ searchKey: this.searchInputId })
+          CustomSearch({ searchKey: this.searchInputId, geometryId: TransitionMap.FeatureMineFansSearch })
         }
         .transition(TransitionEffect.move(TransitionEdge.TOP).combine(TransitionEffect.opacity(0)))
       }
