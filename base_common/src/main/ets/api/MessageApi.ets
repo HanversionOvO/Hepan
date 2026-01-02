@@ -128,12 +128,8 @@ export class MessageApi {
           'userId': uid
         });
 
-    if (result.data.rs === 1 && result.data.status) {
-      return result.data.status !== 0;
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    LogUtil.debug(TAG, JSON.stringify(result.data.status))
+
+    return result.data.status === 2;
   }
 }
