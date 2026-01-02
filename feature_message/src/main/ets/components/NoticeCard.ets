@@ -29,7 +29,7 @@ export struct NoticeCard {
       }
 
       // 2. 右侧内容区
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         // 头部：昵称/标题 + 时间
         Row() {
           Text(this.messageCard.reply_nick_name)
@@ -48,6 +48,30 @@ export struct NoticeCard {
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor($r('sys.color.font_primary'))
           .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+        if (this.messageCard.topic_subject) {
+          Row() {
+            Text(this.messageCard.topic_subject)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_secondary'))
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
+          .width(CommonConstant.FullPercent)
+          .padding({
+            top: CommonConstant.SmallContainerTBPadding,
+            bottom: CommonConstant.SmallContainerTBPadding,
+            left: CommonConstant.SmallContainerLRPadding,
+            right: CommonConstant.SmallContainerLRPadding
+          })
+          .backgroundColor($r('app.color.start_window_background'))
+          .borderRadius(CommonConstant.RadiusTiny)
+          .border({
+            width: { left: CommonConstant.BorderSizeLarge },
+            color: CommonConstant.ThemeColor
+          }) // 左侧装饰线
+          .margin({ top: CommonConstant.BorderSizeLarge })
+        }
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)

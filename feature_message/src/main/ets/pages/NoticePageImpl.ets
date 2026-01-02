@@ -36,8 +36,8 @@ export struct NoticePageImpl {
                   CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
                   CommonConstant.NormalContainerTBPadding)
             }
-            .columnsTemplate('1fr') // 单列模式，模拟 List 布局
-            .rowsGap(CommonConstant.NormalContainerInnerPadding) // 对应 List 的 space
+            .columnsTemplate('1fr')
+            .rowsGap(CommonConstant.NormalContainerInnerPadding)
             .width(CommonConstant.FullPercent)
             .height(CommonConstant.FullPercent)
             .padding({

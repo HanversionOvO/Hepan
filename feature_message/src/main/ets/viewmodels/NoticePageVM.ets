@@ -1,5 +1,8 @@
+import { LogUtil } from '@pura/harmony-utils';
 import { AnPNotification, BaseVM, MessageApi } from 'base_common';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
+
+const TAG = '[NoticePageVM]: ';
 
 @ObservedV2
 export class NoticePageVM extends BaseVM {
@@ -15,6 +18,7 @@ export class NoticePageVM extends BaseVM {
 
       } else {
         this.messageCards = await MessageApi.getNotificationList(type)
+        LogUtil.debug(TAG, JSON.stringify(this.messageCards))
       }
     }
   }
