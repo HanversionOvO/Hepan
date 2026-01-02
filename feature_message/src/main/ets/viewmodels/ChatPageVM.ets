@@ -12,6 +12,7 @@ export class ChatPageVM extends BaseVM {
   @Trace recentMessage: RecentMessage | undefined = undefined;
   @Trace richEditorController: RichEditorController = new RichEditorController();
   @Trace chats: Chat[] = [];
+  @Trace isUserOnline: boolean = false;
   isAtBottom: boolean = true;
   private timerId: number = -1;
 
@@ -23,6 +24,7 @@ export class ChatPageVM extends BaseVM {
   async loadData() {
     if (this.recentMessage) {
       const chats: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, 0, 10);
+      this.isUserOnline = await MessageApi.queryOnline(this.recentMessage.toUserId);
       this.chats = chats.sort((a, b) => Number(a.time) - Number(b.time));
       this.isAtBottom = true;
       setTimeout(() => {

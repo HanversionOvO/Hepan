@@ -23,6 +23,14 @@
     {
       "name": "ChatPage_new_message",
       "value": "有新消息来咯"
+    },
+    {
+      "name": "ChatPage_user_online",
+      "value": "在线"
+    },
+    {
+      "name": "ChatPage_user_offline",
+      "value": "离线"
     }
   ]
 }

@@ -120,4 +120,20 @@ export class MessageApi {
       throw new Error(errorMsg);
     }
   }
+
+  public static async queryOnline(uid: number): Promise<boolean> {
+    const result =
+      await ApiClient.getInstance()
+        .requestLegacy<LegacyResponse<Record<string, Object>>>('user', 'userinfo', {
+          'userId': uid
+        });
+
+    if (result.data.rs === 1 && result.data.status) {
+      return result.data.status !== 0;
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
 }

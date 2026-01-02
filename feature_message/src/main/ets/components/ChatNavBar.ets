@@ -13,6 +13,15 @@ export struct ChatNavBar {
             .width(CommonConstant.IconSizeLarge)
             .height(CommonConstant.IconSizeLarge)
             .borderRadius(CommonConstant.RadiusRound)
+
+          if (this.vm.isUserOnline) {
+            Circle()
+              .width(CommonConstant.TextSizeSmall)
+              .height(CommonConstant.TextSizeSmall)
+              .fill(CommonConstant.SuccessColor)
+              .borderRadius(CommonConstant.RadiusRound)
+              .border({ width: CommonConstant.BorderSizeLarge, color: $r('sys.color.font_on_primary') })
+          }
         }
 
         Column({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -20,7 +29,7 @@ export struct ChatNavBar {
             .fontSize(CommonConstant.TextSizeNormal)
             .fontWeight(FontWeight.Bold)
 
-          Text("在线")
+          Text(this.vm.isUserOnline ? $r('app.string.ChatPage_user_online') : $r('app.string.ChatPage_user_offline'))
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_tertiary'))
         }
