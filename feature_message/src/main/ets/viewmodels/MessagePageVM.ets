@@ -1,7 +1,6 @@
 import {
   BaseVM,
   CommonConstant,
-  MessageApi,
   MessageManager,
   NewMessagesSummary,
   RecentMessage,
@@ -52,8 +51,13 @@ export class MessagePageVM extends BaseVM {
     ),
   ];
   @Trace messages: RecentMessage[] = [];
-  private messageListener = (newMessages: NewMessagesSummary) => {
+  // 消息计数监听回调
+  private messageCountListener = (newMessages: NewMessagesSummary) => {
     this.updateMessageCounts(newMessages);
+  };
+  // 消息列表监听回调
+  private messageListListener = (list: RecentMessage[]) => {
+    this.messages = list;
   };
 
   updateMessageCounts(newMessages: NewMessagesSummary) {
@@ -64,15 +68,27 @@ export class MessagePageVM extends BaseVM {
 
   constructor() {
     super();
-    MessageManager.getInstance().registerListener(this.messageListener);
+    // 注册监听
+    MessageManager.getInstance().registerListener(this.messageCountListener);
+    MessageManager.getInstance().registerMessageListListener(this.messageListListener);
   }
 
   async startMessage() {
-    await this.loadMessages();
+    // 启动轮询服务
+    MessageManager.getInstance().start();
+    // 首次主动加载完整列表
+    await this.refreshMessages();
   }
 
-  async loadMessages() {
-    const messages: RecentMessage[] = await MessageApi.getMessageList();
-    this.messages = messages;
+  async refreshMessages() {
+    try {
+      this.isRefreshingMessage = true;
+      // 调用 Manager 的刷新方法，更新数据源
+      await MessageManager.getInstance().refreshMessageList();
+    } catch (e) {
+      // 错误处理由 BaseVM 或 UI 提示
+    } finally {
+      this.isRefreshingMessage = false;
+    }
   }
 }

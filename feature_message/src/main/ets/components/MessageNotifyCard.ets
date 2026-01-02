@@ -46,7 +46,7 @@ export struct MessageNotifyCard {
             .fontSize(CommonConstant.IconSizeNormal)
             .fontColor([$r('sys.color.font_on_primary')])
         }
-        .padding(CommonConstant.NormalContainerInnerPadding)
+        .padding(CommonConstant.SmallContainerTBPadding)
         .borderRadius(CommonConstant.RadiusLarge)
         .backgroundColor(messageCardModel.iconColor)
       }
