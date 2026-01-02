@@ -15,9 +15,9 @@ export struct ChatPageImpl {
   private handleScroll(yOffset: number, scrollState: ScrollState) {
     if (scrollState === ScrollState.Scroll) {
       if (yOffset > CommonConstant.ScrollAnimationThreshold) {
-        this.vm.toggleHeader(true);
-      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
         this.vm.toggleHeader(false);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(true);
       }
     }
   }
@@ -57,8 +57,8 @@ export struct ChatPageImpl {
           right: CommonConstant.PageLRPadding
         })
         .scrollBar(BarState.Off)
-        .onWillScroll((yOffset, scrollState) => {
-          this.handleScroll(yOffset, scrollState);
+        .onDidScroll((scrollOffset, scrollState) => {
+          this.handleScroll(scrollOffset, scrollState);
         })
         .onReachStart(() => {
 
