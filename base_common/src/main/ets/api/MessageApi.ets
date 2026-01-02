@@ -87,14 +87,16 @@ export class MessageApi {
   }
 
   public static async getChat(uid: number, start_time: number = 0, stop_time: number = 0,
-    pageSize: number = 15): Promise<Chat[]> {
+    pageSize: number = 15, cacheCount?: number): Promise<Chat[]> {
+    const actualCacheCount = cacheCount !== undefined ? cacheCount : pageSize;
+
     const pmlist: Record<string, Record<string, Record<string, Object> | Array<Record<string, Object>>>> = {
       'body': {
         'pmInfos': [
           {
             'startTime': start_time,
             'stopTime': stop_time,
-            'cacheCount': pageSize,
+            'cacheCount': actualCacheCount,
             'fromUid': uid,
             'pmLimit': pageSize
           }

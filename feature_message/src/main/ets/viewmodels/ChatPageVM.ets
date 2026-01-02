@@ -101,7 +101,15 @@ export class ChatPageVM extends BaseVM {
       const oldestChat = this.chats[0];
       const stopTime = Number(oldestChat.time);
 
-      const historyChats: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, stopTime, 10);
+      const currentCacheCount = this.chats.length;
+
+      const historyChats: Chat[] = await MessageApi.getChat(
+        this.recentMessage.toUserId,
+        0,
+        stopTime,
+        10,
+        currentCacheCount
+      );
 
       if (historyChats && historyChats.length > 0) {
         const existingMids = new Set(this.chats.map(c => c.mid));
@@ -109,7 +117,12 @@ export class ChatPageVM extends BaseVM {
 
         if (newChats.length > 0) {
           newChats.sort((a, b) => Number(a.time) - Number(b.time));
+          const insertCount = newChats.length;
           this.chats = [...newChats, ...this.chats];
+
+          setTimeout(() => {
+            this.chatScroller.scrollToIndex(insertCount);
+          }, 0);
         }
       }
     } catch (e) {
