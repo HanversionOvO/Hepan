@@ -1,5 +1,5 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { AnPNotification, BaseVM, MessageApi } from 'base_common';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { AnPNotification, BaseVM, CommonConstant, MessageApi } from 'base_common';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 
 const TAG = '[NoticePageVM]: ';
@@ -21,5 +21,13 @@ export class NoticePageVM extends BaseVM {
         LogUtil.debug(TAG, JSON.stringify(this.messageCards))
       }
     }
+  }
+
+  toggleHeader(hide: boolean) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isHideNavBar = hide;
+        })
   }
 }

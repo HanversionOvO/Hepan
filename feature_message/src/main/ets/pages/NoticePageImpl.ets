@@ -11,13 +11,25 @@ const TAG = '[NoticePageImpl]: ';
 export struct NoticePageImpl {
   @Local vm: NoticePageVM = new NoticePageVM();
 
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      if (yOffset > CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(true);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(false);
+      }
+    }
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Top }) {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          NoticeNavBar({
-            vm: this.vm
-          })
+          if (!this.vm.isHideNavBar) {
+            NoticeNavBar({
+              vm: this.vm
+            })
+          }
 
           Refresh({ refreshing: $$this.vm.isRefreshingNotice }) {
             Grid(new Scroller()) {
@@ -46,6 +58,12 @@ export struct NoticePageImpl {
             })
             .scrollBar(BarState.Off)
             .edgeEffect(EdgeEffect.Spring)
+            .onWillScroll((yOffset, scrollState) => {
+              this.handleScroll(yOffset, scrollState);
+            })
+            .onReachStart(() => {
+              this.vm.toggleHeader(false);
+            })
           }
           .layoutWeight(1)
         }

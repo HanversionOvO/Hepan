@@ -29,5 +29,6 @@ export struct NoticeNavBar {
       left: CommonConstant.PageLRPadding + CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding,
       right: CommonConstant.PageLRPadding
     })
+    .transition(TransitionEffect.move(TransitionEdge.TOP).combine(TransitionEffect.opacity(0)))
   }
 }
