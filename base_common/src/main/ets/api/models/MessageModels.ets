@@ -131,3 +131,8 @@ export interface Chat {
   type: "image" | "text";
   time: string
 }
+
+export interface ChatSendContent {
+  type: "text" | "image";
+  content: string;
+}

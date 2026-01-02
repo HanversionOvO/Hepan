@@ -1,5 +1,14 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { BaseVM, Chat, CommonConstant, MessageApi, RecentMessage, RouterUtil, StackEnum } from 'base_common';
+import {
+  BaseVM,
+  Chat,
+  ChatSendContent,
+  CommonConstant,
+  MessageApi,
+  RecentMessage,
+  RouterUtil,
+  StackEnum
+} from 'base_common';
 
 const TAG = '[ChatPageVM]: ';
 
@@ -127,6 +136,12 @@ export class ChatPageVM extends BaseVM {
       console.error(TAG, 'Load history failed: ', e);
     } finally {
       this.isLoadingHistory = false;
+    }
+  }
+
+  async sendMessage(msg: ChatSendContent) {
+    if (this.recentMessage) {
+      await MessageApi.sendMessage(this.recentMessage.toUserId, msg, this.recentMessage.plid, this.recentMessage.pmid)
     }
   }
 

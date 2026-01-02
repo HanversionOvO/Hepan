@@ -1,9 +1,11 @@
 import { CommonConstant } from 'base_common';
 import { FloatButton } from 'base_ui';
+import { ChatPageVM } from '../viewmodels/ChatPageVM';
 
 @ComponentV2
 export struct ChatBottomBar {
-  @Param @Require controller: RichEditorController;
+  @Param @Require vm: ChatPageVM;
+  @Param controller: RichEditorController = this.vm.richEditorController;
   @Local hasContent: boolean = false;
   @Event onFaceClick: () => void;
 
@@ -84,6 +86,10 @@ export struct ChatBottomBar {
                 curve: CommonConstant.AnimationCurveSpring
               })
           )
+          .onClick(() => {
+            // TODO: 构造发送内容
+            this.vm.sendMessage()
+          })
         }
       }
       .layoutWeight(1)

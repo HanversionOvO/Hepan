@@ -2,7 +2,14 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { AnPNotification, Chat, MessageSummary, RecentMessage, SystemNotification } from './models/MessageModels';
+import {
+  AnPNotification,
+  Chat,
+  ChatSendContent,
+  MessageSummary,
+  RecentMessage,
+  SystemNotification
+} from './models/MessageModels';
 import { LegacyResponse } from './models/ApiModels';
 
 const TAG = '[MessageApi]: ';
@@ -131,5 +138,31 @@ export class MessageApi {
     LogUtil.debug(TAG, JSON.stringify(result.data.status))
 
     return result.data.status === 2;
+  }
+
+  public static async sendMessage(uid: number, msg: ChatSendContent, plid: number, pmid: number): Promise<void> {
+    const json: Record<string, Object> = {
+      "action": "send",
+      "toUid": uid,
+      "msg": msg,
+      "plid": plid,
+      "pmid": pmid
+    }
+
+    const result =
+      await ApiClient.getInstance()
+        .requestLegacy<LegacyResponse>('message', 'pmadmin', {
+          'json': json
+        });
+
+    LogUtil.debug(TAG, JSON.stringify(result.data))
+
+    if (result.data.rs === 1) {
+      return;
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
   }
 }

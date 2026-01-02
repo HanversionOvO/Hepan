@@ -44,6 +44,7 @@ export { NewMessagesSummary,
   RecentMessage,
   AnPNotification,
   SystemNotification,
-  Chat } from './src/main/ets/api/models/MessageModels';
+  Chat,
+  ChatSendContent } from './src/main/ets/api/models/MessageModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

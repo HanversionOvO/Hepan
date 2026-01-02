@@ -98,11 +98,9 @@ export struct ChatPageImpl {
         })
 
         ChatBottomBar({
-          controller: this.vm.richEditorController,
+          vm: this.vm,
           onFaceClick: () => {
-            // 点击表情按钮的处理
             if (this.vm.isShowFacePanel) {
-              // 如果面板已开，则关闭
               AppUtil.getUIContext().animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
                 curve: CommonConstant.AnimationCurveSpring
@@ -110,9 +108,7 @@ export struct ChatPageImpl {
                 this.vm.isShowFacePanel = false;
               });
             } else {
-              // 如果要打开面板，先关闭键盘
               inputMethod.getController().hideTextInput();
-              // 稍作延迟或直接打开，配合键盘监听逻辑
               AppUtil.getUIContext().animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
                 curve: CommonConstant.AnimationCurveSpring
