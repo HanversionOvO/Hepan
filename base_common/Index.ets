@@ -20,6 +20,8 @@ export { ToastShowType, ToastState, ToastOptions, ToastParams, ToastUtil } from 
 
 export { DateUtil } from './src/main/ets/utils/DateUtil';
 
+export { MessageManager } from './src/main/ets/utils/MessageManager';
+
 export { BaseVM, UiState } from './src/main/ets/viewmodels/BaseVM';
 
 export { CommonConstant } from './src/main/ets/constants/CommonConstant';

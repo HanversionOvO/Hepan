@@ -1,4 +1,11 @@
-import { BaseVM, CommonConstant, MessageApi, NewMessagesSummary, RouterUtil, StackEnum } from 'base_common';
+import {
+  BaseVM,
+  CommonConstant,
+  MessageManager,
+  NewMessagesSummary,
+  RouterUtil,
+  StackEnum
+} from 'base_common';
 import { NavTitleButtonModel } from 'base_ui';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 
@@ -16,7 +23,6 @@ export class MessagePageVM extends BaseVM {
     }
     }
   ]
-  // ✅ 修复：使用 new 关键字，并按顺序传入参数
   @Trace messageNotifyCards: MessageNotifyCardItem[] = [
     new MessageNotifyCardItem(
       0,
@@ -43,16 +49,22 @@ export class MessagePageVM extends BaseVM {
       }
     ),
   ];
+  private messageListener = (newMessages: NewMessagesSummary) => {
+    this.updateMessageCounts(newMessages);
+  };
 
-  async startMessage() {
-    await this.refreshNotificationData();
-  }
-
-  async refreshNotificationData() {
-    const newMessages: NewMessagesSummary = await MessageApi.getMessageSummary();
-
+  updateMessageCounts(newMessages: NewMessagesSummary) {
     this.messageNotifyCards[0].count = newMessages.posts.at;
     this.messageNotifyCards[1].count = newMessages.posts.reply;
     this.messageNotifyCards[2].count = newMessages.posts.rate + newMessages.posts.other + newMessages.system.system;
+  }
+
+  constructor() {
+    super();
+    MessageManager.getInstance().registerListener(this.messageListener);
+  }
+
+  async startMessage() {
+
   }
 }
