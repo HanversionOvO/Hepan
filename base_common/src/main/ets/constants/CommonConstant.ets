@@ -91,4 +91,6 @@ export class CommonConstant {
   static readonly WarningColor: string = "#FFF59E0B";
   static readonly ErrorColor: string = "#FFEF4444";
   static readonly InfoColor: string = "#FF3B82F6";
+  // 透明度
+  static readonly IconOpacity: number = 0.3;
 }

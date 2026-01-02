@@ -5,6 +5,7 @@ import {
   MessageManager,
   NewMessagesSummary,
   RecentMessage,
+  RouterMap,
   RouterUtil,
   StackEnum
 } from 'base_common';
@@ -17,7 +18,6 @@ const TAG = '[MessagePageVM]: '
 export class MessagePageVM extends BaseVM {
   @Trace isHideSearch: boolean = false;
   @Trace isRefreshingMessage: boolean = false;
-  @Trace messageStack: NavPathStack = RouterUtil.getStack(StackEnum.MESSAGE);
   @Trace messagePageScroller: Scroller = new Scroller();
   @Trace titleButtons: NavTitleButtonModel[] = [
     {
@@ -27,27 +27,33 @@ export class MessagePageVM extends BaseVM {
   ]
   @Trace messageNotifyCards: MessageNotifyCardItem[] = [
     new MessageNotifyCardItem(
+      'at',
       0,
       $r('sys.symbol.at'),
       CommonConstant.ThemeColor,
       $r('app.string.MessagePage_at_me'),
       () => {
+        this.clearAndPush(RouterMap.NOTICE_PAGE, this.messageNotifyCards[0]);
       }
     ),
     new MessageNotifyCardItem(
+      'post',
       0,
       $r('sys.symbol.ellipsis_message'),
       CommonConstant.SuccessColor,
       $r('app.string.MessagePage_reply'),
       () => {
+        this.clearAndPush(RouterMap.NOTICE_PAGE, this.messageNotifyCards[1]);
       }
     ),
     new MessageNotifyCardItem(
+      'system',
       0,
       $r('sys.symbol.bell'),
       CommonConstant.WarningColor,
       $r('app.string.MessagePage_notification'),
       () => {
+        this.clearAndPush(RouterMap.NOTICE_PAGE, this.messageNotifyCards[2]);
       }
     ),
   ];
@@ -74,6 +80,12 @@ export class MessagePageVM extends BaseVM {
     // 注册监听器
     MessageManager.getInstance().registerListener(this.messageCountListener);
     MessageManager.getInstance().registerMessageListListener(this.messageListListener);
+  }
+
+  private clearAndPush(name: RouterMap, param: Object) {
+    animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal }, () => {
+      RouterUtil.replacePathByName(RouterMap.NOTICE_PAGE, param, false, StackEnum.MESSAGE);
+    })
   }
 
   async startMessage() {

@@ -3,6 +3,7 @@ import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
 @ObservedV2
 export class MessageNotifyCardItem {
+  type: 'at' | 'post' | 'system' = 'at';
   @Trace count: number = 0;
   icon: Resource = $r('sys.symbol.at');
   iconColor: ResourceColor = CommonConstant.ThemeColor;
@@ -11,12 +12,14 @@ export class MessageNotifyCardItem {
   };
 
   constructor(
+    type: 'at' | 'post' | 'system',
     count: number,
     icon: Resource,
     iconColor: ResourceColor,
     cardTitle: ResourceStr,
     onCardClick: () => void
   ) {
+    this.type = type;
     this.count = count;
     this.icon = icon;
     this.iconColor = iconColor;

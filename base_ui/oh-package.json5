@@ -6,6 +6,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@luvi/lv-markdown-in": "^3.1.8",
     "base_common": "file:../base_common"
   }
 }

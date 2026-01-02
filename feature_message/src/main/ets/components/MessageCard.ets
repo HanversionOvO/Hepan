@@ -17,7 +17,7 @@ export struct MessageCard {
           fontSize: CommonConstant.TextSizeUltraTiny
         }
       }) {
-        Image(UserAvatarUtil.getAvatarUrl(this.message.lastUserId))
+        Image(UserAvatarUtil.getAvatarUrl(this.message.toUserId))
           .width(CommonConstant.IconSizeLarge)
           .height(CommonConstant.IconSizeLarge)
           .borderRadius(CommonConstant.RadiusRound)
@@ -26,7 +26,7 @@ export struct MessageCard {
       // 内容区
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         Row() {
-          Text(this.message.lastUserName)
+          Text(this.message.toUserName)
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor($r('sys.color.font_primary'))
             .fontWeight(FontWeight.Bold)

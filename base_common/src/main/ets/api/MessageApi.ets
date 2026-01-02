@@ -2,7 +2,7 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { MessageSummary, RecentMessage } from './models/MessageModels';
+import { AnPNotification, MessageSummary, RecentMessage } from './models/MessageModels';
 import { LegacyResponse } from './models/ApiModels';
 
 const TAG = '[MessageApi]: ';
@@ -28,10 +28,10 @@ export class MessageApi {
     }
   }
 
-  public static async getMessageList(): Promise<RecentMessage[]> {
+  public static async getMessageList(page = 1, pagesize = 15): Promise<RecentMessage[]> {
     const json: Record<string, number> = {
-      'page': 1,
-      'pagesize': 20
+      'page': page,
+      'pagesize': pagesize
     }
 
     const result =
@@ -42,6 +42,24 @@ export class MessageApi {
 
     if (result.data.rs === 1 && result.data.body) {
       return result.data.body["list"];
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getNotificationList(type: 'at' | 'post', page = 1, pagesize = 15): Promise<AnPNotification[]> {
+    const result =
+      await ApiClient.getInstance()
+        .requestLegacy<LegacyResponse>('message', 'notifylist', {
+          'type': type,
+          'page': page,
+          'pagesize': pagesize
+        });
+
+    if (result.data.rs === 1 && result.data.list) {
+      return result.data.list;
     } else {
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);

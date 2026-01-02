@@ -1,4 +1,4 @@
-import { CommonConstant, RecentMessage, TransitionMap, VMManager } from 'base_common';
+import { CommonConstant, RecentMessage, RouterUtil, StackEnum, TransitionMap, VMManager } from 'base_common';
 import { CustomNavTitle, CustomSearch } from 'base_ui';
 import { MessageCard } from '../components/MessageCard';
 import { MessageNotifyCard } from '../components/MessageNotifyCard';
@@ -31,7 +31,7 @@ export struct MessagePageImpl {
 
   @Builder
   build() {
-    Navigation(this.vm.messageStack) {
+    Navigation(RouterUtil.getStack(StackEnum.MESSAGE)) {
       Stack({ alignContent: Alignment.Top }) {
         Column() {
           CustomNavTitle({

@@ -11,3 +11,5 @@ export { CustomBadge } from './src/main/ets/components/CustomBadage';
 export { StateLayout } from './src/main/ets/components/StateLayout';
 
 export { CustomNavTitle, NavTitleButtonModel } from './src/main/ets/components/CustomNavTitle';
+
+export { CustomMarkdown } from './src/main/ets/components/CustomMarkdown';
