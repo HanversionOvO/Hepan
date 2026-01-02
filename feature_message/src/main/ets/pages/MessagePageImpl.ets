@@ -83,6 +83,9 @@ export struct MessagePageImpl {
               .edgeEffect(EdgeEffect.Spring)
             }
             .layoutWeight(1)
+            .onRefreshing(async () => {
+              await this.vm.onRefresh();
+            })
           }
           .padding({
             left: CommonConstant.PageLRPadding,

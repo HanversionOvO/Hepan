@@ -101,4 +101,9 @@ export class MessagePageVM extends BaseVM {
     } finally {
     }
   }
+
+  async onRefresh() {
+    await this.refreshMessages();
+    this.isRefreshingMessage = false;
+  }
 }
