@@ -85,4 +85,35 @@ export class MessageApi {
       throw new Error(errorMsg);
     }
   }
+
+  public static async getChat(uid: number, start_time: number = 0, stop_time: number = 0): Promise<void> {
+    const pmlist: Record<string, Record<string, Record<string, Object>>> = {
+      'body': {
+        "externInfo": { "onlyFromUid": 0 },
+        'pmInfos': {
+          'startTime': start_time,
+          'stopTime': stop_time,
+          'cacheCount': 1,
+          'fromUid': uid.toString(),
+          'pmLimit': 10
+        }
+      }
+    }
+
+    const result =
+      await ApiClient.getInstance()
+        .requestLegacy<LegacyResponse>('message', 'pmlist', {
+          'pmlist': pmlist
+        });
+
+    LogUtil.debug(TAG, JSON.stringify(result.data));
+
+    if (result.data.rs === 1 && result.data.body) {
+
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
 }

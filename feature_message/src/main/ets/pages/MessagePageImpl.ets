@@ -55,12 +55,15 @@ export struct MessagePageImpl {
                 .columnStart(0)
                 .columnEnd(this.gridLanes - 1)
 
-                ForEach(this.vm.messages, (message: RecentMessage) => {
+                ForEach(this.vm.messages, (message: RecentMessage, index: number) => {
                   GridItem() {
                     MessageCard({
                       vm: this.vm,
                       message: message
                     })
+                      .onClick(() => {
+                        this.vm.pushToChatPage(index);
+                      })
                   }
                 }, (item: RecentMessage) => {
                   return `${item.plid}_${item.lastDateline}_${item.isNew}`;

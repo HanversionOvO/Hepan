@@ -1,3 +1,4 @@
+import { AppUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   CommonConstant,
@@ -57,7 +58,6 @@ export class MessagePageVM extends BaseVM {
     ),
   ];
   @Trace messages: RecentMessage[] = [];
-  // 消息列表监听器
   private messageListListener = (list: RecentMessage[]) => {
     this.messages = [...list];
   };
@@ -80,9 +80,15 @@ export class MessagePageVM extends BaseVM {
   }
 
   private clearAndPush(name: RouterMap, param: Object) {
-    animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal }, () => {
-      RouterUtil.replacePathByName(RouterMap.NOTICE_PAGE, param, false, StackEnum.MESSAGE);
-    })
+    AppUtil.getUIContext()
+      .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
+        () => {
+          RouterUtil.replacePathByName(name, param, false, StackEnum.MESSAGE);
+        })
+  }
+
+  pushToChatPage(index: number) {
+    this.clearAndPush(RouterMap.CHAT_PAGE, this.messages[index]);
   }
 
   async startMessage() {
