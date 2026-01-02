@@ -29,12 +29,11 @@ export struct ChatNewMessageTip {
     .zIndex(3)
     .transition(
       TransitionEffect.OPACITY
-        .combine(TransitionEffect.translate({ y: 10 }))
-        .animation({ curve: CommonConstant.AnimationCurveSpring })
+        .combine(TransitionEffect.translate({ x: 15 }))
+        .animation({ curve: CommonConstant.AnimationCurveNormal })
     )
     .onClick(() => {
-      this.vm.chatScroller.scrollEdge(Edge.Bottom);
-      this.vm.updateBottomStatus(true);
+      this.vm.chatScroller.scrollToIndex(this.vm.chats.length - 1, true);
     })
   }
 }
