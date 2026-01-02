@@ -51,13 +51,12 @@ export class MessagePageVM extends BaseVM {
     ),
   ];
   @Trace messages: RecentMessage[] = [];
-  // 消息计数监听回调
+  // 消息列表监听器
+  private messageListListener = (list: RecentMessage[]) => {
+    this.messages = [...list];
+  };
   private messageCountListener = (newMessages: NewMessagesSummary) => {
     this.updateMessageCounts(newMessages);
-  };
-  // 消息列表监听回调
-  private messageListListener = (list: RecentMessage[]) => {
-    this.messages = list;
   };
 
   updateMessageCounts(newMessages: NewMessagesSummary) {
@@ -68,27 +67,24 @@ export class MessagePageVM extends BaseVM {
 
   constructor() {
     super();
-    // 注册监听
+    // 注册监听器
     MessageManager.getInstance().registerListener(this.messageCountListener);
     MessageManager.getInstance().registerMessageListListener(this.messageListListener);
   }
 
   async startMessage() {
-    // 启动轮询服务
+    // 开启轮询
     MessageManager.getInstance().start();
-    // 首次主动加载完整列表
+    // 首次进入主动刷新列表
     await this.refreshMessages();
   }
 
   async refreshMessages() {
     try {
-      this.isRefreshingMessage = true;
-      // 调用 Manager 的刷新方法，更新数据源
       await MessageManager.getInstance().refreshMessageList();
     } catch (e) {
-      // 错误处理由 BaseVM 或 UI 提示
+      // Error handling
     } finally {
-      this.isRefreshingMessage = false;
     }
   }
 }

@@ -46,19 +46,20 @@ export class MessageManager {
     LogUtil.info(TAG, 'Message polling service stopped');
   }
 
-  // 主动刷新完整消息列表（通常在页面初始化或下拉刷新时调用）
+  // 主动刷新完整消息列表
   public async refreshMessageList() {
     try {
       const list = await MessageApi.getMessageList();
+      // 获取到的是全新数组，直接赋值即可
       this.messageList = list;
       this.notifyMessageListListeners(this.messageList);
     } catch (error) {
       LogUtil.error(TAG, `Refresh message list failed: ${JSON.stringify(error)}`);
-      throw new Error(error); // 抛出异常供 UI 处理刷新状态
+      throw new Error(error);
     }
   }
 
-  // 执行轮询网络请求
+  // 执行网络请求
   private async fetchData() {
     try {
       const summary: MessageSummary = await MessageApi.getMessageSummary();
@@ -77,53 +78,46 @@ export class MessageManager {
     }
   }
 
-  // 将 new_chats 合并到现有消息列表
   private mergeNewChats(newChats: NewChat[]) {
+    const updatedList = [...this.messageList];
     let isListChanged = false;
 
     newChats.forEach(chat => {
       const plid = Number(chat.conversation_id);
-      // 查找列表中是否已存在该对话
-      const index = this.messageList.findIndex(msg => msg.plid === plid);
+      const index = updatedList.findIndex(msg => msg.plid === plid);
 
-      // 转换数据结构
       const newMessage = this.convertNewChatToRecent(chat);
 
       if (index !== -1) {
-        // 如果存在，移除旧的（稍后添加到顶部）
-        this.messageList.splice(index, 1);
+        updatedList.splice(index, 1);
       }
 
-      // 添加到顶部
-      this.messageList.unshift(newMessage);
+      updatedList.unshift(newMessage);
       isListChanged = true;
     });
 
     if (isListChanged) {
-      this.notifyMessageListListeners(this.messageList);
+      this.messageList = updatedList; // 更新内部缓存为新数组
+      this.notifyMessageListListeners(this.messageList); // 通知监听器
     }
   }
 
-  // 辅助方法：将 NewChat 转换为 RecentMessage
   private convertNewChatToRecent(chat: NewChat): RecentMessage {
     return {
       plid: Number(chat.conversation_id),
-      pmid: Number(chat.conversation_id), // 通常会话ID即为pmid
+      pmid: Number(chat.conversation_id),
       lastUserId: chat.last_author_id,
       lastUserName: chat.last_author,
       lastSummary: chat.last_summary,
-      // NewChat 时间戳通常是秒，RecentMessage 可能是毫秒（根据示例数据），统一转为毫秒
       lastDateline: chat.last_dateline * 1000,
       toUserId: chat.to_uid,
       toUserName: chat.to_username,
-      // 拼接头像 URL
       toUserAvatar: `https://bbs.uestc.edu.cn/uc_server/avatar.php?uid=${chat.to_uid}&size=middle`,
-      toUserIsBlack: '0', // 默认值
+      toUserIsBlack: '0',
       isNew: chat.unread ? '1' : '0'
     };
   }
 
-  // 注册监听器（消息计数）
   public registerListener(listener: (summary: NewMessagesSummary) => void) {
     this.listeners.push(listener);
     if (this.lastSummary) {
@@ -135,10 +129,8 @@ export class MessageManager {
     this.listeners = this.listeners.filter(l => l !== listener);
   }
 
-  // 注册监听器（消息列表）
   public registerMessageListListener(listener: (list: RecentMessage[]) => void) {
     this.messageListListeners.push(listener);
-    // 如果已有缓存数据，立即回调
     if (this.messageList.length > 0) {
       listener(this.messageList);
     }
