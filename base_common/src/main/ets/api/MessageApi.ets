@@ -161,7 +161,7 @@ export class MessageApi {
     } else {
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);
-      ToastUtil.showError(errorMsg);
+      ToastUtil.showError(result.data.errcode);
       throw new Error(errorMsg);
     }
   }
