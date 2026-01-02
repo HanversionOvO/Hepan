@@ -123,3 +123,11 @@ export interface SystemNotification {
   note: string;
   is_read: string;
 }
+
+export interface Chat {
+  sender: number;
+  mid: number;
+  content: string;
+  type: "image" | "text";
+  time: string
+}

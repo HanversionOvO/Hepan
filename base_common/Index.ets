@@ -43,6 +43,7 @@ export { AuthModel } from './src/main/ets/models/AuthModel';
 export { NewMessagesSummary,
   RecentMessage,
   AnPNotification,
-  SystemNotification } from './src/main/ets/api/models/MessageModels';
+  SystemNotification,
+  Chat } from './src/main/ets/api/models/MessageModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

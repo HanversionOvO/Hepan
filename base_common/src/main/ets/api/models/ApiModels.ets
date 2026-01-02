@@ -6,7 +6,7 @@ export interface LegacyResponse<T = Object> {
   head?: LegacyHead; // 响应头信息
   body?: T; // 响应体
   pois?: Record<string, string>[];
-  list?: AnPNotification[]
+  list?: AnPNotification[];
 }
 
 export interface LegacyHead {
