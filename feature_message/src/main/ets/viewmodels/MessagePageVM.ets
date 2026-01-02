@@ -55,7 +55,7 @@ export class MessagePageVM extends BaseVM {
   // 消息列表监听器
   private messageListListener = (list: RecentMessage[]) => {
     LogUtil.debug(TAG, JSON.stringify(list));
-    
+
     this.messages = [...list];
   };
   private messageCountListener = (newMessages: NewMessagesSummary) => {
@@ -65,7 +65,8 @@ export class MessagePageVM extends BaseVM {
   updateMessageCounts(newMessages: NewMessagesSummary) {
     this.messageNotifyCards[0].count = newMessages.posts.at;
     this.messageNotifyCards[1].count = newMessages.posts.reply;
-    this.messageNotifyCards[2].count = newMessages.posts.rate + newMessages.posts.other + newMessages.system.system;
+    this.messageNotifyCards[2].count =
+      newMessages.posts.rate + newMessages.posts.other + newMessages.system.system + newMessages.system.friend;
   }
 
   constructor() {
