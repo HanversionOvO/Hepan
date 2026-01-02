@@ -54,8 +54,7 @@ export struct NoticePageImpl {
                 GridItem()
                   .height(this.vm.isTabletView ?
                     this.vm.window.windowBottomPadding :
-                    CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
-                    CommonConstant.NormalContainerTBPadding)
+                    this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding)
               }
               .columnsTemplate('1fr')
               .rowsGap(CommonConstant.NormalContainerInnerPadding)
