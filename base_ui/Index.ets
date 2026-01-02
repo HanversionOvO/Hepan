@@ -13,3 +13,5 @@ export { StateLayout } from './src/main/ets/components/StateLayout';
 export { CustomNavTitle, NavTitleButtonModel } from './src/main/ets/components/CustomNavTitle';
 
 export { CustomMarkdown } from './src/main/ets/components/CustomMarkdown';
+
+export { CustomFacePanel } from './src/main/ets/components/CustomFacePanel';
