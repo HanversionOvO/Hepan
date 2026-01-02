@@ -171,7 +171,6 @@ export struct ChatPageImpl {
       this.vm.stopListen();
     })
     .onBackPressed(() => {
-      // 物理返回键处理：如果面板打开，先关闭面板
       if (this.vm.isShowFacePanel) {
         AppUtil.getUIContext().animateTo({
           duration: CommonConstant.AnimationDurationNormal,
