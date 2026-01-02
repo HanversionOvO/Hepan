@@ -9,7 +9,8 @@ export struct MessageCard {
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       Badge({
-        count: this.message.isNew ? 1 : 0,
+        // 修复：必须明确判断 '1'，因为 '0' 字符串也是真值
+        count: this.message.isNew === '1' ? 1 : 0,
         style: {
           badgeColor: CommonConstant.ErrorColor,
           badgeSize: CommonConstant.TextSizeTiny,

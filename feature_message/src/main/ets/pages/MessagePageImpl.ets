@@ -62,7 +62,9 @@ export struct MessagePageImpl {
                       message: message
                     })
                   }
-                }, (item: RecentMessage) => item.plid.toString())
+                }, (item: RecentMessage) => {
+                  return `${item.plid}_${item.lastDateline}`;
+                })
 
                 GridItem()
                   .height(this.vm.isTabletView ?

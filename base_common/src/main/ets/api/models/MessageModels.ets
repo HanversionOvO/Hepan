@@ -1,3 +1,52 @@
+// 1. 新增：定义纯数据接口，用于参数传递和类型检查
+export interface RecentMessageData {
+  plid?: number;
+  pmid?: number;
+  lastUserId?: number;
+  lastUserName?: string;
+  lastSummary?: string;
+  lastDateline?: number;
+  toUserId?: number;
+  toUserAvatar?: string;
+  toUserName?: string;
+  toUserIsBlack?: string;
+  isNew?: string;
+}
+
+// 2. 修改：RecentMessage 类使用该接口
+@ObservedV2
+export class RecentMessage {
+  @Trace plid: number = 0;
+  @Trace pmid: number = 0;
+  @Trace lastUserId: number = 0;
+  @Trace lastUserName: string = '';
+  @Trace lastSummary: string = '';
+  @Trace lastDateline: number = 0;
+  @Trace toUserId: number = 0;
+  @Trace toUserAvatar: string = '';
+  @Trace toUserName: string = '';
+  @Trace toUserIsBlack: string = '0';
+  @Trace isNew: string = '0';
+
+  // 构造函数接收接口类型
+  constructor(data?: RecentMessageData) {
+    if (data) {
+      this.plid = data.plid ?? 0;
+      this.pmid = data.pmid ?? 0;
+      this.lastUserId = data.lastUserId ?? 0;
+      this.lastUserName = data.lastUserName ?? '';
+      this.lastSummary = data.lastSummary ?? '';
+      this.lastDateline = data.lastDateline ?? 0;
+      this.toUserId = data.toUserId ?? 0;
+      this.toUserAvatar = data.toUserAvatar ?? '';
+      this.toUserName = data.toUserName ?? '';
+      this.toUserIsBlack = data.toUserIsBlack ?? '0';
+      this.isNew = data.isNew ?? '0';
+    }
+  }
+}
+
+// ... 保持其他接口 (NewChat, MessageSummary 等) 不变
 export interface PostSummary {
   reply: number;
   comment: number;
@@ -43,18 +92,4 @@ export interface NewChat {
 export interface MessageSummary {
   new_messages: NewMessagesSummary;
   new_chats: NewChat[];
-}
-
-export interface RecentMessage {
-  plid: number;
-  pmid: number;
-  lastUserId: number;
-  lastUserName: string;
-  lastSummary: string;
-  lastDateline: number;
-  toUserId: number;
-  toUserAvatar: string;
-  toUserName: string;
-  toUserIsBlack: string;
-  isNew: string;
 }
