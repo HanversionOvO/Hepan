@@ -43,7 +43,13 @@ export struct NoticePageImpl {
                       messageCard: messageCard
                     })
                   }
-                }, (messageCard: AnPNotification) => messageCard.reply_remind_id.toString())
+                }, (messageCard: AnPNotification) => {
+                  if (messageCard.reply_remind_id) {
+                    return messageCard.reply_remind_id.toString();
+                  } else {
+                    return (Number(messageCard.replied_date) * Math.random()).toString();
+                  }
+                })
 
                 GridItem()
                   .height(this.vm.isTabletView ?

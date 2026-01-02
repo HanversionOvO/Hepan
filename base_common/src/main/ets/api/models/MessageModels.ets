@@ -99,14 +99,16 @@ export interface AnPNotification {
   board_id: number;
   topic_id: number;
   topic_subject: string;
-  topic_content: string;
-  topic_url: string;
+  topic_content?: string;
+  topic_url?: string;
   reply_content: string;
   reply_url: string;
-  reply_remind_id: number;
+  reply_remind_id?: number;
   reply_nick_name: string;
   user_id: number;
   icon: string;
   is_read: number;
   replied_date: string;
+  mod?: string;
+  type?: string;
 }
