@@ -91,28 +91,28 @@ export struct ChatBottomBar {
             this.controller.deleteSpans();
             this.checkContent();
 
+            let msgContent = '';
+
             for (const span of spans) {
               const textSpan = span as RichEditorTextSpanResult;
               const imageSpan = span as RichEditorImageSpanResult;
-              
+
               if (imageSpan.imageStyle) {
                 if (imageSpan.valueResourceStr && typeof imageSpan.valueResourceStr === 'string') {
-                  await this.vm.sendMessage({
-                    type: 'image',
-                    content: imageSpan.valueResourceStr
-                  });
+                  msgContent += `[mobcent_phiz=${imageSpan.valueResourceStr}]`;
                 }
               } else {
                 if (typeof textSpan.value === 'string') {
-                  const text = textSpan.value;
-                  if (text.trim().length > 0) {
-                    await this.vm.sendMessage({
-                      type: 'text',
-                      content: text
-                    });
-                  }
+                  msgContent += textSpan.value;
                 }
               }
+            }
+
+            if (msgContent.length > 0) {
+              await this.vm.sendMessage({
+                type: 'text', // 统一使用 text 类型发送，包含表情代码
+                content: msgContent
+              });
             }
           })
         }
