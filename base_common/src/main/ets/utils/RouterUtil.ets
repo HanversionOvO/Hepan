@@ -1,7 +1,8 @@
 const TAG = "[RouterUtil]: "
 
 export enum StackEnum {
-  MAIN = 'main'
+  MAIN = 'main',
+  MESSAGE = 'message'
 }
 
 export enum RouterMap {

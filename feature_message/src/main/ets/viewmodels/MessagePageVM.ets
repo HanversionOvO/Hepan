@@ -1,4 +1,4 @@
-import { BaseVM, CommonConstant } from 'base_common';
+import { BaseVM, CommonConstant, RouterUtil, StackEnum } from 'base_common';
 import { NavTitleButtonModel } from 'base_ui';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 
@@ -6,6 +6,7 @@ import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 export class MessagePageVM extends BaseVM {
   @Trace isHideSearch: boolean = false;
   @Trace isRefreshingMessage: boolean = false;
+  @Trace messageStack: NavPathStack = RouterUtil.getStack(StackEnum.MESSAGE);
   @Trace messagePageScroller: Scroller = new Scroller();
   @Trace titleButtons: NavTitleButtonModel[] = [
     {

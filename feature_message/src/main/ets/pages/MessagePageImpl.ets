@@ -16,7 +16,7 @@ export struct MessagePageImpl {
 
   @Builder
   build() {
-    Navigation() {
+    Navigation(this.vm.messageStack) {
       Stack({ alignContent: Alignment.Top }) {
         Column() {
           CustomNavTitle({
