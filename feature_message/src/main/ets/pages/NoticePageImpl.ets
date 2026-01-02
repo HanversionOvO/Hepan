@@ -99,7 +99,7 @@ export struct NoticePageImpl {
       if (params) {
         this.vm.messageNotifyCard = params;
 
-        await this.vm.loadData();
+        await this.vm.loadData(true);
       }
     })
   }
