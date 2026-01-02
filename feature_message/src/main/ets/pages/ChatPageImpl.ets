@@ -43,9 +43,7 @@ export struct ChatPageImpl {
                 chat: chat
               })
             }
-          }, (chat: Chat) => {
-            return (Number(chat.time) * Math.random()).toString()
-          })
+          }, (chat: Chat) => `${chat.sender}_${chat.mid}_${chat.time}`)
 
           ListItem()
             .height(this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
@@ -83,6 +81,7 @@ export struct ChatPageImpl {
             this.vm.backPage();
           })
           .zIndex(2)
+          .expandSafeArea([SafeAreaType.KEYBOARD])
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)

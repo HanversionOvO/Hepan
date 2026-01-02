@@ -45,7 +45,7 @@ export struct NoticePageImpl {
                       })
                     }
                   }, (noticeCard: SystemNotification) => {
-                    return (Number(noticeCard.replied_date) * Math.random()).toString();
+                    return `${noticeCard.replied_date}_${noticeCard.user_id}_${noticeCard.type}`;
                   })
                 } else {
                   ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {
@@ -59,7 +59,7 @@ export struct NoticePageImpl {
                     if (messageCard.reply_remind_id) {
                       return messageCard.reply_remind_id.toString();
                     } else {
-                      return (Number(messageCard.replied_date) * Math.random()).toString();
+                      return `${messageCard.replied_date}_${messageCard.user_id}_${messageCard.topic_id}`;
                     }
                   })
                 }

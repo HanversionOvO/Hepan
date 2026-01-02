@@ -38,5 +38,6 @@ export struct ChatNavBar {
       right: CommonConstant.PageLRPadding
     })
     .transition(TransitionEffect.move(TransitionEdge.TOP).combine(TransitionEffect.opacity(0)))
+    .expandSafeArea([SafeAreaType.KEYBOARD])
   }
 }
