@@ -17,6 +17,14 @@ export class ChatPageVM extends BaseVM {
     }
   }
 
+  toggleHeader(hide: boolean) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isHideNavBar = hide;
+        })
+  }
+
   backPage() {
     AppUtil.getUIContext()
       .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },

@@ -12,12 +12,24 @@ const TAG = '[ChatPageImpl]: ';
 export struct ChatPageImpl {
   @Local vm: ChatPageVM = new ChatPageVM();
 
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      if (yOffset > CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(false);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(true);
+      }
+    }
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Top }) {
-        ChatNavBar({
-          vm: this.vm
-        })
+        if (!this.vm.isHideNavBar) {
+          ChatNavBar({
+            vm: this.vm
+          })
+        }
 
         List({
           space: CommonConstant.NormalContainerInnerPadding
@@ -34,7 +46,7 @@ export struct ChatPageImpl {
 
           ListItem()
             .height(this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
-              CommonConstant.IconSizeLarge)
+            CommonConstant.IconSizeLarge)
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
@@ -44,6 +56,15 @@ export struct ChatPageImpl {
           right: CommonConstant.PageLRPadding
         })
         .scrollBar(BarState.Off)
+        .onWillScroll((yOffset, scrollState) => {
+          this.handleScroll(yOffset, scrollState);
+        })
+        .onReachStart(() => {
+
+        })
+        .onReachEnd(async () => {
+          this.vm.toggleHeader(false);
+        })
 
         ChatBottomBar({ controller: this.vm.richEditorController })
           .position({
