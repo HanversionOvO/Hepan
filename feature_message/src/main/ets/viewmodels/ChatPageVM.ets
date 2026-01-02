@@ -22,7 +22,7 @@ export class ChatPageVM extends BaseVM {
 
   async loadData() {
     if (this.recentMessage) {
-      const chats: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, 0, 10);
+      const chats: Chat[] = await MessageApi.getChat(this.recentMessage.toUserId, 0, 0, 20);
       this.chats = chats.sort((a, b) => Number(a.time) - Number(b.time));
       this.isAtBottom = true;
       setTimeout(() => {
