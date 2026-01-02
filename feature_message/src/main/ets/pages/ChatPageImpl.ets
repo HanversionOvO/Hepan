@@ -15,9 +15,9 @@ export struct ChatPageImpl {
   private handleScroll(yOffset: number, scrollState: ScrollState) {
     if (scrollState === ScrollState.Scroll) {
       if (yOffset > CommonConstant.ScrollAnimationThreshold) {
-        this.vm.toggleHeader(false);
-      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
         this.vm.toggleHeader(true);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(false);
       }
     }
   }
