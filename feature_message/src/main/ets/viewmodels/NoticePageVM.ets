@@ -1,5 +1,5 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { AnPNotification, BaseVM, CommonConstant, MessageApi, UiState } from 'base_common';
+import { AnPNotification, BaseVM, CommonConstant, MessageApi, RouterUtil, StackEnum, UiState } from 'base_common';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 
 const TAG = '[NoticePageVM]: ';
@@ -77,6 +77,14 @@ export class NoticePageVM extends BaseVM {
       .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
         () => {
           this.isHideNavBar = hide;
+        })
+  }
+
+  backPage() {
+    AppUtil.getUIContext()
+      .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
+        () => {
+          RouterUtil.pop(undefined, false, StackEnum.MESSAGE);
         })
   }
 }

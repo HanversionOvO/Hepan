@@ -1,4 +1,4 @@
-import { AnPNotification, CommonConstant, RouterUtil, StackEnum } from 'base_common'
+import { AnPNotification, CommonConstant } from 'base_common'
 import { FloatButton, StateLayout } from 'base_ui'
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard'
 import { NoticeCard } from '../components/NoticeCard'
@@ -84,10 +84,7 @@ export struct NoticePageImpl {
             left: CommonConstant.PageLRPadding
           })
           .onClick(() => {
-            animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
-              () => {
-                RouterUtil.pop(undefined, false, StackEnum.MESSAGE);
-              })
+            this.vm.backPage();
           })
           .zIndex(2)
       }
@@ -98,9 +95,12 @@ export struct NoticePageImpl {
       const params = context.pathInfo.param as MessageNotifyCardItem;
       if (params) {
         this.vm.messageNotifyCard = params;
-
         await this.vm.loadData(true);
       }
+    })
+    .onBackPressed(() => {
+      this.vm.backPage();
+      return true;
     })
   }
 }
