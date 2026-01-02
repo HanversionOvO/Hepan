@@ -1,3 +1,4 @@
+import { LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   CommonConstant,
@@ -53,6 +54,8 @@ export class MessagePageVM extends BaseVM {
   @Trace messages: RecentMessage[] = [];
   // 消息列表监听器
   private messageListListener = (list: RecentMessage[]) => {
+    LogUtil.debug(TAG, JSON.stringify(list));
+    
     this.messages = [...list];
   };
   private messageCountListener = (newMessages: NewMessagesSummary) => {
@@ -73,9 +76,7 @@ export class MessagePageVM extends BaseVM {
   }
 
   async startMessage() {
-    // 开启轮询
     MessageManager.getInstance().start();
-    // 首次进入主动刷新列表
     await this.refreshMessages();
   }
 
