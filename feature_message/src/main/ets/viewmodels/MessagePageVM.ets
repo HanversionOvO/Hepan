@@ -1,4 +1,3 @@
-import { LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   CommonConstant,
@@ -60,8 +59,6 @@ export class MessagePageVM extends BaseVM {
   @Trace messages: RecentMessage[] = [];
   // 消息列表监听器
   private messageListListener = (list: RecentMessage[]) => {
-    LogUtil.debug(TAG, JSON.stringify(list));
-
     this.messages = [...list];
   };
   private messageCountListener = (newMessages: NewMessagesSummary) => {

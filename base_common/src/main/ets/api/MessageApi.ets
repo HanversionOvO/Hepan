@@ -2,7 +2,7 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { AnPNotification, MessageSummary, RecentMessage } from './models/MessageModels';
+import { AnPNotification, MessageSummary, RecentMessage, SystemNotification } from './models/MessageModels';
 import { LegacyResponse } from './models/ApiModels';
 
 const TAG = '[MessageApi]: ';
@@ -49,7 +49,8 @@ export class MessageApi {
     }
   }
 
-  public static async getNotificationList(type: 'at' | 'post', page = 1, pagesize = 15): Promise<AnPNotification[]> {
+  public static async getNotificationList(type: 'at' | 'post', page = 1,
+    pagesize = 15): Promise<AnPNotification[]> {
     const result =
       await ApiClient.getInstance()
         .requestLegacy<LegacyResponse>('message', 'notifylist', {
@@ -60,6 +61,24 @@ export class MessageApi {
 
     if (result.data.rs === 1 && result.data.list) {
       return result.data.list;
+    } else {
+      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getSystemNotification(page = 1, pagesize = 15): Promise<SystemNotification[]> {
+    const result =
+      await ApiClient.getInstance()
+        .requestLegacy<LegacyResponse<Record<string, Object>>>('message', 'notifylistex', {
+          'type': 'system',
+          'page': page,
+          'pagesize': pagesize
+        });
+
+    if (result.data.rs === 1 && result.data.body) {
+      return result.data.body['data'] as SystemNotification[];
     } else {
       const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
       LogUtil.warn(TAG, errorMsg);

@@ -1,5 +1,14 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { AnPNotification, BaseVM, CommonConstant, MessageApi, RouterUtil, StackEnum, UiState } from 'base_common';
+import {
+  AnPNotification,
+  BaseVM,
+  CommonConstant,
+  MessageApi,
+  RouterUtil,
+  StackEnum,
+  SystemNotification,
+  UiState
+} from 'base_common';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
 
 const TAG = '[NoticePageVM]: ';
@@ -12,6 +21,7 @@ export class NoticePageVM extends BaseVM {
   @Trace currentPage: number = 1;
   @Trace hasMore: boolean = true;
   @Trace messageCards: AnPNotification[] = [];
+  @Trace noticeCards: SystemNotification[] = [];
 
   async loadData(isInit: boolean = false) {
     if (isInit) {
@@ -26,16 +36,21 @@ export class NoticePageVM extends BaseVM {
       if (this.messageNotifyCard) {
         const type = this.messageNotifyCard.type;
         if (type === 'system') {
+          this.noticeCards = await MessageApi.getSystemNotification();
 
+          if (this.noticeCards.length === 0) {
+            this.uiState = UiState.EMPTY;
+          } else {
+            this.uiState = UiState.SUCCESS;
+          }
         } else {
           this.messageCards = await MessageApi.getNotificationList(type)
-          LogUtil.debug(TAG, JSON.stringify(this.messageCards))
-        }
 
-        if (this.messageCards.length === 0) {
-          this.uiState = UiState.EMPTY;
-        } else {
-          this.uiState = UiState.SUCCESS;
+          if (this.messageCards.length === 0) {
+            this.uiState = UiState.EMPTY;
+          } else {
+            this.uiState = UiState.SUCCESS;
+          }
         }
       }
     } catch (error) {
@@ -56,10 +71,14 @@ export class NoticePageVM extends BaseVM {
       if (this.messageNotifyCard) {
         const type = this.messageNotifyCard.type;
         if (type === "system") {
+          const noticeCards: SystemNotification[] = await MessageApi.getSystemNotification(this.currentPage + 1);
 
+          if (noticeCards.length > 0) {
+            this.noticeCards = this.noticeCards.concat(noticeCards);
+            this.currentPage++;
+          }
         } else {
           const messageCards: AnPNotification[] = await MessageApi.getNotificationList(type, this.currentPage + 1);
-          LogUtil.debug(TAG, JSON.stringify(messageCards))
 
           if (messageCards.length > 0) {
             this.messageCards = this.messageCards.concat(messageCards);

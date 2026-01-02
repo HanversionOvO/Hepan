@@ -112,3 +112,14 @@ export interface AnPNotification {
   mod?: string;
   type?: string;
 }
+
+export interface SystemNotification {
+  replied_date: string;
+  type: string;
+  icon: string;
+  user_name: string;
+  user_id: string;
+  mod: string;
+  note: string;
+  is_read: string;
+}

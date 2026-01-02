@@ -1,15 +1,31 @@
-import { AnPNotification, CommonConstant, DateUtil } from 'base_common';
+import { AnPNotification, CommonConstant, DateUtil, SystemNotification } from 'base_common';
 import { NoticePageVM } from '../viewmodels/NoticePageVM';
 
 @ComponentV2
 export struct NoticeCard {
-  @Param @Require messageCard: AnPNotification;
+  @Param @Require noticeCard: SystemNotification | AnPNotification;
   @Param @Require vm: NoticePageVM;
+
+  @Computed
+  get systemMsg(): SystemNotification | null {
+    if (this.vm.messageNotifyCard?.type === 'system') {
+      return this.noticeCard as SystemNotification;
+    }
+    return null;
+  }
+
+  @Computed
+  get anpMsg(): AnPNotification | null {
+    if (this.vm.messageNotifyCard?.type !== 'system') {
+      return this.noticeCard as AnPNotification;
+    }
+    return null;
+  }
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       // 1. 左侧头像区
-      if (this.vm.messageNotifyCard?.type === "system") {
+      if (this.systemMsg) {
         // 系统通知图标
         Stack() {
           Circle()
@@ -18,10 +34,11 @@ export struct NoticeCard {
             .fill($r('app.color.start_window_background'))
           SymbolGlyph($r('sys.symbol.bell_fill'))
             .fontSize(CommonConstant.IconSizeNormal)
-            .fontColor([this.vm.messageNotifyCard.iconColor])
+            .fontColor([this.vm.messageNotifyCard?.iconColor])
         }
-      } else {
-        Image(this.messageCard.icon)
+        .alignSelf(ItemAlign.Start)
+      } else if (this.anpMsg) {
+        Image(this.anpMsg.icon)
           .width(CommonConstant.IconSizeLarge)
           .height(CommonConstant.IconSizeLarge)
           .borderRadius(CommonConstant.RadiusRound)
@@ -32,26 +49,41 @@ export struct NoticeCard {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         // 头部：昵称/标题 + 时间
         Row() {
-          Text(this.messageCard.reply_nick_name)
-            .fontSize(CommonConstant.TextSizeNormal)
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('sys.color.font_primary'))
-            .layoutWeight(1)
+          if (this.systemMsg) {
+            Text(this.systemMsg.user_name)
+              .fontSize(CommonConstant.TextSizeNormal)
+              .fontWeight(FontWeight.Bold)
+              .fontColor($r('sys.color.font_primary'))
+              .layoutWeight(1)
+          } else if (this.anpMsg) {
+            Text(this.anpMsg.reply_nick_name)
+              .fontSize(CommonConstant.TextSizeNormal)
+              .fontWeight(FontWeight.Bold)
+              .fontColor($r('sys.color.font_primary'))
+              .layoutWeight(1)
+          }
 
-          Text(DateUtil.getRelativeTime(Number(this.messageCard.replied_date)))
+          Text(DateUtil.getRelativeTime(Number(this.noticeCard.replied_date)))
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_tertiary'))
         }
         .width(CommonConstant.FullPercent)
 
-        Text(this.messageCard.reply_content)
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontColor($r('sys.color.font_primary'))
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
+        if (this.systemMsg) {
+          Text(this.systemMsg.note)
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontColor($r('sys.color.font_primary'))
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        } else if (this.anpMsg) {
+          Text(this.anpMsg.reply_content)
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontColor($r('sys.color.font_primary'))
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        }
 
-        if (this.messageCard.topic_subject) {
+        if (this.anpMsg && this.anpMsg.topic_subject) {
           Row() {
-            Text(this.messageCard.topic_subject)
+            Text(this.anpMsg.topic_subject)
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_secondary'))
               .maxLines(2)

@@ -1,4 +1,4 @@
-import { AnPNotification, CommonConstant } from 'base_common'
+import { AnPNotification, CommonConstant, SystemNotification } from 'base_common'
 import { FloatButton, StateLayout } from 'base_ui'
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard'
 import { NoticeCard } from '../components/NoticeCard'
@@ -36,20 +36,33 @@ export struct NoticePageImpl {
           }) {
             Refresh({ refreshing: $$this.vm.isRefreshingNotice }) {
               Grid(new Scroller()) {
-                ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {
-                  GridItem() {
-                    NoticeCard({
-                      vm: this.vm,
-                      messageCard: messageCard
-                    })
-                  }
-                }, (messageCard: AnPNotification) => {
-                  if (messageCard.reply_remind_id) {
-                    return messageCard.reply_remind_id.toString();
-                  } else {
-                    return (Number(messageCard.replied_date) * Math.random()).toString();
-                  }
-                })
+                if (this.vm.messageNotifyCard?.type === 'system') {
+                  ForEach(this.vm.noticeCards, (noticeCard: SystemNotification) => {
+                    GridItem() {
+                      NoticeCard({
+                        vm: this.vm,
+                        noticeCard: noticeCard
+                      })
+                    }
+                  }, (noticeCard: SystemNotification) => {
+                    return (Number(noticeCard.replied_date) * Math.random()).toString();
+                  })
+                } else {
+                  ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {
+                    GridItem() {
+                      NoticeCard({
+                        vm: this.vm,
+                        noticeCard: messageCard
+                      })
+                    }
+                  }, (messageCard: AnPNotification) => {
+                    if (messageCard.reply_remind_id) {
+                      return messageCard.reply_remind_id.toString();
+                    } else {
+                      return (Number(messageCard.replied_date) * Math.random()).toString();
+                    }
+                  })
+                }
 
                 GridItem()
                   .height(this.vm.isTabletView ?
