@@ -1,6 +1,8 @@
-import { BaseVM, CommonConstant, RouterUtil, StackEnum } from 'base_common';
+import { BaseVM, CommonConstant, MessageApi, NewMessagesSummary, RouterUtil, StackEnum } from 'base_common';
 import { NavTitleButtonModel } from 'base_ui';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
+
+const TAG = '[MessagePageVM]: '
 
 @ObservedV2
 export class MessagePageVM extends BaseVM {
@@ -14,30 +16,43 @@ export class MessagePageVM extends BaseVM {
     }
     }
   ]
+  // ✅ 修复：使用 new 关键字，并按顺序传入参数
   @Trace messageNotifyCards: MessageNotifyCardItem[] = [
-    {
-      count: 0,
-      icon: $r('sys.symbol.at'),
-      iconColor: CommonConstant.ThemeColor,
-      cardTitle: $r('app.string.MessagePage_at_me'),
-      onCardClick: () => {
+    new MessageNotifyCardItem(
+      0,
+      $r('sys.symbol.at'),
+      CommonConstant.ThemeColor,
+      $r('app.string.MessagePage_at_me'),
+      () => {
       }
-    },
-    {
-      count: 0,
-      icon: $r('sys.symbol.ellipsis_message'),
-      iconColor: CommonConstant.InfoColor,
-      cardTitle: $r('app.string.MessagePage_reply'),
-      onCardClick: () => {
+    ),
+    new MessageNotifyCardItem(
+      0,
+      $r('sys.symbol.ellipsis_message'),
+      CommonConstant.SuccessColor,
+      $r('app.string.MessagePage_reply'),
+      () => {
       }
-    },
-    {
-      count: 2,
-      icon: $r('sys.symbol.bell'),
-      iconColor: CommonConstant.SuccessColor,
-      cardTitle: $r('app.string.MessagePage_notification'),
-      onCardClick: () => {
+    ),
+    new MessageNotifyCardItem(
+      0,
+      $r('sys.symbol.bell'),
+      CommonConstant.WarningColor,
+      $r('app.string.MessagePage_notification'),
+      () => {
       }
-    },
+    ),
   ];
+
+  async startMessage() {
+    await this.refreshNotificationData();
+  }
+
+  async refreshNotificationData() {
+    const newMessages: NewMessagesSummary = await MessageApi.getMessageSummary();
+
+    this.messageNotifyCards[0].count = newMessages.posts.at;
+    this.messageNotifyCards[1].count = newMessages.posts.reply;
+    this.messageNotifyCards[2].count = newMessages.posts.rate + newMessages.posts.other + newMessages.system.system;
+  }
 }

@@ -9,6 +9,10 @@ export struct MessagePageImpl {
   @Local minNavBarWidth: number = 340;
   @Local gridLanes: number = 2;
 
+  async aboutToAppear() {
+    await this.vm.startMessage();
+  }
+
   @Computed
   get defaultNavBarWidth(): number {
     return (this.vm.window.windowWidth - CommonConstant.BottomBarHeight) / 2;

@@ -1,12 +1,28 @@
 import { CommonConstant } from 'base_common';
 import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
-export interface MessageNotifyCardItem {
-  count: number,
-  icon: Resource,
-  iconColor: ResourceStr,
-  cardTitle: ResourceStr,
-  onCardClick: () => void
+@ObservedV2
+export class MessageNotifyCardItem {
+  @Trace count: number = 0;
+  icon: Resource = $r('sys.symbol.at');
+  iconColor: ResourceColor = CommonConstant.ThemeColor;
+  cardTitle: ResourceStr = '';
+  onCardClick: () => void = () => {
+  };
+
+  constructor(
+    count: number,
+    icon: Resource,
+    iconColor: ResourceColor,
+    cardTitle: ResourceStr,
+    onCardClick: () => void
+  ) {
+    this.count = count;
+    this.icon = icon;
+    this.iconColor = iconColor;
+    this.cardTitle = cardTitle;
+    this.onCardClick = onCardClick;
+  }
 }
 
 @ComponentV2
@@ -31,7 +47,7 @@ export struct MessageNotifyCard {
             .fontColor([$r('sys.color.font_on_primary')])
         }
         .padding(CommonConstant.NormalContainerInnerPadding)
-        .borderRadius(CommonConstant.RadiusNormal)
+        .borderRadius(CommonConstant.RadiusLarge)
         .backgroundColor(messageCardModel.iconColor)
       }
 

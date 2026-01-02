@@ -7,9 +7,9 @@ export struct MinePageImpl {
   // 使用 VMManager 单例，确保 Tab 切换状态保持
   @Local vm: MinePageVM = VMManager.get(MinePageVM, () => new MinePageVM())
 
-  aboutToAppear(): void {
+  async aboutToAppear() {
     this.vm.init('me');
-    this.vm.startMine();
+    await this.vm.startMine();
   }
 
   build() {

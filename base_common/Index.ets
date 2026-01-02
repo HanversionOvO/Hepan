@@ -32,8 +32,12 @@ export { AuthApi } from './src/main/ets/api/AuthApi';
 
 export { UserApi } from './src/main/ets/api/UserApi';
 
+export { MessageApi } from './src/main/ets/api/MessageApi';
+
 export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
+
+export { NewMessagesSummary } from './src/main/ets/api/models/MessageModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

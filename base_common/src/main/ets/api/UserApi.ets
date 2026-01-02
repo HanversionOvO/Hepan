@@ -98,8 +98,6 @@ export class UserApi {
     const idStr = uid === 'me' ? 'me' : uid.toString();
     const path = `/_/user/${idStr}/friends?page=${page}&user_summary`;
 
-    // const userFriends: UserFriends[] = []; // 该行可以移除，下面直接返回 map 结果
-
     const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFriends>>>({
       path: path,
       method: http.RequestMethod.GET,
