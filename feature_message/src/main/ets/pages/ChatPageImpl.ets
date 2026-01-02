@@ -72,6 +72,7 @@ export struct ChatPageImpl {
         .onReachEnd(async () => {
           this.vm.toggleHeader(false);
         })
+        .maintainVisibleContentPosition(true)
 
         ChatBottomBar({ controller: this.vm.richEditorController })
           .position({

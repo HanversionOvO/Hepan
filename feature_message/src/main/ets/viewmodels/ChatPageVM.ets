@@ -117,12 +117,7 @@ export class ChatPageVM extends BaseVM {
 
         if (newChats.length > 0) {
           newChats.sort((a, b) => Number(a.time) - Number(b.time));
-          const insertCount = newChats.length;
           this.chats = [...newChats, ...this.chats];
-
-          setTimeout(() => {
-            this.chatScroller.scrollToIndex(insertCount);
-          }, 0);
         }
       }
     } catch (e) {
