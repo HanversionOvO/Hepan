@@ -6,6 +6,8 @@ import { ChatNavBar } from '../components/ChatNavBar';
 import { ChatNewMessageTip } from '../components/ChatNewMessageTip';
 import { ChatPageVM } from '../viewmodels/ChatPageVM';
 import { AppUtil } from '@pura/harmony-utils';
+import { inputMethod } from '@kit.IMEKit';
+import { window } from '@kit.ArkUI';
 
 const TAG = '[ChatPageImpl]: ';
 
@@ -48,6 +50,7 @@ export struct ChatPageImpl {
             }
           }, (chat: Chat) => `${chat.sender}_${chat.mid}_${chat.time}`)
 
+          // 底部垫片：根据面板状态调整高度
           ListItem()
             .height(this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
             CommonConstant.IconSizeLarge + (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0))
@@ -79,39 +82,51 @@ export struct ChatPageImpl {
           this.vm.toggleHeader(false);
         })
         .maintainVisibleContentPosition(true)
+        // 新增：点击列表区域（外部），关闭输入法和面板
+        .onClick(() => {
+          // 关闭面板
+          if (this.vm.isShowFacePanel) {
+            AppUtil.getUIContext().animateTo({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            }, () => {
+              this.vm.isShowFacePanel = false;
+            });
+          }
+          // 关闭键盘
+          inputMethod.getController().hideTextInput();
+        })
 
-        if (this.vm.isShowFacePanel) {
-          Column()
-            .width(CommonConstant.FullPercent)
-            .height(CommonConstant.FullPercent)
-            .backgroundColor(Color.Transparent)
-            .zIndex(3)
-            .onClick(() => {
+        ChatBottomBar({
+          controller: this.vm.richEditorController,
+          onFaceClick: () => {
+            // 点击表情按钮的处理
+            if (this.vm.isShowFacePanel) {
+              // 如果面板已开，则关闭
               AppUtil.getUIContext().animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
                 curve: CommonConstant.AnimationCurveSpring
               }, () => {
                 this.vm.isShowFacePanel = false;
               });
-            })
-        }
-
-        ChatBottomBar({
-          controller: this.vm.richEditorController,
-          onFaceClick: () => {
-            AppUtil.getUIContext().animateTo({
-              duration: CommonConstant.AnimationDurationNormal,
-              curve: CommonConstant.AnimationCurveSpring
-            }, () => {
-              this.vm.isShowFacePanel = !this.vm.isShowFacePanel;
-            });
+            } else {
+              // 如果要打开面板，先关闭键盘
+              inputMethod.getController().hideTextInput();
+              // 稍作延迟或直接打开，配合键盘监听逻辑
+              AppUtil.getUIContext().animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.isShowFacePanel = true;
+              });
+            }
           }
         })
           .position({
             bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
               (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0)
           })
-          .zIndex(4)
+          .zIndex(2)
 
         if (this.vm.isShowFacePanel) {
           CustomFacePanel({
@@ -128,7 +143,7 @@ export struct ChatPageImpl {
             .height(this.vm.window.windowHeight * 0.4)
             .transition(TransitionEffect.move(TransitionEdge.BOTTOM))
             .position({ bottom: 0 })
-            .zIndex(4)
+            .zIndex(3)
         }
 
         if (this.vm.showNewMessageTip) {
@@ -141,7 +156,7 @@ export struct ChatPageImpl {
               CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding +
                 (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0)
             })
-            .zIndex(4)
+            .zIndex(2)
         }
 
         FloatButton({ isFloating: this.vm.isHideNavBar })
@@ -166,18 +181,26 @@ export struct ChatPageImpl {
         this.vm.recentMessage = params;
         await this.vm.startMessage();
       }
+
+      // 新增：监听键盘高度变化
+      // 当键盘弹出（高度>0）时，自动关闭表情面板
+      const win = await window.getLastWindow(AppUtil.getContext());
+      win.on('keyboardHeightChange', (data) => {
+        if (data > 0 && this.vm.isShowFacePanel) {
+          this.vm.isShowFacePanel = false;
+        }
+      });
     })
     .onWillDisappear(() => {
       this.vm.stopListen();
+      window.getLastWindow(AppUtil.getContext()).then(win => {
+        win.off('keyboardHeightChange');
+      });
     })
     .onBackPressed(() => {
+      // 物理返回键优先处理面板
       if (this.vm.isShowFacePanel) {
-        AppUtil.getUIContext().animateTo({
-          duration: CommonConstant.AnimationDurationNormal,
-          curve: CommonConstant.AnimationCurveSpring
-        }, () => {
-          this.vm.isShowFacePanel = false;
-        });
+        this.vm.isShowFacePanel = false;
         return true;
       }
       this.vm.backPage();
