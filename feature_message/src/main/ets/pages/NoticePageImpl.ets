@@ -1,4 +1,4 @@
-import { AnPNotification, CommonConstant, RouterUtil, StackEnum, VMManager } from 'base_common'
+import { AnPNotification, CommonConstant, RouterUtil, StackEnum } from 'base_common'
 import { FloatButton } from 'base_ui'
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard'
 import { NoticeCard } from '../components/NoticeCard'
@@ -9,7 +9,7 @@ const TAG = '[NoticePageImpl]: ';
 
 @ComponentV2
 export struct NoticePageImpl {
-  @Local vm: NoticePageVM = VMManager.get(NoticePageVM, () => new NoticePageVM())
+  @Local vm: NoticePageVM = new NoticePageVM();
 
   build() {
     NavDestination() {

@@ -7,6 +7,7 @@ export struct CustomMarkdown {
   @Param controller: MarkdownController = new MarkdownController();
   @Param titleColor: ResourceColor = $r('sys.color.font_primary');
   @Param textColor: ResourceColor = $r('sys.color.font_primary');
+  @Param textSize: number = CommonConstant.TextSizeNormal;
   @Param quoteBorderColor: ResourceColor = CommonConstant.ThemeColor;
   @Param quoteTextColor: ResourceColor = $r('sys.color.font_primary');
   @Param quoteBgColor: ResourceColor = $r('app.color.tetertiary_window_background');
@@ -16,6 +17,7 @@ export struct CustomMarkdown {
     this.controller
       .setTitleColor(this.titleColor)
       .setTextColor(this.textColor)
+      .setTextSize(this.textSize)
       .setQuoteBorderColor(this.quoteBorderColor)
       .setQuoteBackgroundColor(this.quoteBgColor)
       .setHyperlinkTextColor(this.hyperlinkTextColor)

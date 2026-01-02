@@ -1,5 +1,4 @@
 import { AnPNotification, CommonConstant, DateUtil } from 'base_common';
-import { CustomMarkdown } from 'base_ui';
 import { NoticePageVM } from '../viewmodels/NoticePageVM';
 
 @ComponentV2
@@ -45,9 +44,10 @@ export struct NoticeCard {
         }
         .width(CommonConstant.FullPercent)
 
-        CustomMarkdown({
-          content: this.messageCard.reply_content
-        })
+        Text(this.messageCard.reply_content)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontColor($r('sys.color.font_primary'))
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
