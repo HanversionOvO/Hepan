@@ -1,6 +1,6 @@
 import { LogUtil } from '@pura/harmony-utils';
 import { MessageApi } from '../api/MessageApi';
-import { NewMessagesSummary } from '../api/models/MessageModels';
+import { MessageSummary, NewMessagesSummary } from '../api/models/MessageModels';
 
 const TAG = '[MessageManager]: ';
 
@@ -46,9 +46,10 @@ export class MessageManager {
   // 执行网络请求
   private async fetchData() {
     try {
-      const summary: NewMessagesSummary = await MessageApi.getMessageSummary();
-      this.lastSummary = summary;
-      this.notifyListeners(summary);
+      const summary: MessageSummary = await MessageApi.getMessageSummary();
+      const newSummary: NewMessagesSummary = summary.new_messages;
+      this.lastSummary = newSummary;
+      this.notifyListeners(newSummary);
     } catch (error) {
       LogUtil.error(TAG, `Fetch message summary failed: ${JSON.stringify(error)}`);
     }

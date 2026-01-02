@@ -13,21 +13,9 @@ import {
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { UserAvatarUtil } from '../utils/UserAvatarUtil';
+import { LegacyResponse } from './models/ApiModels';
 
 const TAG = '[UserApi]: ';
-
-interface LegacyResponse {
-  rs: number; // 成功标记: 1 为成功, 0 为失败
-  errcode: string; // 错误码
-  head?: LegacyHead; // 响应头信息
-  body?: Object; // 响应体
-  pois?: Record<string, string>[];
-}
-
-interface LegacyHead {
-  errInfo?: string; // 错误描述信息
-  version?: string;
-}
 
 export class UserApi {
   /**

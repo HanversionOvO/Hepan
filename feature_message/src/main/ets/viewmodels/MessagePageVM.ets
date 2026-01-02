@@ -1,8 +1,10 @@
 import {
   BaseVM,
   CommonConstant,
+  MessageApi,
   MessageManager,
   NewMessagesSummary,
+  RecentMessage,
   RouterUtil,
   StackEnum
 } from 'base_common';
@@ -49,6 +51,7 @@ export class MessagePageVM extends BaseVM {
       }
     ),
   ];
+  @Trace messages: RecentMessage[] = [];
   private messageListener = (newMessages: NewMessagesSummary) => {
     this.updateMessageCounts(newMessages);
   };
@@ -65,6 +68,11 @@ export class MessagePageVM extends BaseVM {
   }
 
   async startMessage() {
+    await this.loadMessages();
+  }
 
+  async loadMessages() {
+    const messages: RecentMessage[] = await MessageApi.getMessageList();
+    this.messages = messages;
   }
 }

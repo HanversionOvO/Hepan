@@ -21,9 +21,6 @@ export class LoginPageVM extends BaseVM {
     }
 
     try {
-      // 2. 调用登录接口
-      // 注意：现在的 AuthApi.login 内部会自动更新 AuthModel 并将账号密码持久化到本地
-      // 所以这里不再需要手动操作 StorageManager.authModel
       await this.authApi.login(this.username.trim(), this.password);
 
       MessageManager.getInstance().start();

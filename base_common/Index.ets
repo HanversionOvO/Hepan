@@ -40,6 +40,6 @@ export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/e
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
 
-export { NewMessagesSummary } from './src/main/ets/api/models/MessageModels';
+export { NewMessagesSummary, RecentMessage } from './src/main/ets/api/models/MessageModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';
