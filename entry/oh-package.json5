@@ -8,6 +8,7 @@
   "dependencies": {
     "base_common": "file:../base_common",
     "base_ui": "file:../base_ui",
-    "feature_mine": "file:../feature_mine"
+    "feature_mine": "file:../feature_mine",
+    "feature_message": "file:../feature_message",
   }
 }

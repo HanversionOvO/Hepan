@@ -64,6 +64,10 @@
     {
       "name": "feature_mine",
       "srcPath": "./feature_mine"
+    },
+    {
+      "name": "feature_message",
+      "srcPath": "./feature_message",
     }
   ]
 }
