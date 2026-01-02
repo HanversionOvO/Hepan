@@ -33,7 +33,8 @@ export struct ChatNewMessageTip {
         .animation({ curve: CommonConstant.AnimationCurveSpring })
     )
     .onClick(() => {
-      this.vm.chatScroller.scrollToIndex(this.vm.chats.length - 1, true);
+      this.vm.chatScroller.scrollEdge(Edge.Bottom);
+      this.vm.updateBottomStatus(true);
     })
   }
 }

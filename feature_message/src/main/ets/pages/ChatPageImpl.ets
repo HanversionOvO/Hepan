@@ -1,4 +1,3 @@
-import { LogUtil } from '@pura/harmony-utils';
 import { Chat, CommonConstant, RecentMessage } from 'base_common';
 import { FloatButton } from 'base_ui';
 import { ChatBottomBar } from '../components/ChatBottomBar';
@@ -62,6 +61,11 @@ export struct ChatPageImpl {
         .onDidScroll((scrollOffset, scrollState) => {
           this.handleScroll(scrollOffset, scrollState);
         })
+        .onScrollIndex((start, end) => {
+          const totalCount = this.vm.chats.length;
+          const isAtBottom = totalCount > 0 && end >= totalCount - 1;
+          this.vm.updateBottomStatus(isAtBottom);
+        })
         .onReachStart(async () => {
           await this.vm.loadHistory();
         })
@@ -70,9 +74,11 @@ export struct ChatPageImpl {
         })
 
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          ChatNewMessageTip({
-            vm: this.vm
-          })
+          if (this.vm.showNewMessageTip) {
+            ChatNewMessageTip({
+              vm: this.vm
+            })
+          }
 
           ChatBottomBar({ controller: this.vm.richEditorController })
         }
@@ -105,9 +111,11 @@ export struct ChatPageImpl {
       const params = context.pathInfo.param as RecentMessage;
       if (params) {
         this.vm.recentMessage = params;
-        LogUtil.debug(TAG, JSON.stringify(this.vm.recentMessage))
-        await this.vm.loadData();
+        await this.vm.startMessage();
       }
+    })
+    .onWillDisappear(() => {
+      this.vm.stopListen();
     })
     .onBackPressed(() => {
       this.vm.backPage();
