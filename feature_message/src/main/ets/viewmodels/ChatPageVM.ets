@@ -83,7 +83,11 @@ export class ChatPageVM extends BaseVM {
   updateBottomStatus(isAtBottom: boolean) {
     this.isAtBottom = isAtBottom;
     if (isAtBottom) {
-      this.showNewMessageTip = false;
+      AppUtil.getUIContext()
+        .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal },
+          () => {
+            this.showNewMessageTip = false;
+          })
     }
   }
 

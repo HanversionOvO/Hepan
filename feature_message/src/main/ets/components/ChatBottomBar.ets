@@ -30,5 +30,9 @@ export struct ChatBottomBar {
     .justifyContent(FlexAlign.SpaceBetween)
     .transition(TransitionEffect.move(TransitionEdge.BOTTOM).combine(TransitionEffect.opacity(0)))
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .padding({
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding
+    })
   }
 }

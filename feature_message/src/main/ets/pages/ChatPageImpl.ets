@@ -73,23 +73,22 @@ export struct ChatPageImpl {
           this.vm.toggleHeader(false);
         })
 
-        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          if (this.vm.showNewMessageTip) {
-            ChatNewMessageTip({
-              vm: this.vm
-            })
-          }
+        ChatBottomBar({ controller: this.vm.richEditorController })
+          .position({
+            bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
+          })
 
-          ChatBottomBar({ controller: this.vm.richEditorController })
+
+        if (this.vm.showNewMessageTip) {
+          ChatNewMessageTip({
+            vm: this.vm
+          })
+            .position({
+              right: CommonConstant.PageLRPadding,
+              bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
+              CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding
+            })
         }
-        .padding({
-          left: CommonConstant.PageLRPadding,
-          right: CommonConstant.PageLRPadding
-        })
-        .alignItems(HorizontalAlign.End)
-        .position({
-          bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
-        })
 
         FloatButton({ isFloating: this.vm.isHideNavBar, floatIconColor: $r('sys.color.font_on_primary') })
           .position({
