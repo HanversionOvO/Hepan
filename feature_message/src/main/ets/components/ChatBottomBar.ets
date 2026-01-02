@@ -4,6 +4,27 @@ import { FloatButton } from 'base_ui';
 @ComponentV2
 export struct ChatBottomBar {
   @Param @Require controller: RichEditorController;
+  @Local hasContent: boolean = false;
+
+  checkContent() {
+    let hasTextOrImage = false;
+    const spans = this.controller.getSpans();
+
+    for (const span of spans) {
+      const textSpan = span as RichEditorTextSpanResult;
+
+      if (typeof textSpan.value === 'string') {
+        if (textSpan.value.trim().length > 0) {
+          hasTextOrImage = true;
+          break;
+        }
+      } else {
+        hasTextOrImage = true;
+        break;
+      }
+    }
+    this.hasContent = hasTextOrImage;
+  }
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -20,9 +41,8 @@ export struct ChatBottomBar {
             minHeight: CommonConstant.IconSizeLarge,
             maxHeight: CommonConstant.IconSizeLarge * 3
           })
+          .backgroundColor(Color.Transparent)
           .barState(BarState.Off)
-          .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
-          .borderRadius(CommonConstant.IconSizeLarge)
           .placeholder($r('app.string.ChatPage_send_placeholder'), {
             font: {
               size: CommonConstant.TextSizeNormal
@@ -35,23 +55,44 @@ export struct ChatBottomBar {
               fontSize: CommonConstant.TextSizeNormal,
               fontColor: $r('sys.color.font_primary')
             })
+
+            this.checkContent();
+          })
+          .onDidChange(() => {
+            this.checkContent();
           })
 
-        Row() {
-          SymbolGlyph($r('sys.symbol.paperplane'))
-            .fontSize(CommonConstant.TextSizeLarge)
-            .fontWeight(FontWeight.Bold)
-            .fontColor([$r('sys.color.font_on_primary')])
+        if (this.hasContent) {
+          Row() {
+            SymbolGlyph($r('sys.symbol.paperplane'))
+              .fontSize(CommonConstant.TextSizeLarge)
+              .fontWeight(FontWeight.Bold)
+              .fontColor([$r('sys.color.font_on_primary')])
+          }
+          .width(CommonConstant.IconSizeNormal)
+          .height(CommonConstant.IconSizeNormal)
+          .borderRadius(CommonConstant.RadiusRound)
+          .backgroundColor(CommonConstant.ThemeColor)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(VerticalAlign.Center)
+          .transition(
+            TransitionEffect.OPACITY
+              .combine(TransitionEffect.scale({ x: 0.5, y: 0.5 }))
+              .animation({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              })
+          )
         }
-        .width(CommonConstant.IconSizeLarge)
-        .height(CommonConstant.IconSizeLarge)
-        .borderRadius(CommonConstant.RadiusRound)
-        .backgroundColor(CommonConstant.ThemeColor)
-        .justifyContent(FlexAlign.Center)
-        .alignItems(VerticalAlign.Center)
       }
       .layoutWeight(1)
-      .alignItems(VerticalAlign.Bottom)
+      .animation({
+        duration: CommonConstant.AnimationDurationNormal,
+        curve: CommonConstant.AnimationCurveSpring
+      })
+      .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      .borderRadius(CommonConstant.IconSizeLarge / 2)
+      .padding({ right: CommonConstant.SmallContainerInnerPadding })
 
       FloatButton({
         isFloating: true,
