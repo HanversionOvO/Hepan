@@ -20,7 +20,6 @@ export class ChatPageVM extends BaseVM {
   }
 
   async loadHistory() {
-    // 正在加载、列表为空或无用户信息时不执行
     if (this.isLoadingHistory || this.chats.length === 0 || !this.recentMessage) {
       return;
     }
