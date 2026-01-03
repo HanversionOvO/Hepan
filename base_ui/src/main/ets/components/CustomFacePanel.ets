@@ -1,4 +1,4 @@
-import { BaseVM, CommonConstant } from 'base_common';
+import { BaseVM, BreakpointType, CommonConstant } from 'base_common';
 import { CustomTabBar, CustomTabItem } from './CustomTabBar';
 import { util } from '@kit.ArkTS';
 import { AppUtil } from '@pura/harmony-utils';
@@ -21,6 +21,17 @@ export struct CustomFacePanel {
   // 当前选中的 Tab 索引
   @Local currentIndex: number = 0;
   @Event onFaceClick: (url: string) => void;
+  @Local lanesOptions: BreakpointType<number> = new BreakpointType<number>({
+    sm: 6,
+    md: 8,
+    lg: 10,
+    xl: 12,
+  });
+
+  @Computed
+  get gridLanes(): number {
+    return this.lanesOptions.getValue(this.vm.breakPoint.currentBreakPoint);
+  }
 
   aboutToAppear(): void {
     this.loadFaceData();
@@ -93,7 +104,7 @@ export struct CustomFacePanel {
                   })
                 })
               }
-              .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr') // 5列展示
+              .columnsTemplate('1fr '.repeat(this.gridLanes)) // 5列展示
               .rowsGap(CommonConstant.NormalContainerInnerPadding)
               .columnsGap(CommonConstant.NormalContainerInnerPadding)
               .width(CommonConstant.FullPercent)
