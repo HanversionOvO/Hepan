@@ -160,4 +160,3 @@ export interface UploadResponse {
   message: string;
   data: UploadData;
 }
-

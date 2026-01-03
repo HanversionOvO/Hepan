@@ -1,5 +1,6 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import {
+  AttachmentApi,
   BaseVM,
   Chat,
   ChatSendContent,
@@ -160,9 +161,37 @@ export class ChatPageVM extends BaseVM {
     }
   }
 
+  async uploadAndSendImage(uri: string) {
+    if (!uri) {
+      return;
+    }
+
+    try {
+      // 调用 AttachmentApi 上传
+      const imageUrl = await AttachmentApi.uploadImage(uri);
+
+      if (imageUrl) {
+        // 发送图片消息
+        // 注意：根据 API 文档，content 直接填 URL 即可
+        await this.sendMessage({
+          type: 'image',
+          content: imageUrl
+        });
+        // 成功后关闭面板
+        this.isShowFilePanel = false;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Send image failed: ' + JSON.stringify(e));
+    }
+  }
+
   async takePhoto() {
     try {
       const result: string = await PickerUtil.cameraEasy();
+
+      if (result) {
+        await this.uploadAndSendImage(result);
+      }
     } catch (e) {
       LogUtil.error(TAG, 'Take photo failed: ' + JSON.stringify(e));
     }
@@ -170,9 +199,12 @@ export class ChatPageVM extends BaseVM {
 
   async selectImage() {
     try {
-      const result: string[] = await PhotoHelper.selectEasy({
+      const results: string[] = await PhotoHelper.selectEasy({
         maxSelectNumber: 1
-      })
+      });
+      if (results && results.length > 0) {
+        await this.uploadAndSendImage(results[0]);
+      }
     } catch (e) {
       LogUtil.error(TAG, 'Select image failed: ' + JSON.stringify(e));
     }

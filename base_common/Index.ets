@@ -36,6 +36,8 @@ export { UserApi } from './src/main/ets/api/UserApi';
 
 export { MessageApi } from './src/main/ets/api/MessageApi';
 
+export { AttachmentApi } from './src/main/ets/api/AttachmentApi';
+
 export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
