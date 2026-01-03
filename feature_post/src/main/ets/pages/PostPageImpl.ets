@@ -135,17 +135,17 @@ export struct PostPageImpl {
                   .layoutWeight(1)
               }
               .width(this.vm.isTabletView ? 340 : CommonConstant.FullPercent)
-              .height(CommonConstant.FullPercent)
-              .borderRadius(CommonConstant.RadiusLarge)
+              .borderRadius(this.vm.isTabletView ? CommonConstant.RadiusLarge : 0)
               .backgroundColor($r('app.color.second_window_background'))
               .margin(this.vm.isTabletView ?
                 { right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding } :
-                {
-                  left: CommonConstant.PageLRPadding,
-                  right: CommonConstant.PageLRPadding,
-                  bottom: this.vm.window.windowBottomPadding
-                }
+                0
               )
+              .padding(this.vm.isTabletView ? 0 : {
+                left: CommonConstant.PageLRPadding,
+                right: CommonConstant.PageLRPadding,
+                bottom: this.vm.window.windowBottomPadding
+              })
               .geometryTransition(TransitionMap.PostPageMarkDown)
               .layoutWeight(this.vm.isTabletView ? 0 : 1)
             }
