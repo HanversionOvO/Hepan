@@ -25,80 +25,129 @@ export struct PostPageImpl {
           Flex({
             direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.ColumnReverse
           }) {
-            RichTextToolBar({ vm: this.vm, buttons: this.vm.richTextButtons })
+            if (this.vm.isTabletView || !this.vm.isPreviewMode) {
+              RichTextToolBar({ vm: this.vm, buttons: this.vm.richTextButtons })
 
-            Column({ space: CommonConstant.LargeContainerInnerPadding }) {
-              ImagePicker({ vm: this.vm })
+              Column({ space: CommonConstant.LargeContainerInnerPadding }) {
+                ImagePicker({ vm: this.vm })
 
-              CategoryPicker({ vm: this.vm })
+                CategoryPicker({ vm: this.vm })
 
-              Column() {
-                TextInput({ placeholder: $r('app.string.PostPage_post_title'), text: this.vm.postTitle, })
-                  .fontSize(CommonConstant.TextSizeLarge)
-                  .fontWeight(FontWeight.Bold)
-                  .placeholderFont({ weight: FontWeight.Bold, size: CommonConstant.TextSizeLarge })
-                  .caretColor(CommonConstant.ThemeColor)
-                  .backgroundColor(Color.Transparent)
-                  .width(CommonConstant.FullPercent)
-                  .padding({
-                    left: 0,
-                    right: 0
+                Column() {
+                  TextInput({ placeholder: $r('app.string.PostPage_post_title'), text: this.vm.postTitle, })
+                    .fontSize(CommonConstant.TextSizeLarge)
+                    .fontWeight(FontWeight.Bold)
+                    .placeholderFont({ weight: FontWeight.Bold, size: CommonConstant.TextSizeLarge })
+                    .caretColor(CommonConstant.ThemeColor)
+                    .backgroundColor(Color.Transparent)
+                    .width(CommonConstant.FullPercent)
+                    .padding({
+                      left: 0,
+                      right: 0
+                    })
+                    .onFocus(() => {
+                      AppUtil.getUIContext()
+                        .animateTo({
+                          duration: CommonConstant.AnimationDurationNormal,
+                          curve: CommonConstant.AnimationCurveSpring
+                        }, () => {
+                          this.vm.isInputting = true;
+                        })
+                    })
+                    .onBlur(() => {
+                      AppUtil.getUIContext()
+                        .animateTo({
+                          duration: CommonConstant.AnimationDurationNormal,
+                          curve: CommonConstant.AnimationCurveSpring
+                        }, () => {
+                          this.vm.isInputting = false;
+                        })
+                    })
+                    .onChange((text: string) => {
+                      this.vm.postTitle = text;
+                    }) // 确保标题变化同步回VM
+
+                  Divider()
+                    .width(CommonConstant.FullPercent)
+                    .height(CommonConstant.BorderSizeHuge)
+                    .color($r('sys.color.font_tertiary'))
+                }
+
+                TextArea({ placeholder: $r('app.string.PostPage_content_placeholder'), text: this.vm.markdownContent })
+                  .placeholderFont({
+                    size: CommonConstant.TextSizeNormal
                   })
-
-                Divider()
+                  .padding({ bottom: this.vm.window.windowBottomPadding })
                   .width(CommonConstant.FullPercent)
-                  .height(CommonConstant.BorderSizeHuge)
-                  .color($r('sys.color.font_tertiary'))
+                  .fontSize(CommonConstant.TextSizeNormal)
+                  .borderRadius(0)
+                  .backgroundColor(Color.Transparent)
+                  .padding(0)
+                  .layoutWeight(1)
+                  .onFocus(() => {
+                    AppUtil.getUIContext()
+                      .animateTo({
+                        duration: CommonConstant.AnimationDurationNormal,
+                        curve: CommonConstant.AnimationCurveSpring
+                      }, () => {
+                        this.vm.isInputting = true;
+                      })
+                  })
+                  .onBlur(() => {
+                    AppUtil.getUIContext()
+                      .animateTo({
+                        duration: CommonConstant.AnimationDurationNormal,
+                        curve: CommonConstant.AnimationCurveSpring
+                      }, () => {
+                        this.vm.isInputting = false;
+                      })
+                  })
+                  .onChange((text: string) => {
+                    this.vm.markdownContent = text;
+                  })
               }
-
-              TextArea({ placeholder: $r('app.string.PostPage_content_placeholder'), text: this.vm.markdownContent })
-                .placeholderFont({
-                  size: CommonConstant.TextSizeNormal
-                })
-                .padding({ bottom: this.vm.window.windowBottomPadding })
-                .width(CommonConstant.FullPercent)
-                .fontSize(CommonConstant.TextSizeNormal)
-                .borderRadius(0)
-                .backgroundColor(Color.Transparent)
-                .padding(0)
-                .layoutWeight(1)
-                .onFocus(() => {
-                  AppUtil.getUIContext()
-                    .animateTo({
-                      duration: CommonConstant.AnimationDurationNormal,
-                      curve: CommonConstant.AnimationCurveSpring
-                    }, () => {
-                      this.vm.isInputting = true;
-                    })
-                })
-                .onBlur(() => {
-                  AppUtil.getUIContext()
-                    .animateTo({
-                      duration: CommonConstant.AnimationDurationNormal,
-                      curve: CommonConstant.AnimationCurveSpring
-                    }, () => {
-                      this.vm.isInputting = false;
-                    })
-                })
-                .onChange((text: string) => {
-                  this.vm.markdownContent = text;
-                })
+              .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
+              .alignItems(HorizontalAlign.Start)
+              .layoutWeight(1)
             }
-            .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1)
 
-            if (this.vm.isTabletView) {
-              CustomMarkdown({
-                content: this.vm.markdownContent,
-                controller: this.vm.markdownController
-              })
-                .height(CommonConstant.FullPercent)
-                .width(340)
-                .borderRadius(CommonConstant.RadiusLarge)
-                .margin({ right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding })
-                .backgroundColor($r('app.color.second_window_background'))
-                .geometryTransition(TransitionMap.PostPageMarkDown)
+            if (this.vm.isTabletView || this.vm.isPreviewMode) {
+              Column() {
+                if (!this.vm.isTabletView && this.vm.isPreviewMode) {
+                  Text(this.vm.postTitle || '')
+                    .fontSize(CommonConstant.TextSizeLarge)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor($r('sys.color.font_primary'))
+                    .width(CommonConstant.FullPercent)
+                    .padding({
+                      left: CommonConstant.NormalContainerInnerPadding,
+                      right: CommonConstant.NormalContainerInnerPadding,
+                      top: CommonConstant.LargeContainerInnerPadding,
+                      bottom: CommonConstant.SmallContainerInnerPadding
+                    })
+                }
+
+                CustomMarkdown({
+                  content: this.vm.markdownContent,
+                  controller: this.vm.markdownController
+                })
+                  .width(CommonConstant.FullPercent)
+                  .layoutWeight(1)
+              }
+              .width(this.vm.isTabletView ? 340 : CommonConstant.FullPercent)
+              .height(CommonConstant.FullPercent)
+              .borderRadius(CommonConstant.RadiusLarge)
+              .backgroundColor($r('app.color.second_window_background'))
+              .margin(this.vm.isTabletView ?
+                { right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding } :
+                {
+                  left: CommonConstant.PageLRPadding,
+                  right: CommonConstant.PageLRPadding,
+                  bottom: this.vm.window.windowBottomPadding
+                }
+              )
+              .geometryTransition(TransitionMap.PostPageMarkDown)
+              .layoutWeight(this.vm.isTabletView ? 0 : 1)
             }
           }
           .width(CommonConstant.FullPercent)
@@ -109,7 +158,7 @@ export struct PostPageImpl {
 
         if (!this.vm.isTabletView) {
           FloatButton({
-            floatIcon: $r('sys.symbol.eye'),
+            floatIcon: this.vm.isPreviewMode ? $r('sys.symbol.eye_slash') : $r('sys.symbol.eye'),
             isFloating: true
           })
             .position({
@@ -119,6 +168,18 @@ export struct PostPageImpl {
             })
             .zIndex(2)
             .geometryTransition(TransitionMap.PostPageMarkDown)
+            .onClick(() => {
+              AppUtil.getUIContext()
+                .animateTo({
+                  duration: CommonConstant.AnimationDurationNormal,
+                  curve: CommonConstant.AnimationCurveSpring
+                }, () => {
+                  this.vm.isPreviewMode = !this.vm.isPreviewMode;
+                  if (this.vm.isPreviewMode) {
+                    this.vm.isInputting = false;
+                  }
+                })
+            })
         }
       }
       .width(CommonConstant.FullPercent)

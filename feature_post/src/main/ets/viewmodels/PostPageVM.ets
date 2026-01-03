@@ -22,6 +22,7 @@ export class PostPageVM extends BaseVM {
   @Trace selectedSubCategory: string = '';
   @Trace isCategoryExpanded: boolean = false;
   @Trace isInputting: boolean = false;
+  @Trace isPreviewMode: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
