@@ -30,7 +30,7 @@ export struct CategoryPicker {
             }
           })
         }
-        .height(240) // 固定高度，提供稳定的浏览区域
+        .height(240)
         .width(CommonConstant.FullPercent)
         .transition(
           TransitionEffect.OPACITY
@@ -135,10 +135,6 @@ export struct CategoryPicker {
           .alignListItem(ListItemAlign.Center)
           .scrollBar(BarState.Off)
           .edgeEffect(EdgeEffect.Spring)
-        } else {
-          Text('该板块无分类')
-            .fontSize(11)
-            .fontColor($r('sys.color.font_tertiary'))
         }
       }
       .height(CommonConstant.IconSizeLarge)

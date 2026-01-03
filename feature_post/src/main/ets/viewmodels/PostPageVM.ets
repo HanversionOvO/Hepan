@@ -221,6 +221,14 @@ export class PostPageVM extends BaseVM {
       this.categories = await ForumApi.getPostCategories();
       if (this.categories.length > 0) {
         this.categoriesStatus = UiState.SUCCESS;
+        for (let i = 0; i < this.categories.length; i++) {
+          const group = this.categories[i];
+          if (group.children && group.children.length > 0) {
+            this.leftPanelIndex = i;
+            await this.onForumSelected(group.children[0]);
+            break;
+          }
+        }
       } else {
         this.categoriesStatus = UiState.EMPTY;
       }
