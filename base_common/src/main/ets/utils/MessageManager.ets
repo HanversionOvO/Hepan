@@ -17,6 +17,7 @@ export class MessageManager {
   private messageListListeners: ((list: RecentMessage[]) => void)[] = [];
   private lastSummary: NewMessagesSummary | null = null;
   private messageList: RecentMessage[] = [];
+  private currentPage: number = 1;
 
   public static getInstance(): MessageManager {
     if (!MessageManager.instance) {
@@ -46,13 +47,37 @@ export class MessageManager {
   // 刷新全量列表
   public async refreshMessageList() {
     try {
-      const rawList = await MessageApi.getMessageList();
+      this.currentPage = 1; // 重置页码
+      // 显式传递第一页
+      const rawList = await MessageApi.getMessageList(1);
       // 转换为类实例
       this.messageList = rawList.map(item => new RecentMessage(item as RecentMessageData));
       this.notifyMessageListListeners(this.messageList);
     } catch (error) {
       LogUtil.error(TAG, `Refresh message list failed: ${JSON.stringify(error)}`);
       // 这里不抛出异常，以免打断轮询逻辑
+    }
+  }
+
+  public async loadNextPage() {
+    try {
+      const nextPage = this.currentPage + 1;
+      const rawList = await MessageApi.getMessageList(nextPage);
+
+      if (rawList && rawList.length > 0) {
+        // 转换为类实例
+        const newItems = rawList.map(item => new RecentMessage(item as RecentMessageData));
+        // 追加到现有列表
+        this.messageList = [...this.messageList, ...newItems];
+        // 更新当前页码
+        this.currentPage = nextPage;
+        // 通知监听器更新 UI
+        this.notifyMessageListListeners(this.messageList);
+      } else {
+        LogUtil.info(TAG, 'No more messages to load');
+      }
+    } catch (error) {
+      LogUtil.error(TAG, `Load next page failed: ${JSON.stringify(error)}`);
     }
   }
 

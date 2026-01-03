@@ -111,7 +111,7 @@ export class MessagePageVM extends BaseVM {
   }
 
   async loadMore() {
-    //TODO: 加载更多
+    await MessageManager.getInstance().loadNextPage();
   }
 
   toggleHeader(hide: boolean) {
