@@ -14,6 +14,10 @@ export function HomePageBuilder() {
 struct HomePage {
   @Local vm: HomePageVM = VMManager.get(HomePageVM, () => new HomePageVM())
 
+  aboutToDisappear(): void {
+    this.vm.aboutToDisappear();
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Bottom }) {

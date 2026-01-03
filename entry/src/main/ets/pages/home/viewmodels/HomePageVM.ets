@@ -1,4 +1,4 @@
-import { BaseVM, RouterUtil, StorageManager } from 'base_common';
+import { BaseVM, InputOverlayStore, InputOverlayVisibilityEvent, RouterUtil, StorageManager } from 'base_common';
 import { HomeNavBarItem } from '../components/HomeNavBar';
 
 const TAG = '[HomePageVM]: ';
@@ -14,6 +14,8 @@ export class HomePageVM extends BaseVM {
   @Trace currentIndex: number = StorageManager.tabIndexModel.homeTabIndex;
   @Trace controller: TabsController = new TabsController();
   @Trace isKeyBoardOpen: boolean = false;
+  @Trace isInputOverlayOpen: boolean = false;
+  private inputOverlayListener: ((visible: boolean) => void) | null = null;
 
   @Computed
   get isNavBarVisible(): boolean {
@@ -25,11 +27,11 @@ export class HomePageVM extends BaseVM {
       return true;
     }
 
-    if (RouterUtil.routerModel.messageStackSize > 0) {
+    if (this.currentIndex === 1 && this.isInputOverlayOpen) {
       return false;
     }
 
-    if (this.currentIndex === 1 && this.isKeyBoardOpen) {
+    if (RouterUtil.routerModel.messageStackSize > 0) {
       return false;
     }
 
@@ -37,9 +39,22 @@ export class HomePageVM extends BaseVM {
   }
 
   startHome() {
+    if (!this.inputOverlayListener) {
+      this.inputOverlayListener = (visible: boolean) => {
+        this.isInputOverlayOpen = visible;
+      };
+      InputOverlayStore.on(InputOverlayVisibilityEvent, this.inputOverlayListener);
+    }
     setTimeout(() => {
       this.window.showNavigation = false
     }, 50)
+  }
+
+  aboutToDisappear() {
+    if (this.inputOverlayListener) {
+      InputOverlayStore.off(InputOverlayVisibilityEvent, this.inputOverlayListener);
+      this.inputOverlayListener = null;
+    }
   }
 
   changeNavBar(index: number) {
