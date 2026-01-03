@@ -39,6 +39,10 @@ export class PostPageVM extends BaseVM {
     {
       icon: $r('sys.symbol.picture'), onClick: () => {
     }
+    },
+    {
+      icon: $r('sys.symbol.link'), onClick: () => {
+    }
     }
   ];
 

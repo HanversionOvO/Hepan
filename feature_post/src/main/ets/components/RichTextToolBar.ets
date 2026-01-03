@@ -35,6 +35,12 @@ export struct RichTextToolBar {
               button.onClick();
             })
         }, (button: RichTextButton, index: number) => index.toString())
+
+        Divider()
+          .color($r('sys.color.font_secondary'))
+          .width(this.vm.isTabletView ? CommonConstant.IconSizeNormal : CommonConstant.BorderSizeLarge)
+          .height(this.vm.isTabletView ? CommonConstant.BorderSizeLarge : CommonConstant.IconSizeNormal)
+          .vertical(!this.vm.isTabletView)
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
