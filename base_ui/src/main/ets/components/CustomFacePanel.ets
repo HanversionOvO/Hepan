@@ -92,7 +92,7 @@ export struct CustomFacePanel {
               Grid() {
                 ForEach(collection.collections, (imgName: string) => {
                   GridItem() {
-                    Image(collection.base_url + imgName) // 拼接 URL
+                    Image(collection.base_url + imgName)
                       .width(CommonConstant.IconSizeLarge)
                       .height(CommonConstant.IconSizeLarge)
                       .objectFit(ImageFit.Contain)
@@ -104,7 +104,7 @@ export struct CustomFacePanel {
                   })
                 })
               }
-              .columnsTemplate('1fr '.repeat(this.gridLanes)) // 5列展示
+              .columnsTemplate('1fr '.repeat(this.gridLanes))
               .rowsGap(CommonConstant.NormalContainerInnerPadding)
               .columnsGap(CommonConstant.NormalContainerInnerPadding)
               .width(CommonConstant.FullPercent)
