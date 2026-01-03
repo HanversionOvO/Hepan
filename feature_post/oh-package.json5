@@ -5,5 +5,8 @@
   "main": "Index.ets",
   "author": "",
   "license": "Apache-2.0",
-  "dependencies": {}
+  "dependencies": {
+    "base_common": "file:../base_common",
+    "base_ui": "file:../base_ui"
+  }
 }

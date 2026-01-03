@@ -1,0 +1,1 @@
+export { PostPageImpl } from './src/main/ets/pages/PostPageImpl';

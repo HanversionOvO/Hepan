@@ -1,8 +1,12 @@
 {
   "string": [
     {
-      "name": "page_show",
-      "value": "page from package"
+      "name": "PostPage_title",
+      "value": "发布帖子"
+    },
+    {
+      "name": "PostPage_add_image",
+      "value": "添加图片"
     }
   ]
 }

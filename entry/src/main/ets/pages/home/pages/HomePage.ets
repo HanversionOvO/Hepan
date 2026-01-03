@@ -3,6 +3,7 @@ import { MinePageImpl } from 'feature_mine';
 import { HomeNavBar } from '../components/HomeNavBar';
 import { HomePageVM } from '../viewmodels/HomePageVM';
 import { MessagePageImpl } from 'feature_message';
+import { PostPageImpl } from 'feature_post';
 
 @Builder
 export function HomePageBuilder() {
@@ -22,7 +23,7 @@ struct HomePage {
           }
 
           TabContent() {
-            Text("Content 2")
+            PostPageImpl()
           }
 
           TabContent() {
