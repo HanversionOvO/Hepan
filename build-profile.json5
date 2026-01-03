@@ -68,6 +68,10 @@
     {
       "name": "feature_message",
       "srcPath": "./feature_message",
+    },
+    {
+      "name": "feature_post",
+      "srcPath": "./feature_post",
     }
   ]
 }

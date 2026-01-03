@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry.iml" filepath="$PROJECT_DIR$/.idea/modules/entry.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/feature_message.iml" filepath="$PROJECT_DIR$/.idea/modules/feature_message.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/feature_mine.iml" filepath="$PROJECT_DIR$/.idea/modules/feature_mine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/feature_post.iml" filepath="$PROJECT_DIR$/.idea/modules/feature_post.iml" />
     </modules>
   </component>
 </project>

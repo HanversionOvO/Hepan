@@ -47,6 +47,12 @@
       <excludeFolder url="file://$MODULE_DIR$/../../feature_message/build" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_message/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_message/oh_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/.cxx" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/.preview" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/.test" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_post/oh_modules" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="" scope="PROVIDED">
