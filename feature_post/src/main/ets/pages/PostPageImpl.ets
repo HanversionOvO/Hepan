@@ -26,30 +26,31 @@ export struct PostPageImpl {
           }) {
             RichTextToolBar({ vm: this.vm })
 
-            Column() {
+            Column({ space: CommonConstant.LargeContainerInnerPadding }) {
               ImagePicker({ vm: this.vm })
 
               CategoryPicker({ vm: this.vm })
 
-              TextInput({ placeholder: $r('app.string.PostPage_post_title'), text: this.vm.postTitle })
-                .fontSize(CommonConstant.TextSizeUltraLarge)
-                .fontWeight(FontWeight.Bold)
-                .placeholderFont({ weight: FontWeight.Bold, size: CommonConstant.TextSizeUltraLarge })
-                .caretColor(CommonConstant.ThemeColor)
-                .backgroundColor(Color.Transparent)
-                .padding({
-                  left: CommonConstant.PageLRPadding,
-                  right: CommonConstant.PageLRPadding,
-                })
-                .width(CommonConstant.FullPercent)
-                .border({
-                  width: CommonConstant.BorderSizeLarge,
-                  style: {
-                    bottom: BorderStyle.Solid
-                  }
-                })
+              Column() {
+                TextInput({ placeholder: $r('app.string.PostPage_post_title'), text: this.vm.postTitle, })
+                  .fontSize(CommonConstant.TextSizeLarge)
+                  .fontWeight(FontWeight.Bold)
+                  .placeholderFont({ weight: FontWeight.Bold, size: CommonConstant.TextSizeLarge })
+                  .caretColor(CommonConstant.ThemeColor)
+                  .backgroundColor(Color.Transparent)
+                  .width(CommonConstant.FullPercent)
+                  .padding({
+                    left: 0,
+                    right: 0
+                  })
+
+                Divider()
+                  .width(CommonConstant.FullPercent)
+                  .height(CommonConstant.BorderSizeHuge)
+                  .color($r('sys.color.font_tertiary'))
+              }
             }
-            .height(CommonConstant.FullPercent)
+            .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
 
@@ -60,6 +61,8 @@ export struct PostPageImpl {
                 .backgroundColor($r('app.color.second_window_background'))
             }
           }
+          .width(CommonConstant.FullPercent)
+          .layoutWeight(1)
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)

@@ -21,12 +21,11 @@ export class PostPageVM extends BaseVM {
   ];
   @Trace categories: PostCategories[] = [];
 
-  get currentMainKey(): string {
-    const keys = Object.keys(this.categories);
-    if (this.currentCategory >= 0 && this.currentCategory < keys.length) {
-      return keys[this.currentCategory];
+  get currentMainCategoryName(): string {
+    if (this.categories.length > 0 && this.currentCategory >= 0 && this.currentCategory < this.categories.length) {
+      return this.categories[this.currentCategory].name;
     }
-    return keys[0];
+    return '未选择';
   }
 
   async startPostPage() {

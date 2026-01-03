@@ -1,4 +1,5 @@
-import { ColorUtil, CommonConstant } from 'base_common';
+import { AppUtil } from '@pura/harmony-utils';
+import { ColorUtil, CommonConstant, PostCategories } from 'base_common';
 import { CustomTabBar } from 'base_ui';
 import { PostPageVM } from '../viewmodels/PostPageVM';
 
@@ -6,53 +7,51 @@ import { PostPageVM } from '../viewmodels/PostPageVM';
 export struct CategoryPicker {
   @Param @Require vm: PostPageVM;
 
-  private isSubSelected(sub: string): boolean {
-    return this.vm.selectedSubCategory === sub;
+  private isSubSelected(subName: string): boolean {
+    return this.vm.selectedSubCategory === subName;
   }
 
   // === 二级话题标签 ===
   @Builder
-  SubChannelItem(sub: string) {
-    Text('# ' + sub)
-      .fontSize(CommonConstant.TextSizeSmall)
-      .fontColor(this.isSubSelected(sub) ? CommonConstant.ThemeColor : $r('sys.color.font_primary'))
-      .fontWeight(this.isSubSelected(sub) ? FontWeight.Bold : FontWeight.Regular)
+  SubChannelItem(sub: PostCategories) {
+    Text('# ' + sub.name)
+      .fontSize(CommonConstant.TextSizeTiny)
+      .fontColor(this.isSubSelected(sub.name) ? CommonConstant.ThemeColor : $r('sys.color.font_primary'))
+      .fontWeight(this.isSubSelected(sub.name) ? FontWeight.Bold : FontWeight.Regular)
       .padding({
         left: CommonConstant.SmallContainerLRPadding,
         right: CommonConstant.SmallContainerLRPadding,
         top: CommonConstant.SmallContainerTBPadding,
         bottom: CommonConstant.SmallContainerTBPadding
       })
-      .backgroundColor(this.isSubSelected(sub) ? ColorUtil.opacity(CommonConstant.ThemeColor) :
+      .backgroundColor(this.isSubSelected(sub.name) ? ColorUtil.opacity(CommonConstant.ThemeColor) :
         $r('app.color.second_window_background'))
       .borderRadius(CommonConstant.RadiusSmall)
       .border({
         width: CommonConstant.BorderSizeNormal,
-        color: this.isSubSelected(sub) ? CommonConstant.ThemeColor : Color.Transparent
+        color: this.isSubSelected(sub.name) ? CommonConstant.ThemeColor : Color.Transparent
       })
       .onClick(() => {
-
+        this.vm.selectedSubCategory = sub.name;
       })
       .margin({ right: CommonConstant.NormalContainerInnerPadding, bottom: CommonConstant.NormalContainerInnerPadding })
   }
 
   build() {
-    Column() {
-      // === 1. 触发栏 ===
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       Row() {
-        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Row({ space: CommonConstant.NormalContainerInnerPadding }) {
           SymbolGlyph($r('sys.symbol.list_number'))
             .fontSize(CommonConstant.TextSizeNormal)
-            .fontColor(this.vm.selectedCategory ? [CommonConstant.ThemeColor] : [$r('sys.color.font_secondary')])
+            .fontColor([CommonConstant.ThemeColor])
             .animation({ duration: CommonConstant.AnimationDurationNormal })
 
-
           Text() {
-            Span(this.vm.currentMainKey)
+            Span(this.vm.currentMainCategoryName)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('sys.color.font_primary'))
-            Span('  /  ')
-            Span(this.vm.selectedSubCategory)
+            Span(' / ')
+            Span(this.vm.selectedSubCategory || '全部')
               .fontColor($r('sys.color.font_secondary'))
           }
           .fontSize(CommonConstant.TextSizeNormal)
@@ -65,39 +64,41 @@ export struct CategoryPicker {
           .animation({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal })
       }
       .width(CommonConstant.FullPercent)
-      .padding({
-        left: CommonConstant.PageLRPadding,
-        right: CommonConstant.PageLRPadding,
-      })
       .justifyContent(FlexAlign.SpaceBetween)
       .backgroundColor($r('app.color.start_window_background'))
       .onClick(() => {
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.vm.isCategoryExpanded = !this.vm.isCategoryExpanded;
+            })
       })
 
       // === 2. 折叠内容区 ===
       if (this.vm.isCategoryExpanded) {
-        Column() {
+        Column({ space: CommonConstant.SmallContainerTBPadding }) {
           Row() {
             CustomTabBar({
               tabItems: this.vm.categoryTabs,
               vm: this.vm,
               currentIndex: this.vm.currentCategory,
-              alignMode: FlexAlign.Start, // 左对齐
+              tabButtonHeight: CommonConstant.IconSizeLarge,
+              alignMode: FlexAlign.Start,
               changeTab: (index) => {
-
+                this.vm.currentCategory = index;
               }
             })
           }
           .width(CommonConstant.FullPercent)
-          .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
 
           // B. 二级网格/瀑布流
           Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-            ForEach(this.vm.categories[this.vm.currentMainKey], (sub: string) => {
-              this.SubChannelItem(sub)
-            })
+            if (this.vm.categories.length > this.vm.currentCategory) {
+              ForEach(this.vm.categories[this.vm.currentCategory].children || [], (sub: PostCategories) => {
+                this.SubChannelItem(sub)
+              })
+            }
           }
-          .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
           .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
         .width(CommonConstant.FullPercent)
@@ -113,5 +114,8 @@ export struct CategoryPicker {
     .width(CommonConstant.FullPercent)
     .clip(true)
     .animation({ curve: CommonConstant.AnimationCurveSpring })
+    .padding({
+      top: CommonConstant.NormalContainerTBPadding
+    })
   }
 }

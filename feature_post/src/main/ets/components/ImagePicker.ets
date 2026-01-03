@@ -102,11 +102,9 @@ export struct ImagePicker {
       }
       .listDirection(Axis.Horizontal)
       .width(CommonConstant.FullPercent)
+      .scrollBar(BarState.Off)
     }
     .width(CommonConstant.FullPercent)
-    .padding({
-      left: CommonConstant.PageLRPadding,
-      right: CommonConstant.PageLRPadding
-    })
+    .height(this.currentImageSize)
   }
 }
