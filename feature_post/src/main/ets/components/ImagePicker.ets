@@ -24,14 +24,14 @@ export struct ImagePicker {
           ListItem() {
             Stack({ alignContent: Alignment.TopEnd }) {
               Image(img)
-                .width(this.currentImageSize)
-                .height(this.currentImageSize)
                 .objectFit(ImageFit.Cover)
                 .animation({
                   curve: CommonConstant.AnimationCurveSpring,
                   duration: CommonConstant.AnimationDurationNormal
                 })
-                .borderRadius(CommonConstant.RadiusUltraLarge)
+                .width(this.currentImageSize)
+                .height(this.currentImageSize)
+                .borderRadius(CommonConstant.RadiusLarge)
                 .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
 
               Button({ type: ButtonType.Circle }) {
@@ -52,16 +52,12 @@ export struct ImagePicker {
                 duration: CommonConstant.AnimationDurationNormal
               })
             }
-            .width(this.currentImageSize)
-            .height(this.currentImageSize)
-            .borderRadius(CommonConstant.RadiusUltraLarge)
-            .clip(true)
           }
         }, (img: string, index: number) => index.toString())
 
         if (this.vm.uploadedImages.length < 9) {
           ListItem() {
-            Button() {
+            Stack({ alignContent: Alignment.Center }) {
               Column({ space: this.isShrink ? 0 : CommonConstant.SmallContainerInnerPadding }) {
                 SymbolGlyph($r('sys.symbol.plus'))
                   .fontSize(CommonConstant.IconSizeNormal)
@@ -87,8 +83,10 @@ export struct ImagePicker {
             .width(this.currentImageSize)
             .height(this.currentImageSize)
             .backgroundColor($r('app.color.second_window_background'))
-            .borderRadius(CommonConstant.RadiusNormal)
+            .borderRadius(CommonConstant.RadiusLarge)
+            .clip(true)
             .onClick(() => {
+
             })
             .animation({
               curve: CommonConstant.AnimationCurveSpring,
