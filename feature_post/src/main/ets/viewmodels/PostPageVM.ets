@@ -1,6 +1,7 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
 import { AppUtil } from '@pura/harmony-utils';
 import {
+  AtUser,
   BaseVM,
   CommonConstant,
   ForumApi,
@@ -36,6 +37,8 @@ export class PostPageVM extends BaseVM {
   @Trace isShowFace: boolean = false;
   @Trace isShowAt: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
+  @Trace contentSelectionStart: number = 0;
+  @Trace contentSelectionEnd: number = 0;
   @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
   @Trace categoryTabs: CustomTabItem[] = [];
@@ -148,5 +151,30 @@ export class PostPageVM extends BaseVM {
   emitInputOverlayVisibility() {
     InputOverlayStore.emit(InputOverlayVisibilityEvent,
       this.isShowFace || this.isShowAt || this.isInputtingWithKeyboard);
+  }
+
+  updateContentSelection(start: number, end: number) {
+    this.contentSelectionStart = Math.max(0, start);
+    this.contentSelectionEnd = Math.max(0, end);
+  }
+
+  private insertTextAtCursor(text: string) {
+    const start = Math.min(this.contentSelectionStart, this.contentSelectionEnd);
+    const end = Math.max(this.contentSelectionStart, this.contentSelectionEnd);
+    const before = this.markdownContent.slice(0, start);
+    const after = this.markdownContent.slice(end);
+    this.markdownContent = `${before}${text}${after}`;
+    const newCursor = start + text.length;
+    this.updateContentSelection(newCursor, newCursor);
+  }
+
+  insertFace(url: string) {
+    const faceText = `![](${url})`;
+    this.insertTextAtCursor(faceText);
+  }
+
+  insertAtUser(atUser: AtUser) {
+    const atText = `[@${atUser.username}](at:${atUser.uid}) `;
+    this.insertTextAtCursor(atText);
   }
 }
