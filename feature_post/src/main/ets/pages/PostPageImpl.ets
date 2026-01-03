@@ -77,6 +77,7 @@ export struct PostPageImpl {
                   .placeholderFont({
                     size: CommonConstant.TextSizeNormal
                   })
+                  .caretColor(CommonConstant.ThemeColor)
                   .padding({ bottom: this.vm.window.windowBottomPadding })
                   .width(CommonConstant.FullPercent)
                   .fontSize(CommonConstant.TextSizeNormal)
