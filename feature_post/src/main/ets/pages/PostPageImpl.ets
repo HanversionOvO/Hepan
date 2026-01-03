@@ -55,13 +55,15 @@ export struct PostPageImpl {
                         })
                     })
                     .onBlur(() => {
-                      AppUtil.getUIContext()
-                        .animateTo({
-                          duration: CommonConstant.AnimationDurationNormal,
-                          curve: CommonConstant.AnimationCurveSpring
-                        }, () => {
-                          this.vm.isInputting = false;
-                        })
+                      if (!this.vm.isShowFace) {
+                        AppUtil.getUIContext()
+                          .animateTo({
+                            duration: CommonConstant.AnimationDurationNormal,
+                            curve: CommonConstant.AnimationCurveSpring
+                          }, () => {
+                            this.vm.isInputting = false;
+                          })
+                      }
                     })
                     .onChange((text: string) => {
                       this.vm.postTitle = text;

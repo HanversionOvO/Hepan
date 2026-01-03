@@ -3,6 +3,7 @@ import { AppUtil } from '@pura/harmony-utils';
 import { BaseVM, CommonConstant, ForumApi, PostCategories } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
+import { inputMethod } from '@kit.IMEKit';
 
 const TAG = '[PostPageVM]: ';
 
@@ -35,7 +36,14 @@ export class PostPageVM extends BaseVM {
     {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
       this.isShowFace = !this.isShowFace;
+      // [新增逻辑] 如果是打开表情面板，强制关闭软键盘
       if (this.isShowFace) {
+        try {
+          inputMethod.getController().stopInputSession();
+        } catch (error) {
+          console.error(TAG, 'Stop input session failed:', error);
+        }
+
         AppUtil.getUIContext()
           .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
             () => {
