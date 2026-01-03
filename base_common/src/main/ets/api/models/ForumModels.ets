@@ -21,14 +21,33 @@ export interface LatestThread {
   lastpost_authorid: number;
 }
 
-export interface PostCategories {
+export interface PostCategoryGroup {
   fid: number;
   name: string;
-  children?: PostCategories[];
+  children: PostCategoryItem[];
+}
+
+export interface PostCategoryItem {
+  fid: number;
+  name: string;
+  description?: string;
+  parentName?: string;
 }
 
 export interface AtUser {
   uid: number;
   username: string;
   status: string;
+}
+
+export interface ForumDetails {
+  fid: number;
+  name: string;
+  thread_types: ThreadType[];
+  optional_thread_type: boolean;
+}
+
+export interface ThreadType {
+  type_id: number;
+  name: string;
 }

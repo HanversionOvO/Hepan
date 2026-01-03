@@ -2,7 +2,7 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { AtUser, ForumCategory, PostCategories } from './models/ForumModels';
+import { AtUser, ForumCategory, ForumDetails, PostCategoryGroup, PostCategoryItem } from './models/ForumModels';
 
 const TAG = '[ForumApi]: ';
 
@@ -20,69 +20,52 @@ export class ForumApi {
     if (response.status === 200 && response.data.code === 0) {
       return response.data.data["forum_list"] as ForumCategory[];
     } else {
-      // 抛出具体错误供 VM 处理
-      const errorMsg = response.data?.message || `Fetch profile failed, status: ${response.status}`;
+      const errorMsg = response.data?.message || `Fetch forum list failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
   }
 
-  public static async getPostCategories(): Promise<PostCategories[]> {
+  public static async getPostCategories(): Promise<PostCategoryGroup[]> {
     try {
       const categories: ForumCategory[] = await ForumApi.getForumCategory();
-      const result: PostCategories[] = [];
+      const result: PostCategoryGroup[] = [];
+
+      const extractForums = (node: ForumCategory, list: PostCategoryItem[], parentName: string = '') => {
+
+        const isLeafOrPostable = node.can_post_thread;
+
+        if (isLeafOrPostable && node.fid > 0) {
+          list.push({
+            fid: node.fid,
+            name: node.name,
+            parentName: parentName
+          });
+        }
+
+        if (node.children && node.children.length > 0) {
+          node.children.forEach(child => {
+            extractForums(child, list, node.name);
+          });
+        }
+      };
 
       for (const group of categories) {
-        const keptChildren: PostCategories[] = [];
-        const promotedChildren: PostCategories[] = [];
+        const groupItems: PostCategoryItem[] = [];
 
         if (group.children && group.children.length > 0) {
-          for (const child of group.children) {
-            if (child.children && child.children.length > 0) {
-              const validSubChildren: PostCategories[] = [];
-              child.children.forEach(sub => {
-                if (sub.can_post_thread) {
-                  const subCat: PostCategories = {
-                    fid: sub.fid,
-                    name: sub.name
-                  };
-                  validSubChildren.push(subCat);
-                }
-              });
-
-              if (validSubChildren.length > 0) {
-                const promoted: PostCategories = {
-                  fid: child.fid,
-                  name: child.name,
-                  children: validSubChildren
-                };
-                promotedChildren.push(promoted);
-              }
-
-            } else {
-              if (child.can_post_thread) {
-                const kept: PostCategories = {
-                  fid: child.fid,
-                  name: child.name
-                };
-                keptChildren.push(kept);
-              }
-            }
-          }
+          group.children.forEach(child => {
+            extractForums(child, groupItems, '');
+          });
         }
 
-        if (keptChildren.length > 0) {
-          const newGroup: PostCategories = {
+        if (groupItems.length > 0) {
+          result.push({
             fid: group.fid,
             name: group.name,
-            children: keptChildren
-          };
-          result.push(newGroup);
+            children: groupItems
+          });
         }
-
-        promotedChildren.forEach(item => {
-          result.push(item);
-        });
       }
 
       return result;
@@ -90,6 +73,25 @@ export class ForumApi {
     } catch (error) {
       LogUtil.warn(TAG, 'Failed to parse post categories', error);
       throw new Error('Failed to parse post categories');
+    }
+  }
+
+  public static async getForumDetails(fid: number): Promise<ForumDetails> {
+    const path = `/_/forum/details?forum_id=${fid}`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<ForumDetails>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      const errorMsg = response.data?.message || `Fetch forum details failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
     }
   }
 
@@ -106,8 +108,7 @@ export class ForumApi {
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
       return response.data.data["rows"] as AtUser[];
     } else {
-      // 抛出具体错误供 VM 处理
-      const errorMsg = response.data?.message || `Fetch profile failed, status: ${response.status}`;
+      const errorMsg = response.data?.message || `Fetch at list failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }

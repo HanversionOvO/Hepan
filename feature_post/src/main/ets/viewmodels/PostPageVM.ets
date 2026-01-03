@@ -8,8 +8,11 @@ import {
   ForumApi,
   InputOverlayStore,
   InputOverlayVisibilityEvent,
-  PostCategories,
-  ToastUtil
+  PostCategoryGroup,
+  PostCategoryItem,
+  ThreadType,
+  ToastUtil,
+  UiState
 } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
@@ -43,10 +46,21 @@ export class PostPageVM extends BaseVM {
     }
     }
   ];
-  @Trace selectedCategory: number = 0;
-  @Trace currentCategory: number = 0;
-  @Trace selectedSubCategory: string = '';
-  @Trace isCategoryExpanded: boolean = false;
+  // === 分类选择相关状态 ===
+  @Trace isCategoryExpanded: boolean = false; // 是否展开板块选择器
+  @Trace leftPanelIndex: number = 0; // 左侧大区列表的选中索引
+
+  @Trace selectedForumId: number = 0; // 已选板块ID
+  @Trace selectedForumName: string = ''; // 已选板块名称
+  @Trace selectedTypeId: number = 0; // 已选分类ID
+  @Trace selectedTypeName: string = ''; // 已选分类名称
+
+  @Trace categories: PostCategoryGroup[] = []; // 所有板块数据
+  @Trace threadTypes: ThreadType[] = []; // 当前板块的分类数据
+
+  // 2. 使用 UiState 管理状态
+  @Trace categoriesStatus: UiState = UiState.LOADING;
+  @Trace typesStatus: UiState = UiState.EMPTY;
   @Trace isInputting: boolean = false;
   @Trace isInputtingWithKeyboard: boolean = false;
   @Trace isPreviewMode: boolean = false;
@@ -60,7 +74,6 @@ export class PostPageVM extends BaseVM {
   @Trace postTitle: string = '';
   @Trace categoryTabs: CustomTabItem[] = [];
   @Trace uploadedImages: PostImageModel[] = [];
-  @Trace categories: PostCategories[] = [];
   @Trace richTextButtons: RichTextButton[] = [
     {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
@@ -146,11 +159,77 @@ export class PostPageVM extends BaseVM {
     }
   ];
 
-  get currentMainCategoryName(): ResourceStr {
-    if (this.categories.length > 0 && this.currentCategory >= 0 && this.currentCategory < this.categories.length) {
-      return this.categories[this.currentCategory].name;
+  // 切换左侧大区
+  selectLeftPanel(index: number) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.leftPanelIndex = index;
+        });
+  }
+
+  // 切换展开/收起状态
+  toggleCategoryExpand() {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isCategoryExpanded = !this.isCategoryExpanded;
+        });
+  }
+
+  // 选中具体板块
+  async onForumSelected(item: PostCategoryItem) {
+    if (this.selectedForumId === item.fid) {
+      this.toggleCategoryExpand();
+      return;
     }
-    return $r('app.string.PostPage_choose_category_first');
+
+    this.selectedForumId = item.fid;
+    this.selectedForumName = item.name;
+    this.selectedTypeId = 0;
+    this.selectedTypeName = '';
+    this.threadTypes = [];
+
+    // 设置分类加载状态
+    this.typesStatus = UiState.LOADING;
+
+    this.isCategoryExpanded = false;
+
+    // 获取分类
+    try {
+      const details = await ForumApi.getForumDetails(item.fid);
+      if (details.thread_types && details.thread_types.length > 0) {
+        this.threadTypes = details.thread_types;
+        this.typesStatus = UiState.SUCCESS;
+      } else {
+        this.typesStatus = UiState.EMPTY;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Fetch forum details failed:', e);
+      this.typesStatus = UiState.ERROR;
+    }
+  }
+
+  onTypeSelected(type: ThreadType) {
+    this.selectedTypeId = type.type_id;
+    this.selectedTypeName = type.name;
+  }
+
+  async startPostPage() {
+    this.categoriesStatus = UiState.LOADING;
+    try {
+      this.categories = await ForumApi.getPostCategories();
+      if (this.categories.length > 0) {
+        this.categoriesStatus = UiState.SUCCESS;
+        this.isCategoryExpanded = true; // 默认展开
+      } else {
+        this.categoriesStatus = UiState.EMPTY;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Start post page failed:', e);
+      this.categoriesStatus = UiState.ERROR;
+      ToastUtil.showToast('获取版块列表失败');
+    }
   }
 
   async selectImage() {
@@ -214,33 +293,6 @@ export class PostPageVM extends BaseVM {
     }
     this.insertFace(img.remoteUrl);
     this.isInsertImageMode = false;
-  }
-
-  selectMainCategory(index: number) {
-    this.currentCategory = index;
-    if (this.categories.length > index && index >= 0) {
-      const category = this.categories[index];
-      if (category.children && category.children.length > 0) {
-        this.selectedSubCategory = category.children[0].name;
-      } else {
-        this.selectedSubCategory = '';
-      }
-    }
-  }
-
-  async startPostPage() {
-    this.categories = await ForumApi.getPostCategories();
-
-    this.categoryTabs = this.categories.map((category) => {
-      return {
-        label: category.name,
-        icon: $r('sys.symbol.person')
-      } as CustomTabItem;
-    });
-
-    if (this.categories.length > 0) {
-      this.selectMainCategory(0);
-    }
   }
 
   setKeyboardInputting(isVisible: boolean) {
