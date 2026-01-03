@@ -191,7 +191,11 @@ export class PostPageVM extends BaseVM {
     this.threadTypes = [];
 
     this.typesStatus = UiState.LOADING;
-    this.isCategoryExpanded = false;
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isCategoryExpanded = false;
+        });
 
     try {
       const details = await ForumApi.getForumDetails(item.fid);
@@ -229,7 +233,7 @@ export class PostPageVM extends BaseVM {
       this.categories = await ForumApi.getPostCategories();
       if (this.categories.length > 0) {
         this.categoriesStatus = UiState.SUCCESS;
-        
+
         let isDefaultFound = false;
 
         for (let i = 0; i < this.categories.length; i++) {
