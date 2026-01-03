@@ -7,6 +7,7 @@ const TAG = '[CustomAtPanel]: ';
 @ComponentV2
 export struct CustomAtPanel {
   @Param @Require vm: BaseVM;
+  @Event onAtUserClick: (user: AtUser) => void;
   @Local uiState: UiState = UiState.LOADING;
   @Local atUserList: AtUser[] = [];
 
@@ -59,7 +60,12 @@ export struct CustomAtPanel {
       StateLayout({ uiState: this.uiState }) {
         List({ space: CommonConstant.NormalContainerInnerPadding }) {
           ForEach(this.atUserList, (atUser: AtUser) => {
-            this.AtUserBuilder(atUser)
+            ListItem() {
+              this.AtUserBuilder(atUser)
+            }
+            .onClick(() => {
+              this.onAtUserClick(atUser);
+            })
           }, (atUser: AtUser) => atUser.uid.toString())
         }
         .width(CommonConstant.FullPercent)
