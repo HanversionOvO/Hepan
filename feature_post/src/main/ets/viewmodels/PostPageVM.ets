@@ -101,10 +101,12 @@ export class PostPageVM extends BaseVM {
     },
     {
       icon: $r('sys.symbol.picture'), onClick: () => {
+      this.insertImageTemplate();
     }
     },
     {
       icon: $r('sys.symbol.link'), onClick: () => {
+      this.insertLinkTemplate();
     }
     }
   ];
@@ -158,14 +160,15 @@ export class PostPageVM extends BaseVM {
     this.contentSelectionEnd = Math.max(0, end);
   }
 
-  private insertTextAtCursor(text: string) {
+  private insertTextAtCursor(text: string, relativeSelectionStart?: number, relativeSelectionEnd?: number) {
     const start = Math.min(this.contentSelectionStart, this.contentSelectionEnd);
     const end = Math.max(this.contentSelectionStart, this.contentSelectionEnd);
     const before = this.markdownContent.slice(0, start);
     const after = this.markdownContent.slice(end);
     this.markdownContent = `${before}${text}${after}`;
-    const newCursor = start + text.length;
-    this.updateContentSelection(newCursor, newCursor);
+    const selectionStart = start + (relativeSelectionStart ?? text.length);
+    const selectionEnd = start + (relativeSelectionEnd ?? relativeSelectionStart ?? text.length);
+    this.updateContentSelection(selectionStart, selectionEnd);
   }
 
   insertFace(url: string) {
@@ -176,5 +179,19 @@ export class PostPageVM extends BaseVM {
   insertAtUser(atUser: AtUser) {
     const atText = `[@${atUser.username}](at:${atUser.uid}) `;
     this.insertTextAtCursor(atText);
+  }
+
+  insertImageTemplate() {
+    const template = '![]()';
+    // Place caret inside parentheses to let user fill the image URL
+    this.insertTextAtCursor(template, template.length - 1, template.length - 1);
+  }
+
+  insertLinkTemplate() {
+    const template = '[](https://)';
+    // Preselect the URL part for quick replacement
+    const urlStart = template.indexOf('https://');
+    const urlEnd = urlStart + 'https://'.length;
+    this.insertTextAtCursor(template, urlStart, urlEnd);
   }
 }
