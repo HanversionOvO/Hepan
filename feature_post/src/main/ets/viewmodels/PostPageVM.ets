@@ -1,3 +1,4 @@
+import { MarkdownController } from '@luvi/lv-markdown-in';
 import { BaseVM, ForumApi, PostCategories } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 
@@ -10,6 +11,8 @@ export class PostPageVM extends BaseVM {
   @Trace currentCategory: number = 0;
   @Trace selectedSubCategory: string = '';
   @Trace isCategoryExpanded: boolean = false;
+  @Trace markdownController: MarkdownController = new MarkdownController();
+  @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
   @Trace categoryTabs: CustomTabItem[] = [];
   @Trace uploadedImages: string[] = [];

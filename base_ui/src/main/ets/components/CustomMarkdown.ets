@@ -30,7 +30,10 @@ export struct CustomMarkdown {
         text: this.content,
         controller: this.controller
       })
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
     }
+    .padding(CommonConstant.NormalContainerInnerPadding)
     .width(CommonConstant.FullPercent)
     .alignItems(HorizontalAlign.Start)
   }

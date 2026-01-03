@@ -15,6 +15,10 @@
     {
       "name": "PostPage_choose_category_first",
       "value": "请先选择板块"
+    },
+    {
+      "name": "PostPage_content_placeholder",
+      "value": "开始你的精彩故事吧...(MarkDown支持)"
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { CommonConstant, VMManager } from 'base_common'
-import { CustomNavTitle } from 'base_ui'
+import { CustomMarkdown, CustomNavTitle } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
@@ -49,15 +49,35 @@ export struct PostPageImpl {
                   .height(CommonConstant.BorderSizeHuge)
                   .color($r('sys.color.font_tertiary'))
               }
+
+              TextArea({ placeholder: $r('app.string.PostPage_content_placeholder'), text: this.vm.markdownContent })
+                .placeholderFont({
+                  size: CommonConstant.TextSizeNormal
+                })
+                .padding({ bottom: this.vm.window.windowBottomPadding })
+                .width(CommonConstant.FullPercent)
+                .fontSize(CommonConstant.TextSizeNormal)
+                .borderRadius(0)
+                .backgroundColor(Color.Transparent)
+                .padding(0)
+                .layoutWeight(1)
+                .onChange((text: string) => {
+                  this.vm.markdownContent = text;
+                })
             }
             .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
 
             if (this.vm.isTabletView) {
-              Column()
+              CustomMarkdown({
+                content: this.vm.markdownContent,
+                controller: this.vm.markdownController
+              })
                 .height(CommonConstant.FullPercent)
                 .width(340)
+                .borderRadius(CommonConstant.RadiusLarge)
+                .margin({ right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding })
                 .backgroundColor($r('app.color.second_window_background'))
             }
           }
