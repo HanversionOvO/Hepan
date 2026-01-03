@@ -76,6 +76,7 @@ export struct PostPageImpl {
                           this.vm.isInputting = true;
                           this.vm.isShowFace = false;
                           this.vm.isShowAt = false;
+                          this.vm.setKeyboardInputting(true);
                         })
                     })
                     .onBlur(() => {
@@ -88,6 +89,7 @@ export struct PostPageImpl {
                             this.vm.isInputting = false;
                           })
                       }
+                      this.vm.setKeyboardInputting(false);
                     })
                     .onChange((text: string) => {
                       this.vm.postTitle = text;
@@ -120,6 +122,7 @@ export struct PostPageImpl {
                         this.vm.isInputting = true;
                         this.vm.isShowFace = false;
                         this.vm.isShowAt = false;
+                        this.vm.setKeyboardInputting(true);
                       })
                   })
                   .onBlur(() => {
@@ -130,6 +133,7 @@ export struct PostPageImpl {
                       }, () => {
                         this.vm.isInputting = false;
                       })
+                    this.vm.setKeyboardInputting(false);
                   })
                   .onChange((text: string) => {
                     this.vm.markdownContent = text;

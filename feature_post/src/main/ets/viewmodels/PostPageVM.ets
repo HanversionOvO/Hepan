@@ -1,6 +1,13 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
 import { AppUtil } from '@pura/harmony-utils';
-import { BaseVM, CommonConstant, ForumApi, PostCategories } from 'base_common';
+import {
+  BaseVM,
+  CommonConstant,
+  ForumApi,
+  InputOverlayStore,
+  InputOverlayVisibilityEvent,
+  PostCategories
+} from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
 import { inputMethod } from '@kit.IMEKit';
@@ -24,6 +31,7 @@ export class PostPageVM extends BaseVM {
   @Trace selectedSubCategory: string = '';
   @Trace isCategoryExpanded: boolean = false;
   @Trace isInputting: boolean = false;
+  @Trace isInputtingWithKeyboard: boolean = false;
   @Trace isPreviewMode: boolean = false;
   @Trace isShowFace: boolean = false;
   @Trace isShowAt: boolean = false;
@@ -38,6 +46,7 @@ export class PostPageVM extends BaseVM {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
       this.isShowFace = !this.isShowFace;
       this.isShowAt = false;
+      this.isInputtingWithKeyboard = false;
       if (this.isShowFace) {
         try {
           inputMethod.getController().stopInputSession();
@@ -57,12 +66,14 @@ export class PostPageVM extends BaseVM {
               this.isInputting = false;
             })
       }
+      this.emitInputOverlayVisibility();
     }
     },
     {
       icon: $r('sys.symbol.at'), onClick: () => {
       this.isShowAt = !this.isShowAt;
       this.isShowFace = false;
+      this.isInputtingWithKeyboard = false;
 
       if (this.isShowAt) {
         try {
@@ -82,6 +93,7 @@ export class PostPageVM extends BaseVM {
               this.isInputting = false;
             })
       }
+      this.emitInputOverlayVisibility();
     }
     },
     {
@@ -126,5 +138,15 @@ export class PostPageVM extends BaseVM {
     if (this.categories.length > 0) {
       this.selectMainCategory(0);
     }
+  }
+
+  setKeyboardInputting(isVisible: boolean) {
+    this.isInputtingWithKeyboard = isVisible;
+    this.emitInputOverlayVisibility();
+  }
+
+  emitInputOverlayVisibility() {
+    InputOverlayStore.emit(InputOverlayVisibilityEvent,
+      this.isShowFace || this.isShowAt || this.isInputtingWithKeyboard);
   }
 }

@@ -1,5 +1,5 @@
 import { AppUtil } from '@pura/harmony-utils';
-import { CommonConstant } from 'base_common';
+import { CommonConstant, InputOverlayStore, InputOverlayVisibilityEvent } from 'base_common';
 import { HomePageVM } from '../viewmodels/HomePageVM';
 import { window } from '@kit.ArkUI';
 
@@ -80,6 +80,7 @@ export struct HomeNavBar {
     window.getLastWindow(this.getUIContext().getHostContext()).then(currentWindow => {
       currentWindow.on('keyboardHeightChange', (data: number) => {
         this.vm.isKeyBoardOpen = data > 0;
+        InputOverlayStore.emit(InputOverlayVisibilityEvent, data > 0);
       })
     })
   }
