@@ -1,5 +1,7 @@
-import { BaseVM } from 'base_common';
+import { BaseVM, ForumApi, PostCategories } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
+
+const TAG = '[PostPageVM]: ';
 
 @ObservedV2
 export class PostPageVM extends BaseVM {
@@ -9,10 +11,7 @@ export class PostPageVM extends BaseVM {
   @Trace selectedSubCategory: string = '';
   @Trace isCategoryExpanded: boolean = false;
   @Trace postTitle: string = '';
-  @Trace categoryTabs: CustomTabItem[] = [
-    { label: "test", icon: $r('sys.symbol.person') },
-    { label: "test", icon: $r('sys.symbol.person') },
-  ];
+  @Trace categoryTabs: CustomTabItem[] = [];
   @Trace uploadedImages: string[] = [
     'https://t.alcy.cc/pc',
     'https://t.alcy.cc/pc',
@@ -20,7 +19,7 @@ export class PostPageVM extends BaseVM {
     'https://t.alcy.cc/pc',
     'https://t.alcy.cc/pc',
   ];
-  @Trace categories: Record<string, Object>[] = [];
+  @Trace categories: PostCategories[] = [];
 
   get currentMainKey(): string {
     const keys = Object.keys(this.categories);
@@ -28,5 +27,15 @@ export class PostPageVM extends BaseVM {
       return keys[this.currentCategory];
     }
     return keys[0];
+  }
+
+  async startPostPage() {
+    this.categories = await ForumApi.getPostCategories();
+    this.categoryTabs = this.categories.map((category) => {
+      return {
+        label: category.name,
+        icon: $r('sys.symbol.person')
+      } as CustomTabItem;
+    });
   }
 }

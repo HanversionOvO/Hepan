@@ -38,6 +38,8 @@ export { MessageApi } from './src/main/ets/api/MessageApi';
 
 export { AttachmentApi } from './src/main/ets/api/AttachmentApi';
 
+export { ForumApi } from './src/main/ets/api/ForumApi';
+
 export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
@@ -48,5 +50,7 @@ export { NewMessagesSummary,
   SystemNotification,
   Chat,
   ChatSendContent } from './src/main/ets/api/models/MessageModels';
+
+export { ForumCategory, LatestThread, PostCategories } from './src/main/ets/api/models/ForumModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

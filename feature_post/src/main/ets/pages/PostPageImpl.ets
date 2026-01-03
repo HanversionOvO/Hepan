@@ -5,6 +5,8 @@ import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
 import { PostPageVM } from '../viewmodels/PostPageVM'
 
+const TAG = '[PostPageImpl]: ';
+
 @ComponentV2
 export struct PostPageImpl {
   @Local vm: PostPageVM = VMManager.get(PostPageVM, () => new PostPageVM())
@@ -67,5 +69,8 @@ export struct PostPageImpl {
     }
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
+    .onReady(async () => {
+      await this.vm.startPostPage();
+    })
   }
 }
