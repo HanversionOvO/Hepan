@@ -1,18 +1,22 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { CommonConstant } from '../constants/CommonConstant';
 import { ComponentContent } from '@kit.ArkUI';
+// [新增] 引入 Lottie
+import { LottieView } from '@ohos/lottie-turbo';
 
 const TAG = '[ToastUtil]: ';
 
 export enum ToastShowType {
-  OPEN
+  OPEN,
+  LOADING // [新增]
 }
 
 export enum ToastState {
   SUCCESS,
   WARNING,
   ERROR,
-  INFO
+  INFO,
+  LOADING // [新增]
 }
 
 export interface ToastOptions {
@@ -45,93 +49,123 @@ interface ToastIcon {
 
 @Builder
 function CommonToastBuilder(params: ToastParams) {
-  Column() {
-    // 1. 顶部图标区域 (Header)
-    Stack({ alignContent: Alignment.Center }) {
-      // 背景层：填充并设置透明度
-      Column()
-        .width('100%')
-        .height('100%')
-        .backgroundColor(ToastUtil.getIcon(params.state).color)
-        .opacity(0.2)
+  // [关键修改] 针对 LOADING 状态使用完全独立的布局结构
+  if (params.state === ToastState.LOADING) {
+    Column() {
+      // 1. Lottie 动画区域
+      LottieView({
+        lottieId: 'toast_loading', // 唯一的 ID
+        path: $rawfile('loading_lottie.json'), // 确保该文件在 base_common 的 rawfile 中
+        // 默认 autoPlay: true, loop: true
+      })
+        .width(120) // 调整 Lottie 大小
+        .height(120)
 
-      // 图标层
-      SymbolGlyph(ToastUtil.getIcon(params.state).icon)
-        .fontSize(24)
-        .fontColor([ToastUtil.getIcon(params.state).color])
-        .fontWeight(FontWeight.Bolder)
-        .padding(CommonConstant.NormalContainerInnerPadding)
-        .backgroundColor($r('sys.color.font_on_primary'))
-        .borderRadius(CommonConstant.RadiusRound)
+      // 2. 文字区域
+      if (params.message) {
+        Text(params.message)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontColor($r('sys.color.font_secondary')) // 或使用 Color.White 如果背景很深
+          .textAlign(TextAlign.Center)
+          .margin({ top: CommonConstant.SmallContainerTBPadding })
+          .maxLines(2)
+          .offset({ y: -20 })
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+      }
     }
-    .width('100%')
-    .height(96) // 固定高度
-    .flexShrink(0) // 防止被压缩
+    .width(160) // [需求] 固定宽度
+    .height(160) // [需求] 固定高度
+    .justifyContent(FlexAlign.Center) // [需求] 内容居中
+    .backgroundColor($r('sys.color.comp_background_primary')) // 背景色
+    .borderRadius(CommonConstant.RadiusLarge)
+    .shadow(ShadowStyle.OUTER_DEFAULT_MD) // 可选：添加一点阴影增加层次感
+  } else {
+    // ================= 原有逻辑 (非 Loading 状态) =================
+    Column() {
+      // 1. 顶部图标区域 (Header)
+      Stack({ alignContent: Alignment.Center }) {
+        // 背景层
+        Column()
+          .width('100%')
+          .height('100%')
+          .backgroundColor(ToastUtil.getIcon(params.state).color)
+          .opacity(0.2)
 
-    // 2. 内容区域 (Scrollable Body)
-    // 使用 Scroll 包裹内容，并限制最大高度
-    Scroll() {
-      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        if (params.title) {
-          Text(params.title)
-            .fontSize(CommonConstant.TextSizeLarge)
-            .fontWeight(FontWeight.Bolder)
+        // 图标层
+        SymbolGlyph(ToastUtil.getIcon(params.state).icon)
+          .fontSize(24)
+          .fontColor([ToastUtil.getIcon(params.state).color])
+          .fontWeight(FontWeight.Bolder)
+          .padding(CommonConstant.NormalContainerInnerPadding)
+          .backgroundColor($r('sys.color.font_on_primary'))
+          .borderRadius(CommonConstant.RadiusRound)
+      }
+      .width('100%')
+      .height(96)
+      .flexShrink(0)
+
+      // 2. 内容区域
+      Scroll() {
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          if (params.title) {
+            Text(params.title)
+              .fontSize(CommonConstant.TextSizeLarge)
+              .fontWeight(FontWeight.Bolder)
+              .textAlign(TextAlign.Center)
+              .width('100%')
+          }
+
+          Text(params.message)
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontColor($r('sys.color.font_secondary'))
             .textAlign(TextAlign.Center)
             .width('100%')
         }
-
-        Text(params.message)
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontColor($r('sys.color.font_secondary'))
-          .textAlign(TextAlign.Center)
-          .width('100%')
-      }
-      .padding({
-        top: CommonConstant.NormalContainerTBPadding,
-        bottom: CommonConstant.NormalContainerTBPadding,
-        left: CommonConstant.NormalContainerLRPadding,
-        right: CommonConstant.NormalContainerLRPadding
-      })
-    }
-    .scrollBar(BarState.Auto)
-    .width('100%')
-    // [关键修复] 限制滚动区域的最大高度 (例如屏幕高度的 60%)
-    // 这样内容少时自适应，多时滚动
-    .constraintSize({ maxHeight: '60%' })
-    .edgeEffect(EdgeEffect.Spring) // 添加回弹效果优化体验
-
-    // 3. 按钮区域 (Footer)
-    Row({ space: CommonConstant.LargeContainerInnerPadding }) {
-      ToastButton({
-        bgColor: $r('sys.color.font_on_tertiary'),
-        fontColor: $r('sys.color.font_secondary'),
-        text: params.isShowConfirm ? $r('app.string.CommonToast_cancel') : $r('app.string.CommonToast_known'),
-        clickAction: params.onCancel
-      })
-
-      if (params.isShowConfirm) {
-        ToastButton({
-          bgColor: ToastUtil.getIcon(params.state).color,
-          fontColor: $r('sys.color.font_on_primary'),
-          text: $r('app.string.CommonToast_confirm'),
-          clickAction: params.onConfirm
+        .padding({
+          top: CommonConstant.NormalContainerTBPadding,
+          bottom: CommonConstant.NormalContainerTBPadding,
+          left: CommonConstant.NormalContainerLRPadding,
+          right: CommonConstant.NormalContainerLRPadding
         })
       }
+      .scrollBar(BarState.Auto)
+      .width('100%')
+      .constraintSize({ maxHeight: '60%' })
+      .edgeEffect(EdgeEffect.Spring)
+
+      // 3. 按钮区域
+      Row({ space: CommonConstant.LargeContainerInnerPadding }) {
+        ToastButton({
+          bgColor: $r('sys.color.font_on_tertiary'),
+          fontColor: $r('sys.color.font_secondary'),
+          text: params.isShowConfirm ? $r('app.string.CommonToast_cancel') : $r('app.string.CommonToast_known'),
+          clickAction: params.onCancel
+        })
+
+        if (params.isShowConfirm) {
+          ToastButton({
+            bgColor: ToastUtil.getIcon(params.state).color,
+            fontColor: $r('sys.color.font_on_primary'),
+            text: $r('app.string.CommonToast_confirm'),
+            clickAction: params.onConfirm
+          })
+        }
+      }
+      .padding({
+        left: CommonConstant.NormalContainerLRPadding,
+        right: CommonConstant.NormalContainerLRPadding,
+        top: CommonConstant.NormalContainerTBPadding,
+        bottom: CommonConstant.NormalContainerTBPadding,
+      })
+      .width(CommonConstant.FullPercent)
+      .flexShrink(0)
     }
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding,
-    })
-    .width(CommonConstant.FullPercent)
-    .flexShrink(0) // 防止被压缩
+    .width(CommonConstant.AboveHalfPercent)
+    .constraintSize({ maxWidth: 400 })
+    .backgroundColor($r('sys.color.comp_background_primary'))
+    .borderRadius(CommonConstant.RadiusLarge)
+    .clip(true)
   }
-  .width(CommonConstant.AboveHalfPercent)
-  .constraintSize({ maxWidth: 400 })
-  .backgroundColor($r('sys.color.comp_background_primary'))
-  .borderRadius(CommonConstant.RadiusLarge)
-  .clip(true) // [关键修复] 裁剪子元素，确保顶部背景色块不会溢出圆角
 }
 
 const WrappedToastBuilder = wrapBuilder(CommonToastBuilder);
@@ -183,6 +217,9 @@ export class ToastUtil {
         return { icon: $r('sys.symbol.warning'), color: CommonConstant.WarningColor };
       case ToastState.ERROR:
         return { icon: $r('sys.symbol.xmark'), color: CommonConstant.ErrorColor };
+      // Loading 状态其实在这里不需要图标配置了，因为 builder 里直接用了 Lottie，但为了类型安全保留一个默认
+      case ToastState.LOADING:
+        return { icon: $r('sys.symbol.arrow_clockwise'), color: CommonConstant.InfoColor };
       default:
         return { icon: $r('sys.symbol.info_shield'), color: CommonConstant.InfoColor };
     }
@@ -229,7 +266,7 @@ export class ToastUtil {
     const prompt = uiContext.getPromptAction();
     prompt.openCustomDialog(componentContent, {
       alignment: DialogAlignment.Center,
-      autoCancel: false,
+      autoCancel: false, // Loading 也不允许点击背景关闭
       onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
         if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
           ToastUtil.closeToast(type);
@@ -253,6 +290,7 @@ export class ToastUtil {
     }
 
     const instance = ToastUtil.shareInstance();
+    // 查找对应类型的 Toast
     const index = instance.infoList.map(item => item.popType).lastIndexOf(type);
 
     if (index !== -1) {
@@ -311,5 +349,18 @@ export class ToastUtil {
       onConfirm: onConfirm,
       onCancel: onCancel
     });
+  }
+
+  // [新增] 快捷调用 Loading
+  static showLoading(message: ResourceStr) {
+    ToastUtil.showToast(message, {
+      type: ToastShowType.LOADING,
+      state: ToastState.LOADING
+    });
+  }
+
+  // [新增] 快捷关闭 Loading
+  static hideLoading() {
+    ToastUtil.closeToast(ToastShowType.LOADING);
   }
 }
