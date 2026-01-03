@@ -85,7 +85,7 @@ export struct CategoryPicker {
               tabButtonHeight: CommonConstant.IconSizeLarge,
               alignMode: FlexAlign.Start,
               changeTab: (index) => {
-                this.vm.currentCategory = index;
+                this.vm.selectMainCategory(index);
               }
             })
           }

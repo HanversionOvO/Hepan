@@ -22,6 +22,18 @@ export class PostPageVM extends BaseVM {
     return $r('app.string.PostPage_choose_category_first');
   }
 
+  selectMainCategory(index: number) {
+    this.currentCategory = index;
+    if (this.categories.length > index && index >= 0) {
+      const category = this.categories[index];
+      if (category.children && category.children.length > 0) {
+        this.selectedSubCategory = category.children[0].name;
+      } else {
+        this.selectedSubCategory = '';
+      }
+    }
+  }
+
   async startPostPage() {
     this.categories = await ForumApi.getPostCategories();
 
@@ -33,14 +45,7 @@ export class PostPageVM extends BaseVM {
     });
 
     if (this.categories.length > 0) {
-      this.currentCategory = 0;
-      const firstCategory = this.categories[0];
-
-      if (firstCategory.children && firstCategory.children.length > 0) {
-        this.selectedSubCategory = firstCategory.children[0].name;
-      } else {
-        this.selectedSubCategory = '';
-      }
+      this.selectMainCategory(0);
     }
   }
 }
