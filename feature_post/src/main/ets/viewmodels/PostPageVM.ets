@@ -1,19 +1,35 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
-import { AppUtil, ResUtil } from '@pura/harmony-utils';
+import { AppUtil, LogUtil, ResUtil } from '@pura/harmony-utils';
 import {
+  AttachmentApi,
   AtUser,
   BaseVM,
   CommonConstant,
   ForumApi,
   InputOverlayStore,
   InputOverlayVisibilityEvent,
-  PostCategories
+  PostCategories,
+  ToastUtil
 } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
 import { inputMethod } from '@kit.IMEKit';
+import { PickerUtil } from '@pura/picker_utils';
+import { picker } from '@kit.CoreFileKit';
 
 const TAG = '[PostPageVM]: ';
+
+@ObservedV2
+export class PostImageModel {
+  @Trace localUri: string = ''; // 本地选取的图片 URI (用于立即显示)
+  @Trace remoteUrl: string = ''; // 上传成功后的网络 URL
+  @Trace isLoading: boolean = false; // 是否正在上传中
+
+  constructor(localUri: string) {
+    this.localUri = localUri;
+    this.isLoading = true; // 默认为加载中
+  }
+}
 
 @ObservedV2
 export class PostPageVM extends BaseVM {
@@ -42,7 +58,7 @@ export class PostPageVM extends BaseVM {
   @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
   @Trace categoryTabs: CustomTabItem[] = [];
-  @Trace uploadedImages: string[] = [];
+  @Trace uploadedImages: PostImageModel[] = [];
   @Trace categories: PostCategories[] = [];
   @Trace richTextButtons: RichTextButton[] = [
     {
@@ -114,6 +130,52 @@ export class PostPageVM extends BaseVM {
       return this.categories[this.currentCategory].name;
     }
     return $r('app.string.PostPage_choose_category_first');
+  }
+
+  async selectImage() {
+    const maxCount = 9 - this.uploadedImages.length;
+    if (maxCount <= 0) {
+      ToastUtil.showError($r('app.string.PostPage_select_photo_error'))
+      return;
+    }
+
+    try {
+      const uris = await PickerUtil.selectPhoto({
+        MIMEType: picker.PhotoViewMIMETypes.IMAGE_TYPE,
+        maxSelectNumber: maxCount
+      });
+
+      if (uris && uris.length > 0) {
+        uris.forEach((uri: string) => {
+          const imgModel = new PostImageModel(uri);
+          this.uploadedImages.push(imgModel);
+          this.uploadImage(imgModel);
+        });
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Select photo failed:', e);
+    }
+  }
+
+  async uploadImage(img: PostImageModel) {
+    try {
+      const url = await AttachmentApi.uploadImage(img.localUri);
+      img.remoteUrl = url;
+      img.isLoading = false;
+    } catch (e) {
+      LogUtil.error(TAG, 'Upload failed:', e);
+      ToastUtil.showError($r('app.string.PostPage_photo_upload_failed'));
+      const index = this.uploadedImages.indexOf(img);
+      if (index !== -1) {
+        this.uploadedImages.splice(index, 1);
+      }
+    }
+  }
+
+  deleteImage(index: number) {
+    if (index >= 0 && index < this.uploadedImages.length) {
+      this.uploadedImages.splice(index, 1);
+    }
   }
 
   selectMainCategory(index: number) {

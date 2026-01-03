@@ -1,5 +1,5 @@
 import { CommonConstant } from 'base_common';
-import { PostPageVM } from '../viewmodels/PostPageVM';
+import { PostImageModel, PostPageVM } from '../viewmodels/PostPageVM'; // 引入 PostImageModel
 
 @ComponentV2
 export struct ImagePicker {
@@ -20,10 +20,10 @@ export struct ImagePicker {
   build() {
     Column() {
       List({ space: CommonConstant.NormalContainerInnerPadding }) {
-        ForEach(this.vm.uploadedImages, (img: string, index: number) => {
+        ForEach(this.vm.uploadedImages, (img: PostImageModel, index: number) => {
           ListItem() {
             Stack({ alignContent: Alignment.TopEnd }) {
-              Image(img)
+              Image(img.localUri)
                 .objectFit(ImageFit.Cover)
                 .animation({
                   curve: CommonConstant.AnimationCurveSpring,
@@ -34,6 +34,21 @@ export struct ImagePicker {
                 .borderRadius(CommonConstant.RadiusLarge)
                 .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
 
+              if (img.isLoading) {
+                Stack({ alignContent: Alignment.Center }) {
+                  LoadingProgress()
+                    .color(Color.White)
+                    .width(this.isShrink ? CommonConstant.IconSizeNormal : CommonConstant.IconSizeLarge)
+                    .height(this.isShrink ? CommonConstant.IconSizeNormal : CommonConstant.IconSizeLarge)
+                }
+                .width(this.currentImageSize)
+                .height(this.currentImageSize)
+                .borderRadius(CommonConstant.RadiusLarge)
+                .backgroundColor($r('app.color.glass_background'))
+                .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+              }
+
+              // 删除按钮
               Button({ type: ButtonType.Circle }) {
                 SymbolGlyph($r('sys.symbol.xmark'))
                   .fontSize(this.isShrink ? CommonConstant.TextSizeUltraTiny : CommonConstant.TextSizeSmall)
@@ -46,6 +61,7 @@ export struct ImagePicker {
               .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
               .margin(CommonConstant.SmallContainerInnerPadding)
               .onClick(() => {
+                this.vm.deleteImage(index);
               })
               .animation({
                 curve: CommonConstant.AnimationCurveNormal,
@@ -53,7 +69,7 @@ export struct ImagePicker {
               })
             }
           }
-        }, (img: string, index: number) => index.toString())
+        }, (img: PostImageModel, index: number) => img.localUri + index.toString())
 
         if (this.vm.uploadedImages.length < 9) {
           ListItem() {
@@ -86,7 +102,7 @@ export struct ImagePicker {
             .borderRadius(CommonConstant.RadiusLarge)
             .clip(true)
             .onClick(() => {
-
+              this.vm.selectImage();
             })
             .animation({
               curve: CommonConstant.AnimationCurveSpring,

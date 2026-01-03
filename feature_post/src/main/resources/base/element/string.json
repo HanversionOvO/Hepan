@@ -31,6 +31,14 @@
     {
       "name": "PostPage_quote",
       "value": "引用内容"
+    },
+    {
+      "name": "PostPage_select_photo_error",
+      "value": "最多只能选择9张图片"
+    },
+    {
+      "name": "PostPage_photo_upload_failed",
+      "value": "图片上传失败"
     }
   ]
 }
