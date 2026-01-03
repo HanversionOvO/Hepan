@@ -15,12 +15,12 @@ export struct CustomFilePanel {
   FunctionButton(title: ResourceStr, icon: Resource, onClick: () => void) {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       SymbolGlyph(icon)
-        .fontSize(CommonConstant.IconSizeUltraLarge)
+        .fontSize(CommonConstant.IconSizeNormal)
         .fontColor([$r('sys.color.font_secondary')])
         .fontWeight(FontWeight.Bold)
 
       Text(title)
-        .fontSize(CommonConstant.TextSizeNormal)
+        .fontSize(CommonConstant.TextSizeSmall)
         .fontColor($r('sys.color.font_secondary'))
         .fontWeight(FontWeight.Medium)
     }
@@ -34,16 +34,16 @@ export struct CustomFilePanel {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       Text($r('app.string.CustomFilePanel_title'))
         .width(CommonConstant.FullPercent)
-        .fontSize(CommonConstant.TextSizeUltraLarge)
+        .fontSize(CommonConstant.TextSizeNormal)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Start)
 
       Grid() {
-        ForEach(this.items, (item: CustomFilePanelItem) => {
+        ForEach(this.items, (item: CustomFilePanelItem, index: number) => {
           GridItem() {
             this.FunctionButton(item.title, item.icon, item.onClick)
           }
-        }, (item: CustomFilePanelItem) => item.title.toString())
+        }, (item: CustomFilePanelItem, index: number) => index.toString())
       }
       .columnsTemplate('1fr '.repeat(4))
       .rowsGap(CommonConstant.NormalContainerInnerPadding)

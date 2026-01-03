@@ -8,6 +8,7 @@ export struct ChatBottomBar {
   @Param controller: RichEditorController = this.vm.richEditorController;
   @Local hasContent: boolean = false;
   @Event onFaceClick: () => void;
+  @Event onFileClick: () => void
 
   checkContent() {
     let hasTextOrImage = false;
@@ -35,6 +36,9 @@ export struct ChatBottomBar {
         isFloating: true,
         floatIcon: $r('sys.symbol.picture')
       })
+        .onClick(() => {
+          this.onFileClick();
+        })
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         RichEditor({

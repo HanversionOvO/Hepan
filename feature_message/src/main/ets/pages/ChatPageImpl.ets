@@ -1,5 +1,5 @@
 import { Chat, CommonConstant, RecentMessage } from 'base_common';
-import { CustomFacePanel, FloatButton } from 'base_ui';
+import { CustomFacePanel, CustomFilePanel, FloatButton } from 'base_ui';
 import { ChatBottomBar } from '../components/ChatBottomBar';
 import { ChatBubble } from '../components/ChatBubble';
 import { ChatNavBar } from '../components/ChatNavBar';
@@ -53,7 +53,8 @@ export struct ChatPageImpl {
           // 底部垫片：根据面板状态调整高度
           ListItem()
             .height(this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
-            CommonConstant.IconSizeLarge + (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0))
+            CommonConstant.IconSizeLarge +
+              (this.vm.isShowFacePanel || this.vm.isShowFilePanel ? this.vm.window.windowHeight * 0.4 : 0))
             .animation({
               duration: CommonConstant.AnimationDurationNormal,
               curve: CommonConstant.AnimationCurveSpring
@@ -82,24 +83,25 @@ export struct ChatPageImpl {
           this.vm.toggleHeader(false);
         })
         .maintainVisibleContentPosition(true)
-        // 新增：点击列表区域（外部），关闭输入法和面板
         .onClick(() => {
           // 关闭面板
-          if (this.vm.isShowFacePanel) {
+          if (this.vm.isShowFacePanel || this.vm.isShowFilePanel) {
             AppUtil.getUIContext().animateTo({
               duration: CommonConstant.AnimationDurationNormal,
               curve: CommonConstant.AnimationCurveSpring
             }, () => {
               this.vm.isShowFacePanel = false;
+              this.vm.isShowFilePanel = false;
             });
           }
-          // 关闭键盘
+
           inputMethod.getController().hideTextInput();
         })
 
         ChatBottomBar({
           vm: this.vm,
           onFaceClick: () => {
+            // 处理表情面板点击
             if (this.vm.isShowFacePanel) {
               AppUtil.getUIContext().animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
@@ -108,19 +110,42 @@ export struct ChatPageImpl {
                 this.vm.isShowFacePanel = false;
               });
             } else {
+              // 开启表情面板前，关闭键盘和文件面板
               inputMethod.getController().hideTextInput();
               AppUtil.getUIContext().animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
                 curve: CommonConstant.AnimationCurveSpring
               }, () => {
+                this.vm.isShowFilePanel = false; // 互斥关闭文件面板
                 this.vm.isShowFacePanel = true;
+              });
+            }
+          },
+          onFileClick: () => {
+            // 处理文件面板点击
+            if (this.vm.isShowFilePanel) {
+              AppUtil.getUIContext().animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.isShowFilePanel = false;
+              });
+            } else {
+              // 开启文件面板前，关闭键盘和表情面板
+              inputMethod.getController().hideTextInput();
+              AppUtil.getUIContext().animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.isShowFacePanel = false; // 互斥关闭表情面板
+                this.vm.isShowFilePanel = true;
               });
             }
           }
         })
           .position({
             bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
-              (this.vm.isShowFacePanel ? this.vm.window.windowHeight * 0.4 : 0)
+              (this.vm.isShowFacePanel || this.vm.isShowFilePanel ? this.vm.window.windowHeight * 0.4 : 0)
           })
           .zIndex(2)
 
@@ -135,6 +160,17 @@ export struct ChatPageImpl {
                 }
               })
             }
+          })
+            .height(this.vm.window.windowHeight * 0.4)
+            .transition(TransitionEffect.move(TransitionEdge.BOTTOM))
+            .position({ bottom: 0 })
+            .zIndex(3)
+        }
+
+        if (this.vm.isShowFilePanel) {
+          CustomFilePanel({
+            vm: this.vm,
+            items: this.vm.filePanelItems
           })
             .height(this.vm.window.windowHeight * 0.4)
             .transition(TransitionEffect.move(TransitionEdge.BOTTOM))

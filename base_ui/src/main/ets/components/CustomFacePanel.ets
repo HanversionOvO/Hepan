@@ -109,6 +109,8 @@ export struct CustomFacePanel {
               .columnsGap(CommonConstant.NormalContainerInnerPadding)
               .width(CommonConstant.FullPercent)
               .height(CommonConstant.FullPercent)
+              .scrollBar(BarState.Off)
+              .edgeEffect(EdgeEffect.Spring)
             }
           })
         }
