@@ -19,6 +19,7 @@ export struct RichTextToolBar {
         .vertical(this.vm.isTabletView)
         .width(this.vm.isTabletView ? CommonConstant.BorderSizeHuge : CommonConstant.FullPercent)
         .height(this.vm.isTabletView ? CommonConstant.FullPercent : CommonConstant.BorderSizeHuge)
+        .margin({ bottom: this.vm.isTabletView ? 0 : CommonConstant.TopBarHeight })
 
       Flex({
         direction: this.vm.isTabletView ? FlexDirection.Column : FlexDirection.Row,
@@ -44,6 +45,10 @@ export struct RichTextToolBar {
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
+      .padding({
+        left: this.vm.isTabletView ? 0 : CommonConstant.SmallContainerLRPadding,
+        right: this.vm.isTabletView ? 0 : CommonConstant.SmallContainerLRPadding,
+      })
     }
     .width(this.vm.isTabletView ? CommonConstant.TopBarHeight : CommonConstant.FullPercent)
     .height(this.vm.isTabletView ? CommonConstant.FullPercent : CommonConstant.TopBarHeight)

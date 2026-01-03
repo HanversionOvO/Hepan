@@ -13,6 +13,7 @@ export class HomePageVM extends BaseVM {
   ];
   @Trace currentIndex: number = StorageManager.tabIndexModel.homeTabIndex;
   @Trace controller: TabsController = new TabsController();
+  @Trace isKeyBoardOpen: boolean = false;
 
   @Computed
   get isNavBarVisible(): boolean {
@@ -25,6 +26,10 @@ export class HomePageVM extends BaseVM {
     }
 
     if (RouterUtil.routerModel.messageStackSize > 0) {
+      return false;
+    }
+
+    if (this.currentIndex === 1 && this.isKeyBoardOpen) {
       return false;
     }
 

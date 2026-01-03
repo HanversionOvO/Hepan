@@ -1,6 +1,9 @@
 import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant } from 'base_common';
 import { HomePageVM } from '../viewmodels/HomePageVM';
+import { window } from '@kit.ArkUI';
+
+const TAG = "[HomeNavBar]: ";
 
 export interface HomeNavBarItem {
   name: string;
@@ -71,6 +74,20 @@ export struct HomeNavBar {
   @Monitor("vm.breakPoint.currentBreakPoint", "vm.window.windowWidth", "vm.window.windowHeight")
   updateLayout() {
     this.calculateOffset(this.vm.currentIndex);
+  }
+
+  aboutToAppear(): void {
+    window.getLastWindow(this.getUIContext().getHostContext()).then(currentWindow => {
+      currentWindow.on('keyboardHeightChange', (data: number) => {
+        this.vm.isKeyBoardOpen = data > 0;
+      })
+    })
+  }
+
+  aboutToDisappear(): void {
+    window.getLastWindow(this.getUIContext().getHostContext()).then(currentWindow => {
+      currentWindow.off('keyboardHeightChange');
+    })
   }
 
   private calculateOffset(index: number) {

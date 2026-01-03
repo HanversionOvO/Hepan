@@ -5,12 +5,34 @@ import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
 import { PostPageVM } from '../viewmodels/PostPageVM'
+import { KeyboardAvoidMode } from '@kit.ArkUI'
 
 const TAG = '[PostPageImpl]: ';
 
 @ComponentV2
 export struct PostPageImpl {
   @Local vm: PostPageVM = VMManager.get(PostPageVM, () => new PostPageVM())
+
+  @Monitor("vm.isTabletView")
+  changeKeyBoardMode() {
+    if (!this.vm.isTabletView) {
+      this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE_WITH_CARET)
+    } else {
+      this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET)
+    }
+  }
+
+  aboutToAppear(): void {
+    if (!this.vm.isTabletView) {
+      this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE_WITH_CARET)
+    } else {
+      this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET)
+    }
+  }
+
+  aboutToDisappear(): void {
+    this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET)
+  }
 
   build() {
     NavDestination() {
