@@ -174,7 +174,11 @@ export class PostPageVM extends BaseVM {
 
   deleteImage(index: number) {
     if (index >= 0 && index < this.uploadedImages.length) {
-      this.uploadedImages.splice(index, 1);
+      AppUtil.getUIContext()
+        .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal },
+          () => {
+            this.uploadedImages.splice(index, 1);
+          })
     }
   }
 
