@@ -11,6 +11,63 @@ export interface RichTextButton {
 export struct RichTextToolBar {
   @Param @Require vm: PostPageVM;
   @Param buttons: RichTextButton[] = [];
+  @Local richFuc: RichTextButton[] = [
+    {
+      icon: $r('sys.symbol.bold'), onClick: () => {
+      // TODO: 加粗
+    }
+    },
+    {
+      icon: $r('sys.symbol.italic'), onClick: () => {
+      // TODO: 斜体
+    }
+    },
+    {
+      icon: $r('sys.symbol.underline'), onClick: () => {
+      // TODO: 下划线
+    }
+    },
+    {
+      icon: $r('sys.symbol.strikethrough'), onClick: () => {
+      // TODO: 删除线
+    }
+    },
+    {
+      icon: $r('sys.symbol.list_number'), onClick: () => {
+      // TODO: 有序列表
+    }
+    },
+    {
+      icon: $r('sys.symbol.list_bullet'), onClick: () => {
+      // TODO: 无序列表
+    }
+    },
+    {
+      icon: $r('sys.symbol.line'), onClick: () => {
+      // TODO: 分割线
+    }
+    },
+    {
+      icon: $r('sys.symbol.list_checkmask'), onClick: () => {
+      // TODO: 任务列表
+    }
+    },
+    {
+      icon: $r('sys.symbol.chevron_right'), onClick: () => {
+      // TODO: 引用
+    }
+    }
+  ];
+
+  @Builder
+  ButtonBuilder(icon: Resource, onClick: () => void) {
+    SymbolGlyph(icon)
+      .fontSize(CommonConstant.IconSizeNormal)
+      .fontColor([$r('sys.color.font_secondary')])
+      .onClick(() => {
+        onClick();
+      })
+  }
 
   build() {
     Stack({ alignContent: this.vm.isTabletView ? Alignment.End : Alignment.Start }) {
@@ -29,12 +86,7 @@ export struct RichTextToolBar {
         }
       }) {
         ForEach(this.buttons, (button: RichTextButton, index: number) => {
-          SymbolGlyph(button.icon)
-            .fontSize(CommonConstant.IconSizeNormal)
-            .fontColor([$r('sys.color.font_secondary')])
-            .onClick(() => {
-              button.onClick();
-            })
+          this.ButtonBuilder(button.icon, button.onClick)
         }, (button: RichTextButton, index: number) => index.toString())
 
         Divider()
@@ -42,6 +94,19 @@ export struct RichTextToolBar {
           .width(this.vm.isTabletView ? CommonConstant.IconSizeNormal : CommonConstant.BorderSizeLarge)
           .height(this.vm.isTabletView ? CommonConstant.BorderSizeLarge : CommonConstant.IconSizeNormal)
           .vertical(!this.vm.isTabletView)
+
+        List({ space: CommonConstant.NormalContainerInnerPadding }) {
+          ForEach(this.richFuc, (button: RichTextButton, index: number) => {
+            ListItem() {
+              this.ButtonBuilder(button.icon, button.onClick)
+            }
+          }, (button: RichTextButton, index: number) => index.toString())
+        }
+        .alignListItem(ListItemAlign.Center)
+        .listDirection(this.vm.isTabletView ? Axis.Vertical : Axis.Horizontal)
+        .layoutWeight(1)
+        .scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring)
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
