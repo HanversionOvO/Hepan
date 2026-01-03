@@ -113,6 +113,9 @@ export struct PostPageImpl {
                   .backgroundColor(Color.Transparent)
                   .padding(0)
                   .layoutWeight(1)
+                  .onSelectionChange((start: number, end: number) => {
+                    this.vm.updateContentSelection(start, end);
+                  })
                   .onFocus(() => {
                     AppUtil.getUIContext()
                       .animateTo({
@@ -123,6 +126,7 @@ export struct PostPageImpl {
                         this.vm.isShowFace = false;
                         this.vm.isShowAt = false;
                         this.vm.setKeyboardInputting(true);
+                        this.vm.updateContentSelection(this.vm.markdownContent.length, this.vm.markdownContent.length);
                       })
                   })
                   .onBlur(() => {
@@ -137,15 +141,14 @@ export struct PostPageImpl {
                   })
                   .onChange((text: string) => {
                     this.vm.markdownContent = text;
+                    this.vm.updateContentSelection(text.length, text.length);
                   })
 
                 if (this.vm.isShowFace) {
                   CustomFacePanel({
                     vm: this.vm,
-                    onFaceClick: (face: ResourceStr) => {
-                      if (typeof face === 'string') {
-                        this.vm.markdownContent += face;
-                      }
+                    onFaceClick: (face: string) => {
+                      this.vm.insertFace(face);
                     }
                   })
                     .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
@@ -159,8 +162,7 @@ export struct PostPageImpl {
                   CustomAtPanel({
                     vm: this.vm,
                     onAtUserClick: (atUser: AtUser) => {
-                      // 插入 @用户名
-                      this.vm.markdownContent += `@${atUser.username} `;
+                      this.vm.insertAtUser(atUser);
                     }
                   })
                     .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
