@@ -163,12 +163,6 @@ export class ChatPageVM extends BaseVM {
   async takePhoto() {
     try {
       const result: string = await PickerUtil.cameraEasy();
-
-      LogUtil.debug(TAG, 'Take photo result: ' + result)
-
-      // if (pickerResult.resultUri) {
-      //   this.uploadAndSendImage(pickerResult.resultUri);
-      // }
     } catch (e) {
       LogUtil.error(TAG, 'Take photo failed: ' + JSON.stringify(e));
     }
@@ -179,12 +173,6 @@ export class ChatPageVM extends BaseVM {
       const result: string[] = await PhotoHelper.selectEasy({
         maxSelectNumber: 1
       })
-
-      LogUtil.debug(TAG, 'Select image result: ' + JSON.stringify(result))
-
-      // if (photoSelectResult.photoUris.length > 0) {
-      //   this.uploadAndSendImage(photoSelectResult.photoUris[0]);
-      // }
     } catch (e) {
       LogUtil.error(TAG, 'Select image failed: ' + JSON.stringify(e));
     }
