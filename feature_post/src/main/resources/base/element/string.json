@@ -39,6 +39,14 @@
     {
       "name": "PostPage_photo_upload_failed",
       "value": "图片上传失败"
+    },
+    {
+      "name": "PostPage_photo_uploading",
+      "value": "图片正在上传中，请稍后..."
+    },
+    {
+      "name": "PostPage_photo_upload_failed_insert",
+      "value": "图片上传失败，无法插入！"
     }
   ]
 }

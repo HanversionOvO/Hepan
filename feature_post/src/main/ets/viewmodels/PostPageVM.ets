@@ -21,13 +21,13 @@ const TAG = '[PostPageVM]: ';
 
 @ObservedV2
 export class PostImageModel {
-  @Trace localUri: string = ''; // 本地选取的图片 URI (用于立即显示)
-  @Trace remoteUrl: string = ''; // 上传成功后的网络 URL
-  @Trace isLoading: boolean = false; // 是否正在上传中
+  @Trace localUri: string = '';
+  @Trace remoteUrl: string = '';
+  @Trace isLoading: boolean = false;
 
   constructor(localUri: string) {
     this.localUri = localUri;
-    this.isLoading = true; // 默认为加载中
+    this.isLoading = true;
   }
 }
 
@@ -52,6 +52,7 @@ export class PostPageVM extends BaseVM {
   @Trace isPreviewMode: boolean = false;
   @Trace isShowFace: boolean = false;
   @Trace isShowAt: boolean = false;
+  @Trace isInsertImageMode: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace contentSelectionStart: number = 0;
   @Trace contentSelectionEnd: number = 0;
@@ -65,12 +66,13 @@ export class PostPageVM extends BaseVM {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
       this.isShowFace = !this.isShowFace;
       this.isShowAt = false;
+      this.isInsertImageMode = false;
       this.isInputtingWithKeyboard = false;
       if (this.isShowFace) {
         try {
           inputMethod.getController().stopInputSession();
         } catch (error) {
-          console.error(TAG, 'Stop input session failed:', error);
+          LogUtil.error(TAG, 'Stop input session failed:', error);
         }
 
         AppUtil.getUIContext()
@@ -92,13 +94,14 @@ export class PostPageVM extends BaseVM {
       icon: $r('sys.symbol.at'), onClick: () => {
       this.isShowAt = !this.isShowAt;
       this.isShowFace = false;
+      this.isInsertImageMode = false;
       this.isInputtingWithKeyboard = false;
 
       if (this.isShowAt) {
         try {
           inputMethod.getController().stopInputSession();
         } catch (error) {
-          console.error(TAG, 'Stop input session failed:', error);
+          LogUtil.error(TAG, 'Stop input session failed:', error);
         }
         AppUtil.getUIContext()
           .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
@@ -117,10 +120,28 @@ export class PostPageVM extends BaseVM {
     },
     {
       icon: $r('sys.symbol.picture'), onClick: () => {
+      this.isInsertImageMode = !this.isInsertImageMode;
+      this.isShowFace = false;
+      this.isShowAt = false;
+
+      if (this.isInsertImageMode) {
+        try {
+          inputMethod.getController().stopInputSession();
+        } catch (error) {
+          LogUtil.error(TAG, 'Stop input session failed:', error);
+        }
+        AppUtil.getUIContext().animateTo({
+          duration: CommonConstant.AnimationDurationNormal,
+          curve: CommonConstant.AnimationCurveSpring
+        }, () => {
+          this.isInputting = false;
+        });
+      }
     }
     },
     {
       icon: $r('sys.symbol.link'), onClick: () => {
+      this.isInsertImageMode = false;
     }
     }
   ];
@@ -180,6 +201,19 @@ export class PostPageVM extends BaseVM {
             this.uploadedImages.splice(index, 1);
           })
     }
+  }
+
+  insertImageToContent(img: PostImageModel) {
+    if (img.isLoading) {
+      ToastUtil.showInfo($r('app.string.PostPage_photo_uploading'));
+      return;
+    }
+    if (!img.remoteUrl) {
+      ToastUtil.showError($r('app.string.PostPage_photo_upload_failed_insert'));
+      return;
+    }
+    this.insertFace(img.remoteUrl);
+    this.isInsertImageMode = false;
   }
 
   selectMainCategory(index: number) {

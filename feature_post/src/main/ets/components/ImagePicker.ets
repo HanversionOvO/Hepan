@@ -48,25 +48,41 @@ export struct ImagePicker {
                 .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
               }
 
-              // 删除按钮
-              Button({ type: ButtonType.Circle }) {
-                SymbolGlyph($r('sys.symbol.xmark'))
-                  .fontSize(this.isShrink ? CommonConstant.TextSizeUltraTiny : CommonConstant.TextSizeSmall)
-                  .fontColor([$r('sys.color.font_on_primary')])
-                  .animation({ duration: CommonConstant.AnimationDurationNormal })
+              if (this.vm.isInsertImageMode) {
+                Stack({ alignContent: Alignment.Center }) {
+                  SymbolGlyph($r('sys.symbol.plus'))
+                    .fontSize(this.isShrink ? CommonConstant.IconSizeNormal : CommonConstant.IconSizeLarge)
+                    .fontColor([$r('sys.color.font_on_primary')])
+                    .animation({ duration: CommonConstant.AnimationDurationNormal })
+                }
+                .width(this.currentImageSize)
+                .height(this.currentImageSize)
+                .borderRadius(CommonConstant.RadiusLarge)
+                .backgroundColor($r('app.color.glass_background')) // 半透明黑色蒙层
+                .onClick(() => {
+                  this.vm.insertImageToContent(img);
+                })
+                .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+              } else {
+                Button({ type: ButtonType.Circle }) {
+                  SymbolGlyph($r('sys.symbol.xmark'))
+                    .fontSize(this.isShrink ? CommonConstant.TextSizeUltraTiny : CommonConstant.TextSizeSmall)
+                    .fontColor([$r('sys.color.font_on_primary')])
+                    .animation({ duration: CommonConstant.AnimationDurationNormal })
+                }
+                .width(this.isShrink ? CommonConstant.IconSizeTiny : CommonConstant.IconSizeNormal)
+                .height(this.isShrink ? CommonConstant.IconSizeTiny : CommonConstant.IconSizeNormal)
+                .backgroundColor(Color.Transparent)
+                .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+                .margin(CommonConstant.SmallContainerInnerPadding)
+                .onClick(() => {
+                  this.vm.deleteImage(index);
+                })
+                .animation({
+                  curve: CommonConstant.AnimationCurveNormal,
+                  duration: CommonConstant.AnimationDurationNormal
+                })
               }
-              .width(this.isShrink ? CommonConstant.IconSizeTiny : CommonConstant.IconSizeNormal)
-              .height(this.isShrink ? CommonConstant.IconSizeTiny : CommonConstant.IconSizeNormal)
-              .backgroundColor(Color.Transparent)
-              .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
-              .margin(CommonConstant.SmallContainerInnerPadding)
-              .onClick(() => {
-                this.vm.deleteImage(index);
-              })
-              .animation({
-                curve: CommonConstant.AnimationCurveNormal,
-                duration: CommonConstant.AnimationDurationNormal
-              })
             }
           }
         }, (img: PostImageModel, index: number) => img.localUri + index.toString())
