@@ -147,12 +147,18 @@ export struct PostPageImpl {
                     })
                 }
 
-                CustomMarkdown({
-                  content: this.vm.markdownContent,
-                  controller: this.vm.markdownController
-                })
-                  .width(CommonConstant.FullPercent)
-                  .layoutWeight(1)
+                Scroll() {
+                  CustomMarkdown({
+                    content: this.vm.markdownContent,
+                    controller: this.vm.markdownController
+                  })
+                    .width(CommonConstant.FullPercent)
+                }
+                .layoutWeight(1)
+                .width(CommonConstant.FullPercent)
+                .align(Alignment.TopStart)
+                .scrollBar(BarState.Off)
+                .edgeEffect(EdgeEffect.Spring)
               }
               .width(this.vm.isTabletView ? 340 : CommonConstant.FullPercent)
               .borderRadius(this.vm.isTabletView ? CommonConstant.RadiusLarge : 0)

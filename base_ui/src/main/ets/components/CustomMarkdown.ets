@@ -24,14 +24,12 @@ export struct CustomMarkdown {
   }
 
   build() {
-    // 可以在这里统一处理 Markdown 的容器样式，例如内边距、背景色等
     Column() {
       Markdown({
         text: this.content,
         controller: this.controller
       })
         .width(CommonConstant.FullPercent)
-        .height(CommonConstant.FullPercent)
     }
     .padding(CommonConstant.NormalContainerInnerPadding)
     .width(CommonConstant.FullPercent)
