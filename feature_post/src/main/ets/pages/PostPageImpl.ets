@@ -1,5 +1,5 @@
 import { CommonConstant, VMManager } from 'base_common'
-import { CustomMarkdown, CustomNavTitle } from 'base_ui'
+import { CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
@@ -79,6 +79,7 @@ export struct PostPageImpl {
                 .borderRadius(CommonConstant.RadiusLarge)
                 .margin({ right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding })
                 .backgroundColor($r('app.color.second_window_background'))
+                .geometryTransition("mk")
             }
           }
           .width(CommonConstant.FullPercent)
@@ -86,6 +87,20 @@ export struct PostPageImpl {
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
+
+        if (!this.vm.isTabletView) {
+          FloatButton({
+            floatIcon: $r('sys.symbol.eye'),
+            isFloating: true
+          })
+            .position({
+              top: this.vm.window.windowTopPadding + (CommonConstant.TopBarHeight - CommonConstant.IconSizeLarge) / 2,
+              right: CommonConstant.PageLRPadding + CommonConstant.NormalContainerInnerPadding * 2 +
+                CommonConstant.IconSizeLarge * 2
+            })
+            .zIndex(2)
+            .geometryTransition("mk")
+        }
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
