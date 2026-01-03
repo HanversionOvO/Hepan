@@ -12,7 +12,7 @@ export struct CategoryPicker {
       this.HeaderBar()
 
       // 2. 主题分类选择条 (仅当已选板块且有分类，并且选择器折叠时显示)
-      if (this.vm.selectedForumId && !this.vm.isCategoryExpanded) {
+      if (this.vm.selectedForumId && !this.vm.isCategoryExpanded && this.vm.threadTypes.length > 0) {
         this.ThreadTypeBar()
       }
 
@@ -21,12 +21,12 @@ export struct CategoryPicker {
         Column() {
           // 使用 StateLayout 管理内容区状态
           StateLayout({
-            uiState: this.vm.categoriesStatus, // 绑定 VM 中的 UiState
+            uiState: this.vm.categoriesStatus,
             content: () => {
               this.CategorySelectorBody()
             },
             onRetry: () => {
-              this.vm.startPostPage(); // 重试回调
+              this.vm.startPostPage();
             }
           })
         }
@@ -53,12 +53,7 @@ export struct CategoryPicker {
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor([CommonConstant.ThemeColor])
 
-        if (!this.vm.selectedForumName) {
-          Text('点击选择发布版块')
-            .fontSize(CommonConstant.TextSizeNormal)
-            .fontColor($r('sys.color.font_primary'))
-            .fontWeight(FontWeight.Medium)
-        } else {
+        if (this.vm.selectedForumName) {
           // 路径式显示
           Text() {
             Span(this.vm.selectedForumName)

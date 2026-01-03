@@ -178,7 +178,7 @@ export class PostPageVM extends BaseVM {
   }
 
   // 选中具体板块
-  async onForumSelected(item: PostCategoryItem) {
+  async onForumSelected(item: PostCategoryItem, targetTypeId?: number) {
     if (this.selectedForumId === item.fid) {
       this.toggleCategoryExpand();
       return;
@@ -190,17 +190,25 @@ export class PostPageVM extends BaseVM {
     this.selectedTypeName = '';
     this.threadTypes = [];
 
-    // 设置分类加载状态
     this.typesStatus = UiState.LOADING;
-
     this.isCategoryExpanded = false;
 
-    // 获取分类
     try {
       const details = await ForumApi.getForumDetails(item.fid);
       if (details.thread_types && details.thread_types.length > 0) {
         this.threadTypes = details.thread_types;
         this.typesStatus = UiState.SUCCESS;
+
+        if (targetTypeId) {
+          const targetType = this.threadTypes.find(t => t.type_id === targetTypeId);
+          if (targetType) {
+            this.onTypeSelected(targetType);
+          } else {
+            this.onTypeSelected(this.threadTypes[0]);
+          }
+        } else {
+          this.onTypeSelected(this.threadTypes[0]);
+        }
       } else {
         this.typesStatus = UiState.EMPTY;
       }
@@ -221,14 +229,34 @@ export class PostPageVM extends BaseVM {
       this.categories = await ForumApi.getPostCategories();
       if (this.categories.length > 0) {
         this.categoriesStatus = UiState.SUCCESS;
+        
+        let isDefaultFound = false;
+
         for (let i = 0; i < this.categories.length; i++) {
           const group = this.categories[i];
           if (group.children && group.children.length > 0) {
-            this.leftPanelIndex = i;
-            await this.onForumSelected(group.children[0]);
-            break;
+            const targetItem = group.children.find(child => child.fid === 25);
+
+            if (targetItem) {
+              this.leftPanelIndex = i;
+              await this.onForumSelected(targetItem, 315);
+              isDefaultFound = true;
+              break;
+            }
           }
         }
+
+        if (!isDefaultFound) {
+          for (let i = 0; i < this.categories.length; i++) {
+            const group = this.categories[i];
+            if (group.children && group.children.length > 0) {
+              this.leftPanelIndex = i;
+              await this.onForumSelected(group.children[0]);
+              break;
+            }
+          }
+        }
+
       } else {
         this.categoriesStatus = UiState.EMPTY;
       }
