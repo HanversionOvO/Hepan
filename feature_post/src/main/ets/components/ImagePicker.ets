@@ -104,5 +104,9 @@ export struct ImagePicker {
       .width(CommonConstant.FullPercent)
     }
     .width(CommonConstant.FullPercent)
+    .padding({
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding
+    })
   }
 }

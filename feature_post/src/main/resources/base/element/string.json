@@ -7,6 +7,10 @@
     {
       "name": "PostPage_add_image",
       "value": "添加图片"
+    },
+    {
+      "name": "PostPage_post_title",
+      "value": "好的标题是成功的开端..."
     }
   ]
 }
