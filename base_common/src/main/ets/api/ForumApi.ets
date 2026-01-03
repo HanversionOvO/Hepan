@@ -28,23 +28,65 @@ export class ForumApi {
   }
 
   public static async getPostCategories(): Promise<PostCategories[]> {
-    const categories: ForumCategory[] = await ForumApi.getForumCategory();
     try {
-      const postCategories: PostCategories[] = [];
-      const processCategory = (category: ForumCategory) => {
-        if (category.can_post_thread) {
-          postCategories.push({
-            fid: category.fid,
-            name: category.name,
-            children: category.children?.filter(child => child.can_post_thread).map(child => ({
-              fid: child.fid,
-              name: child.name
-            } as PostCategories))
-          });
+      const categories: ForumCategory[] = await ForumApi.getForumCategory();
+      const result: PostCategories[] = [];
+
+      for (const group of categories) {
+        const keptChildren: PostCategories[] = [];
+        const promotedChildren: PostCategories[] = [];
+
+        if (group.children && group.children.length > 0) {
+          for (const child of group.children) {
+            if (child.children && child.children.length > 0) {
+              const validSubChildren: PostCategories[] = [];
+              child.children.forEach(sub => {
+                if (sub.can_post_thread) {
+                  const subCat: PostCategories = {
+                    fid: sub.fid,
+                    name: sub.name
+                  };
+                  validSubChildren.push(subCat);
+                }
+              });
+
+              if (validSubChildren.length > 0) {
+                const promoted: PostCategories = {
+                  fid: child.fid,
+                  name: child.name,
+                  children: validSubChildren
+                };
+                promotedChildren.push(promoted);
+              }
+
+            } else {
+              if (child.can_post_thread) {
+                const kept: PostCategories = {
+                  fid: child.fid,
+                  name: child.name
+                };
+                keptChildren.push(kept);
+              }
+            }
+          }
         }
-      };
-      categories.forEach(processCategory);
-      return postCategories;
+
+        if (keptChildren.length > 0) {
+          const newGroup: PostCategories = {
+            fid: group.fid,
+            name: group.name,
+            children: keptChildren
+          };
+          result.push(newGroup);
+        }
+
+        promotedChildren.forEach(item => {
+          result.push(item);
+        });
+      }
+
+      return result;
+
     } catch (error) {
       LogUtil.warn(TAG, 'Failed to parse post categories', error);
       throw new Error('Failed to parse post categories');

@@ -11,6 +11,10 @@
     {
       "name": "PostPage_post_title",
       "value": "好的标题是成功的开端..."
+    },
+    {
+      "name": "PostPage_choose_category_first",
+      "value": "请先选择板块"
     }
   ]
 }
