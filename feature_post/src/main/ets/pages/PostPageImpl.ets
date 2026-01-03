@@ -53,7 +53,17 @@ export struct PostPageImpl {
               Column({ space: CommonConstant.LargeContainerInnerPadding }) {
                 ImagePicker({ vm: this.vm })
 
-                CategoryPicker({ vm: this.vm })
+                if (this.vm.isTabletView || !this.vm.isInputting) {
+                  CategoryPicker({ vm: this.vm })
+                    .transition(TransitionEffect.OPACITY
+                      .combine(TransitionEffect.translate({ y: -10 }))
+                      .combine(TransitionEffect.scale({ y: 0.98 }))
+                      .animation({
+                        curve: CommonConstant.AnimationCurveSpring,
+                        duration: CommonConstant.AnimationDurationNormal
+                      })
+                    )
+                }
 
                 Column() {
                   TextInput({ placeholder: $r('app.string.PostPage_post_title'), text: this.vm.postTitle, })
@@ -77,6 +87,9 @@ export struct PostPageImpl {
                           this.vm.isShowFace = false;
                           this.vm.isShowAt = false;
                           this.vm.setKeyboardInputting(true);
+                          if (!this.vm.isTabletView) {
+                            this.vm.isCategoryExpanded = false;
+                          }
                         })
                     })
                     .onBlur(() => {
@@ -127,6 +140,9 @@ export struct PostPageImpl {
                         this.vm.isShowAt = false;
                         this.vm.setKeyboardInputting(true);
                         this.vm.updateContentSelection(this.vm.markdownContent.length, this.vm.markdownContent.length);
+                        if (!this.vm.isTabletView) {
+                          this.vm.isCategoryExpanded = false;
+                        }
                       })
                   })
                   .onBlur(() => {
