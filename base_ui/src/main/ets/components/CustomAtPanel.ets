@@ -70,10 +70,6 @@ export struct CustomAtPanel {
         }
         .width(CommonConstant.FullPercent)
         .layoutWeight(1)
-        .padding({
-          left: CommonConstant.NormalContainerLRPadding,
-          right: CommonConstant.NormalContainerLRPadding
-        })
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
       }
@@ -86,6 +82,8 @@ export struct CustomAtPanel {
       topRight: CommonConstant.RadiusUltraLarge
     })
     .padding({
+      left: CommonConstant.NormalContainerLRPadding,
+      right: CommonConstant.NormalContainerLRPadding,
       top: CommonConstant.NormalContainerTBPadding,
       bottom: CommonConstant.NormalContainerTBPadding
     })

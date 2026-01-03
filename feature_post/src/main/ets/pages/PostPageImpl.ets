@@ -1,6 +1,6 @@
 import { AppUtil } from '@pura/harmony-utils'
-import { CommonConstant, TransitionMap, VMManager } from 'base_common'
-import { CustomFacePanel, CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
+import { AtUser, CommonConstant, TransitionMap, VMManager } from 'base_common'
+import { CustomAtPanel, CustomFacePanel, CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
@@ -52,6 +52,8 @@ export struct PostPageImpl {
                           curve: CommonConstant.AnimationCurveSpring
                         }, () => {
                           this.vm.isInputting = true;
+                          this.vm.isShowFace = false;
+                          this.vm.isShowAt = false;
                         })
                     })
                     .onBlur(() => {
@@ -95,6 +97,7 @@ export struct PostPageImpl {
                       }, () => {
                         this.vm.isInputting = true;
                         this.vm.isShowFace = false;
+                        this.vm.isShowAt = false;
                       })
                   })
                   .onBlur(() => {
@@ -117,6 +120,21 @@ export struct PostPageImpl {
                       if (typeof face === 'string') {
                         this.vm.markdownContent += face;
                       }
+                    }
+                  })
+                    .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+                      .animation({
+                        duration: CommonConstant.AnimationDurationNormal,
+                        curve: CommonConstant.AnimationCurveSpring
+                      }))
+                }
+
+                if (this.vm.isShowAt) {
+                  CustomAtPanel({
+                    vm: this.vm,
+                    onAtUserClick: (atUser: AtUser) => {
+                      // 插入 @用户名
+                      this.vm.markdownContent += `@${atUser.username} `;
                     }
                   })
                     .transition(TransitionEffect.move(TransitionEdge.BOTTOM)

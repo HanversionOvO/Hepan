@@ -26,6 +26,7 @@ export class PostPageVM extends BaseVM {
   @Trace isInputting: boolean = false;
   @Trace isPreviewMode: boolean = false;
   @Trace isShowFace: boolean = false;
+  @Trace isShowAt: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
@@ -36,7 +37,7 @@ export class PostPageVM extends BaseVM {
     {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
       this.isShowFace = !this.isShowFace;
-      // [新增逻辑] 如果是打开表情面板，强制关闭软键盘
+      this.isShowAt = false;
       if (this.isShowFace) {
         try {
           inputMethod.getController().stopInputSession();
@@ -60,6 +61,27 @@ export class PostPageVM extends BaseVM {
     },
     {
       icon: $r('sys.symbol.at'), onClick: () => {
+      this.isShowAt = !this.isShowAt;
+      this.isShowFace = false;
+
+      if (this.isShowAt) {
+        try {
+          inputMethod.getController().stopInputSession();
+        } catch (error) {
+          console.error(TAG, 'Stop input session failed:', error);
+        }
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isInputting = true;
+            })
+      } else {
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isInputting = false;
+            })
+      }
     }
     },
     {
