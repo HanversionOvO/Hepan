@@ -31,6 +31,10 @@
     {
       "name": "CustomFilePanel_title",
       "value": "文件选择器"
+    },
+    {
+      "name": "CustomAtPanel_title",
+      "value": "选择需要@的用户"
     }
   ]
 }

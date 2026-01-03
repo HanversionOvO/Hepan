@@ -17,3 +17,5 @@ export { CustomMarkdown } from './src/main/ets/components/CustomMarkdown';
 export { CustomFacePanel } from './src/main/ets/components/CustomFacePanel';
 
 export { CustomFilePanel, CustomFilePanelItem } from './src/main/ets/components/CustomFilePanel';
+
+export { CustomAtPanel } from './src/main/ets/components/CustomAtPanel';
