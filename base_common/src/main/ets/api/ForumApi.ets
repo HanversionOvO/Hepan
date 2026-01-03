@@ -2,7 +2,15 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { AtUser, ForumCategory, ForumDetails, PostCategoryGroup, PostCategoryItem } from './models/ForumModels';
+import {
+  AtUser,
+  ForumCategory,
+  ForumDetails,
+  NewThreadRequest,
+  NewThreadResponse,
+  PostCategoryGroup,
+  PostCategoryItem
+} from './models/ForumModels';
 
 const TAG = '[ForumApi]: ';
 
@@ -109,6 +117,26 @@ export class ForumApi {
       return response.data.data["rows"] as AtUser[];
     } else {
       const errorMsg = response.data?.message || `Fetch at list failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async newThread(request: NewThreadRequest): Promise<NewThreadResponse> {
+    const path = '/_/thread/new';
+
+    const response = await ApiClient.getInstance().request<BaseResponse<NewThreadResponse>>({
+      path: path,
+      method: http.RequestMethod.POST,
+      includeAuthorization: true,
+      includeCookie: true,
+      data: request
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }

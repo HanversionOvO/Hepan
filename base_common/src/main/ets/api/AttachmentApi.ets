@@ -2,7 +2,7 @@ import { fileIo } from '@kit.CoreFileKit';
 import { http } from '@kit.NetworkKit';
 import { util } from '@kit.ArkTS';
 import { ApiClient } from './ApiClient';
-import { UploadResponse } from './models/MessageModels';
+import { UploadedFile, UploadResponse } from './models/MessageModels'; // 确保引入 UploadedFile
 import { LogUtil } from '@pura/harmony-utils';
 
 const TAG = '[AttachmentApi]';
@@ -13,9 +13,9 @@ export class AttachmentApi {
   /**
    * 上传图片
    * @param fileUri 图片文件的 URI
-   * @returns 上传后的图片 URL (raw_url)
+   * @returns 上传后的附件对象信息
    */
-  public static async uploadImage(fileUri: string): Promise<string> {
+  public static async uploadImage(fileUri: string): Promise<UploadedFile> {
     let file: fileIo.File | undefined;
     try {
       // 1. 读取文件数据
@@ -43,7 +43,6 @@ export class AttachmentApi {
       textBody += `image${lineBreak}`; // 图片必须是 image
 
       // 4. 构建文件头部分
-      // 注意: filename 可以随便取，Content-Type 设为 image/jpeg 即可通用
       let fileHead = `--${boundary}${lineBreak}`;
       fileHead += `Content-Disposition: form-data; name="files[]"; filename="upload.jpg"${lineBreak}`;
       fileHead += `Content-Type: image/jpeg${lineBreak}${lineBreak}`;
@@ -52,7 +51,6 @@ export class AttachmentApi {
       const fileTail = `${lineBreak}--${boundary}--${lineBreak}`;
 
       // 6. 拼接所有 Buffer
-      // ArkTS 中需要使用 Uint8Array 进行拼接
       const textBodyBuffer = encoder.encodeInto(textBody);
       const fileHeadBuffer = encoder.encodeInto(fileHead);
       const fileTailBuffer = encoder.encodeInto(fileTail);
@@ -74,29 +72,35 @@ export class AttachmentApi {
       totalBuffer.set(fileTailBuffer, offset);
 
       // 7. 发送请求
-      // 注意：Content-Type 必须包含 boundary
       const contentType = `multipart/form-data; boundary=${boundary}`;
 
-      // 使用 ApiClient 发送请求，注意 data 类型此时是 ArrayBuffer
       const response = await ApiClient.getInstance().request<UploadResponse>({
         path: '/_/attachment/upload',
         method: http.RequestMethod.POST,
         headers: {
           'Content-Type': contentType
         },
-        data: totalBuffer.buffer, // 传递 ArrayBuffer 给 extraData
+        data: totalBuffer.buffer,
         includeAuthorization: true,
         includeCookie: true
       });
 
-      // 8. 解析结果
+      // 8. 解析结果 (修改返回值逻辑)
       if (response.status === 200 && response.data.data?.uploaded?.length > 0) {
         const uploadedFile = response.data.data.uploaded[0];
+        // 补充完整 URL 方便前端显示
         let relativePath = uploadedFile.thumbnail_url || uploadedFile.path || uploadedFile.raw_url;
         if (relativePath && !relativePath.startsWith('http')) {
-          return BASE_URL + relativePath;
+          const fullUrl = BASE_URL + relativePath;
+          if (uploadedFile.thumbnail_url) {
+            uploadedFile.thumbnail_url = BASE_URL + uploadedFile.thumbnail_url;
+          }
+          if (uploadedFile.raw_url) {
+            uploadedFile.raw_url = BASE_URL + uploadedFile.raw_url;
+          }
+          // 我们依然可以临时把用于显示的 url 存入 path 或其他字段，或者直接返回整个对象
         }
-        return relativePath!;
+        return uploadedFile;
       } else {
         throw new Error(`Upload failed: ${response.data.message || 'Unknown error'}`);
       }

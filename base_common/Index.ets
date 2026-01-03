@@ -56,13 +56,16 @@ export { NewMessagesSummary,
   AnPNotification,
   SystemNotification,
   Chat,
-  ChatSendContent } from './src/main/ets/api/models/MessageModels';
+  ChatSendContent,
+  UploadedFile } from './src/main/ets/api/models/MessageModels';
 
 export { ForumCategory,
   LatestThread,
   AtUser,
   ThreadType,
   PostCategoryGroup,
-  PostCategoryItem } from './src/main/ets/api/models/ForumModels';
+  PostCategoryItem,
+  NewThreadRequest,
+  NewThreadResponse } from './src/main/ets/api/models/ForumModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

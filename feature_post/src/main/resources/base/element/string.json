@@ -51,6 +51,30 @@
     {
       "name": "PostPage_category",
       "value": "分类"
+    },
+    {
+      "name": "PostPage_choose_forum_first",
+      "value": "请先选择发帖版块"
+    },
+    {
+      "name": "PostPage_input_title",
+      "value": "请先输入帖子标题"
+    },
+    {
+      "name": "PostPage_input_content",
+      "value": "请输入帖子内容"
+    },
+    {
+      "name": "PostPage_publishing",
+      "value": "您的帖子正在飞往河畔星球..."
+    },
+    {
+      "name": "PostPage_publish_success",
+      "value": "您可以前往河畔星球查看您的帖子了~"
+    },
+    {
+      "name": "PostPage_publish_failed",
+      "value": "发布失败，请稍后重试"
     }
   ]
 }

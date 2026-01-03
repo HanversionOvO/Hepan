@@ -8,11 +8,13 @@ import {
   ForumApi,
   InputOverlayStore,
   InputOverlayVisibilityEvent,
+  NewThreadRequest,
   PostCategoryGroup,
   PostCategoryItem,
   ThreadType,
   ToastUtil,
-  UiState
+  UiState,
+  UploadedFile
 } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
@@ -21,12 +23,14 @@ import { PickerUtil } from '@pura/picker_utils';
 import { picker } from '@kit.CoreFileKit';
 
 const TAG = '[PostPageVM]: ';
+const BASE_URL = 'https://bbs.uestc.edu.cn';
 
 @ObservedV2
 export class PostImageModel {
   @Trace localUri: string = '';
   @Trace remoteUrl: string = '';
   @Trace isLoading: boolean = false;
+  attachment: UploadedFile | null = null;
 
   constructor(localUri: string) {
     this.localUri = localUri;
@@ -43,6 +47,7 @@ export class PostPageVM extends BaseVM {
     },
     {
       icon: $r('sys.symbol.paperplane'), onClick: () => {
+      this.publishThread();
     }
     }
   ];
@@ -297,8 +302,14 @@ export class PostPageVM extends BaseVM {
 
   async uploadImage(img: PostImageModel) {
     try {
-      const url = await AttachmentApi.uploadImage(img.localUri);
-      img.remoteUrl = url;
+      const uploadedFile = await AttachmentApi.uploadImage(img.localUri);
+      img.attachment = uploadedFile;
+      // 优先使用 raw_url 或 thumbnail_url 进行显示
+      let displayUrl = uploadedFile.raw_url || uploadedFile.thumbnail_url || uploadedFile.path;
+      if (displayUrl && !displayUrl.startsWith('http')) {
+        displayUrl = BASE_URL + displayUrl;
+      }
+      img.remoteUrl = displayUrl || '';
       img.isLoading = false;
     } catch (e) {
       LogUtil.error(TAG, 'Upload failed:', e);
@@ -443,5 +454,103 @@ export class PostPageVM extends BaseVM {
     const selectionStart = before.length;
     const selectionEnd = selectionStart + formattedLines.length;
     this.updateContentSelection(selectionStart, selectionEnd);
+  }
+
+  async publishThread() {
+    // 1. 校验输入
+    if (this.selectedForumId === 0) {
+      ToastUtil.showError($r('app.string.PostPage_choose_forum_first'));
+      return;
+    }
+    if (this.selectedTypeId === 0 && this.threadTypes.length > 0) {
+      ToastUtil.showError($r('app.string.PostPage_choose_category_first'));
+      return;
+    }
+    if (!this.postTitle || this.postTitle.trim().length === 0) {
+      ToastUtil.showError($r('app.string.PostPage_input_title'));
+      return;
+    }
+    if (!this.markdownContent || this.markdownContent.trim().length === 0) {
+      ToastUtil.showError($r('app.string.PostPage_input_content'));
+      return;
+    }
+
+    // 检查图片是否还在上传中
+    const isUploading = this.uploadedImages.some(img => img.isLoading);
+    if (isUploading) {
+      ToastUtil.showInfo($r('app.string.PostPage_photo_uploading'));
+      return;
+    }
+
+    // 2. 显示 Loading
+    ToastUtil.showLoading($r('app.string.PostPage_publishing'));
+
+    try {
+      // 3. 构建参数
+      const attachments: UploadedFile[] = [];
+      let finalMessage = this.markdownContent;
+
+      this.uploadedImages.forEach(img => {
+        if (img.attachment) {
+          attachments.push(img.attachment);
+          // 替换 Markdown 中的 URL 为 API 要求的格式 (i:attachment_id)
+          // 注意：如果用户没有在文中插入图片，通常需要 append 到文末，这里为了简化，如果用户使用了 ![]() 语法，
+          // 我们可以尝试替换，或者直接依靠 API 的 attachments 列表。
+          // 更加稳健的做法是：只要传了 attachments 列表，Discuz 通常会自动处理。
+          // 如果为了严格匹配文档 "message": "thread content\n\n[test.txt](a:2687361)\n\n![test.jpeg](i:2687364)\n"
+          // 可以进行以下替换：
+          if (img.remoteUrl) {
+            // 简单的字符串替换，将 URL 替换为附件 ID 引用
+            // 匹配 ![](URL) 或 [](URL)
+            // 注意转义特殊字符
+            const escapedUrl = img.remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`\\!\\[.*?\\]\\(${escapedUrl}\\)`, 'g');
+            // 如果文中引用了该图片，替换为 API 格式。
+            // 实际上，如果保持 URL，服务端可能不会识别为附件引用，而是外部图片。
+            // 建议替换。
+            if (finalMessage.match(regex)) {
+              finalMessage =
+                finalMessage.replace(regex, `![${img.attachment.filename}](i:${img.attachment.attachment_id})`);
+            } else {
+              // 如果文中没有引用，则追加到文末
+              finalMessage += `\n\n![${img.attachment.filename}](i:${img.attachment.attachment_id})`;
+            }
+          }
+        }
+      });
+
+      const request: NewThreadRequest = {
+        forum_id: this.selectedForumId,
+        type_id: this.selectedTypeId,
+        subject: this.postTitle,
+        message: finalMessage,
+        format: 2,
+        usesig: 1,
+        attachments: attachments
+      };
+
+      // 4. 调用接口
+      const response = await ForumApi.newThread(request);
+
+      // 5. 成功处理
+      ToastUtil.hideLoading();
+      ToastUtil.showSuccess($r('app.string.PostPage_publish_success'));
+
+      // 清除内容
+      this.clearPage();
+
+    } catch (e) {
+      ToastUtil.hideLoading();
+      LogUtil.error(TAG, 'Publish thread failed:', e);
+      ToastUtil.showError(e.message || $r('app.string.PostPage_publish_failed'));
+    }
+  }
+
+  private clearPage() {
+    this.postTitle = '';
+    this.markdownContent = '';
+    this.contentSelectionStart = 0;
+    this.contentSelectionEnd = 0;
+    this.uploadedImages = [];
   }
 }

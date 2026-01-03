@@ -167,18 +167,19 @@ export class ChatPageVM extends BaseVM {
     }
 
     try {
-      // 调用 AttachmentApi 上传
-      const imageUrl = await AttachmentApi.uploadImage(uri);
+      // 调用 AttachmentApi 上传，现在返回的是 UploadedFile 对象
+      const uploadedFile = await AttachmentApi.uploadImage(uri);
 
-      if (imageUrl) {
-        // 发送图片消息
-        // 注意：根据 API 文档，content 直接填 URL 即可
-        await this.sendMessage({
-          type: 'image',
-          content: imageUrl
-        });
-        // 成功后关闭面板
-        this.isShowFilePanel = false;
+      if (uploadedFile) {
+        const contentUrl = uploadedFile.raw_url || uploadedFile.thumbnail_url || uploadedFile.path;
+
+        if (contentUrl) {
+          await this.sendMessage({
+            type: 'image',
+            content: contentUrl
+          });
+          this.isShowFilePanel = false;
+        }
       }
     } catch (e) {
       LogUtil.error(TAG, 'Send image failed: ' + JSON.stringify(e));

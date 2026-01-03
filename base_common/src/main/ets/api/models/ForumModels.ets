@@ -1,3 +1,5 @@
+import { UploadedFile } from './MessageModels';
+
 export interface ForumCategory {
   fid: number;
   name: string;
@@ -50,4 +52,19 @@ export interface ForumDetails {
 export interface ThreadType {
   type_id: number;
   name: string;
+}
+
+export interface NewThreadRequest {
+  forum_id: number;
+  type_id: number;
+  subject: string;
+  message: string;
+  format: number;
+  usesig: number;
+  attachments?: UploadedFile[];
+}
+
+export interface NewThreadResponse {
+  thread_id: number;
+  ext_credits_update?: Record<string, number>;
 }
