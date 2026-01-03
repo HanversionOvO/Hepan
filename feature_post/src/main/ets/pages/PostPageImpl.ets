@@ -123,6 +123,7 @@ export struct PostPageImpl {
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
+      .transition(CommonConstant.CONF_TRANSITION)
     }
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
