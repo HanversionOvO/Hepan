@@ -221,14 +221,12 @@ export class PostPageVM extends BaseVM {
       this.categories = await ForumApi.getPostCategories();
       if (this.categories.length > 0) {
         this.categoriesStatus = UiState.SUCCESS;
-        this.isCategoryExpanded = true; // 默认展开
       } else {
         this.categoriesStatus = UiState.EMPTY;
       }
     } catch (e) {
       LogUtil.error(TAG, 'Start post page failed:', e);
       this.categoriesStatus = UiState.ERROR;
-      ToastUtil.showToast('获取版块列表失败');
     }
   }
 

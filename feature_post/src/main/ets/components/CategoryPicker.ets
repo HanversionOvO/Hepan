@@ -1,7 +1,6 @@
-import { ColorUtil, CommonConstant, PostCategoryGroup, PostCategoryItem, ThreadType, UiState } from 'base_common';
+import { ColorUtil, CommonConstant, PostCategoryGroup, PostCategoryItem, ThreadType } from 'base_common';
 import { StateLayout } from 'base_ui';
 import { PostPageVM } from '../viewmodels/PostPageVM';
-import { curves } from '@kit.ArkUI';
 
 @ComponentV2
 export struct CategoryPicker {
@@ -31,31 +30,27 @@ export struct CategoryPicker {
             }
           })
         }
-        .height(320) // 固定高度，提供稳定的浏览区域
+        .height(240) // 固定高度，提供稳定的浏览区域
         .width(CommonConstant.FullPercent)
-        .backgroundColor($r('app.color.start_window_background'))
         .transition(
           TransitionEffect.OPACITY
             .combine(TransitionEffect.translate({ y: -20 }))
             .combine(TransitionEffect.scale({ y: 0.98 }))
-            .animation({ curve: curves.springMotion(0.5, 0.7) })
+            .animation({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal })
         )
       }
     }
     .width(CommonConstant.FullPercent)
     .clip(true)
-    .backgroundColor($r('app.color.start_window_background'))
     .borderRadius(CommonConstant.RadiusNormal)
-    .margin({ bottom: CommonConstant.NormalContainerInnerPadding })
-    .shadow({ radius: 4, color: '#0F000000', offsetY: 2 })
   }
 
   @Builder
   HeaderBar() {
     Row() {
-      Row({ space: 8 }) {
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         SymbolGlyph($r('sys.symbol.grid'))
-          .fontSize(18)
+          .fontSize(CommonConstant.TextSizeNormal)
           .fontColor([CommonConstant.ThemeColor])
 
         if (!this.vm.selectedForumName) {
@@ -74,7 +69,7 @@ export struct CategoryPicker {
             if (this.vm.selectedTypeName) {
               Span('  /  ')
                 .fontColor($r('sys.color.font_tertiary'))
-                .fontSize(12)
+                .fontSize(CommonConstant.TextSizeSmall)
               Span(this.vm.selectedTypeName)
                 .fontColor(CommonConstant.ThemeColor)
                 .fontWeight(FontWeight.Medium)
@@ -89,14 +84,13 @@ export struct CategoryPicker {
 
       // 旋转箭头指示
       SymbolGlyph($r('sys.symbol.chevron_down'))
-        .fontSize(16)
+        .fontSize(CommonConstant.TextSizeNormal)
         .fontColor([$r('sys.color.font_tertiary')])
         .rotate({ angle: this.vm.isCategoryExpanded ? 180 : 0 })
-        .animation({ curve: curves.springMotion(), duration: 300 })
+        .animation({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal })
     }
     .width(CommonConstant.FullPercent)
-    .height(48)
-    .padding({ left: 16, right: 16 })
+    .padding(CommonConstant.NormalContainerInnerPadding)
     .justifyContent(FlexAlign.SpaceBetween)
     .onClick(() => {
       this.vm.toggleCategoryExpand();
@@ -106,56 +100,56 @@ export struct CategoryPicker {
   @Builder
   ThreadTypeBar() {
     Column() {
-      Divider().color($r('sys.color.comp_divider')).width(CommonConstant.FullPercent).opacity(0.6)
+      Divider()
+        .color($r('sys.color.font_tertiary'))
+        .width(CommonConstant.FullPercent)
 
-      Scroll() {
-        Row({ space: 8 }) {
-          Text('分类')
-            .fontSize(10)
-            .fontColor($r('sys.color.font_tertiary'))
-            .margin({ right: 4 })
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Text('分类')
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontColor($r('sys.color.font_tertiary'))
 
-          if (this.vm.typesStatus === UiState.LOADING) {
-            LoadingProgress().width(16).height(16).color($r('sys.color.font_secondary'))
-          } else if (this.vm.threadTypes.length > 0) {
+        if (this.vm.threadTypes.length > 0) {
+          List({ space: CommonConstant.NormalContainerInnerPadding }) {
             ForEach(this.vm.threadTypes, (type: ThreadType) => {
-              Text(type.name)
-                .fontSize(11)
-                .fontColor(this.vm.selectedTypeId === type.type_id ? Color.White : $r('sys.color.font_secondary'))
-                .fontWeight(this.vm.selectedTypeId === type.type_id ? FontWeight.Medium : FontWeight.Regular)
-                .padding({
-                  left: 10,
-                  right: 10,
-                  top: 4,
-                  bottom: 4
-                })
-                .backgroundColor(this.vm.selectedTypeId === type.type_id ? CommonConstant.ThemeColor :
-                  $r('app.color.second_window_background'))
-                .borderRadius(12)
-                .onClick(() => {
-                  this.vm.onTypeSelected(type);
-                })
-                .animation({ duration: 200 })
-            })
-          } else {
-            Text('该板块无分类')
-              .fontSize(11)
-              .fontColor($r('sys.color.font_tertiary'))
+              ListItem() {
+                Text(type.name)
+                  .fontSize(CommonConstant.TextSizeTiny)
+                  .fontColor(this.vm.selectedTypeId === type.type_id ? $r('sys.color.font_on_primary') :
+                    $r('sys.color.font_secondary'))
+                  .borderRadius(CommonConstant.RadiusRound)
+                  .fontWeight(this.vm.selectedTypeId === type.type_id ? FontWeight.Medium : FontWeight.Regular)
+                  .backgroundColor(this.vm.selectedTypeId === type.type_id ? CommonConstant.ThemeColor :
+                    $r('app.color.second_window_background'))
+                  .padding(CommonConstant.SmallContainerInnerPadding)
+                  .onClick(() => {
+                    this.vm.onTypeSelected(type);
+                  })
+                  .animation({ duration: CommonConstant.AnimationDurationNormal })
+              }
+            }, (type: ThreadType) => type.type_id.toString())
           }
+          .listDirection(Axis.Horizontal)
+          .layoutWeight(1)
+          .alignListItem(ListItemAlign.Center)
+          .scrollBar(BarState.Off)
+          .edgeEffect(EdgeEffect.Spring)
+        } else {
+          Text('该板块无分类')
+            .fontSize(11)
+            .fontColor($r('sys.color.font_tertiary'))
         }
-        .padding({
-          top: 8,
-          bottom: 8,
-          left: 16,
-          right: 16
-        })
-        .alignItems(VerticalAlign.Center)
       }
-      .scrollBar(BarState.Off)
+      .height(CommonConstant.IconSizeLarge)
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding,
+        right: CommonConstant.SmallContainerLRPadding
+      })
+      .alignItems(VerticalAlign.Center)
+      .justifyContent(FlexAlign.Start)
       .width(CommonConstant.FullPercent)
-      .edgeEffect(EdgeEffect.Spring)
     }
-    .transition(TransitionEffect.OPACITY.animation({ duration: 200 }))
+    .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
   }
 
   @Builder
@@ -169,33 +163,35 @@ export struct CategoryPicker {
               // 选中指示条
               if (this.vm.leftPanelIndex === index) {
                 Rect()
-                  .width(3)
-                  .height(16)
+                  .width(CommonConstant.BorderSizeLarge)
+                  .height(CommonConstant.TextSizeNormal)
                   .fill(CommonConstant.ThemeColor)
-                  .radius(2)
-                  .margin({ right: 4 })
-                  .transition(TransitionEffect.OPACITY.animation({ duration: 200 }))
+                  .margin({ right: CommonConstant.SmallContainerInnerPadding })
+                  .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
               }
               Text(group.name)
-                .fontSize(13)
+                .fontSize(CommonConstant.TextSizeNormal)
                 .fontColor(this.vm.leftPanelIndex === index ? CommonConstant.ThemeColor : $r('sys.color.font_primary'))
                 .fontWeight(this.vm.leftPanelIndex === index ? FontWeight.Bold : FontWeight.Regular)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             .width(CommonConstant.FullPercent)
-            .height(44)
-            .padding({ left: this.vm.leftPanelIndex === index ? 8 : 12, right: 4 })
+            .padding({
+              top: CommonConstant.NormalContainerTBPadding,
+              bottom: CommonConstant.NormalContainerTBPadding,
+              left: CommonConstant.NormalContainerLRPadding
+            })
             .backgroundColor(this.vm.leftPanelIndex === index ? $r('app.color.start_window_background') :
               $r('app.color.second_window_background'))
-            .animation({ duration: 200 })
+            .animation({ duration: CommonConstant.AnimationDurationNormal })
           }
           .onClick(() => {
             this.vm.selectLeftPanel(index);
           })
         })
       }
-      .width('28%') // 左侧占比较窄
+      .width(CommonConstant.BelowHalfPercent)
       .height(CommonConstant.FullPercent)
       .backgroundColor($r('app.color.second_window_background'))
       .scrollBar(BarState.Off)
@@ -203,7 +199,7 @@ export struct CategoryPicker {
       // === 右侧：二级板块 Grid ===
       Column() {
         Scroll() {
-          GridRow({ columns: 2, gutter: 8 }) {
+          GridRow({ columns: 2, gutter: CommonConstant.NormalContainerInnerPadding }) {
             if (this.vm.categories.length > this.vm.leftPanelIndex) {
               ForEach(this.vm.categories[this.vm.leftPanelIndex].children || [], (item: PostCategoryItem) => {
                 GridCol() {
@@ -212,7 +208,7 @@ export struct CategoryPicker {
               })
             }
           }
-          .padding(12)
+          .padding(CommonConstant.NormalContainerInnerPadding)
         }
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
@@ -224,14 +220,15 @@ export struct CategoryPicker {
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
-    .border({ width: { top: 1 }, color: $r('sys.color.comp_divider') })
+
+    .border({ width: { top: 1 }, color: $r('sys.color.font_tertiary') })
   }
 
   @Builder
   ForumGridItem(item: PostCategoryItem) {
-    Column() {
+    Column({ space: CommonConstant.SmallContainerInnerPadding }) {
       Text(item.name)
-        .fontSize(13)
+        .fontSize(CommonConstant.TextSizeSmall)
         .fontColor(this.vm.selectedForumId === item.fid ? CommonConstant.ThemeColor : $r('sys.color.font_primary'))
         .fontWeight(this.vm.selectedForumId === item.fid ? FontWeight.Bold : FontWeight.Medium)
         .maxLines(1)
@@ -241,21 +238,25 @@ export struct CategoryPicker {
 
       if (item.parentName) {
         Text(item.parentName)
-          .fontSize(10)
+          .fontSize(CommonConstant.TextSizeTiny)
           .fontColor($r('sys.color.font_tertiary'))
-          .margin({ top: 2 })
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .width(CommonConstant.FullPercent)
+      } else {
+        Text(item.name)
+          .maxLines(1)
+          .fontSize(CommonConstant.TextSizeTiny)
+          .opacity(0)
       }
     }
     .alignItems(HorizontalAlign.Start)
-    .padding(10)
+    .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor(this.vm.selectedForumId === item.fid ? ColorUtil.opacity(CommonConstant.ThemeColor, 0.08) :
       $r('app.color.second_window_background'))
-    .borderRadius(8)
+    .borderRadius(CommonConstant.RadiusSmall)
     .border({
-      width: 1,
+      width: CommonConstant.BorderSizeNormal,
       color: this.vm.selectedForumId === item.fid ? ColorUtil.opacity(CommonConstant.ThemeColor, 0.3) :
         Color.Transparent
     })
@@ -266,11 +267,11 @@ export struct CategoryPicker {
     .stateStyles({
       pressed: {
         .scale({ x: 0.96, y: 0.96 })
-        .animation({ duration: 100 })
+        .animation({ duration: CommonConstant.AnimationDurationNormal })
       },
       normal: {
         .scale({ x: 1, y: 1 })
-        .animation({ duration: 200 })
+        .animation({ duration: CommonConstant.AnimationDurationNormal })
       }
     })
   }
