@@ -34,7 +34,7 @@ export class ChatPageVM extends BaseVM {
     }
     },
     {
-      title: $r('app.string.ChatPage_select_image'), icon: $r('sys.symbol.art_gallery'), onClick: async () => {
+      title: $r('app.string.ChatPage_select_image'), icon: $r('sys.symbol.picture'), onClick: async () => {
       await this.selectImage()
     }
     },

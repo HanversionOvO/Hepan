@@ -7,7 +7,16 @@ const TAG = '[PostPageVM]: ';
 
 @ObservedV2
 export class PostPageVM extends BaseVM {
-  @Trace titleButtons: NavTitleButtonModel[] = [];
+  @Trace titleButtons: NavTitleButtonModel[] = [
+    {
+      icon: $r('sys.symbol.save'), onClick: () => {
+    }
+    },
+    {
+      icon: $r('sys.symbol.paperplane'), onClick: () => {
+    }
+    }
+  ];
   @Trace selectedCategory: number = 0;
   @Trace currentCategory: number = 0;
   @Trace selectedSubCategory: string = '';
@@ -25,6 +34,10 @@ export class PostPageVM extends BaseVM {
     },
     {
       icon: $r('sys.symbol.at'), onClick: () => {
+    }
+    },
+    {
+      icon: $r('sys.symbol.picture'), onClick: () => {
     }
     }
   ];
