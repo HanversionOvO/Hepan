@@ -100,10 +100,6 @@ export struct CategoryPicker {
   @Builder
   ThreadTypeBar() {
     Column() {
-      Divider()
-        .color($r('sys.color.font_tertiary'))
-        .width(CommonConstant.FullPercent)
-
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         Text($r('app.string.PostPage_category'))
           .fontSize(CommonConstant.TextSizeTiny)
