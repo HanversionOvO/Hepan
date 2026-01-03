@@ -14,47 +14,47 @@ export struct RichTextToolBar {
   @Local richFuc: RichTextButton[] = [
     {
       icon: $r('sys.symbol.bold'), onClick: () => {
-      // TODO: 加粗
+      this.vm.applyBold();
     }
     },
     {
       icon: $r('sys.symbol.italic'), onClick: () => {
-      // TODO: 斜体
+      this.vm.applyItalic();
     }
     },
     {
       icon: $r('sys.symbol.underline'), onClick: () => {
-      // TODO: 下划线
+      this.vm.applyUnderline();
     }
     },
     {
       icon: $r('sys.symbol.strikethrough'), onClick: () => {
-      // TODO: 删除线
+      this.vm.applyStrikethrough();
     }
     },
     {
       icon: $r('sys.symbol.list_number'), onClick: () => {
-      // TODO: 有序列表
+      this.vm.applyOrderedList();
     }
     },
     {
       icon: $r('sys.symbol.list_bullet'), onClick: () => {
-      // TODO: 无序列表
+      this.vm.applyUnorderedList();
     }
     },
     {
       icon: $r('sys.symbol.line'), onClick: () => {
-      // TODO: 分割线
+      this.vm.insertDivider();
     }
     },
     {
       icon: $r('sys.symbol.list_checkmask'), onClick: () => {
-      // TODO: 任务列表
+      this.vm.applyTaskList();
     }
     },
     {
       icon: $r('sys.symbol.chevron_right'), onClick: () => {
-      // TODO: 引用
+      this.vm.applyQuote();
     }
     }
   ];

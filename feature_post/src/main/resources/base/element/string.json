@@ -19,6 +19,18 @@
     {
       "name": "PostPage_content_placeholder",
       "value": "开始你的精彩故事吧...(MarkDown支持)"
+    },
+    {
+      "name": "PostPage_list_item",
+      "value": "列表项"
+    },
+    {
+      "name": "PostPage_todo",
+      "value": "待办事项"
+    },
+    {
+      "name": "PostPage_quote",
+      "value": "引用内容"
     }
   ]
 }

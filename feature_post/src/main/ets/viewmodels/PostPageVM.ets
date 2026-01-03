@@ -1,5 +1,5 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
-import { AppUtil } from '@pura/harmony-utils';
+import { AppUtil, ResUtil } from '@pura/harmony-utils';
 import {
   AtUser,
   BaseVM,
@@ -176,5 +176,82 @@ export class PostPageVM extends BaseVM {
   insertAtUser(atUser: AtUser) {
     const atText = `[@${atUser.username}](at:${atUser.uid}) `;
     this.insertTextAtCursor(atText);
+  }
+
+  applyBold() {
+    this.wrapSelection('**');
+  }
+
+  applyItalic() {
+    this.wrapSelection('*');
+  }
+
+  applyUnderline() {
+    this.wrapSelection('<u>', '</u>');
+  }
+
+  applyStrikethrough() {
+    this.wrapSelection('~~');
+  }
+
+  applyOrderedList() {
+    this.prefixLines((index: number) => `${index + 1}. `, ResUtil.getStringSync($r('app.string.PostPage_list_item')));
+  }
+
+  applyUnorderedList() {
+    this.prefixLines(() => '- ', ResUtil.getStringSync($r('app.string.PostPage_list_item')));
+  }
+
+  insertDivider() {
+    const start = Math.min(this.contentSelectionStart, this.contentSelectionEnd);
+    const end = Math.max(this.contentSelectionStart, this.contentSelectionEnd);
+    const before = this.markdownContent.slice(0, start);
+    const after = this.markdownContent.slice(end);
+    const leading = before.endsWith('\n') || before.length === 0 ? '' : '\n';
+    const trailing = after.startsWith('\n') || after.length === 0 ? '' : '\n';
+    const divider = `${leading}---${trailing}`;
+    this.markdownContent = `${before}${divider}${after}`;
+    const newCursor = before.length + divider.length;
+    this.updateContentSelection(newCursor, newCursor);
+  }
+
+  applyTaskList() {
+    this.prefixLines(() => '- [ ] ', ResUtil.getStringSync($r('app.string.PostPage_todo')));
+  }
+
+  applyQuote() {
+    this.prefixLines(() => '> ', ResUtil.getStringSync($r('app.string.PostPage_quote')));
+  }
+
+  private wrapSelection(prefix: string, suffix: string = prefix, placeholder: string = '') {
+    const start = Math.min(this.contentSelectionStart, this.contentSelectionEnd);
+    const end = Math.max(this.contentSelectionStart, this.contentSelectionEnd);
+    const before = this.markdownContent.slice(0, start);
+    const selected = this.markdownContent.slice(start, end);
+    const content = selected.length > 0 ? selected : placeholder;
+    const after = this.markdownContent.slice(end);
+    this.markdownContent = `${before}${prefix}${content}${suffix}${after}`;
+    const selectionStart = before.length + prefix.length;
+    const selectionEnd = selectionStart + content.length;
+    this.updateContentSelection(selectionStart, selectionEnd);
+  }
+
+  private prefixLines(prefixBuilder: (index: number) => string, placeholder: string) {
+    const start = Math.min(this.contentSelectionStart, this.contentSelectionEnd);
+    const end = Math.max(this.contentSelectionStart, this.contentSelectionEnd);
+    const before = this.markdownContent.slice(0, start);
+    const selected = this.markdownContent.slice(start, end);
+    const content = selected.length > 0 ? selected : placeholder;
+    const lines = content.split('\n');
+    const formattedLines = lines.map((line: string, index: number) => {
+      const prefix = prefixBuilder(index);
+      const lineContent = line.length > 0 ? line : placeholder;
+      return `${prefix}${lineContent}`;
+    }).join('\n');
+    const after = this.markdownContent.slice(end);
+    this.markdownContent = `${before}${formattedLines}${after}`;
+    const selectionStart = before.length;
+    const selectionEnd = selectionStart + formattedLines.length;
+    this.updateContentSelection(selectionStart, selectionEnd);
   }
 }
