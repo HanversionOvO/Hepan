@@ -1,5 +1,6 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
-import { BaseVM, ForumApi, PostCategories } from 'base_common';
+import { AppUtil } from '@pura/harmony-utils';
+import { BaseVM, CommonConstant, ForumApi, PostCategories } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 import { RichTextButton } from '../components/RichTextToolBar';
 
@@ -23,6 +24,7 @@ export class PostPageVM extends BaseVM {
   @Trace isCategoryExpanded: boolean = false;
   @Trace isInputting: boolean = false;
   @Trace isPreviewMode: boolean = false;
+  @Trace isShowFace: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace markdownContent: string = '';
   @Trace postTitle: string = '';
@@ -32,6 +34,20 @@ export class PostPageVM extends BaseVM {
   @Trace richTextButtons: RichTextButton[] = [
     {
       icon: $r('sys.symbol.capture_smiles'), onClick: () => {
+      this.isShowFace = !this.isShowFace;
+      if (this.isShowFace) {
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isInputting = true;
+            })
+      } else {
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isInputting = false;
+            })
+      }
     }
     },
     {

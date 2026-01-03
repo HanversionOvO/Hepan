@@ -1,6 +1,6 @@
 import { AppUtil } from '@pura/harmony-utils'
 import { CommonConstant, TransitionMap, VMManager } from 'base_common'
-import { CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
+import { CustomFacePanel, CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
@@ -91,6 +91,7 @@ export struct PostPageImpl {
                         curve: CommonConstant.AnimationCurveSpring
                       }, () => {
                         this.vm.isInputting = true;
+                        this.vm.isShowFace = false;
                       })
                   })
                   .onBlur(() => {
@@ -105,6 +106,22 @@ export struct PostPageImpl {
                   .onChange((text: string) => {
                     this.vm.markdownContent = text;
                   })
+
+                if (this.vm.isShowFace) {
+                  CustomFacePanel({
+                    vm: this.vm,
+                    onFaceClick: (face: ResourceStr) => {
+                      if (typeof face === 'string') {
+                        this.vm.markdownContent += face;
+                      }
+                    }
+                  })
+                    .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+                      .animation({
+                        duration: CommonConstant.AnimationDurationNormal,
+                        curve: CommonConstant.AnimationCurveSpring
+                      }))
+                }
               }
               .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
               .alignItems(HorizontalAlign.Start)

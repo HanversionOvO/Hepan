@@ -161,8 +161,11 @@ export struct ChatPageImpl {
               })
             }
           })
-            .height(this.vm.window.windowHeight * 0.4)
-            .transition(TransitionEffect.move(TransitionEdge.BOTTOM))
+            .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+              .animation({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }))
             .position({ bottom: 0 })
             .zIndex(3)
         }
@@ -172,8 +175,11 @@ export struct ChatPageImpl {
             vm: this.vm,
             items: this.vm.filePanelItems
           })
-            .height(this.vm.window.windowHeight * 0.4)
-            .transition(TransitionEffect.move(TransitionEdge.BOTTOM))
+            .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+              .animation({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }))
             .position({ bottom: 0 })
             .zIndex(3)
         }
