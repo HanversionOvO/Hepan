@@ -2,7 +2,7 @@ import { ApiClient } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
-import { ForumCategory, PostCategories } from './models/ForumModels';
+import { AtUser, ForumCategory, PostCategories } from './models/ForumModels';
 
 const TAG = '[ForumApi]: ';
 
@@ -90,6 +90,26 @@ export class ForumApi {
     } catch (error) {
       LogUtil.warn(TAG, 'Failed to parse post categories', error);
       throw new Error('Failed to parse post categories');
+    }
+  }
+
+  public static async getAtUser(): Promise<AtUser[]> {
+    const path = '/_/post/atlist';
+
+    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Object>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      return response.data.data["rows"] as AtUser[];
+    } else {
+      // 抛出具体错误供 VM 处理
+      const errorMsg = response.data?.message || `Fetch profile failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
     }
   }
 }

@@ -51,6 +51,6 @@ export { NewMessagesSummary,
   Chat,
   ChatSendContent } from './src/main/ets/api/models/MessageModels';
 
-export { ForumCategory, LatestThread, PostCategories } from './src/main/ets/api/models/ForumModels';
+export { ForumCategory, LatestThread, PostCategories, AtUser } from './src/main/ets/api/models/ForumModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

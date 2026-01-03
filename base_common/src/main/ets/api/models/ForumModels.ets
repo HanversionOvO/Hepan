@@ -26,3 +26,9 @@ export interface PostCategories {
   name: string;
   children?: PostCategories[];
 }
+
+export interface AtUser {
+  uid: number;
+  username: string;
+  status: string;
+}
