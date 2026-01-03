@@ -47,6 +47,10 @@
     {
       "name": "PostPage_photo_upload_failed_insert",
       "value": "图片上传失败，无法插入！"
+    },
+    {
+      "name": "PostPage_category",
+      "value": "分类"
     }
   ]
 }

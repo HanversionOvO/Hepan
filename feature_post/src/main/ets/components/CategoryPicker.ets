@@ -105,7 +105,7 @@ export struct CategoryPicker {
         .width(CommonConstant.FullPercent)
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        Text('分类')
+        Text($r('app.string.PostPage_category'))
           .fontSize(CommonConstant.TextSizeTiny)
           .fontColor($r('sys.color.font_tertiary'))
 
@@ -121,7 +121,12 @@ export struct CategoryPicker {
                   .fontWeight(this.vm.selectedTypeId === type.type_id ? FontWeight.Medium : FontWeight.Regular)
                   .backgroundColor(this.vm.selectedTypeId === type.type_id ? CommonConstant.ThemeColor :
                     $r('app.color.second_window_background'))
-                  .padding(CommonConstant.SmallContainerInnerPadding)
+                  .padding({
+                    left: CommonConstant.SmallContainerLRPadding,
+                    right: CommonConstant.SmallContainerLRPadding,
+                    top: CommonConstant.SmallContainerInnerPadding,
+                    bottom: CommonConstant.SmallContainerInnerPadding
+                  })
                   .onClick(() => {
                     this.vm.onTypeSelected(type);
                   })
