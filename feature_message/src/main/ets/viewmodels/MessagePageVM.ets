@@ -109,4 +109,16 @@ export class MessagePageVM extends BaseVM {
     await this.refreshMessages();
     this.isRefreshingMessage = false;
   }
+
+  async loadMore() {
+    //TODO: 加载更多
+  }
+
+  toggleHeader(hide: boolean) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isHideSearch = hide;
+        })
+  }
 }

@@ -1,5 +1,5 @@
 import { CommonConstant, RecentMessage, RouterUtil, StackEnum, TransitionMap, VMManager } from 'base_common';
-import { CustomNavTitle, CustomSearch } from 'base_ui';
+import { CustomNavTitle, CustomSearch, FloatButton } from 'base_ui';
 import { MessageCard } from '../components/MessageCard';
 import { MessageNotifyCard } from '../components/MessageNotifyCard';
 import { MessagePageVM } from '../viewmodels/MessagePageVM';
@@ -26,6 +26,17 @@ export struct MessagePageImpl {
       return 2;
     } else {
       return 3;
+    }
+  }
+
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      // 手指向上滑是正值
+      if (yOffset > CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(true);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.vm.toggleHeader(false);
+      }
     }
   }
 
@@ -84,6 +95,15 @@ export struct MessagePageImpl {
               .height(CommonConstant.FullPercent)
               .scrollBar(BarState.Off)
               .edgeEffect(EdgeEffect.Spring)
+              .onWillScroll((yOffset, scrollState) => {
+                this.handleScroll(yOffset, scrollState);
+              })
+              .onReachStart(() => {
+                this.vm.toggleHeader(false);
+              })
+              .onReachEnd(() => {
+                this.vm.loadMore();
+              })
             }
             .layoutWeight(1)
             .onRefreshing(async () => {
@@ -110,6 +130,20 @@ export struct MessagePageImpl {
             })
           }
         })
+
+        if (this.vm.isHideSearch) {
+          FloatButton({ isFloating: this.vm.isHideSearch, floatIcon: $r('sys.symbol.magnifyingglass') })
+            .geometryTransition(TransitionMap.MessagePageSearch)
+            .position({
+              top: this.vm.window.windowTopPadding + (CommonConstant.TopBarHeight - CommonConstant.IconSizeLarge) / 2,
+              right: CommonConstant.PageLRPadding + CommonConstant.NormalContainerInnerPadding +
+              CommonConstant.IconSizeLarge
+            })
+            .onClick(() => {
+              RouterUtil.pop()
+            })
+            .zIndex(2)
+        }
       }
       .transition(CommonConstant.CONF_TRANSITION)
     }
