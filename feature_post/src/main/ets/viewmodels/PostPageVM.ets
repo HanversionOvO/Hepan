@@ -1,6 +1,7 @@
 import { MarkdownController } from '@luvi/lv-markdown-in';
 import { BaseVM, ForumApi, PostCategories } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
+import { RichTextButton } from '../components/RichTextToolBar';
 
 const TAG = '[PostPageVM]: ';
 
@@ -17,6 +18,16 @@ export class PostPageVM extends BaseVM {
   @Trace categoryTabs: CustomTabItem[] = [];
   @Trace uploadedImages: string[] = [];
   @Trace categories: PostCategories[] = [];
+  @Trace richTextButtons: RichTextButton[] = [
+    {
+      icon: $r('sys.symbol.capture_smiles'), onClick: () => {
+    }
+    },
+    {
+      icon: $r('sys.symbol.at'), onClick: () => {
+    }
+    }
+  ];
 
   get currentMainCategoryName(): ResourceStr {
     if (this.categories.length > 0 && this.currentCategory >= 0 && this.currentCategory < this.categories.length) {

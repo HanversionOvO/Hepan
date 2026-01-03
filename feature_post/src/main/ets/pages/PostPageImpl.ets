@@ -24,7 +24,7 @@ export struct PostPageImpl {
           Flex({
             direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.ColumnReverse
           }) {
-            RichTextToolBar({ vm: this.vm })
+            RichTextToolBar({ vm: this.vm, buttons: this.vm.richTextButtons })
 
             Column({ space: CommonConstant.LargeContainerInnerPadding }) {
               ImagePicker({ vm: this.vm })
