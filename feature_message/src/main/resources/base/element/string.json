@@ -31,6 +31,14 @@
     {
       "name": "ChatPage_user_offline",
       "value": "离线"
+    },
+    {
+      "name": "ChatPage_take_photo",
+      "value": "拍摄照片"
+    },
+    {
+      "name": "ChatPage_select_image",
+      "value": "选择照片"
     }
   ]
 }

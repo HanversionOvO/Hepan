@@ -15,3 +15,5 @@ export { CustomNavTitle, NavTitleButtonModel } from './src/main/ets/components/C
 export { CustomMarkdown } from './src/main/ets/components/CustomMarkdown';
 
 export { CustomFacePanel } from './src/main/ets/components/CustomFacePanel';
+
+export { CustomFilePanel, CustomFilePanelItem } from './src/main/ets/components/CustomFilePanel';

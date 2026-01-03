@@ -27,6 +27,10 @@
     {
       "name": "StateLayout_retry",
       "value": "重新连接"
+    },
+    {
+      "name": "CustomFilePanel_title",
+      "value": "文件选择器"
     }
   ]
 }

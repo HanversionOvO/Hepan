@@ -9,6 +9,7 @@ import {
   RouterUtil,
   StackEnum
 } from 'base_common';
+import { CustomFilePanelItem } from 'base_ui';
 
 const TAG = '[ChatPageVM]: ';
 
@@ -23,6 +24,16 @@ export class ChatPageVM extends BaseVM {
   @Trace richEditorController: RichEditorController = new RichEditorController();
   @Trace chats: Chat[] = [];
   @Trace isUserOnline: boolean = false;
+  @Trace filePanelItems: CustomFilePanelItem[] = [
+    {
+      title: $r('app.string.ChatPage_take_photo'), icon: $r('sys.symbol.camera'), onClick: () => {
+    }
+    },
+    {
+      title: $r('app.string.ChatPage_select_image'), icon: $r('sys.symbol.art_gallery'), onClick: () => {
+    }
+    },
+  ];
   isAtBottom: boolean = true;
   private timerId: number = -1;
 
