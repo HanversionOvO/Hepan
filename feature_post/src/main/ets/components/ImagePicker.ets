@@ -9,7 +9,7 @@ export struct ImagePicker {
 
   @Computed
   get isShrink(): boolean {
-    return false;
+    return this.vm.isInputting;
   }
 
   @Computed

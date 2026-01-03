@@ -2,4 +2,5 @@
 export class TransitionMap {
   static readonly FeatureMineFansSearch: string = "FeatureMineFansSearch";
   static readonly MessagePageSearch: string = "MessagePageSearch";
+  static readonly PostPageMarkDown: string = "PostPageMarkDown";
 }

@@ -1,4 +1,5 @@
-import { CommonConstant, VMManager } from 'base_common'
+import { AppUtil } from '@pura/harmony-utils'
+import { CommonConstant, TransitionMap, VMManager } from 'base_common'
 import { CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
@@ -61,6 +62,24 @@ export struct PostPageImpl {
                 .backgroundColor(Color.Transparent)
                 .padding(0)
                 .layoutWeight(1)
+                .onFocus(() => {
+                  AppUtil.getUIContext()
+                    .animateTo({
+                      duration: CommonConstant.AnimationDurationNormal,
+                      curve: CommonConstant.AnimationCurveSpring
+                    }, () => {
+                      this.vm.isInputting = true;
+                    })
+                })
+                .onBlur(() => {
+                  AppUtil.getUIContext()
+                    .animateTo({
+                      duration: CommonConstant.AnimationDurationNormal,
+                      curve: CommonConstant.AnimationCurveSpring
+                    }, () => {
+                      this.vm.isInputting = false;
+                    })
+                })
                 .onChange((text: string) => {
                   this.vm.markdownContent = text;
                 })
@@ -79,7 +98,7 @@ export struct PostPageImpl {
                 .borderRadius(CommonConstant.RadiusLarge)
                 .margin({ right: CommonConstant.PageLRPadding, bottom: this.vm.window.windowBottomPadding })
                 .backgroundColor($r('app.color.second_window_background'))
-                .geometryTransition("mk")
+                .geometryTransition(TransitionMap.PostPageMarkDown)
             }
           }
           .width(CommonConstant.FullPercent)
@@ -99,7 +118,7 @@ export struct PostPageImpl {
                 CommonConstant.IconSizeLarge * 2
             })
             .zIndex(2)
-            .geometryTransition("mk")
+            .geometryTransition(TransitionMap.PostPageMarkDown)
         }
       }
       .width(CommonConstant.FullPercent)
