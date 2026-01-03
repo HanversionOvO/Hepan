@@ -159,7 +159,6 @@ export struct PostPageImpl {
                   CustomAtPanel({
                     vm: this.vm,
                     onAtUserClick: (atUser: AtUser) => {
-                      // 插入 @用户名
                       this.vm.markdownContent += `@${atUser.username} `;
                     }
                   })
