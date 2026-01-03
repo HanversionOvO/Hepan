@@ -136,3 +136,28 @@ export interface ChatSendContent {
   type: "text" | "image";
   content: string;
 }
+
+export interface UploadedFile {
+  attachment_id: number;
+  dateline: number;
+  filename: string;
+  size: number;
+  path: string;
+  remote: number;
+  is_image: number;
+  width: number;
+  thumb: boolean;
+  thumbnail_url?: string;
+  raw_url?: string;
+}
+
+export interface UploadData {
+  uploaded: UploadedFile[];
+}
+
+export interface UploadResponse {
+  code: number;
+  message: string;
+  data: UploadData;
+}
+

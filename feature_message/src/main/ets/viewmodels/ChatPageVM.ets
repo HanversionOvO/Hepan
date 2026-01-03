@@ -10,6 +10,7 @@ import {
   StackEnum
 } from 'base_common';
 import { CustomFilePanelItem } from 'base_ui';
+import { PhotoHelper, PickerUtil } from '@pura/picker_utils';
 
 const TAG = '[ChatPageVM]: ';
 
@@ -27,11 +28,13 @@ export class ChatPageVM extends BaseVM {
   @Trace isUserOnline: boolean = false;
   @Trace filePanelItems: CustomFilePanelItem[] = [
     {
-      title: $r('app.string.ChatPage_take_photo'), icon: $r('sys.symbol.camera'), onClick: () => {
+      title: $r('app.string.ChatPage_take_photo'), icon: $r('sys.symbol.camera'), onClick: async () => {
+      await this.takePhoto();
     }
     },
     {
-      title: $r('app.string.ChatPage_select_image'), icon: $r('sys.symbol.art_gallery'), onClick: () => {
+      title: $r('app.string.ChatPage_select_image'), icon: $r('sys.symbol.art_gallery'), onClick: async () => {
+      await this.selectImage()
     }
     },
   ];
@@ -154,6 +157,36 @@ export class ChatPageVM extends BaseVM {
   async sendMessage(msg: ChatSendContent) {
     if (this.recentMessage) {
       await MessageApi.sendMessage(this.recentMessage.toUserId, msg, this.recentMessage.plid, this.recentMessage.pmid)
+    }
+  }
+
+  async takePhoto() {
+    try {
+      const result: string = await PickerUtil.cameraEasy();
+
+      LogUtil.debug(TAG, 'Take photo result: ' + result)
+
+      // if (pickerResult.resultUri) {
+      //   this.uploadAndSendImage(pickerResult.resultUri);
+      // }
+    } catch (e) {
+      LogUtil.error(TAG, 'Take photo failed: ' + JSON.stringify(e));
+    }
+  }
+
+  async selectImage() {
+    try {
+      const result: string[] = await PhotoHelper.selectEasy({
+        maxSelectNumber: 1
+      })
+
+      LogUtil.debug(TAG, 'Select image result: ' + JSON.stringify(result))
+
+      // if (photoSelectResult.photoUris.length > 0) {
+      //   this.uploadAndSendImage(photoSelectResult.photoUris[0]);
+      // }
+    } catch (e) {
+      LogUtil.error(TAG, 'Select image failed: ' + JSON.stringify(e));
     }
   }
 

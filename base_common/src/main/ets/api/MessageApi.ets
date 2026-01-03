@@ -136,8 +136,6 @@ export class MessageApi {
           'userId': uid
         });
 
-    LogUtil.debug(TAG, JSON.stringify(result.data.status))
-
     return result.data.status === 2;
   }
 
