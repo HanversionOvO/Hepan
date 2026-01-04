@@ -32,7 +32,8 @@ export struct ContentPageImpl {
               vm: this.vm,
               title: $r('app.string.ContentPage_title'),
               buttons: this.vm.titleButtons,
-              bgColor: Color.Transparent
+              bgColor: Color.Transparent,
+              enableGlassMode: this.isHideNavTitle ? true : false
             })
           }
 

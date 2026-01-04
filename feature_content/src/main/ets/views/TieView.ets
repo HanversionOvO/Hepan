@@ -1,3 +1,4 @@
+import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant, VMManager } from 'base_common';
 import { CustomTabBar, FloatButton } from 'base_ui';
 import { TieVM } from '../viewmodels/TieVM';
@@ -30,11 +31,19 @@ export struct TieView {
   private handleScroll(yOffset: number, scrollState: ScrollState) {
     if (scrollState === ScrollState.Scroll) {
       if (yOffset > CommonConstant.ScrollAnimationThreshold) {
-        this.isHideNavTitle = true;
-        this.isHideTabBar = true;
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isHideNavTitle = true;
+              this.isHideTabBar = true;
+            })
       } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
-        this.isHideNavTitle = false;
-        this.isHideTabBar = false;
+        AppUtil.getUIContext()
+          .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+            () => {
+              this.isHideNavTitle = false;
+              this.isHideTabBar = false;
+            })
       }
     }
   }
@@ -82,6 +91,9 @@ export struct TieView {
               .fontSize(CommonConstant.TextSizeUltraLarge)
               .opacity(0)
               .hitTestBehavior(HitTestMode.Transparent)
+              .margin({
+                right: CommonConstant.NormalContainerInnerPadding * 3
+              })
           }
 
           Row() {

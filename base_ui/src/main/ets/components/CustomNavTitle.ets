@@ -14,6 +14,7 @@ export struct CustomNavTitle {
   @Param bgColor: ResourceColor = $r('app.color.start_window_background');
   @Param contentColor: ResourceColor = $r('sys.color.font_primary');
   @Param buttons: NavTitleButtonModel[] | undefined = undefined;
+  @Param enableGlassMode: boolean = false;
 
   @Builder
   titleButton(navTitleButtonModel: NavTitleButtonModel) {
@@ -39,11 +40,36 @@ export struct CustomNavTitle {
 
   build() {
     Row() {
-      Text(this.title)
-        .fontSize(CommonConstant.TextSizeUltraLarge)
-        .fontColor(this.contentColor)
-        .fontWeight(FontWeight.Bolder)
-        .animation({ duration: CommonConstant.AnimationDurationNormal })
+      Row() {
+        Text(this.title)
+          .fontSize(CommonConstant.TextSizeUltraLarge)
+          .fontColor(this.contentColor)
+          .fontWeight(FontWeight.Bolder)
+          .animation({ duration: CommonConstant.AnimationDurationNormal })
+      }
+      .margin({
+        left: this.enableGlassMode ? CommonConstant.NormalContainerInnerPadding : 0
+      })
+      .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerInnerPadding * 2)
+      .alignItems(VerticalAlign.Center)
+      .padding({
+        left: CommonConstant.PageLRPadding,
+        right: CommonConstant.PageLRPadding
+      })
+      .borderRadius(CommonConstant.RadiusRound)
+      .backgroundColor(this.enableGlassMode ? $r('app.color.glass_background') : Color.Transparent)
+      .backgroundBlurStyle(this.enableGlassMode ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE)
+      .border(
+        this.enableGlassMode
+          ? {
+          width: CommonConstant.BorderSizeNormal,
+          color: $r('app.color.glass_border')
+        }
+          : {
+          width: CommonConstant.BorderSizeNormal,
+          color: Color.Transparent
+        }
+      )
 
       Blank()
         .layoutWeight(1)
@@ -55,6 +81,9 @@ export struct CustomNavTitle {
             this.titleButton(navTitleButtonModel);
           })
         }
+        .padding({
+          right: CommonConstant.PageLRPadding
+        })
       }
     }
     .backgroundColor(this.bgColor)
@@ -63,8 +92,7 @@ export struct CustomNavTitle {
     .hitTestBehavior(HitTestMode.None)
     .padding({
       top: this.vm.window.windowTopPadding,
-      left: CommonConstant.PageLRPadding,
-      right: CommonConstant.PageLRPadding
     })
+    .animation({ duration: CommonConstant.AnimationDurationNormal })
   }
 }
