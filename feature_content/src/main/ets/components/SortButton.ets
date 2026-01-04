@@ -55,15 +55,22 @@ export struct SortButton {
   }
 
   build() {
-    Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+    List({ space: CommonConstant.SmallContainerInnerPadding }) {
       if (this.vm.isSorting) {
         ForEach(this.vm.sortItems, (item: SortItem, index: number) => {
-          this.SortItemView(item, index)
+          ListItem() {
+            this.SortItemView(item, index)
+          }
         }, (item: SortItem) => item.id.toString())
       } else {
-        this.SortItemView(this.vm.sortItems[this.vm.currentSort], this.vm.currentSort)
+        ListItem() {
+          this.SortItemView(this.vm.sortItems[this.vm.currentSort], this.vm.currentSort)
+        }
       }
     }
+    .listDirection(Axis.Horizontal)
+    .scrollBar(BarState.Off)
+    .edgeEffect(EdgeEffect.Spring)
     .height(CommonConstant.IconSizeLarge)
     .padding({
       top: CommonConstant.SmallContainerTBPadding / 2,
@@ -71,13 +78,11 @@ export struct SortButton {
       left: this.vm.isTabletView || this.vm.isSorting ? CommonConstant.SmallContainerTBPadding / 2 : 0,
       right: this.vm.isTabletView || this.vm.isSorting ? CommonConstant.SmallContainerTBPadding / 2 : 0,
     })
-    .alignItems(VerticalAlign.Center)
     .borderRadius(CommonConstant.RadiusRound)
     .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
     .backgroundColor(Color.Transparent)
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .width((this.vm.isSorting || this.vm.isTabletView) ? undefined : CommonConstant.IconSizeLarge)
-    .justifyContent(FlexAlign.Center)
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
     .constraintSize({ maxWidth: this.vm.isTabletView ? undefined : this.vm.window.windowWidth / 2 })
     .clip(true)
