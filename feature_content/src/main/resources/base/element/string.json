@@ -15,6 +15,10 @@
     {
       "name": "ContentPage_tab_water_drop",
       "value": "水滴"
+    },
+    {
+      "name": "TieView_hide_sub",
+      "value": "收起"
     }
   ]
 }
