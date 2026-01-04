@@ -23,6 +23,10 @@
     {
       "name": "sub_color",
       "value": "#FF1F2937"
+    },
+    {
+      "name": "mask_color",
+      "value": "#4D000000"
     }
   ]
 }

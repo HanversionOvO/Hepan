@@ -44,7 +44,7 @@ export struct ImagePicker {
                 .width(this.currentImageSize)
                 .height(this.currentImageSize)
                 .borderRadius(CommonConstant.RadiusLarge)
-                .backgroundColor($r('app.color.glass_background'))
+                .backgroundColor($r('app.color.mask_color'))
                 .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
               }
 
@@ -58,7 +58,7 @@ export struct ImagePicker {
                 .width(this.currentImageSize)
                 .height(this.currentImageSize)
                 .borderRadius(CommonConstant.RadiusLarge)
-                .backgroundColor($r('app.color.glass_background')) // 半透明黑色蒙层
+                .backgroundColor($r('app.color.mask_color'))
                 .onClick(() => {
                   this.vm.insertImageToContent(img);
                 })
