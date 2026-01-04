@@ -83,26 +83,28 @@ export class TieVM extends BaseVM {
 
   async loadSubCategory() {
     const fid: number = this.categoryTabItems[this.currentCategory].fid;
+    let categories: SubCategoryItem[] = [];
     if (fid === 0 || fid === -1) {
-      this.subCategoryItems = [
+      categories = [
         { fid: 0, name: $r('app.string.TieView_category_no_sub') },
       ];
-      return;
+    } else {
+      const result = await ForumApi.getForumDetails(fid);
+      if (result.children) {
+        result.children.forEach((subCategory: ForumCategory) => {
+          categories.push({
+            fid: subCategory.fid,
+            name: subCategory.name
+          })
+        })
+      } else {
+        categories = [
+          { fid: 0, name: $r('app.string.TieView_category_no_sub') },
+        ];
+      }
     }
 
-    const result = await ForumApi.getForumDetails(this.categoryTabItems[this.currentCategory].fid);
-    if (result.children) {
-      result.children.forEach((subCategory: ForumCategory) => {
-        this.subCategoryItems.push({
-          fid: subCategory.fid,
-          name: subCategory.name
-        })
-      })
-    } else {
-      this.subCategoryItems = [
-        { fid: 0, name: $r('app.string.TieView_category_no_sub') },
-      ];
-    }
+    this.subCategoryItems = categories;
   }
 
   async loadData() {
