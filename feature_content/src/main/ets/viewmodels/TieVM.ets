@@ -25,4 +25,8 @@ export class TieVM extends BaseVM {
   ]
   @Trace isSubCategoryExpanded: boolean = false;
   @Trace isSorting: boolean = false;
+
+  changeCategory(index: number) {
+    this.currentCategory = index;
+  }
 }

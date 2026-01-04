@@ -57,7 +57,11 @@ export struct TieView {
               tabItems: this.vm.categoryTabItems,
               isMax: true,
               isGlassStyle: true,
-              alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
+              alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
+              currentIndex: this.vm.currentCategory,
+              changeTab: (index: number) => {
+                this.vm.changeCategory(index)
+              }
             })
           }
           .layoutWeight(1)
