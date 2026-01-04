@@ -4,7 +4,7 @@ import { CommonConstant } from 'base_common';
 export struct CustomBadge {
   @Param text: string | Resource = "";
   @Param icon: Resource | undefined = undefined;
-  @Param textColor: ResourceColor = Color.White;
+  @Param textColor: ResourceColor = $r('sys.color.font_on_primary');
   @Param bgColor: ResourceColor = Color.Transparent;
   @Param blurStyle: BlurStyle | undefined = undefined;
   @Param badgeBorderWidth: number = 0;

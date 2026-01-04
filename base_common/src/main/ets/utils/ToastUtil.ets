@@ -65,7 +65,7 @@ function CommonToastBuilder(params: ToastParams) {
       if (params.message) {
         Text(params.message)
           .fontSize(CommonConstant.TextSizeNormal)
-          .fontColor($r('sys.color.font_secondary')) // 或使用 Color.White 如果背景很深
+          .fontColor($r('sys.color.font_secondary'))
           .textAlign(TextAlign.Center)
           .margin({ top: CommonConstant.SmallContainerTBPadding })
           .maxLines(2)

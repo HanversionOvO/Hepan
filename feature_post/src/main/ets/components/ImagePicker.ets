@@ -37,7 +37,7 @@ export struct ImagePicker {
               if (img.isLoading) {
                 Stack({ alignContent: Alignment.Center }) {
                   LoadingProgress()
-                    .color(Color.White)
+                    .color($r('sys.color.font_on_primary'))
                     .width(this.isShrink ? CommonConstant.IconSizeNormal : CommonConstant.IconSizeLarge)
                     .height(this.isShrink ? CommonConstant.IconSizeNormal : CommonConstant.IconSizeLarge)
                 }

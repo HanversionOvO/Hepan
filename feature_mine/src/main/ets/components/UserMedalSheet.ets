@@ -176,7 +176,7 @@ struct UserMedalSheet {
               Button() {
                 Text($r('app.string.MinePage_medal_buy'))
                   .fontSize(CommonConstant.TextSizeNormal)
-                  .fontColor(Color.White)
+                  .fontColor($r('sys.color.font_on_primary'))
                   .fontWeight(FontWeight.Medium)
               }
               .type(ButtonType.Capsule)
