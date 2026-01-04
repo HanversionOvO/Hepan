@@ -1,4 +1,5 @@
 import { BaseVM, CommonConstant } from 'base_common';
+
 export interface CustomTabItem {
   label: ResourceStr;
   icon: Resource;
@@ -10,7 +11,7 @@ export struct CustomTabBar {
   @Param @Require vm: BaseVM;
   @Param currentIndex: number = 0;
   @Param tabButtonWidth: Length = 84;
-  @Param tabButtonHeight: Length = 34;
+  @Param tabButtonHeight: Length = CommonConstant.IconSizeLarge;
   @Param alignMode: FlexAlign = FlexAlign.Center;
   @Param indicatorColor: ResourceColor = CommonConstant.ThemeColor;
   @Param activeTextColor: ResourceColor = $r("sys.color.font_on_primary");
@@ -98,13 +99,13 @@ export struct CustomTabBar {
     .border(
       this.isGlassStyle
         ? {
-          width: CommonConstant.BorderSizeNormal,
-          color: $r('app.color.glass_border')
-        }
+        width: CommonConstant.BorderSizeNormal,
+        color: $r('app.color.glass_border')
+      }
         : {
-          width: CommonConstant.BorderSizeNormal,
-          color: Color.Transparent
-        }
+        width: CommonConstant.BorderSizeNormal,
+        color: Color.Transparent
+      }
     )
     .animation({ duration: CommonConstant.AnimationDurationNormal })
   }

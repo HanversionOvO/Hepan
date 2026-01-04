@@ -45,6 +45,10 @@ export struct CustomNavTitle {
         .fontWeight(FontWeight.Bolder)
         .animation({ duration: CommonConstant.AnimationDurationNormal })
 
+      Blank()
+        .layoutWeight(1)
+        .hitTestBehavior(HitTestMode.None)
+
       if (this.buttons) {
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {
           ForEach(this.buttons, (navTitleButtonModel: NavTitleButtonModel) => {
@@ -56,11 +60,11 @@ export struct CustomNavTitle {
     .backgroundColor(this.bgColor)
     .height(this.vm.window.windowTopPadding + CommonConstant.TopBarHeight)
     .width(CommonConstant.FullPercent)
+    .hitTestBehavior(HitTestMode.None)
     .padding({
       top: this.vm.window.windowTopPadding,
       left: CommonConstant.PageLRPadding,
       right: CommonConstant.PageLRPadding
     })
-    .justifyContent(FlexAlign.SpaceBetween)
   }
 }

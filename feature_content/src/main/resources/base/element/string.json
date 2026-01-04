@@ -1,8 +1,20 @@
 {
   "string": [
     {
-      "name": "page_show",
-      "value": "page from package"
+      "name": "ContentPage_title",
+      "value": "小红畔"
+    },
+    {
+      "name": "ContentPage_tab_tie",
+      "value": "帖子"
+    },
+    {
+      "name": "ContentPage_tab_collection",
+      "value": "专辑"
+    },
+    {
+      "name": "ContentPage_tab_water_drop",
+      "value": "水滴"
     }
   ]
 }
