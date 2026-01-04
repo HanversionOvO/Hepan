@@ -78,7 +78,7 @@ export struct FansUserItem {
             .borderRadius(CommonConstant.RadiusRound)
             .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
           Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
               Text(this.user.username)
                 .fontWeight(FontWeight.Medium)
                 .fontSize(CommonConstant.TextSizeNormal)
@@ -92,7 +92,7 @@ export struct FansUserItem {
                   textColor: $r('sys.color.font_on_primary'),
                   badgeBorderRadius: CommonConstant.RadiusTiny,
                   paddingLR: CommonConstant.SmallContainerInnerPadding,
-                  paddingTB: CommonConstant.SmallContainerInnerPadding
+                  paddingTB: CommonConstant.SmallContainerInnerPadding / 2
                 })
               }
             }

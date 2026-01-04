@@ -75,6 +75,14 @@
     {
       "name": "PostPage_publish_failed",
       "value": "发布失败，请稍后重试"
+    },
+    {
+      "name": "PostPage_draft_title",
+      "value": "草稿箱"
+    },
+    {
+      "name": "PostPage_draft_save",
+      "value": "保存当前内容为草稿"
     }
   ]
 }

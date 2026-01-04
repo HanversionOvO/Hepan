@@ -6,6 +6,7 @@ import { ImagePicker } from '../components/ImagePicker'
 import { RichTextToolBar } from '../components/RichTextToolBar'
 import { PostPageVM } from '../viewmodels/PostPageVM'
 import { KeyboardAvoidMode } from '@kit.ArkUI'
+import { postDraftBuilder } from '../components/PostDraft'
 
 const TAG = '[PostPageImpl]: ';
 
@@ -43,6 +44,17 @@ export struct PostPageImpl {
             title: $r('app.string.PostPage_title'),
             buttons: this.vm.titleButtons
           })
+            .bindSheet($$this.vm.isShowDraft, postDraftBuilder(this.vm), {
+              showClose: true,
+              detents: [SheetSize.LARGE],
+              enableOutsideInteractive: false,
+              preferType: SheetType.CENTER,
+              backgroundColor: $r('app.color.start_window_background'),
+              blurStyle: BlurStyle.BACKGROUND_THICK,
+              title: {
+                title: $r('app.string.PostPage_draft_title')
+              }
+            })
 
           Flex({
             direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.ColumnReverse

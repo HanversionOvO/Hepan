@@ -43,6 +43,7 @@ export class PostPageVM extends BaseVM {
   @Trace titleButtons: NavTitleButtonModel[] = [
     {
       icon: $r('sys.symbol.save'), onClick: () => {
+      this.isShowDraft = true;
     }
     },
     {
@@ -72,6 +73,7 @@ export class PostPageVM extends BaseVM {
   @Trace isShowFace: boolean = false;
   @Trace isShowAt: boolean = false;
   @Trace isInsertImageMode: boolean = false;
+  @Trace isShowDraft: boolean = false;
   @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace contentSelectionStart: number = 0;
   @Trace contentSelectionEnd: number = 0;
