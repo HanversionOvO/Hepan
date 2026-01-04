@@ -10,6 +10,10 @@ export struct TieView {
   @Local vm: TieVM = VMManager.get(TieVM, () => new TieVM())
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
 
+  async aboutToAppear() {
+    await this.vm.loadData();
+  }
+
   @Builder
   contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState) => void) {
     if (this.vm.isSubCategoryExpanded && !this.isHideNavTitle) {

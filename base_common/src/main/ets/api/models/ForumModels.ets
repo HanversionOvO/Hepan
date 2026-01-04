@@ -47,6 +47,8 @@ export interface ForumDetails {
   name: string;
   thread_types: ThreadType[];
   optional_thread_type: boolean;
+  can_post_thread: boolean;
+  children?: ForumCategory[];
 }
 
 export interface ThreadType {

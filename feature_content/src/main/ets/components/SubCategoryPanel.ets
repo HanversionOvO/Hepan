@@ -39,7 +39,7 @@ export struct SubCategoryPanel {
               curve: CommonConstant.AnimationCurveSpring,
               delay: index * 30
             }))
-        }, (item: SubCategoryItem) => `${this.vm.currentCategory}_${item.id}`)
+        }, (item: SubCategoryItem) => `${this.vm.currentCategory}_${item.fid}`)
       }
       .rowsTemplate('1fr')
       .layoutWeight(1)

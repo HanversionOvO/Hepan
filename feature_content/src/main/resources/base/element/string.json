@@ -19,6 +19,18 @@
     {
       "name": "TieView_hide_sub",
       "value": "收起"
+    },
+    {
+      "name": "TieView_category_all",
+      "value": "全部"
+    },
+    {
+      "name": "TieView_category_more",
+      "value": "更多"
+    },
+    {
+      "name": "TieView_category_no_sub",
+      "value": "该分类没有分类哦"
     }
   ]
 }

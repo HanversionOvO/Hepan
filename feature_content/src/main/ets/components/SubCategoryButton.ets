@@ -2,7 +2,7 @@ import { CommonConstant, TransitionMap } from 'base_common';
 import { TieVM } from '../viewmodels/TieVM';
 
 export interface SubCategoryItem {
-  id: number;
+  fid: number;
   name: ResourceStr
 }
 
