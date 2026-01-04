@@ -39,9 +39,9 @@ struct PostDraft {
   private handleScroll(yOffset: number, scrollState: ScrollState) {
     if (scrollState === ScrollState.Scroll) {
       if (yOffset > CommonConstant.ScrollAnimationThreshold) {
-        this.toggleHeader(false);
-      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
         this.toggleHeader(true);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.toggleHeader(false);
       }
     }
   }
