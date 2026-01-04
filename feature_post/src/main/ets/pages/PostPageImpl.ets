@@ -210,11 +210,18 @@ export struct PostPageImpl {
                 }
 
                 Scroll() {
-                  CustomMarkdown({
-                    content: this.vm.markdownContent,
-                    controller: this.vm.markdownController
-                  })
-                    .width(CommonConstant.FullPercent)
+                  Column() {
+                    CustomMarkdown({
+                      content: this.vm.markdownContent,
+                      controller: this.vm.markdownController
+                    })
+                      .width(CommonConstant.FullPercent)
+
+                    if (!this.vm.isTabletView) {
+                      Column()
+                        .height(CommonConstant.BottomBarHeight)
+                    }
+                  }
                 }
                 .layoutWeight(1)
                 .width(CommonConstant.FullPercent)
