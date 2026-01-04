@@ -73,7 +73,7 @@ export class TieVM extends BaseVM {
     })
 
     categories.push({
-      fid: -1,
+      fid: 999,
       label: $r('app.string.TieView_category_more'),
       icon
     })
@@ -82,7 +82,7 @@ export class TieVM extends BaseVM {
   }
 
   async loadSubCategory() {
-    if (this.currentCategory === 0 || this.currentCategory === -1) {
+    if (this.currentCategory === 0 || this.currentCategory === 999) {
       this.subCategoryItems = [
         { fid: 0, name: $r('app.string.TieView_category_no_sub') },
       ];
