@@ -3,8 +3,9 @@ import { TieVM } from '../viewmodels/TieVM';
 
 export interface SortItem {
   id: number;
-  name: ResourceStr,
-  icon: Resource
+  idlist: "newreply" | "newthread" | "digest" | "life" | "hotlist";
+  name: ResourceStr;
+  icon: Resource;
 }
 
 @ComponentV2
@@ -78,6 +79,7 @@ export struct SortButton {
     .width((this.vm.isSorting || this.vm.isTabletView) ? undefined : CommonConstant.IconSizeLarge)
     .justifyContent(FlexAlign.Center)
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .constraintSize({ maxWidth: this.vm.isTabletView ? undefined : this.vm.window.windowWidth / 2 })
     .clip(true)
   }
 }

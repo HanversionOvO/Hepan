@@ -19,9 +19,36 @@ export class TieVM extends BaseVM {
     { fid: 0, name: $r('app.string.TieView_category_all') },
   ];
   @Trace sortItems: SortItem[] = [
-    { id: 0, name: "test1", icon: $r('sys.symbol.person') },
-    { id: 1, name: "test2", icon: $r('sys.symbol.person') },
-    { id: 2, name: "test3", icon: $r('sys.symbol.person') },
+    {
+      id: 0,
+      idlist: "newreply",
+      name: $r('app.string.TieView_sort_newreply'),
+      icon: $r('sys.symbol.message')
+    },
+    {
+      id: 1,
+      idlist: "newthread",
+      name: $r('app.string.TieView_sort_newthread'),
+      icon: $r('sys.symbol.edit_badge_star')
+    },
+    {
+      id: 2,
+      idlist: "digest",
+      name: $r('app.string.TieView_sort_digest'),
+      icon: $r('sys.symbol.star')
+    },
+    {
+      id: 3,
+      idlist: "life",
+      name: $r('app.string.TieView_sort_life'),
+      icon: $r('sys.symbol.life_payment')
+    },
+    {
+      id: 4,
+      idlist: "hotlist",
+      name: $r('app.string.TieView_sort_hotlist'),
+      icon: $r('sys.symbol.flame')
+    },
   ]
   @Trace isSubCategoryExpanded: boolean = false;
   @Trace isSorting: boolean = false;

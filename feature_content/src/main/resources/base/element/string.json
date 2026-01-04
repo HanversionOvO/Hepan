@@ -31,6 +31,26 @@
     {
       "name": "TieView_category_no_sub",
       "value": "该分类没有分类哦"
+    },
+    {
+      "name": "TieView_sort_newreply",
+      "value": "最新回复"
+    },
+    {
+      "name": "TieView_sort_newthread",
+      "value": "最新发表"
+    },
+    {
+      "name": "TieView_sort_digest",
+      "value": "精华展示"
+    },
+    {
+      "name": "TieView_sort_life",
+      "value": "生活信息"
+    },
+    {
+      "name": "TieView_sort_hotlist",
+      "value": "今日热门"
     }
   ]
 }
