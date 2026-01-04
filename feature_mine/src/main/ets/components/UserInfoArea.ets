@@ -130,6 +130,7 @@ export struct UserInfoArea {
         detents: [SheetSize.MEDIUM, SheetSize.LARGE], // 支持中等和全屏高度
         enableOutsideInteractive: false,
         preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+        scrollSizeMode: ScrollSizeMode.CONTINUOUS,
         backgroundColor: $r('app.color.start_window_background'),
         blurStyle: BlurStyle.BACKGROUND_THICK,
         title: {
