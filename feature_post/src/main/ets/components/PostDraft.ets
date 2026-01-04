@@ -14,6 +14,7 @@ struct PostDraft {
   @Local vm: DraftVM = VMManager.get(DraftVM, () => new DraftVM())
   @Param @Require pVM: PostPageVM;
   @Local isShowContent: boolean = false;
+  @Local isHideSave: boolean = false;
 
   onBackPress() {
     AppUtil.getUIContext()
@@ -21,6 +22,24 @@ struct PostDraft {
         () => {
           this.isShowContent = false;
         })
+  }
+
+  toggleHeader(hide: boolean) {
+    AppUtil.getUIContext()
+      .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+        () => {
+          this.isHideSave = hide;
+        })
+  }
+
+  private handleScroll(yOffset: number, scrollState: ScrollState) {
+    if (scrollState === ScrollState.Scroll) {
+      if (yOffset > CommonConstant.ScrollAnimationThreshold) {
+        this.toggleHeader(false);
+      } else if (yOffset < -CommonConstant.ScrollAnimationThreshold) {
+        this.toggleHeader(true);
+      }
+    }
   }
 
   @Builder
@@ -97,17 +116,22 @@ struct PostDraft {
       left: CommonConstant.NormalContainerLRPadding,
       right: CommonConstant.NormalContainerLRPadding
     })
-
-    GlassButton({
-      text: $r('app.string.PostPage_draft_save'),
-      symbol: $r('sys.symbol.save_fill')
+    .onDidScroll((scrollOffset, scrollState) => {
+      this.handleScroll(scrollOffset, scrollState);
     })
-      .margin({
-        bottom: this.vm.isTabletView ? CommonConstant.NormalContainerTBPadding : this.vm.window.windowBottomPadding
+
+    if (!this.isHideSave) {
+      GlassButton({
+        text: $r('app.string.PostPage_draft_save'),
+        symbol: $r('sys.symbol.save_fill')
       })
-      .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
-        .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
-      )
+        .margin({
+          bottom: this.vm.isTabletView ? CommonConstant.NormalContainerTBPadding : this.vm.window.windowBottomPadding
+        })
+        .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+          .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+        )
+    }
   }
 
   build() {
