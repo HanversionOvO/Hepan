@@ -144,7 +144,8 @@ export struct ChatPageImpl {
           }
         })
           .position({
-            bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding +
+            bottom: (this.vm.isShowFacePanel || this.vm.isShowFilePanel ? 0 : this.vm.window.windowBottomPadding) +
+            CommonConstant.NormalContainerTBPadding +
               (this.vm.isShowFacePanel || this.vm.isShowFilePanel ? this.vm.window.windowHeight * 0.4 : 0)
           })
           .zIndex(2)
