@@ -35,6 +35,7 @@ export struct ContentPageImpl {
               bgColor: Color.Transparent,
               enableGlassMode: this.isHideNavTitle ? true : false
             })
+              .transition(TransitionEffect.move(TransitionEdge.TOP))
           }
 
           if (!this.isHideTabBar) {
@@ -51,6 +52,7 @@ export struct ContentPageImpl {
                 left: CommonConstant.PageLRPadding,
                 right: CommonConstant.PageLRPadding
               })
+              .transition(TransitionEffect.move(TransitionEdge.TOP))
           }
         }
       }
