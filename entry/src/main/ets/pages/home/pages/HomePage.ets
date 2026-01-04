@@ -4,6 +4,7 @@ import { HomeNavBar } from '../components/HomeNavBar';
 import { HomePageVM } from '../viewmodels/HomePageVM';
 import { MessagePageImpl } from 'feature_message';
 import { PostPageImpl } from 'feature_post';
+import { ContentPageImpl } from 'feature_content';
 
 @Builder
 export function HomePageBuilder() {
@@ -23,7 +24,7 @@ struct HomePage {
       Stack({ alignContent: this.vm.isTabletView ? Alignment.Start : Alignment.Bottom }) {
         Tabs({ index: this.vm.currentIndex, controller: this.vm.controller }) {
           TabContent() {
-            Text("Content 1")
+            ContentPageImpl()
           }
 
           TabContent() {

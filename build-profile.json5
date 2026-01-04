@@ -72,6 +72,10 @@
     {
       "name": "feature_post",
       "srcPath": "./feature_post",
+    },
+    {
+      "name": "feature_content",
+      "srcPath": "./feature_content",
     }
   ]
 }
