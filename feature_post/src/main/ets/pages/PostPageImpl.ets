@@ -114,7 +114,10 @@ export struct PostPageImpl {
                     .color($r('sys.color.font_tertiary'))
                 }
 
-                TextArea({ placeholder: $r('app.string.PostPage_content_placeholder'), text: this.vm.markdownContent })
+                TextArea({
+                  placeholder: $r('app.string.PostPage_content_placeholder'),
+                  text: this.vm.markdownContent
+                })
                   .placeholderFont({
                     size: CommonConstant.TextSizeNormal
                   })
@@ -139,7 +142,8 @@ export struct PostPageImpl {
                         this.vm.isShowFace = false;
                         this.vm.isShowAt = false;
                         this.vm.setKeyboardInputting(true);
-                        this.vm.updateContentSelection(this.vm.markdownContent.length, this.vm.markdownContent.length);
+                        this.vm.updateContentSelection(this.vm.markdownContent.length,
+                          this.vm.markdownContent.length);
                         if (!this.vm.isTabletView) {
                           this.vm.isCategoryExpanded = false;
                         }
@@ -158,6 +162,9 @@ export struct PostPageImpl {
                   .onChange((text: string) => {
                     this.vm.markdownContent = text;
                     this.vm.updateContentSelection(text.length, text.length);
+                  })
+                  .margin({
+                    bottom: this.vm.window.windowBottomPadding
                   })
 
                 if (this.vm.isShowFace) {
