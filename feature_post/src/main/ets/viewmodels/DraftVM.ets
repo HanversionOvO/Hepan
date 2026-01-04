@@ -6,7 +6,6 @@ const TAG = 'DraftVM';
 const PREF_NAME = 'hepan_drafts_store';
 const KEY_DRAFTS = 'draft_list';
 
-// [新增] 定义用于存储的普通接口，避免 @ObservedV2 序列化问题
 export interface DraftData {
   title: string;
   content: string;
@@ -31,7 +30,6 @@ export class DraftModel {
       .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
 
-  // [新增] 从普通数据恢复数据的静态方法
   static fromData(data: DraftData): DraftModel {
     const model = new DraftModel(data.title, data.content);
     model.timeStr = data.timeStr;
@@ -49,20 +47,17 @@ export class DraftVM extends BaseVM {
     this.loadDrafts();
   }
 
-  // 加载草稿
   async loadDrafts() {
     try {
       const context = AppUtil.getContext();
       const pref = await preferences.getPreferences(context, PREF_NAME);
       const jsonStr = await pref.get(KEY_DRAFTS, '[]');
 
-      // 解析为普通对象数组
       const rawList = JSON.parse(jsonStr as string) as DraftData[];
 
-      // 转换为 Observed 对象
       if (Array.isArray(rawList)) {
         this.draftList = rawList.map(item => DraftModel.fromData(item));
-        // 按时间倒序
+
         this.draftList.sort((a, b) => b.timestamp - a.timestamp);
       }
     } catch (e) {
@@ -74,7 +69,7 @@ export class DraftVM extends BaseVM {
   async saveDraft(title: string, content: string): Promise<boolean> {
     try {
       const newDraft = new DraftModel(title, content);
-      this.draftList.unshift(newDraft); // 添加到头部
+      this.draftList.unshift(newDraft);
       await this.persist();
       return true;
     } catch (e) {
@@ -91,7 +86,6 @@ export class DraftVM extends BaseVM {
     }
   }
 
-  // 持久化到 Preferences
   private async persist() {
     try {
       const context = AppUtil.getContext();

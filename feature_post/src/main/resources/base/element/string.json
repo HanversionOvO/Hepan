@@ -83,6 +83,26 @@
     {
       "name": "PostPage_draft_save",
       "value": "保存当前内容为草稿"
+    },
+    {
+      "name": "PostPage_draft_no_title",
+      "value": "无标题"
+    },
+    {
+      "name": "PostPage_draft_no_content",
+      "value": "无内容"
+    },
+    {
+      "name": "PostPage_draft_use",
+      "value": "使用此内容"
+    },
+    {
+      "name": "PostPage_draft_no_draft",
+      "value": "暂无草稿"
+    },
+    {
+      "name": "PostPage_draft_no_title_content",
+      "value": "标题和内容不能同时为空"
     }
   ]
 }
