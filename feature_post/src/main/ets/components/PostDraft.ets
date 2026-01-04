@@ -46,7 +46,6 @@ struct PostDraft {
     }
   }
 
-  // [新增] 侧滑删除按钮的 Builder
   @Builder
   DeleteAction(item: DraftModel) {
     Row() {

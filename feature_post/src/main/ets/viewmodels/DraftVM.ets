@@ -1,10 +1,18 @@
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { BaseVM } from 'base_common';
 import { preferences } from '@kit.ArkData';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
 
 const TAG = 'DraftVM';
 const PREF_NAME = 'hepan_drafts_store';
 const KEY_DRAFTS = 'draft_list';
+
+// [新增] 定义用于存储的普通接口，避免 @ObservedV2 序列化问题
+export interface DraftData {
+  title: string;
+  content: string;
+  timeStr: string;
+  timestamp: number;
+}
 
 @ObservedV2
 export class DraftModel {
@@ -17,11 +25,18 @@ export class DraftModel {
     this.title = title;
     this.content = content;
     this.timestamp = new Date().getTime();
-    // 简单的日期格式化
     const date = new Date(this.timestamp);
     this.timeStr = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()
       .toString()
       .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  }
+
+  // [新增] 从普通数据恢复数据的静态方法
+  static fromData(data: DraftData): DraftModel {
+    const model = new DraftModel(data.title, data.content);
+    model.timeStr = data.timeStr;
+    model.timestamp = data.timestamp;
+    return model;
   }
 }
 
@@ -40,17 +55,16 @@ export class DraftVM extends BaseVM {
       const context = AppUtil.getContext();
       const pref = await preferences.getPreferences(context, PREF_NAME);
       const jsonStr = await pref.get(KEY_DRAFTS, '[]');
-      const rawList = JSON.parse(jsonStr as string) as DraftModel[];
+
+      // 解析为普通对象数组
+      const rawList = JSON.parse(jsonStr as string) as DraftData[];
 
       // 转换为 Observed 对象
-      this.draftList = rawList.map(item => {
-        const model = new DraftModel(item.title, item.content);
-        model.timeStr = item.timeStr;
-        model.timestamp = item.timestamp;
-        return model;
-      });
-      // 按时间倒序
-      this.draftList.sort((a, b) => b.timestamp - a.timestamp);
+      if (Array.isArray(rawList)) {
+        this.draftList = rawList.map(item => DraftModel.fromData(item));
+        // 按时间倒序
+        this.draftList.sort((a, b) => b.timestamp - a.timestamp);
+      }
     } catch (e) {
       LogUtil.error(TAG, 'Load drafts failed:', e);
     }
@@ -79,9 +93,21 @@ export class DraftVM extends BaseVM {
 
   // 持久化到 Preferences
   private async persist() {
-    const context = AppUtil.getContext();
-    const pref = await preferences.getPreferences(context, PREF_NAME);
-    await pref.put(KEY_DRAFTS, JSON.stringify(this.draftList));
-    await pref.flush();
+    try {
+      const context = AppUtil.getContext();
+      const pref = await preferences.getPreferences(context, PREF_NAME);
+
+      const dataToSave: DraftData[] = this.draftList.map(item => ({
+        title: item.title,
+        content: item.content,
+        timeStr: item.timeStr,
+        timestamp: item.timestamp
+      } as DraftData));
+
+      await pref.put(KEY_DRAFTS, JSON.stringify(dataToSave));
+      await pref.flush();
+    } catch (e) {
+      LogUtil.error(TAG, 'Persist drafts failed:', e);
+    }
   }
 }
