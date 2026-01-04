@@ -70,6 +70,7 @@ export struct CustomNavTitle {
           color: Color.Transparent
         }
       )
+      .hitTestBehavior(HitTestMode.Transparent)
 
       Blank()
         .layoutWeight(1)
@@ -94,5 +95,6 @@ export struct CustomNavTitle {
       top: this.vm.window.windowTopPadding,
     })
     .animation({ duration: CommonConstant.AnimationDurationNormal })
+    .hitTestBehavior(HitTestMode.Transparent)
   }
 }

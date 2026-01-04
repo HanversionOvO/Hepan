@@ -57,6 +57,7 @@ export struct ContentPageImpl {
                 .combine(TransitionEffect.move(TransitionEdge.START)))
           }
         }
+        .hitTestBehavior(HitTestMode.Transparent)
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
