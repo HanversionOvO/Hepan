@@ -1,19 +1,12 @@
-import { AppUtil } from '@pura/harmony-utils';
-import { CommonConstant, ForumTieSummary, RouterMap, RouterUtil, VMManager } from 'base_common';
+import { CommonConstant, ForumTieSummary, VMManager } from 'base_common';
 import {
-  CollapsibleCoordinator,
-  CustomTabBar,
-  FloatButton,
-  LoneTakeAnimationsTransition,
-  LongTakeTransitionParam
+  CollapsibleCoordinator, CustomTabBar, FloatButton
 } from 'base_ui';
 import { SortButton } from '../components/SortButton';
 import { SubCategoryButton } from '../components/SubCategoryButton';
 import { SubCategoryPanel } from '../components/SubCategoryPanel';
 import { TieCard } from '../components/TieCard';
 import { TieVM } from '../viewmodels/TieVM';
-import { curves } from '@kit.ArkUI';
-import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
 
 const TAG = '[TieView]: ';
 
@@ -44,31 +37,7 @@ export struct TieView {
             })
               .id(tie.thread_id.toString())
               .onClick(() => {
-                let options: LongTakeTransitionOptions = {
-                  onEnterTransitionStart: () => {
-                    this.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-                      this.vm.pageScale = 0.8;
-                    })
-                  },
-                  onBackTransitionStart: () => {
-                    AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-                      this.vm.pageScale = 1.0;
-                    })
-                  }
-                };
-
-                let longTakeTransitionParam: LongTakeTransitionParam | undefined =
-                  LoneTakeAnimationsTransition.generateLongTakeParam(this.getUIContext(),
-                    tie.thread_id.toString(), CommonConstant.RadiusLarge, options);
-
-                const params: Record<string, Object> = {};
-
-                if (longTakeTransitionParam) {
-                  let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
-                  params["transition"] = transitionParam;
-                }
-
-                RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
+                this.vm.enterDetailPage(tie.thread_id.toString(), this.getUIContext());
               })
           }
           .width(CommonConstant.FullPercent)
