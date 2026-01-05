@@ -13,7 +13,7 @@ export struct TieDetailComment {
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor([$r('sys.color.font_tertiary')])
 
-        Text("说点什么吧...")
+        Text($r('app.string.TieContentPage_say'))
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor($r('sys.color.font_tertiary'))
       }

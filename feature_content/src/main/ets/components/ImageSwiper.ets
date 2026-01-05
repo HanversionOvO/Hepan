@@ -6,7 +6,7 @@ const BASE_URL = 'https://bbs.uestc.edu.cn'
 @ComponentV2
 export struct ImageSwiper {
   @Param @Require vm: TieContentPageVM;
-  @Local swiperHeight: number = 300;
+  @Param @Require swiperHeight: number;
 
   build() {
     Stack() {

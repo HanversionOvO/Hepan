@@ -166,7 +166,7 @@ export class ForumApi {
   }
 
   public static async getForumDetail(tid: number, page: number = 1): Promise<TieDetail> {
-    const path: string = `/_/post/list?thread_id=${tid}&page=${page}&forum_details=1`
+    const path: string = `/_/post/list?thread_id=${tid}&page=${page}&thread_details=1&forum_details=1`
 
     const response = await ApiClient.getInstance().request<BaseResponse<TieDetail>>({
       path: path,

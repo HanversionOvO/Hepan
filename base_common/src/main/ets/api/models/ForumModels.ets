@@ -165,13 +165,13 @@ export interface TieRow {
   attachments?: SummaryAttachments[];
   author: string;
   author_id: number;
-
+  author_details: TieAuthor;
 }
 
 export interface TieAuthor {
   group_id: number;
   level_id: number;
-  group_title: string;
+  group_title?: string;
   group_subtitle: string;
   group_icon: string;
   ext_credits: Record<string, number>;

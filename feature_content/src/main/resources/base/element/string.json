@@ -67,6 +67,26 @@
     {
       "name": "TieContentPage_subscribe",
       "value": "加为好友"
+    },
+    {
+      "name": "TieContentPage_say",
+      "value": "好言一句三冬暖"
+    },
+    {
+      "name": "TieContentPage_comment_num",
+      "value": "条评论"
+    },
+    {
+      "name": "TieContentPage_comment_card_author",
+      "value": "楼主"
+    },
+    {
+      "name": "TieContentPage_comment_floor",
+      "value": "楼"
+    },
+    {
+      "name": "TieContentPage_comment_reply",
+      "value": "回复"
     }
   ]
 }

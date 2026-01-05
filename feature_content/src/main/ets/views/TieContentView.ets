@@ -1,16 +1,20 @@
-import { CommonConstant, TransitionMap } from 'base_common';
-import { CustomFloatNavTitle, CustomMarkdown } from 'base_ui';
+import { CommonConstant, TieRow, TransitionMap } from 'base_common';
+import { CustomFloatNavTitle, CustomMarkdown, CustomTabBar } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImageSwiper } from '../components/ImageSwiper';
 import { UserInfoArea } from '../components/UserInfoArea';
 import { TieDetailFooter } from '../components/TieDetailFooter';
 import { TieDetailComment } from '../components/TieDetailComment';
+import { ResUtil } from '@pura/harmony-utils';
+import { CommentCard } from '../components/CommentCard';
+import { ImagePlacer } from '../components/ImagePlacer';
 
 @ComponentV2
 export struct TieContentView {
   @Param @Require vm: TieContentPageVM;
   @Local sideNavWidth: number = 380;
+  @Local swiperHeight: number = 300;
 
   @Builder
   TieTitle(color: ResourceColor, isNavBar: boolean) {
@@ -78,6 +82,96 @@ export struct TieContentView {
     .width(CommonConstant.FullPercent)
   }
 
+  @Builder
+  CommentContent() {
+    Stack({ alignContent: Alignment.Top }) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+        if (!this.vm.isTabletView) {
+          Divider()
+            .color($r('sys.color.font_tertiary'))
+            .opacity(0.3)
+            .strokeWidth(CommonConstant.BorderSizeLarge)
+            .margin({
+              top: CommonConstant.NormalContainerInnerPadding,
+              bottom: CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding
+            })
+        } else {
+          Column()
+            .width(CommonConstant.FullPercent)
+            .height(this.vm.window.windowTopPadding + CommonConstant.NormalContainerInnerPadding)
+        }
+
+        Flex({
+          direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.Column,
+          justifyContent: this.vm.isTabletView ? FlexAlign.SpaceBetween : undefined,
+          alignItems: ItemAlign.Center,
+          space: {
+            main: this.vm.isTabletView ? LengthMetrics.vp(0) :
+              LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
+          }
+        }) {
+
+          Text(this.vm.tieDetail?.thread.replies +
+          ResUtil.getStringSync($r('app.string.TieContentPage_comment_num')))
+            .fontSize(CommonConstant.TextSizeLarge)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('sys.color.font_secondary'))
+            .layoutWeight(this.vm.isTabletView ? 1 : "auto")
+            .width(this.vm.isTabletView ? "auto" : "100%")
+
+          CustomTabBar({
+            vm: this.vm,
+            tabItems: this.vm.sortMethods,
+            currentIndex: this.vm.currentSort,
+            changeTab: (index: number) => {
+              // this.vm.changeTab(index);
+            },
+            alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
+            isGlassStyle: true,
+            isMax: false
+          })
+        }
+        .width(CommonConstant.FullPercent)
+
+        List({ space: CommonConstant.NormalContainerInnerPadding }) {
+          ForEach(this.vm.tieDetail?.rows, (comment: TieRow, index: number) => {
+            if (index > 0) {
+              ListItem() {
+                CommentCard({
+                  thread: this.vm.tieDetail?.thread,
+                  comment
+                })
+              }
+            }
+          }, (comment: TieRow) => comment.post_id.toString())
+
+          ListItem() {
+            Text("- THE END -")
+              .width(CommonConstant.FullPercent)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .textAlign(TextAlign.Center)
+              .padding({
+                bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
+              })
+          }
+
+        }
+        .width(CommonConstant.FullPercent)
+        .layoutWeight(1)
+        .scrollBar(BarState.Off)
+        .nestedScroll({
+          scrollForward: NestedScrollMode.PARENT_FIRST,
+          scrollBackward: NestedScrollMode.SELF_FIRST,
+        })
+      }
+      .padding({
+        left: CommonConstant.PageLRPadding,
+        right: CommonConstant.PageLRPadding,
+      })
+    }
+    .width(CommonConstant.FullPercent)
+  }
+
   build() {
     Refresh({ refreshing: $$this.vm.isRefreshingDetail }) {
       Stack({ alignContent: Alignment.Top }) {
@@ -109,8 +203,10 @@ export struct TieContentView {
               Scroll(this.vm.detailScroller) {
                 Column() {
                   if (this.vm.tieSummary?.summary_attachments) {
-                    ImageSwiper({ vm: this.vm })
+                    ImageSwiper({ vm: this.vm, swiperHeight: this.swiperHeight })
                       .geometryTransition(TransitionMap.TieDetailImages)
+                  } else {
+                    ImagePlacer({ vm: this.vm, swiperHeight: this.swiperHeight })
                   }
                   this.TieDetailContent()
                 }
@@ -126,7 +222,7 @@ export struct TieContentView {
               })
               .onDidScroll(() => {
                 if (this.vm.isTabletView) {
-                  // this.handleScroll();
+                  this.vm.handleScroll(this.swiperHeight);
                 }
               })
               .onScroll(() => {
@@ -143,7 +239,7 @@ export struct TieContentView {
 
             Scroll(this.vm.commentScroller) {
               Column() {
-                // this.CommentContent()
+                this.CommentContent()
               }
               .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
               .justifyContent(FlexAlign.Start)
@@ -164,7 +260,7 @@ export struct TieContentView {
         .scrollBar(BarState.Off)
         .onDidScroll(() => {
           if (!this.vm.isTabletView) {
-            // this.handleScroll();
+            this.vm.handleScroll(this.swiperHeight);
           }
         })
 
