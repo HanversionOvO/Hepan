@@ -20,7 +20,7 @@ export struct CustomFloatNavTitle {
   }
 
   build() {
-    Row() {
+    Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       FloatButton({
         isFloating: this.isFloating,
         floatIconColor: this.iconColor ?? this.iconColor
@@ -30,7 +30,10 @@ export struct CustomFloatNavTitle {
         })
 
       if (!this.isFloating) {
-        this.content();
+        Row() {
+          this.content();
+        }
+        .layoutWeight(1)
       }
 
       if (!this.buttons && this.isContentCenter) {
