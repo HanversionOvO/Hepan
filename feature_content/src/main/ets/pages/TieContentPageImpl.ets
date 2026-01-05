@@ -1,6 +1,6 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, ForumTieSummary } from 'base_common';
 import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui';
-import { TieContentPageVM } from '../views/TieContentPageVM';
+import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @ComponentV2
 export struct TieContentPageImpl {
@@ -35,7 +35,7 @@ export struct TieContentPageImpl {
     .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
       this.vm.longTakeSession.setNewSize(newValue);
     })
-    .onReady((navDestContext: NavDestinationContext) => {
+    .onReady(async (navDestContext: NavDestinationContext) => {
       let params = navDestContext.pathInfo?.param as Record<string, Object>;
       if (params) {
         if (params["transition"]) {
@@ -46,6 +46,12 @@ export struct TieContentPageImpl {
             },
           });
         }
+
+        if (params["tieSummary"]) {
+          this.vm.tieSummary = params["tieSummary"] as ForumTieSummary;
+        }
+
+        await this.vm.loadData();
       }
     })
   }

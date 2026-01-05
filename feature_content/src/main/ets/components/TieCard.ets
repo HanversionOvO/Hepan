@@ -1,5 +1,5 @@
-import { RandomUtil } from '@pura/harmony-utils';
-import { CommonConstant, ForumTieSummary, UserAvatarUtil } from 'base_common';
+import { RandomUtil, ResUtil } from '@pura/harmony-utils';
+import { CommonConstant, DateUtil, ForumTieSummary, UserAvatarUtil } from 'base_common';
 
 const BASE_URL: string = 'https://bbs.uestc.edu.cn';
 
@@ -188,14 +188,24 @@ export struct TieCard {
         .alignItems(VerticalAlign.Center)
 
         // 标签栏
-        Row() {
-          this.SectionTag()
+        Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+          Row() {
+            this.SectionTag()
 
-          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-            this.IconText($r('sys.symbol.message'), this.formatNumber(this.tie.replies))
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+              this.IconText($r('sys.symbol.message'), this.formatNumber(this.tie.replies))
+            }
           }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .width(CommonConstant.FullPercent)
+
+          Text(ResUtil.getStringSync($r('app.string.TieView_card_pub_time')) + " " +
+          DateUtil.getRelativeTime(this.tie.dateline))
+            .width(CommonConstant.FullPercent)
+            .textAlign(TextAlign.End)
+            .fontColor($r('sys.color.font_tertiary'))
+            .fontSize(CommonConstant.TextSizeTiny)
         }
-        .justifyContent(FlexAlign.SpaceBetween)
         .width(CommonConstant.FullPercent)
       }
       .padding(CommonConstant.NormalContainerInnerPadding)

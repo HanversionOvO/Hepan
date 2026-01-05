@@ -37,7 +37,7 @@ export struct TieView {
             })
               .id(tie.thread_id.toString())
               .onClick(() => {
-                this.vm.enterDetailPage(tie.thread_id.toString(), this.getUIContext());
+                this.vm.enterDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
               })
           }
           .width(CommonConstant.FullPercent)

@@ -102,3 +102,86 @@ export interface ForumTieSummary {
   replies: number;
   label: string;
 }
+
+export interface TieDetail {
+  total: number;
+  page_size: number;
+  page: number;
+  thread: TieThread;
+  rows: TieRow[];
+}
+
+export interface TieThread {
+  thread_id: number;
+  forum_id: number;
+  type_id: number;
+  author: string;
+  author_id: number;
+  subject: string;
+  dateline: number;
+  last_post: number;
+  last_poster: string;
+  views: number;
+  replies: number;
+  display_order: number;
+  is_rated: number;
+  special: number;
+  attachment: number;
+  is_moderated: number,
+  has_stick_reply: number,
+  is_closed: number,
+  recommends: number,
+  recommend_add: number,
+  recommend_sub: number,
+  heats: number,
+  status: number,
+  favorite_times: number,
+  share_times: number,
+  stamp: number,
+  icon: number,
+  cover: number,
+  max_position: number,
+  comments: number,
+  can_reply: boolean
+}
+
+export interface TieRow {
+  post_id: number;
+  forum_id: number;
+  thread_id: number;
+  position: number;
+  is_first: number;
+  subject: string;
+  support: number,
+  oppose: number;
+  message: string;
+  dateline: number;
+  format: number;
+  usesig: number;
+  smileyoff: number;
+  parseurloff: number;
+  status: number;
+  attachments?: SummaryAttachments[];
+  author: string;
+  author_id: number;
+
+}
+
+export interface TieAuthor {
+  group_id: number;
+  level_id: number;
+  group_title: string;
+  group_subtitle: string;
+  group_icon: string;
+  ext_credits: Record<string, number>;
+  posts: number;
+  digests: number;
+  medals: number[];
+  signature: string;
+  signature_format: string;
+  custom_title: string;
+  online_time: number;
+  last_visit: number;
+  credits: number;
+  register_time: number;
+}

@@ -59,6 +59,10 @@
     {
       "name": "TieView_sort_allvisits",
       "value": "最热主题"
+    },
+    {
+      "name": "TieView_card_pub_time",
+      "value": "发布于"
     }
   ]
 }

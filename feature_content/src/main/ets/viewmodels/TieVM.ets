@@ -278,7 +278,6 @@ export class TieVM extends BaseVM {
 
     try {
       const currentSortItem = this.sortItems[this.currentSort];
-      // FIX: 显式指定类型为 SortItem['idlist']，避免使用 any，同时处理 undefined 的情况
       const idlist: TieSortType = currentSortItem ? currentSortItem.idlist : "newreply";
 
       const data = await ForumApi.getForumTie(idlist, this.page);
@@ -304,7 +303,7 @@ export class TieVM extends BaseVM {
     this.loadTies(false);
   }
 
-  enterDetailPage(tid: string, context: UIContext) {
+  enterDetailPage(tid: string, context: UIContext, tieSummary: ForumTieSummary) {
     let options: LongTakeTransitionOptions = {
       onEnterTransitionStart: () => {
         context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
@@ -320,7 +319,7 @@ export class TieVM extends BaseVM {
 
     let longTakeTransitionParam: LongTakeTransitionParam | undefined =
       LoneTakeAnimationsTransition.generateLongTakeParam(context,
-       tid, CommonConstant.RadiusLarge, options);
+        tid, CommonConstant.RadiusLarge, options);
 
     const params: Record<string, Object> = {};
 
@@ -328,6 +327,8 @@ export class TieVM extends BaseVM {
       let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
       params["transition"] = transitionParam;
     }
+
+    params["tieSummary"] = tieSummary;
 
     RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }

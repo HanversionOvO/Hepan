@@ -10,7 +10,8 @@ import {
   NewThreadRequest,
   NewThreadResponse,
   PostCategoryGroup,
-  PostCategoryItem
+  PostCategoryItem,
+  TieDetail
 } from './models/ForumModels';
 
 const TAG = '[ForumApi]: ';
@@ -157,6 +158,26 @@ export class ForumApi {
     if (response.status === 200 && response.data.code === 0 && response.data.data) {
       const ties: ForumTieSummary[] = response.data.data[idlist] as ForumTieSummary[];
       return ties;
+    } else {
+      const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getForumDetail(tid: number, page: number = 1): Promise<TieDetail> {
+    const path: string = `/_/post/list?thread_id=${tid}&page=${page}`
+
+    const response = await ApiClient.getInstance().request<BaseResponse<TieDetail>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true,
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      const tieDetail: TieDetail = response.data.data;
+      return tieDetail;
     } else {
       const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
