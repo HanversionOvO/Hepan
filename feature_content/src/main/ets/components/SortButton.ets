@@ -1,9 +1,11 @@
 import { CommonConstant } from 'base_common';
 import { TieVM } from '../viewmodels/TieVM';
 
+export type TieSortType = "newreply" | "newthread" | "digest" | "life" | "hotlist" | "allreplies" | "allvisits";
+
 export interface SortItem {
   id: number;
-  idlist: "newreply" | "newthread" | "digest" | "life" | "hotlist" | "allreplies" | "allvisits";
+  idlist: TieSortType; // 2. 这里使用定义好的类型
   name: ResourceStr;
   icon: Resource;
 }

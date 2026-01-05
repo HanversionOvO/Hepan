@@ -6,6 +6,7 @@ const BASE_URL: string = 'https://bbs.uestc.edu.cn';
 @ComponentV2
 export struct TieCard {
   @Param @Require tie: ForumTieSummary;
+  @Param forumName: string = ''; // 3、接收分类名称
   @Local scaleVal: number = 1.0;
 
   @Builder
@@ -89,8 +90,8 @@ export struct TieCard {
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor([$r('sys.color.font_tertiary')])
 
-      // TODO: 补全分类名称，需要通过forum_id找到名称
-      Text()
+      // 3、补全分类名称
+      Text(this.forumName)
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor($r('sys.color.font_tertiary'))
         .fontWeight(FontWeight.Medium)

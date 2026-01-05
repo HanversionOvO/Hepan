@@ -29,7 +29,10 @@ export struct TieView {
       WaterFlow() {
         ForEach(this.vm.ties, (tie: ForumTieSummary) => {
           FlowItem() {
-            TieCard()
+            TieCard({
+              tie: tie,
+              forumName: this.vm.getForumName(tie.forum_id)
+            })
               .id(tie.thread_id.toString())
           }
           .width(CommonConstant.FullPercent)
@@ -45,26 +48,15 @@ export struct TieView {
       .onWillScroll((yOffset, scrollState) => {
         onScrollAction(yOffset, scrollState);
       })
+      .onReachEnd(() => {
+        this.vm.loadNextPage();
+      })
     }
+    .onRefreshing(() => {
+      this.vm.loadTies(true);
+    })
     .width(CommonConstant.FullPercent)
     .layoutWeight(1)
-
-    // List({ space: CommonConstant.NormalContainerInnerPadding }) {
-    //   ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-    //     ListItem() {
-    //       Column()
-    //         .width(CommonConstant.FullPercent)
-    //         .height(240)
-    //         .backgroundColor($r('app.color.second_window_background'))
-    //         .borderRadius(CommonConstant.RadiusUltraLarge)
-    //     }
-    //   }, (item: number) => item.toString())
-    // }
-    // .width(CommonConstant.FullPercent)
-    // .layoutWeight(1)
-    // .onDidScroll((scrollOffset, scrollState) => {
-    //   onScrollAction(scrollOffset, scrollState);
-    // })
   }
 
   @Builder
