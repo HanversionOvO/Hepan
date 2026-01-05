@@ -18,6 +18,7 @@ export struct TieContentView {
 
   @Builder
   TieTitle(color: ResourceColor, isNavBar: boolean) {
+    // ... (保持不变)
     Text(this.vm.tieSummary?.subject)
       .fontSize(CommonConstant.TextSizeLarge)
       .fontColor(color)
@@ -35,6 +36,7 @@ export struct TieContentView {
 
   @Builder
   TieDetailContent() {
+    // ... (保持不变)
     Stack({ alignContent: Alignment.Top }) {
       Column()
         .backgroundColor($r('app.color.start_window_background'))
@@ -143,13 +145,35 @@ export struct TieContentView {
             }
           }, (comment: TieRow) => comment.post_id.toString())
 
-          Text("- THE END -")
+          // --- 修改部分：底部加载状态 ---
+          if (this.vm.isLoadingMore) {
+            Row() {
+              LoadingProgress()
+                .width(20)
+                .height(20)
+                .margin({ right: 8 })
+                .color($r('sys.color.font_secondary'))
+              Text("加载中...")
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_secondary'))
+            }
             .width(CommonConstant.FullPercent)
-            .fontSize(CommonConstant.TextSizeSmall)
-            .textAlign(TextAlign.Center)
+            .justifyContent(FlexAlign.Center)
             .padding({
+              top: CommonConstant.NormalContainerInnerPadding,
               bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
             })
+          } else {
+            Text("- THE END -")
+              .width(CommonConstant.FullPercent)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_tertiary'))
+              .textAlign(TextAlign.Center)
+              .padding({
+                bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
+              })
+          }
+          // ---------------------------
 
         }
       }
@@ -162,6 +186,7 @@ export struct TieContentView {
   }
 
   build() {
+    // 绑定刷新事件
     Refresh({ refreshing: $$this.vm.isRefreshingDetail }) {
       Stack({ alignContent: Alignment.Top }) {
         CustomFloatNavTitle({
@@ -226,6 +251,7 @@ export struct TieContentView {
             }
             .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
 
+            // 平板模式下的评论列表滚动容器
             Scroll(this.vm.commentScroller) {
               Column() {
                 this.CommentContent()
@@ -241,6 +267,14 @@ export struct TieContentView {
               scrollForward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
               scrollBackward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
             })
+            // --- 绑定平板模式下的加载更多 ---
+            .onReachEnd(() => {
+              if (this.vm.isTabletView) {
+                this.vm.loadMore();
+              }
+            })
+
+            // -----------------------------
           }
           .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
         }
@@ -252,6 +286,14 @@ export struct TieContentView {
             this.vm.handleScroll(this.swiperHeight);
           }
         })
+        // --- 绑定手机模式下的加载更多 ---
+        .onReachEnd(() => {
+          if (!this.vm.isTabletView) {
+            this.vm.loadMore();
+          }
+        })
+
+        // -----------------------------
 
         if (!this.vm.isTabletView) {
           Column() {
@@ -263,6 +305,10 @@ export struct TieContentView {
         }
       }
     }
+    .onRefreshing(() => {
+      // 触发刷新逻辑
+      this.vm.refresh();
+    })
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
     .backgroundColor($r('app.color.start_window_background'))
