@@ -12,24 +12,35 @@ export struct CustomMarkdown {
   @Param quoteTextColor: ResourceColor = $r('sys.color.font_primary');
   @Param quoteBgColor: ResourceColor = $r('app.color.tetertiary_window_background');
   @Param hyperlinkTextColor: ResourceColor = CommonConstant.ThemeColor;
+  @Param useParallel: boolean = true;
 
   aboutToAppear(): void {
-    this.controller
-      .setTitleColor(this.titleColor)
-      .setTextColor(this.textColor)
-      .setTextSize(this.textSize)
-      .setQuoteBorderColor(this.quoteBorderColor)
-      .setQuoteBackgroundColor(this.quoteBgColor)
-      .setHyperlinkTextColor(this.hyperlinkTextColor)
+    if (this.useParallel) {
+      this.controller
+        .setTitleColor(this.titleColor)
+        .setTextColor(this.textColor)
+        .setTextSize(this.textSize)
+        .setQuoteBorderColor(this.quoteBorderColor)
+        .setQuoteBackgroundColor(this.quoteBgColor)
+        .setHyperlinkTextColor(this.hyperlinkTextColor)
+    }
   }
 
   build() {
     Column() {
-      Markdown({
-        text: this.content,
-        controller: this.controller
-      })
-        .width(CommonConstant.FullPercent)
+      if (this.useParallel) {
+        Markdown({
+          text: this.content,
+          controller: this.controller
+        })
+          .width(CommonConstant.FullPercent)
+      } else {
+        Text(this.content)
+          .fontSize(this.textSize)
+          .fontColor(this.textColor)
+          .width(CommonConstant.FullPercent)
+          .wordBreak(WordBreak.BREAK_ALL)
+      }
     }
     .padding(CommonConstant.NormalContainerInnerPadding)
     .width(CommonConstant.FullPercent)

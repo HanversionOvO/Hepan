@@ -59,7 +59,8 @@ export struct CommentCard {
 
         // 评论内容
         CustomMarkdown({
-          content: this.comment.message
+          content: this.comment.message,
+          useParallel: false
         })
 
         // 底部元数据 (时间 · 地点 · 回复)
