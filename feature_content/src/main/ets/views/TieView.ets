@@ -32,6 +32,7 @@ export struct TieView {
             TieCard()
               .id(tie.thread_id.toString())
           }
+          .width(CommonConstant.FullPercent)
         }, (tie: ForumTieSummary) => tie.thread_id.toString())
       }
       .width(CommonConstant.FullPercent)
