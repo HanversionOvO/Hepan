@@ -56,15 +56,15 @@ export class TieVM extends BaseVM {
   private readonly defaultSortItems: SortItem[] = [
     {
       id: 0,
-      idlist: "newreply",
-      name: $r('app.string.TieView_sort_newreply'),
-      icon: $r('sys.symbol.message')
-    },
-    {
-      id: 1,
       idlist: "newthread",
       name: $r('app.string.TieView_sort_newthread'),
       icon: $r('sys.symbol.edit_badge_star')
+    },
+    {
+      id: 1,
+      idlist: "newreply",
+      name: $r('app.string.TieView_sort_newreply'),
+      icon: $r('sys.symbol.message')
     },
     {
       id: 2,
