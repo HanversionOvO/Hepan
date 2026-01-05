@@ -13,6 +13,7 @@ export enum RouterMap {
   USER_PROFILE = 'UserProfilePage',
   NOTICE_PAGE = 'NoticePage',
   CHAT_PAGE = 'ChatPage',
+  TIE_CONTENT_PAGE = 'TieContentPage'
 }
 
 @ObservedV2

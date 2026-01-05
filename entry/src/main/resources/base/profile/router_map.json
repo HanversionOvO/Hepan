@@ -29,6 +29,11 @@
       "name": "ChatPage",
       "pageSourceFile": "src/main/ets/pages/message/pages/ChatPage.ets",
       "buildFunction": "ChatPageBuilder"
+    },
+    {
+      "name": "TieContentPage",
+      "pageSourceFile": "src/main/ets/pages/content/pages/TieContentPage.ets",
+      "buildFunction": "TieContentPageBuilder"
     }
   ]
 }
