@@ -93,7 +93,7 @@ export struct TieContentView {
             .strokeWidth(CommonConstant.BorderSizeLarge)
             .margin({
               top: CommonConstant.NormalContainerInnerPadding,
-              bottom: CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding
+              bottom: CommonConstant.NormalContainerInnerPadding
             })
         } else {
           Column()
@@ -133,36 +133,25 @@ export struct TieContentView {
         }
         .width(CommonConstant.FullPercent)
 
-        List({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           ForEach(this.vm.tieDetail?.rows, (comment: TieRow, index: number) => {
             if (index > 0) {
-              ListItem() {
-                CommentCard({
-                  thread: this.vm.tieDetail?.thread,
-                  comment
-                })
-              }
+              CommentCard({
+                thread: this.vm.tieDetail?.thread,
+                comment
+              })
             }
           }, (comment: TieRow) => comment.post_id.toString())
 
-          ListItem() {
-            Text("- THE END -")
-              .width(CommonConstant.FullPercent)
-              .fontSize(CommonConstant.TextSizeSmall)
-              .textAlign(TextAlign.Center)
-              .padding({
-                bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
-              })
-          }
+          Text("- THE END -")
+            .width(CommonConstant.FullPercent)
+            .fontSize(CommonConstant.TextSizeSmall)
+            .textAlign(TextAlign.Center)
+            .padding({
+              bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
+            })
 
         }
-        .width(CommonConstant.FullPercent)
-        .layoutWeight(1)
-        .scrollBar(BarState.Off)
-        .nestedScroll({
-          scrollForward: NestedScrollMode.PARENT_FIRST,
-          scrollBackward: NestedScrollMode.SELF_FIRST,
-        })
       }
       .padding({
         left: CommonConstant.PageLRPadding,
