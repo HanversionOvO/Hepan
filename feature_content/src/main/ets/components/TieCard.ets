@@ -20,7 +20,12 @@ export struct TieCard {
         .fontColor($r('sys.color.font_on_primary'))
         .fontWeight(FontWeight.Medium)
     }
-    .padding(CommonConstant.SmallContainerInnerPadding)
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding / 2,
+      right: CommonConstant.SmallContainerLRPadding / 2,
+      top: CommonConstant.SmallContainerTBPadding / 2,
+      bottom: CommonConstant.SmallContainerTBPadding / 2
+    })
     .backgroundColor($r('app.color.glass_background')) // 半透明黑底
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusRound)
@@ -91,7 +96,12 @@ export struct TieCard {
         .fontColor($r('sys.color.font_tertiary'))
         .fontWeight(FontWeight.Medium)
     }
-    .padding(CommonConstant.SmallContainerInnerPadding)
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding / 2,
+      right: CommonConstant.SmallContainerLRPadding / 2,
+      top: CommonConstant.SmallContainerTBPadding / 2,
+      bottom: CommonConstant.SmallContainerTBPadding / 2
+    })
     .backgroundColor($r('app.color.start_window_background'))
     .borderRadius(CommonConstant.RadiusRound)
   }
