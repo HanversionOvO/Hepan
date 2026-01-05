@@ -6,7 +6,7 @@ const BASE_URL: string = 'https://bbs.uestc.edu.cn';
 @ComponentV2
 export struct TieCard {
   @Param @Require tie: ForumTieSummary;
-  @Param forumName: string = ''; // 3、接收分类名称
+  @Param forumName: string = '';
   @Local scaleVal: number = 1.0;
 
   @Builder
@@ -20,12 +20,7 @@ export struct TieCard {
         .fontColor($r('sys.color.font_on_primary'))
         .fontWeight(FontWeight.Medium)
     }
-    .padding({
-      left: CommonConstant.SmallContainerLRPadding,
-      right: CommonConstant.SmallContainerLRPadding,
-      top: CommonConstant.SmallContainerTBPadding,
-      bottom: CommonConstant.SmallContainerTBPadding
-    })
+    .padding(CommonConstant.SmallContainerInnerPadding)
     .backgroundColor($r('app.color.glass_background')) // 半透明黑底
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusRound)
@@ -96,12 +91,7 @@ export struct TieCard {
         .fontColor($r('sys.color.font_tertiary'))
         .fontWeight(FontWeight.Medium)
     }
-    .padding({
-      left: CommonConstant.SmallContainerLRPadding,
-      right: CommonConstant.SmallContainerLRPadding,
-      top: CommonConstant.SmallContainerTBPadding,
-      bottom: CommonConstant.SmallContainerTBPadding
-    })
+    .padding(CommonConstant.SmallContainerInnerPadding)
     .backgroundColor($r('app.color.start_window_background'))
     .borderRadius(CommonConstant.RadiusRound)
   }
@@ -160,7 +150,7 @@ export struct TieCard {
         // 底部元数据栏
         Row() {
           // 左侧：用户信息 (头像+昵称)
-          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
             // 简单模拟头像，如果有真实头像链接则使用 Image
             Image(UserAvatarUtil.getAvatarUrl(this.tie.author_id))
               .width(CommonConstant.IconSizeSmall)
@@ -168,7 +158,7 @@ export struct TieCard {
               .borderRadius(CommonConstant.RadiusRound)
 
             Text(this.tie.author)
-              .fontSize(CommonConstant.TextSizeNormal)
+              .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_secondary'))
               .fontWeight(FontWeight.Medium)
               .maxLines(1)
