@@ -37,7 +37,7 @@ export struct CommentCard {
       .alignItems(HorizontalAlign.Start)
 
       // 2. 主内容区
-      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         // 用户信息行
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
           Text(this.comment.author)

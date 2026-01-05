@@ -335,7 +335,10 @@ export struct CustomMarkdown {
         .alignItems(HorizontalAlign.Start)
       }
     }
-    .padding(CommonConstant.NormalContainerInnerPadding)
+    .padding({
+      left: this.useParallel ? CommonConstant.NormalContainerInnerPadding : 0,
+      right: this.useParallel ? CommonConstant.NormalContainerInnerPadding : 0,
+    })
     .width(CommonConstant.FullPercent)
     .alignItems(HorizontalAlign.Start)
   }

@@ -143,14 +143,23 @@ export struct TieContentView {
             })
           }, (comment: TieRow) => comment.post_id.toString())
 
-          Text("- THE END -")
-            .width(CommonConstant.FullPercent)
-            .fontSize(CommonConstant.TextSizeSmall)
-            .fontColor($r('sys.color.font_tertiary'))
-            .textAlign(TextAlign.Center)
-            .padding({
-              bottom: CommonConstant.NormalContainerTBPadding + this.vm.window.windowBottomPadding
-            })
+          if (this.vm.tieDetail?.rows.length === 1) {
+            Text("- No Content -")
+              .width(CommonConstant.FullPercent)
+              .height(CommonConstant.FullPercent)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_tertiary'))
+              .textAlign(TextAlign.Center)
+          } else {
+            Text("- THE END -")
+              .width(CommonConstant.FullPercent)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_tertiary'))
+              .textAlign(TextAlign.Center)
+              .padding({
+                bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
+              })
+          }
 
         }
       }
