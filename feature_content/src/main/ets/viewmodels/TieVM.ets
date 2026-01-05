@@ -138,16 +138,15 @@ export class TieVM extends BaseVM {
     if (this.categoryTabItems.length === 0) {
       return;
     }
-
     const fid: number = this.categoryTabItems[this.currentCategory].fid;
-
-    this.currentSort = 0;
 
     if (fid === 0) {
       this.sortItems = this.defaultSortItems;
     } else {
       this.sortItems = this.otherSortItems;
     }
+
+    this.currentSort = 0;
   }
 
   async loadData() {
@@ -159,7 +158,15 @@ export class TieVM extends BaseVM {
   changeCategory(index: number) {
     this.currentCategory = index;
     this.currentSubCategory = 0;
+    this.currentSort = 0;
+    this.isSorting = false;
     this.loadSubCategory();
     this.updateSortItems();
+  }
+
+  changeSubCategory(index: number) {
+    this.currentSubCategory = index;
+    this.currentSort = 0;
+    this.isSorting = false;
   }
 }

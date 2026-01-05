@@ -30,7 +30,7 @@ export struct SubCategoryPanel {
                 curve: CommonConstant.AnimationCurveNormal
               })
               .onClick(() => {
-                this.vm.currentSubCategory = index;
+                this.vm.changeSubCategory(index);
               })
           }
           .transition(TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 15 }))

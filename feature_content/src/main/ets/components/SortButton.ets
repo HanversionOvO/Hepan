@@ -68,6 +68,7 @@ export struct SortButton {
             this.SortItemView(this.vm.sortItems[this.vm.currentSort], this.vm.currentSort)
           }
         }
+        .key(`collapsed_${this.vm.currentCategory}_${this.vm.currentSubCategory}_${this.vm.currentSort}`)
       }
     }
     .listDirection(Axis.Horizontal)
