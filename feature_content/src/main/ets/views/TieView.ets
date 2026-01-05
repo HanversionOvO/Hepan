@@ -51,6 +51,36 @@ export struct TieView {
       .onReachEnd(() => {
         this.vm.loadNextPage();
       })
+      .priorityGesture(
+        PinchGesture()
+          .onActionUpdate((event: GestureEvent) => {
+            if (this.vm.isScaling) {
+              return;
+            }
+            if (event.scale < 0.75 && this.vm.columns < this.vm.maxColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns += 1;
+              });
+              this.vm.isScaling = true;
+            }
+
+            if (event.scale > 1.25 && this.vm.columns > this.vm.minColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns -= 1;
+              });
+              this.vm.isScaling = true;
+            }
+          })
+          .onActionEnd(() => {
+            this.vm.isScaling = false;
+          })
+      )
     }
     .onRefreshing(() => {
       this.vm.loadTies(true);

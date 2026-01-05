@@ -37,6 +37,7 @@ export class TieVM extends BaseVM {
   @Trace maxColumns: number = 3;
   // 分页与加载状态
   @Trace isLoadingTie: boolean = false;
+  @Trace isScaling: boolean = false;
   private page: number = 1;
   // 用于缓存板块ID到名称的映射，供TieCard显示使用
   private forumNameMap: Map<number, string> = new Map();
