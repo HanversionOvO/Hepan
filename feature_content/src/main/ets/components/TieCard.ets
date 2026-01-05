@@ -8,6 +8,19 @@ export struct TieCard {
   @Param @Require tie: ForumTieSummary;
   @Param forumName: string = '';
   @Local scaleVal: number = 1.0;
+  @Local minCoverHeight: number = 200;
+  @Local maxCoverHeight: number = 260;
+  @Local randomHeight: number = RandomUtil.getRandomInt(this.minCoverHeight, this.maxCoverHeight);
+
+  getCoverUrl(): string | null {
+    if (this.tie.summary_attachments && this.tie.summary_attachments.length > 0) {
+      const imgItem = this.tie.summary_attachments.find(item => item.is_image === 1);
+      if (imgItem) {
+        return BASE_URL + imgItem.thumbnail_url;
+      }
+    }
+    return null;
+  }
 
   @Builder
   ViewsBadge() {
@@ -26,7 +39,7 @@ export struct TieCard {
       top: CommonConstant.SmallContainerTBPadding / 2,
       bottom: CommonConstant.SmallContainerTBPadding / 2
     })
-    .backgroundColor($r('app.color.glass_background')) // 半透明黑底
+    .backgroundColor($r('app.color.glass_background'))
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusRound)
     .position({ left: CommonConstant.NormalContainerInnerPadding, top: CommonConstant.NormalContainerInnerPadding })
@@ -35,11 +48,13 @@ export struct TieCard {
 
   @Builder
   CoverArea() {
-    if (this.tie.summary_attachments) {
-      Image(BASE_URL + this.tie.summary_attachments[0].thumbnail_url)
+    // 封面区域逻辑
+    if (this.getCoverUrl()) {
+      Image(this.getCoverUrl())
         .width(CommonConstant.FullPercent)
-        .height(CommonConstant.FullPercent)
+        .constraintSize({ maxHeight: this.maxCoverHeight })
         .objectFit(ImageFit.Cover)
+        .align(Alignment.Top)
     } else {
       Stack() {
         Column()
@@ -52,8 +67,8 @@ export struct TieCard {
           .fontSize(CommonConstant.TextSizeUltraLarge)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('sys.color.font_on_tertiary'))
-          .position({ x: -5, y: -5 })
           .rotate({ angle: -10 })
+          .position({ left: 0, top: 0 })
           .opacity(0.4)
 
         // 居中引语
@@ -80,6 +95,8 @@ export struct TieCard {
         .height(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.Center)
       }
+      .width(CommonConstant.FullPercent)
+      .height(this.randomHeight)
     }
   }
 
@@ -90,7 +107,6 @@ export struct TieCard {
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor([$r('sys.color.font_tertiary')])
 
-      // 3、补全分类名称
       Text(this.forumName)
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor($r('sys.color.font_tertiary'))
@@ -106,7 +122,6 @@ export struct TieCard {
     .borderRadius(CommonConstant.RadiusRound)
   }
 
-  // === 4. 底部小图标文字 ===
   @Builder
   IconText(icon: Resource, text: string) {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -121,21 +136,16 @@ export struct TieCard {
 
   build() {
     Column() {
-      // 1. 顶部视觉区 (封面)
-      // 使用 Stack 包裹封面和角标
       Stack({ alignContent: Alignment.TopStart }) {
         this.CoverArea()
         this.ViewsBadge()
       }
       .width(CommonConstant.FullPercent)
-      .height(RandomUtil.getRandomInt(240, 340)) // 核心：使用数据源中的随机高度来实现瀑布流效果
       .clip(true)
       .backgroundColor($r('app.color.second_window_background'))
 
-      // 2. 底部详细信息区
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        // 标题 (如果有封面图，标题显示在下方；如果是纯色背景，标题已经在上面显示了，这里可以不显示或显示摘要)
-        if (this.tie.summary_attachments) {
+        if (this.getCoverUrl()) {
           Text(this.tie.subject)
             .fontSize(CommonConstant.TextSizeNormal)
             .fontWeight(FontWeight.Bold)
@@ -146,7 +156,6 @@ export struct TieCard {
             .textAlign(TextAlign.Start)
             .width(CommonConstant.FullPercent)
         } else {
-          // 如果是纯色海报模式，下方可以显示具体内容摘要
           Text(this.tie.summary)
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor($r('sys.color.font_secondary'))
@@ -157,11 +166,8 @@ export struct TieCard {
             .width(CommonConstant.FullPercent)
         }
 
-        // 底部元数据栏
         Row() {
-          // 左侧：用户信息 (头像+昵称)
-          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-            // 简单模拟头像，如果有真实头像链接则使用 Image
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
             Image(UserAvatarUtil.getAvatarUrl(this.tie.author_id))
               .width(CommonConstant.IconSizeSmall)
               .height(CommonConstant.IconSizeSmall)
@@ -192,12 +198,11 @@ export struct TieCard {
         .justifyContent(FlexAlign.SpaceBetween)
         .width(CommonConstant.FullPercent)
       }
-      .padding(CommonConstant.NormalContainerInnerPadding) // 卡片内容内边距
+      .padding(CommonConstant.NormalContainerInnerPadding)
     }
     .width(CommonConstant.FullPercent)
-    // === 核心样式 ===
     .backgroundColor($r('app.color.second_window_background'))
-    .borderRadius(CommonConstant.RadiusLarge) // 圆角
+    .borderRadius(CommonConstant.RadiusLarge)
     .clip(true)
     .scale({ x: this.scaleVal, y: this.scaleVal })
     .animation({
@@ -207,8 +212,7 @@ export struct TieCard {
     .onTouch((e) => {
       if (e.type === TouchType.Down) {
         this.scaleVal = 0.95;
-      } else if (e.type === TouchType.Up ||
-        e.type === TouchType.Cancel) {
+      } else if (e.type === TouchType.Up || e.type === TouchType.Cancel) {
         this.scaleVal = 1.0;
       }
     })
