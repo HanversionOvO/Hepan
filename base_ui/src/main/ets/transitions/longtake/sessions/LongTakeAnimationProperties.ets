@@ -5,15 +5,14 @@ import { WindowUtils } from '../utils/WindowUtils';
 import { CustomTransition } from '../utils/CustomNavigationUtils';
 import { LongTakeSessionOptions } from '../utils/Options';
 import { curves } from '@kit.ArkUI';
-import { CommonConstant } from 'base_common';
 
 const TAG: string = 'LongTakeSession';
 
 const INIT_BG_COLOR = '#00000000';
 
-const DEFAULT_FINAL_BG_COLOR = $r('app.color.start_window_background');
+const DEFAULT_FINAL_BG_COLOR = '#33000000';
 
-const DEFAULT_SCREEN_RADIUS = CommonConstant.RadiusLarge;
+const DEFAULT_SCREEN_RADIUS = 9;
 
 // 自定义一镜到底转场动画进行封装
 @ObservedV2

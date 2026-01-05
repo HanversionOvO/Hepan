@@ -3,6 +3,7 @@ import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.Ab
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { MessageManager, StorageManager, VMManager, WindowManager } from 'base_common';
+import { LoneTakeAnimationsTransition } from 'base_ui';
 
 const TAG = '[EntryAbility]: ';
 
@@ -30,6 +31,7 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     LogUtil.info(TAG, '%{public}s', 'Ability onWindowStageCreate');
     WindowManager.setWinConfig();
+    LoneTakeAnimationsTransition.init(windowStage);
 
     if (StorageManager.authModel.isLoggedIn) {
       LogUtil.info(TAG, 'User is logged in, starting MessageManager.');

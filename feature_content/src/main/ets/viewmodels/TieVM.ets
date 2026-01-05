@@ -2,20 +2,15 @@ import {
   BaseVM,
   BreakpointNameEnum,
   BreakpointType,
-  CommonConstant,
   ForumApi,
   ForumCategory,
   ForumTieSummary,
-  PostCategoryGroup,
-  RouterMap,
-  RouterUtil
+  PostCategoryGroup
 } from 'base_common';
-import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
+import { CustomTabItem } from 'base_ui';
 import { SortItem, TieSortType } from '../components/SortButton';
 import { SubCategoryItem } from '../components/SubCategoryButton';
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
-import { curves } from '@kit.ArkUI';
+import { LogUtil } from '@pura/harmony-utils';
 
 const TAG = '[TieVM]: ';
 
@@ -302,33 +297,5 @@ export class TieVM extends BaseVM {
 
   loadNextPage() {
     this.loadTies(false);
-  }
-
-  enterDetailPage(tid: string) {
-    let options: LongTakeTransitionOptions = {
-      onEnterTransitionStart: () => {
-        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-          this.pageScale = 0.8;
-        })
-      },
-      onBackTransitionStart: () => {
-        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-          this.pageScale = 1.0;
-        })
-      }
-    };
-
-    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
-      LoneTakeAnimationsTransition.generateLongTakeParam(AppUtil.getUIContext(),
-        tid, CommonConstant.RadiusLarge, options);
-
-    const params: Record<string, Object> = {};
-
-    if (longTakeTransitionParam) {
-      let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
-      params["transition"] = transitionParam;
-    }
-
-    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 }

@@ -1,14 +1,33 @@
-import { VMManager } from 'base_common';
-import { LongTakeTransitionParam } from 'base_ui';
+import { CommonConstant } from 'base_common';
+import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui';
 import { TieContentPageVM } from '../views/TieContentPageVM';
 
 @ComponentV2
 export struct TieContentPageImpl {
-  @Local vm: TieContentPageVM = VMManager.get(TieContentPageVM, () => new TieContentPageVM());
+  @Local vm: TieContentPageVM = new TieContentPageVM();
+
+  @Builder
+  ContentBuilder() {
+    Column() {
+      Text("test")
+    }
+    .width(CommonConstant.FullPercent)
+    .height(CommonConstant.FullPercent)
+    .backgroundColor($r('app.color.start_window_background'))
+  }
 
   build() {
     NavDestination() {
-      Text("test")
+      if (this.vm.longTakeSession) {
+        CardLongTakeDelegate({
+          longTakeSession: this.vm.longTakeSession,
+          contentBuilder: (): void => {
+            this.ContentBuilder()
+          },
+        })
+      } else {
+        this.ContentBuilder()
+      }
     }
     .hideTitleBar(true)
     .backgroundColor(this.vm.longTakeSession.navDestinationBgColor)
@@ -16,7 +35,6 @@ export struct TieContentPageImpl {
     .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
       this.vm.longTakeSession.setNewSize(newValue);
     })
-    .backgroundColor($r('app.color.start_window_background'))
     .onReady((navDestContext: NavDestinationContext) => {
       let params = navDestContext.pathInfo?.param as Record<string, Object>;
       if (params) {

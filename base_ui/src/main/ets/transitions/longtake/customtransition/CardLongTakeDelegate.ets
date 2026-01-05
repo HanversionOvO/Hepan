@@ -29,6 +29,8 @@ export struct CardLongTakeDelegate {
     CustomTransition.getInstance().unRegisterNavParam(this.longTakeSession.getNavDestinationId());
   }
 
+
+
   @Styles
   ExitGestureStyle() {
     .gesture(

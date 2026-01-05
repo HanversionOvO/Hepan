@@ -258,7 +258,7 @@ export struct ImageLongTakeDelegate {
   }
 
   clamp (num: number, min: number, max: number): number {
-   return Math.min(Math.max(num, min), max)
+    return Math.min(Math.max(num, min), max)
   }
 
   // 双击
