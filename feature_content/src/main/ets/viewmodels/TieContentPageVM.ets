@@ -29,61 +29,12 @@ export class TieContentPageVM extends BaseVM {
   @Trace outerPageScroller: Scroller = new Scroller();
   @Trace detailScroller: Scroller = new Scroller();
   @Trace commentScroller: Scroller = new Scroller();
-  @Trace isLoadingMore: boolean = false;
-  @Trace hasMore: boolean = true;
 
-  async loadData(isLoadMore: boolean = false) {
-    if (!this.tieSummary) {
-      return;
-    }
+  async loadData() {
+    if (this.tieSummary) {
+      this.tieDetail = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
 
-    // 防止重复加载
-    if (this.isLoading || this.isLoadingMore) {
-      return;
-    }
-
-    if (isLoadMore) {
-      this.isLoadingMore = true;
-    } else {
-      this.isRefreshingDetail = true;
-      this.currentPage = 1;
-      this.hasMore = true;
-    }
-
-    try {
-      const result = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
-
-      if (isLoadMore) {
-        if (this.tieDetail && result.rows && result.rows.length > 0) {
-          this.tieDetail.rows.push(...result.rows);
-          this.currentPage++;
-        } else {
-          this.hasMore = false;
-        }
-      } else {
-        this.tieDetail = result;
-        if (!result.rows || result.rows.length === 0) {
-          this.hasMore = false;
-        } else {
-          this.currentPage++; // 准备加载下一页
-        }
-      }
-      LogUtil.debug(TAG, `Load data success. Page: ${this.currentPage}, LoadMore: ${isLoadMore}`);
-    } catch (error) {
-      LogUtil.error(TAG, `Load data failed: ${JSON.stringify(error)}`);
-    } finally {
-      this.isRefreshingDetail = false;
-      this.isLoadingMore = false;
-    }
-  }
-
-  async onRefresh() {
-    await this.loadData(false);
-  }
-
-  async onLoadMore() {
-    if (this.hasMore && !this.isLoadingMore && !this.isRefreshingDetail) {
-      await this.loadData(true);
+      LogUtil.debug(TAG, JSON.stringify(this.tieDetail))
     }
   }
 

@@ -163,9 +163,6 @@ export struct TieContentView {
           scrollForward: NestedScrollMode.PARENT_FIRST,
           scrollBackward: NestedScrollMode.SELF_FIRST,
         })
-        .onReachEnd(() => {
-          this.vm.onLoadMore();
-        })
       }
       .padding({
         left: CommonConstant.PageLRPadding,
@@ -255,11 +252,6 @@ export struct TieContentView {
               scrollForward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
               scrollBackward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
             })
-            .onScrollEdge((edge) => {
-              if (this.vm.isTabletView && edge === Edge.Bottom) {
-                this.vm.onLoadMore();
-              }
-            })
           }
           .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
         }
@@ -269,11 +261,6 @@ export struct TieContentView {
         .onDidScroll(() => {
           if (!this.vm.isTabletView) {
             this.vm.handleScroll(this.swiperHeight);
-          }
-        })
-        .onScrollEdge((edge) => {
-          if (!this.vm.isTabletView && edge === Edge.Bottom) {
-            this.vm.onLoadMore();
           }
         })
 
@@ -290,8 +277,5 @@ export struct TieContentView {
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
     .backgroundColor($r('app.color.start_window_background'))
-    .onRefreshing(() => {
-      this.vm.onRefresh();
-    })
   }
 }
