@@ -6,6 +6,7 @@ import {
   AtUser,
   ForumCategory,
   ForumDetails,
+  ForumTieSummary,
   NewThreadRequest,
   NewThreadResponse,
   PostCategoryGroup,
@@ -135,6 +136,27 @@ export class ForumApi {
 
     if (response.status === 200 && response.data.code === 0) {
       return response.data.data;
+    } else {
+      const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getForumTie(idlist: "newreply" | "newthread" | "digest" | "life" | "hotlist" | "allreplies" | "allvisits",
+    page: number = 1): Promise<ForumTieSummary[]> {
+    const path: string = `/_/forum/toplist?idlist=${idlist}&page=${page}`
+
+    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Object>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true,
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      const ties: ForumTieSummary[] = response.data.data[idlist] as ForumTieSummary[];
+      return ties;
     } else {
       const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);

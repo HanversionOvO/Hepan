@@ -1,9 +1,12 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CommonConstant, ForumTieSummary, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { SortButton } from '../components/SortButton';
 import { SubCategoryButton } from '../components/SubCategoryButton';
 import { SubCategoryPanel } from '../components/SubCategoryPanel';
+import { TieCard } from '../components/TieCard';
 import { TieVM } from '../viewmodels/TieVM';
+
+const TAG = '[TieView]: ';
 
 @ComponentV2
 export struct TieView {
@@ -22,22 +25,45 @@ export struct TieView {
         CommonConstant.NormalContainerInnerPadding)
     }
 
-    List({ space: CommonConstant.NormalContainerInnerPadding }) {
-      ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
-        ListItem() {
-          Column()
-            .width(CommonConstant.FullPercent)
-            .height(240)
-            .backgroundColor($r('app.color.second_window_background'))
-            .borderRadius(CommonConstant.RadiusUltraLarge)
-        }
-      }, (item: number) => item.toString())
+    Refresh({ refreshing: $$this.vm.isRefreshTie }) {
+      WaterFlow() {
+        ForEach(this.vm.ties, (tie: ForumTieSummary) => {
+          FlowItem() {
+            TieCard()
+              .id(tie.thread_id.toString())
+          }
+        }, (tie: ForumTieSummary) => tie.thread_id.toString())
+      }
+      .width(CommonConstant.FullPercent)
+      .layoutWeight(1)
+      .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .columnsGap(CommonConstant.NormalContainerInnerPadding)
+      .rowsGap(CommonConstant.NormalContainerInnerPadding)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .onWillScroll((yOffset, scrollState) => {
+        onScrollAction(yOffset, scrollState);
+      })
     }
     .width(CommonConstant.FullPercent)
     .layoutWeight(1)
-    .onDidScroll((scrollOffset, scrollState) => {
-      onScrollAction(scrollOffset, scrollState);
-    })
+
+    // List({ space: CommonConstant.NormalContainerInnerPadding }) {
+    //   ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (item: number) => {
+    //     ListItem() {
+    //       Column()
+    //         .width(CommonConstant.FullPercent)
+    //         .height(240)
+    //         .backgroundColor($r('app.color.second_window_background'))
+    //         .borderRadius(CommonConstant.RadiusUltraLarge)
+    //     }
+    //   }, (item: number) => item.toString())
+    // }
+    // .width(CommonConstant.FullPercent)
+    // .layoutWeight(1)
+    // .onDidScroll((scrollOffset, scrollState) => {
+    //   onScrollAction(scrollOffset, scrollState);
+    // })
   }
 
   @Builder

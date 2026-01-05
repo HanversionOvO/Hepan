@@ -1,4 +1,4 @@
-export { BreakPointModel, BreakpointType } from './src/main/ets/models/BreakPointModel';
+export { BreakPointModel, BreakpointType, BreakpointNameEnum } from './src/main/ets/models/BreakPointModel';
 
 export { WindowModel } from './src/main/ets/models/WindowModel';
 
@@ -66,6 +66,8 @@ export { ForumCategory,
   PostCategoryGroup,
   PostCategoryItem,
   NewThreadRequest,
-  NewThreadResponse } from './src/main/ets/api/models/ForumModels';
+  NewThreadResponse,
+  SummaryAttachments,
+  ForumTieSummary } from './src/main/ets/api/models/ForumModels';
 
 export { TabIndexModel } from './src/main/ets/models/TabIndexModel';

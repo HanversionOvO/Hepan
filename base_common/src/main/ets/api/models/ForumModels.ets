@@ -70,3 +70,35 @@ export interface NewThreadResponse {
   thread_id: number;
   ext_credits_update?: Record<string, number>;
 }
+
+export interface SummaryAttachments {
+  attachment_id: number;
+  dateline: number;
+  filename: string;
+  size: number;
+  path: string;
+  description: string;
+  price: number;
+  is_image: number;
+  width: number;
+  thumb: boolean;
+  picid: number;
+  thumbnail_url: string;
+  raw_url: string;
+}
+
+export interface ForumTieSummary {
+  thread_id: number;
+  forum_id: number;
+  type_id: number;
+  author: string;
+  author_id: number;
+  subject: string;
+  summary: string;
+  summary_attachments?: SummaryAttachments[];
+  dateline: number;
+  last_post: number;
+  views: number;
+  replies: number;
+  label: string;
+}

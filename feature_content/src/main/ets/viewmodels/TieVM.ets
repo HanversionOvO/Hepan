@@ -1,4 +1,12 @@
-import { BaseVM, ForumApi, ForumCategory, PostCategoryGroup } from 'base_common';
+import {
+  BaseVM,
+  BreakpointNameEnum,
+  BreakpointType,
+  ForumApi,
+  ForumCategory,
+  ForumTieSummary,
+  PostCategoryGroup
+} from 'base_common';
 import { CustomTabItem } from 'base_ui';
 import { SortItem } from '../components/SortButton';
 import { SubCategoryItem } from '../components/SubCategoryButton';
@@ -19,8 +27,19 @@ export class TieVM extends BaseVM {
     { fid: 0, name: $r('app.string.TieView_category_all') },
   ];
   @Trace sortItems: SortItem[] = [];
+  @Trace ties: ForumTieSummary[] = [];
   @Trace isSubCategoryExpanded: boolean = false;
   @Trace isSorting: boolean = false;
+  @Trace isRefreshTie: boolean = false;
+  @Trace columns: number = 2;
+  @Trace minColumns: number = 1;
+  @Trace maxColumns: number = 3;
+
+  @Monitor("breakPoint.currentBreakPoint")
+  onBreakpointChange() {
+    this.updateGridConfig(this.breakPoint.currentBreakPoint);
+  }
+
   private readonly defaultSortItems: SortItem[] = [
     {
       id: 0,
@@ -79,6 +98,30 @@ export class TieVM extends BaseVM {
       icon: $r('sys.symbol.flame')
     }
   ];
+  private defaultColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 5
+  });
+  private minColumnsConfig = new BreakpointType({
+    sm: 1,
+    md: 2,
+    lg: 3,
+    xl: 4
+  });
+  private maxColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 4,
+    lg: 5,
+    xl: 6
+  });
+
+  updateGridConfig(bp: BreakpointNameEnum) {
+    this.columns = this.defaultColumnsConfig.getValue(bp);
+    this.minColumns = this.minColumnsConfig.getValue(bp);
+    this.maxColumns = this.maxColumnsConfig.getValue(bp);
+  }
 
   async loadCategory() {
     const result = await ForumApi.getPostCategories();
@@ -153,6 +196,7 @@ export class TieVM extends BaseVM {
     await this.loadCategory();
     this.updateSortItems();
     await this.loadSubCategory();
+    this.updateGridConfig(this.breakPoint.currentBreakPoint);
   }
 
   changeCategory(index: number) {
