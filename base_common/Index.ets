@@ -51,6 +51,8 @@ export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/e
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
 
+export { BasicDataSource } from './src/main/ets/utils/BasicDataSource';
+
 export * from './src/main/ets/api/models/MessageModels';
 
 export * from './src/main/ets/api/models/ForumModels';

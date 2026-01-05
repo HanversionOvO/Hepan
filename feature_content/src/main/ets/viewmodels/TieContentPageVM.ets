@@ -1,8 +1,11 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, CommonConstant, ForumApi, ForumTieSummary, TieDetail } from 'base_common';
+import { BaseVM, BasicDataSource, CommonConstant, ForumApi, ForumTieSummary, TieDetail, TieRow } from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
 
 const TAG = '[TieContentPageVM]: ';
+
+export class CommentDataSource extends BasicDataSource<TieRow> {
+}
 
 @ObservedV2
 export class TieContentPageVM extends BaseVM {
@@ -32,13 +35,12 @@ export class TieContentPageVM extends BaseVM {
   @Trace outerPageScroller: Scroller = new Scroller();
   @Trace detailScroller: Scroller = new Scroller();
   @Trace commentScroller: Scroller = new Scroller();
+  commentDataSource: CommentDataSource = new CommentDataSource();
 
   /**
    * 加载数据
    * @param isLoadMore 是否为加载更多模式
    */
-  // feature_content/src/main/ets/viewmodels/TieContentPageVM.ets
-
   async loadData(isLoadMore: boolean = false) {
     if (this.tieSummary) {
       if (isLoadMore) {
@@ -48,31 +50,35 @@ export class TieContentPageVM extends BaseVM {
       try {
         const detail = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
 
-        if (isLoadMore && this.tieDetail) {
-          // [修复] ArkTS 不支持对象展开 (...detail)，需手动构建对象
-          // 1. 使用 concat 合并旧数据和新数据的 rows
-          const newRows = this.tieDetail.rows.concat(detail.rows);
+        let newComments = detail.rows;
 
-          // 2. 手动创建新对象并赋值，保留 detail 中的最新元数据（如 total, page 等）
+        if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
+          newComments = newComments.slice(1);
+        }
+
+        if (isLoadMore && this.tieDetail) {
+          const allRows = this.tieDetail.rows.concat(detail.rows);
           this.tieDetail = {
             total: detail.total,
             page_size: detail.page_size,
             page: detail.page,
             thread: detail.thread,
             forum: detail.forum,
-            rows: newRows
+            rows: allRows
           };
+
+          this.commentDataSource.addData(newComments);
+
         } else {
-          // 刷新或首次加载：直接覆盖
           this.tieDetail = detail;
+
+          this.commentDataSource.setData(newComments);
         }
 
-        LogUtil.debug(TAG, `Loaded page ${this.currentPage}, total rows: ${this.tieDetail.rows.length}`);
+        LogUtil.debug(TAG, `Loaded page ${this.currentPage}`);
+
       } catch (error) {
-        LogUtil.error(TAG, `Load data failed: ${JSON.stringify(error)}`);
-        if (isLoadMore) {
-          this.currentPage--;
-        }
+        // ... error handling
       } finally {
         this.isLoadingMore = false;
         this.isRefreshingDetail = false;

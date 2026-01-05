@@ -136,13 +136,11 @@ export struct TieContentView {
         .width(CommonConstant.FullPercent)
 
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          ForEach(this.vm.tieDetail?.rows, (comment: TieRow, index: number) => {
-            if (index > 0) {
-              CommentCard({
-                thread: this.vm.tieDetail?.thread,
-                comment
-              })
-            }
+          LazyForEach(this.vm.commentDataSource, (comment: TieRow) => {
+            CommentCard({
+              thread: this.vm.tieDetail?.thread,
+              comment: comment
+            })
           }, (comment: TieRow) => comment.post_id.toString())
 
           Text("- THE END -")
