@@ -195,7 +195,6 @@ export struct TieContentView {
                 Column() {
                   if (this.vm.tieSummary?.summary_attachments) {
                     ImageSwiper({ vm: this.vm, swiperHeight: this.swiperHeight })
-                      .geometryTransition(TransitionMap.TieDetailImages)
                   } else {
                     ImagePlacer({ vm: this.vm, swiperHeight: this.swiperHeight })
                   }

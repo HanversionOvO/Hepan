@@ -55,7 +55,6 @@ export struct TieCard {
         .constraintSize({ maxHeight: this.maxCoverHeight })
         .objectFit(ImageFit.Cover)
         .align(Alignment.Top)
-        .geometryTransition(TransitionMap.TieDetailImages)
     } else {
       Stack() {
         Column()
