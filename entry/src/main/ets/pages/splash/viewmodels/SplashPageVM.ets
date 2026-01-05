@@ -6,6 +6,7 @@ const TAG = '[SplashPageVM]: ';
 @ObservedV2
 export class SplashPageVM extends BaseVM {
   @Trace countDown: number = 3;
+  @Trace isEnabled: boolean = true;
   bpUtil: BreakPointUtil | null = null;
   private timerId: number = -1;
 

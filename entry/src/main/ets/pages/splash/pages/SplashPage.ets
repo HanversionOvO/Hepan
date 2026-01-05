@@ -1,7 +1,7 @@
 import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, RouterUtil, VMManager } from 'base_common'
-import { GlassButton } from 'base_ui';
-import { SplashPageVM } from '../viewmodels/SplashPageVM'
+import { CommonConstant, RouterUtil, VMManager } from 'base_common';
+import { GlassButton, LoneTakeAnimationsTransition } from 'base_ui';
+import { SplashPageVM } from '../viewmodels/SplashPageVM';
 
 @Entry
 @ComponentV2
@@ -92,7 +92,18 @@ struct SplashPage {
     .hideNavBar(!this.vm.window.showNavigation)
     .height(CommonConstant.FullPercent)
     .width(CommonConstant.FullPercent)
+    .enabled(this.vm.isEnabled)
     .mode(NavigationMode.Stack)
     .backgroundColor($r('app.color.start_window_background'))
+    .customNavContentTransition((from: NavContentInfo, to: NavContentInfo, operation: NavigationOperation) => {
+      return LoneTakeAnimationsTransition.customNavContentTransition(from, to, operation, {
+        onTransitionStart: () => {
+          this.vm.isEnabled = false;
+        },
+        onTransitionEnd: () => {
+          this.vm.isEnabled = true;
+        }
+      });
+    })
   }
 }

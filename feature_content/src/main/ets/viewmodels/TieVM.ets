@@ -2,15 +2,20 @@ import {
   BaseVM,
   BreakpointNameEnum,
   BreakpointType,
+  CommonConstant,
   ForumApi,
   ForumCategory,
   ForumTieSummary,
-  PostCategoryGroup
+  PostCategoryGroup,
+  RouterMap,
+  RouterUtil
 } from 'base_common';
-import { CustomTabItem } from 'base_ui';
+import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
 import { SortItem, TieSortType } from '../components/SortButton';
 import { SubCategoryItem } from '../components/SubCategoryButton';
-import { LogUtil } from '@pura/harmony-utils';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
+import { curves } from '@kit.ArkUI';
 
 const TAG = '[TieVM]: ';
 
@@ -38,6 +43,7 @@ export class TieVM extends BaseVM {
   // 分页与加载状态
   @Trace isLoadingTie: boolean = false;
   @Trace isScaling: boolean = false;
+  @Trace pageScale: number = 1;
   private page: number = 1;
   // 用于缓存板块ID到名称的映射，供TieCard显示使用
   private forumNameMap: Map<number, string> = new Map();
@@ -296,5 +302,33 @@ export class TieVM extends BaseVM {
 
   loadNextPage() {
     this.loadTies(false);
+  }
+
+  enterDetailPage(tid: string) {
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.8;
+        })
+      },
+      onBackTransitionStart: () => {
+        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(AppUtil.getUIContext(),
+        tid, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+
+    if (longTakeTransitionParam) {
+      let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
+      params["transition"] = transitionParam;
+    }
+
+    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 }

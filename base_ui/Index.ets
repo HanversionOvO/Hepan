@@ -21,3 +21,5 @@ export { CustomFilePanel, CustomFilePanelItem } from './src/main/ets/components/
 export { CustomAtPanel } from './src/main/ets/components/CustomAtPanel';
 
 export { CollapsibleCoordinator } from './src/main/ets/components/CollapsibleCoordinator';
+
+export * from './src/main/ets/transitions/longtake/Index';

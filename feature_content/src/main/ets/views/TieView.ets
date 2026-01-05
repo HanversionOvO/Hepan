@@ -1,5 +1,7 @@
 import { CommonConstant, ForumTieSummary, VMManager } from 'base_common';
-import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
+import {
+  CollapsibleCoordinator, CustomTabBar, FloatButton
+} from 'base_ui';
 import { SortButton } from '../components/SortButton';
 import { SubCategoryButton } from '../components/SubCategoryButton';
 import { SubCategoryPanel } from '../components/SubCategoryPanel';
@@ -34,6 +36,9 @@ export struct TieView {
               forumName: this.vm.getForumName(tie.forum_id)
             })
               .id(tie.thread_id.toString())
+              .onClick(() => {
+                this.vm.enterDetailPage(tie.thread_id.toString());
+              })
           }
           .width(CommonConstant.FullPercent)
         }, (tie: ForumTieSummary) => tie.thread_id.toString())
@@ -149,6 +154,10 @@ export struct TieView {
       .padding({
         left: CommonConstant.PageLRPadding,
         right: CommonConstant.PageLRPadding
+      })
+      .scale({
+        x: this.vm.pageScale,
+        y: this.vm.pageScale,
       })
   }
 }
