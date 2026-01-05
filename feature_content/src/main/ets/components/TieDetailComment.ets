@@ -36,22 +36,27 @@ export struct TieDetailComment {
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         SymbolGlyph($r('sys.symbol.heart'))
           .fontColor([$r('sys.color.font_tertiary')])
-          .fontSize(CommonConstant.IconSizeNormal)
+          .fontSize(CommonConstant.IconSizeSmall)
 
         SymbolGlyph($r('sys.symbol.star'))
           .fontColor([$r('sys.color.font_tertiary')])
-          .fontSize(CommonConstant.IconSizeNormal)
+          .fontSize(CommonConstant.IconSizeSmall)
 
         SymbolGlyph($r('sys.symbol.hand_thumbsdown'))
           .fontColor([$r('sys.color.font_tertiary')])
-          .fontSize(CommonConstant.IconSizeNormal)
+          .fontSize(CommonConstant.IconSizeSmall)
       }
     }
     .width(this.vm.isTabletView ? this.sideNavWidth - CommonConstant.PageLRPadding * 2 : "92%")
     .borderRadius(CommonConstant.RadiusRound)
     .backgroundColor(Color.Transparent)
     .backgroundBlurStyle(this.vm.isTabletView && this.vm.isReachEnd ? BlurStyle.NONE : BlurStyle.BACKGROUND_ULTRA_THICK)
-    .padding(this.vm.isTabletView && this.vm.isReachEnd ? 0 : CommonConstant.SmallContainerInnerPadding)
+    .padding({
+      left: this.vm.isTabletView && this.vm.isReachEnd ? 0 : CommonConstant.SmallContainerInnerPadding,
+      right: this.vm.isTabletView && this.vm.isReachEnd ? 0 : CommonConstant.SmallContainerLRPadding,
+      top: this.vm.isTabletView && this.vm.isReachEnd ? 0 : CommonConstant.SmallContainerInnerPadding,
+      bottom: this.vm.isTabletView && this.vm.isReachEnd ? 0 : CommonConstant.SmallContainerInnerPadding
+    })
     .justifyContent(FlexAlign.SpaceBetween)
     .margin({
       bottom: this.vm.window.windowBottomPadding
