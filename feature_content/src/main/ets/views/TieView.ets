@@ -83,7 +83,7 @@ export struct TieView {
       }
       .layoutWeight(1)
 
-      if (this.isHideNavTitle && this.vm.isTabletView) {
+      if (this.isHideNavTitle) {
         FloatButton()
           .opacity(0)
           .hitTestBehavior(HitTestMode.Transparent)

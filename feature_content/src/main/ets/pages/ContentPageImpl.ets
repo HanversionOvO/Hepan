@@ -27,17 +27,15 @@ export struct ContentPageImpl {
         .layoutWeight(1)
 
         Column() {
-          if (!this.isHideNavTitle || this.vm.isTabletView) {
-            CustomNavTitle({
-              vm: this.vm,
-              title: $r('app.string.ContentPage_title'),
-              buttons: this.vm.titleButtons,
-              bgColor: Color.Transparent,
-              enableGlassMode: this.isHideNavTitle ? true : false
-            })
-              .transition(TransitionEffect.move(TransitionEdge.TOP)
-                .combine(TransitionEffect.move(TransitionEdge.START)))
-          }
+          CustomNavTitle({
+            vm: this.vm,
+            title: $r('app.string.ContentPage_title'),
+            buttons: this.vm.titleButtons,
+            bgColor: Color.Transparent,
+            enableGlassMode: this.isHideNavTitle ? true : false,
+            isHideTitle: !this.vm.isTabletView && this.isHideNavTitle
+          })
+            .transition(TransitionEffect.move(TransitionEdge.START))
 
           if (!this.isHideTabBar) {
             CustomTabBar({

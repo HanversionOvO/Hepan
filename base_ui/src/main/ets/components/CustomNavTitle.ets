@@ -15,6 +15,7 @@ export struct CustomNavTitle {
   @Param contentColor: ResourceColor = $r('sys.color.font_primary');
   @Param buttons: NavTitleButtonModel[] | undefined = undefined;
   @Param enableGlassMode: boolean = false;
+  @Param isHideTitle: boolean = false;
 
   @Builder
   titleButton(navTitleButtonModel: NavTitleButtonModel) {
@@ -40,37 +41,39 @@ export struct CustomNavTitle {
 
   build() {
     Row() {
-      Row() {
-        Text(this.title)
-          .fontSize(CommonConstant.TextSizeUltraLarge)
-          .fontColor(this.contentColor)
-          .fontWeight(FontWeight.Bolder)
-          .animation({ duration: CommonConstant.AnimationDurationNormal })
+      if (!this.isHideTitle) {
+        Row() {
+          Text(this.title)
+            .fontSize(CommonConstant.TextSizeUltraLarge)
+            .fontColor(this.contentColor)
+            .fontWeight(FontWeight.Bolder)
+            .animation({ duration: CommonConstant.AnimationDurationNormal })
+        }
+        .margin({
+          left: this.enableGlassMode ? CommonConstant.NormalContainerInnerPadding : 0
+        })
+        .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerInnerPadding * 2)
+        .alignItems(VerticalAlign.Center)
+        .padding({
+          left: CommonConstant.PageLRPadding,
+          right: CommonConstant.PageLRPadding
+        })
+        .borderRadius(CommonConstant.RadiusRound)
+        .backgroundColor(this.enableGlassMode ? $r('app.color.glass_background') : Color.Transparent)
+        .backgroundBlurStyle(this.enableGlassMode ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE)
+        .border(
+          this.enableGlassMode
+            ? {
+            width: CommonConstant.BorderSizeNormal,
+            color: $r('app.color.glass_border')
+          }
+            : {
+            width: CommonConstant.BorderSizeNormal,
+            color: Color.Transparent
+          }
+        )
+        .hitTestBehavior(HitTestMode.Transparent)
       }
-      .margin({
-        left: this.enableGlassMode ? CommonConstant.NormalContainerInnerPadding : 0
-      })
-      .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerInnerPadding * 2)
-      .alignItems(VerticalAlign.Center)
-      .padding({
-        left: CommonConstant.PageLRPadding,
-        right: CommonConstant.PageLRPadding
-      })
-      .borderRadius(CommonConstant.RadiusRound)
-      .backgroundColor(this.enableGlassMode ? $r('app.color.glass_background') : Color.Transparent)
-      .backgroundBlurStyle(this.enableGlassMode ? BlurStyle.BACKGROUND_THICK : BlurStyle.NONE)
-      .border(
-        this.enableGlassMode
-          ? {
-          width: CommonConstant.BorderSizeNormal,
-          color: $r('app.color.glass_border')
-        }
-          : {
-          width: CommonConstant.BorderSizeNormal,
-          color: Color.Transparent
-        }
-      )
-      .hitTestBehavior(HitTestMode.Transparent)
 
       Blank()
         .layoutWeight(1)

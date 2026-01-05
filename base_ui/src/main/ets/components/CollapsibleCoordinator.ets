@@ -1,5 +1,3 @@
-// 文件: base_ui/src/main/ets/components/CollapsibleCoordinator.ets
-
 import { AppUtil } from '@pura/harmony-utils';
 import { BaseVM, CommonConstant } from 'base_common';
 
