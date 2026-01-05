@@ -3,7 +3,7 @@ import { TieVM } from '../viewmodels/TieVM';
 
 export interface SortItem {
   id: number;
-  idlist: "newreply" | "newthread" | "digest" | "life" | "hotlist";
+  idlist: "newreply" | "newthread" | "digest" | "life" | "hotlist" | "allreplies" | "allvisits";
   name: ResourceStr;
   icon: Resource;
 }
@@ -64,7 +64,9 @@ export struct SortButton {
         }, (item: SortItem) => item.id.toString())
       } else {
         ListItem() {
-          this.SortItemView(this.vm.sortItems[this.vm.currentSort], this.vm.currentSort)
+          if (this.vm.sortItems.length > 0 && this.vm.currentSort < this.vm.sortItems.length) {
+            this.SortItemView(this.vm.sortItems[this.vm.currentSort], this.vm.currentSort)
+          }
         }
       }
     }

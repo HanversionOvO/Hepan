@@ -51,6 +51,14 @@
     {
       "name": "TieView_sort_hotlist",
       "value": "今日热门"
+    },
+    {
+      "name": "TieView_sort_allreplies",
+      "value": "最多回复"
+    },
+    {
+      "name": "TieView_sort_allvisits",
+      "value": "最热主题"
     }
   ]
 }

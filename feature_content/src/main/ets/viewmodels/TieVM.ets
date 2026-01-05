@@ -18,7 +18,10 @@ export class TieVM extends BaseVM {
   @Trace subCategoryItems: SubCategoryItem[] = [
     { fid: 0, name: $r('app.string.TieView_category_all') },
   ];
-  @Trace sortItems: SortItem[] = [
+  @Trace sortItems: SortItem[] = [];
+  @Trace isSubCategoryExpanded: boolean = false;
+  @Trace isSorting: boolean = false;
+  private readonly defaultSortItems: SortItem[] = [
     {
       id: 0,
       idlist: "newreply",
@@ -49,9 +52,33 @@ export class TieVM extends BaseVM {
       name: $r('app.string.TieView_sort_hotlist'),
       icon: $r('sys.symbol.flame')
     },
-  ]
-  @Trace isSubCategoryExpanded: boolean = false;
-  @Trace isSorting: boolean = false;
+  ];
+  private readonly otherSortItems: SortItem[] = [
+    {
+      id: 1,
+      idlist: "newreply",
+      name: $r('app.string.TieView_sort_newreply'),
+      icon: $r('sys.symbol.message')
+    },
+    {
+      id: 2,
+      idlist: "newthread",
+      name: $r('app.string.TieView_sort_newthread'),
+      icon: $r('sys.symbol.edit_badge_star')
+    },
+    {
+      id: 3,
+      idlist: "allreplies",
+      name: $r('app.string.TieView_sort_allreplies'),
+      icon: $r('sys.symbol.message')
+    },
+    {
+      id: 4,
+      idlist: "allvisits",
+      name: $r('app.string.TieView_sort_allvisits'),
+      icon: $r('sys.symbol.flame')
+    }
+  ];
 
   async loadCategory() {
     const result = await ForumApi.getPostCategories();
@@ -107,13 +134,32 @@ export class TieVM extends BaseVM {
     this.subCategoryItems = categories;
   }
 
+  updateSortItems() {
+    if (this.categoryTabItems.length === 0) {
+      return;
+    }
+
+    const fid: number = this.categoryTabItems[this.currentCategory].fid;
+
+    this.currentSort = 0;
+
+    if (fid === 0) {
+      this.sortItems = this.defaultSortItems;
+    } else {
+      this.sortItems = this.otherSortItems;
+    }
+  }
+
   async loadData() {
     await this.loadCategory();
+    this.updateSortItems();
     await this.loadSubCategory();
   }
 
   changeCategory(index: number) {
     this.currentCategory = index;
+    this.currentSubCategory = 0;
     this.loadSubCategory();
+    this.updateSortItems();
   }
 }
