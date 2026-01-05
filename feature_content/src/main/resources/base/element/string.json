@@ -63,6 +63,10 @@
     {
       "name": "TieView_card_pub_time",
       "value": "发布于"
+    },
+    {
+      "name": "TieContentPage_subscribe",
+      "value": "加为好友"
     }
   ]
 }

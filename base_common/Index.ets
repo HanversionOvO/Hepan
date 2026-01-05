@@ -51,23 +51,8 @@ export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/e
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
 
-export { NewMessagesSummary,
-  RecentMessage,
-  AnPNotification,
-  SystemNotification,
-  Chat,
-  ChatSendContent,
-  UploadedFile } from './src/main/ets/api/models/MessageModels';
+export * from './src/main/ets/api/models/MessageModels';
 
-export { ForumCategory,
-  LatestThread,
-  AtUser,
-  ThreadType,
-  PostCategoryGroup,
-  PostCategoryItem,
-  NewThreadRequest,
-  NewThreadResponse,
-  SummaryAttachments,
-  ForumTieSummary } from './src/main/ets/api/models/ForumModels';
+export * from './src/main/ets/api/models/ForumModels';
 
-export { TabIndexModel } from './src/main/ets/models/TabIndexModel';
+export * from './src/main/ets/models/TabIndexModel';

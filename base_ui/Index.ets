@@ -22,4 +22,6 @@ export { CustomAtPanel } from './src/main/ets/components/CustomAtPanel';
 
 export { CollapsibleCoordinator } from './src/main/ets/components/CollapsibleCoordinator';
 
+export { CustomFloatNavTitle } from './src/main/ets/components/CustomFloatNavTitle';
+
 export * from './src/main/ets/transitions/longtake/Index';

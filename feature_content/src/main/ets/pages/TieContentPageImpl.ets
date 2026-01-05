@@ -1,6 +1,7 @@
-import { CommonConstant, ForumTieSummary } from 'base_common';
+import { ForumTieSummary } from 'base_common';
 import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
+import { TieContentView } from '../views/TieContentView';
 
 @ComponentV2
 export struct TieContentPageImpl {
@@ -8,12 +9,7 @@ export struct TieContentPageImpl {
 
   @Builder
   ContentBuilder() {
-    Column() {
-      Text("test")
-    }
-    .width(CommonConstant.FullPercent)
-    .height(CommonConstant.FullPercent)
-    .backgroundColor($r('app.color.start_window_background'))
+    TieContentView({ vm: this.vm })
   }
 
   build() {

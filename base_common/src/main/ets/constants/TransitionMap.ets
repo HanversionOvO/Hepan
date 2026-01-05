@@ -4,4 +4,5 @@ export class TransitionMap {
   static readonly MessagePageSearch: string = "MessagePageSearch";
   static readonly PostPageMarkDown: string = "PostPageMarkDown";
   static readonly TiePageSubCategory: string = "TiePageSubCategory";
+  static readonly TieDetailPageTitle: string = "TieDetailPageTitle";
 }
