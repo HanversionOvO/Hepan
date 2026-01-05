@@ -1,5 +1,4 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, ForumTieSummary, TieDetail } from 'base_common';
+import { BaseVM, ForumApi, ForumTieSummary, TieDetail } from 'base_common';
 import { LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
 
 const TAG = '[TieContentPageVM]: ';
@@ -12,6 +11,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;
   @Trace currentImageIndex: number = 0;
+  @Trace currentPage: number = 1;
   @Trace titleButtons: NavTitleButtonModel[] = [];
   @Trace isRefreshingDetail: boolean = false;
   @Trace outerPageScroller: Scroller = new Scroller();
@@ -19,6 +19,8 @@ export class TieContentPageVM extends BaseVM {
   @Trace commentScroller: Scroller = new Scroller();
 
   async loadData() {
-    LogUtil.debug(TAG, JSON.stringify(this.tieSummary))
+    if (this.tieSummary) {
+      this.tieDetail = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
+    }
   }
 }

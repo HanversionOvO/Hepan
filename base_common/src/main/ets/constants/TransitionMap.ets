@@ -5,4 +5,6 @@ export class TransitionMap {
   static readonly PostPageMarkDown: string = "PostPageMarkDown";
   static readonly TiePageSubCategory: string = "TiePageSubCategory";
   static readonly TieDetailPageTitle: string = "TieDetailPageTitle";
+  static readonly TieDetailImages: string = "TieDetailImages";
+  static readonly TieDetailComment: string = "TieDetailComment";
 }

@@ -1,5 +1,5 @@
 import { RandomUtil, ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, DateUtil, ForumTieSummary, UserAvatarUtil } from 'base_common';
+import { CommonConstant, DateUtil, ForumTieSummary, TransitionMap, UserAvatarUtil } from 'base_common';
 
 const BASE_URL: string = 'https://bbs.uestc.edu.cn';
 
@@ -55,6 +55,7 @@ export struct TieCard {
         .constraintSize({ maxHeight: this.maxCoverHeight })
         .objectFit(ImageFit.Cover)
         .align(Alignment.Top)
+        .geometryTransition(TransitionMap.TieDetailImages)
     } else {
       Stack() {
         Column()

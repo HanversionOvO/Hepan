@@ -108,6 +108,7 @@ export interface TieDetail {
   page_size: number;
   page: number;
   thread: TieThread;
+  forum: ForumDetails;
   rows: TieRow[];
 }
 

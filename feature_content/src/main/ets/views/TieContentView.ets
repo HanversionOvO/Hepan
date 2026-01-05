@@ -1,9 +1,11 @@
 import { CommonConstant, TransitionMap } from 'base_common';
-import { CustomFloatNavTitle } from 'base_ui';
+import { CustomFloatNavTitle, CustomMarkdown } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImageSwiper } from '../components/ImageSwiper';
 import { UserInfoArea } from '../components/UserInfoArea';
+import { TieDetailFooter } from '../components/TieDetailFooter';
+import { TieDetailComment } from '../components/TieDetailComment';
 
 @ComponentV2
 export struct TieContentView {
@@ -13,7 +15,7 @@ export struct TieContentView {
   @Builder
   TieTitle(color: ResourceColor, isNavBar: boolean) {
     Text(this.vm.tieSummary?.subject)
-      .fontSize(isNavBar ? CommonConstant.TextSizeLarge : CommonConstant.TextSizeUltraLarge)
+      .fontSize(CommonConstant.TextSizeLarge)
       .fontColor(color)
       .fontWeight(FontWeight.Bold)
       .maxLines(isNavBar ? 1 : -1)
@@ -42,7 +44,7 @@ export struct TieContentView {
         .height(CommonConstant.RadiusUltraLarge * 2)
         .width(CommonConstant.FullPercent)
 
-      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Column({ space: CommonConstant.LargeContainerInnerPadding }) {
         if (!this.vm.isSticky) {
           this.TieTitle($r('sys.color.font_primary'), false)
         } else {
@@ -54,9 +56,12 @@ export struct TieContentView {
         }
 
         UserInfoArea({ vm: this.vm })
-        // this.ContentArea()
-        //
-        // this.TieFooter()
+
+        CustomMarkdown({
+          content: this.vm.tieDetail?.rows[0].message
+        })
+
+        TieDetailFooter({ vm: this.vm })
 
         if (this.vm.isTabletView) {
           Column()
@@ -78,7 +83,7 @@ export struct TieContentView {
       Stack({ alignContent: Alignment.Top }) {
         CustomFloatNavTitle({
           vm: this.vm,
-          isFloating: this.vm.isSticky,
+          isFloating: !this.vm.isSticky,
           buttons: this.vm.titleButtons,
           content: () => {
             if (this.vm.isSticky) {
@@ -105,8 +110,9 @@ export struct TieContentView {
                 Column() {
                   if (this.vm.tieSummary?.summary_attachments) {
                     ImageSwiper({ vm: this.vm })
+                      .geometryTransition(TransitionMap.TieDetailImages)
                   }
-                  // this.TieDetailContent()
+                  this.TieDetailContent()
                 }
                 .width(this.vm.isTabletView ? this.sideNavWidth : CommonConstant.FullPercent)
                 .justifyContent(FlexAlign.Start)
@@ -130,7 +136,7 @@ export struct TieContentView {
               })
 
               if (this.vm.isTabletView) {
-                // this.FunctionArea()
+                TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
               }
             }
             .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
@@ -161,6 +167,15 @@ export struct TieContentView {
             // this.handleScroll();
           }
         })
+
+        if (!this.vm.isTabletView) {
+          Column() {
+            TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
+          }
+          .width(CommonConstant.FullPercent)
+          .position({ bottom: CommonConstant.NormalContainerTBPadding })
+          .hitTestBehavior(HitTestMode.Transparent)
+        }
       }
     }
     .width(CommonConstant.FullPercent)

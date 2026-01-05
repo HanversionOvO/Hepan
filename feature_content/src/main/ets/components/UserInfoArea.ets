@@ -29,7 +29,8 @@ export struct UserInfoArea {
         }
 
         GlassButton({
-          text: $r('app.string.TieContentPage_subscribe')
+          text: $r('app.string.TieContentPage_subscribe'),
+          innerFontSize: CommonConstant.TextSizeSmall
         })
       }
       .width(CommonConstant.FullPercent)
