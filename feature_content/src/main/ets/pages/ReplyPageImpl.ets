@@ -9,11 +9,7 @@ import { ImagePicker } from 'feature_post';
 export struct ReplyPageImpl {
   @Local vm: ReplyPageVM = new ReplyPageVM();
   @Local isShow: boolean = false;
-
-  @Computed
-  get placeHolder(): ResourceStr {
-    return $r('app.string.ReplyPage_placeholder');
-  }
+  @Local placeHolder: ResourceStr = $r('app.string.ReplyPage_placeholder');
 
   private closeDialog() {
     const state: Record<string, boolean> = {
