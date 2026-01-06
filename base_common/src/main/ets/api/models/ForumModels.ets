@@ -245,6 +245,7 @@ export interface ForumDetailComment {
   is_quote: number;
   quote_pid: number;
   quote_content: string;
+  quote_content_bare?: string;
   quote_user_name: string;
   delThread: boolean;
   extraPanel: ForumExtraPanel[];

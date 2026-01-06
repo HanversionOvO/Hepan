@@ -58,8 +58,11 @@ export struct CommentCard {
         .width(CommonConstant.FullPercent)
 
         // 评论内容
+        // 传递引用内容（quoteContent）和用户名（quoteUserName）
         TieContentRender({
-          contents: this.tieComment.reply_content
+          contents: this.tieComment.reply_content,
+          quoteContent: this.tieComment.quote_content_bare,
+          quoteUserName: this.tieComment.quote_user_name
         })
 
         // 底部元数据 (时间 · 地点 · 回复)
