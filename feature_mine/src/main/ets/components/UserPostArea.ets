@@ -1,4 +1,3 @@
-import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant, ForumTieSummary, UiState } from 'base_common';
 import { CustomTabBar, StateLayout } from 'base_ui';
 import { MinePageVM } from '../viewmodels/MinePageVM';
@@ -54,6 +53,12 @@ struct UserPostList {
     return '1fr '.repeat(this.vm.columns).trim();
   }
 
+  // 生成用于占位的数组
+  @Computed
+  get spacerArray(): number[] {
+    return new Array(this.vm.columns).fill(0);
+  }
+
   @Event onLoadMore: () => void = () => {
   };
   @Event onRefresh: () => void = () => {
@@ -63,6 +68,13 @@ struct UserPostList {
   renderList() {
     Refresh({ refreshing: this.isRefreshing }) {
       WaterFlow({ scroller: this.scroller }) {
+        ForEach(this.spacerArray, (_: number, i: number) => {
+          FlowItem() {
+            Column().height(CommonConstant.IconSizeUltraLarge)
+          }
+          .width(CommonConstant.FullPercent)
+        }, (_: number, i: number) => `top_spacer_${this.vm.columns}_${i}`)
+
         ForEach(this.currentData, (tie: ForumTieSummary) => {
           FlowItem() {
             TieCard({
@@ -76,6 +88,17 @@ struct UserPostList {
           }
           .width(CommonConstant.FullPercent)
         }, (tie: ForumTieSummary) => `${this.index}_${tie.thread_id}_${tie.dateline}`)
+
+        if (!this.vm.isTabletView) {
+          ForEach(this.spacerArray, (_: number, i: number) => {
+            FlowItem() {
+              Column()
+                .height((this.vm.isTabletView ? 0 : CommonConstant.BottomBarHeight) +
+                this.vm.window.windowBottomPadding)
+            }
+            .width(CommonConstant.FullPercent)
+          }, (_: number, i: number) => `bottom_spacer_${this.vm.columns}_${i}`)
+        }
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
@@ -85,12 +108,17 @@ struct UserPostList {
       .padding({
         left: CommonConstant.NormalContainerInnerPadding,
         right: CommonConstant.NormalContainerInnerPadding,
-        bottom: CommonConstant.NormalContainerInnerPadding
+        // 移除之前的 padding.bottom，改用内部占位符
+        // bottom: CommonConstant.NormalContainerInnerPadding
       })
       .scrollBar(BarState.Off)
       .nestedScroll({
         scrollForward: NestedScrollMode.PARENT_FIRST,
         scrollBackward: NestedScrollMode.SELF_FIRST
+      })
+      .animation({
+        duration: CommonConstant.AnimationDurationNormal,
+        curve: CommonConstant.AnimationCurveSpring
       })
       .onReachEnd(() => {
         this.onLoadMore();
@@ -103,7 +131,6 @@ struct UserPostList {
           this.vm.isTabBarGlass = false;
         }
       })
-      // === 新增：捏合手势 ===
       .priorityGesture(
         PinchGesture()
           .onActionStart(() => {
@@ -114,16 +141,14 @@ struct UserPostList {
             const scale = event.scale;
             let newCols = this.baseColumns;
 
-            // 计算新列数：放大(scale>1)则列数减少，缩小(scale<1)则列数增加
             if (scale > 0) {
               newCols = Math.round(this.baseColumns / scale);
             }
 
-            // 限制范围
             newCols = Math.max(this.vm.minColumns, Math.min(newCols, this.vm.maxColumns));
 
             if (newCols !== this.vm.columns) {
-              AppUtil.getUIContext().animateTo({
+              animateTo({
                 duration: CommonConstant.AnimationDurationNormal,
                 curve: CommonConstant.AnimationCurveSpring
               }, () => {
@@ -153,7 +178,6 @@ struct UserPostList {
   }
 }
 
-// UserPostArea 组件保持不变，只需引用更新后的 UserPostList
 @ComponentV2
 export struct UserPostArea {
   @Param @Require vm: MinePageVM;
@@ -233,6 +257,9 @@ export struct UserPostArea {
       x: this.vm.pageScale,
       y: this.vm.pageScale
     })
-    .animation({ duration: CommonConstant.AnimationDurationNormal })
+    .animation({
+      duration: CommonConstant.AnimationDurationNormal,
+      curve: CommonConstant.AnimationDurationNormal
+    })
   }
 }
