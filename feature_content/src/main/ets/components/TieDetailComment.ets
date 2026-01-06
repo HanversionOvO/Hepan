@@ -1,4 +1,4 @@
-import { CommonConstant, TransitionMap } from 'base_common';
+import { CommonConstant, RouterUtil, TransitionMap } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @ComponentV2
@@ -45,7 +45,10 @@ export struct TieDetailComment {
       .geometryTransition(TransitionMap.TieDetailComment)
       .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
       .onClick(() => {
-        // RouterUtil.pushPathByName(RouterMap.COMMENT_REPLY_DIALOG, null, undefined, false);
+        if (this.vm.tieTopic?.topic_id) {
+          RouterUtil.pushPathByName("ReplyPage", { "threadId": this.vm.tieTopic.topic_id } as Record<string, Object>,
+            undefined, false);
+        }
       })
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -114,5 +117,6 @@ export struct TieDetailComment {
       duration: CommonConstant.AnimationDurationNormal,
       curve: CommonConstant.AnimationCurveSpring
     })
+    .expandSafeArea([SafeAreaType.KEYBOARD])
   }
 }

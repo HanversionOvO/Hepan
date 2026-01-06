@@ -289,3 +289,16 @@ export interface ForumDetailResponse extends LegacyResponse {
   img_url: string;
   icon_url: string;
 }
+
+export interface ReplyRequest {
+  thread_id: number;
+  message: string;
+  usesig: number;
+  is_anonymous: boolean;
+  attachments: UploadedFile[];
+  format: number;
+}
+
+export interface ReplyResponse {
+  post_id: number;
+}

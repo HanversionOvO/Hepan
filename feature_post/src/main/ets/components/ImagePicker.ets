@@ -1,9 +1,21 @@
 import { CommonConstant } from 'base_common';
-import { PostImageModel, PostPageVM } from '../viewmodels/PostPageVM'; // 引入 PostImageModel
+import { PostImageModel } from '../viewmodels/PostPageVM'; // 引入 PostImageModel
+
+export interface IImagePickerVM {
+  uploadedImages: PostImageModel[];
+  isInputting: boolean;
+  isInsertImageMode: boolean;
+
+  insertImageToContent(img: PostImageModel): void;
+
+  deleteImage(index: number): void;
+
+  selectImage(): void;
+}
 
 @ComponentV2
 export struct ImagePicker {
-  @Param @Require vm: PostPageVM;
+  @Param @Require vm: IImagePickerVM;
   readonly NORMAL_SIZE: number = 80;
   readonly SHRINK_SIZE: number = 40;
 

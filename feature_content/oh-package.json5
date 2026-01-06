@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "base_common": "file:../base_common",
-    "base_ui": "file:../base_ui"
+    "base_ui": "file:../base_ui",
+    "feature_post": "file:../feature_post"
   }
 }

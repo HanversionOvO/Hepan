@@ -21,6 +21,7 @@ import { RichTextButton } from '../components/RichTextToolBar';
 import { inputMethod } from '@kit.IMEKit';
 import { PickerUtil } from '@pura/picker_utils';
 import { picker } from '@kit.CoreFileKit';
+import { IImagePickerVM } from '../components/ImagePicker';
 
 const TAG = '[PostPageVM]: ';
 const BASE_URL = 'https://bbs.uestc.edu.cn';
@@ -39,7 +40,7 @@ export class PostImageModel {
 }
 
 @ObservedV2
-export class PostPageVM extends BaseVM {
+export class PostPageVM extends BaseVM implements IImagePickerVM {
   @Trace titleButtons: NavTitleButtonModel[] = [
     {
       icon: $r('sys.symbol.save'), onClick: () => {

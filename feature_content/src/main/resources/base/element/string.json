@@ -107,6 +107,38 @@
     {
       "name": "TieContentPage_reply",
       "value": "回复"
+    },
+    {
+      "name": "ReplyPage_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "ReplyPage_reply",
+      "value": "回复"
+    },
+    {
+      "name": "ReplyPage_send",
+      "value": "发送"
+    },
+    {
+      "name": "ReplyPage_placeholder",
+      "value": "好言一句三冬暖，恶语伤人六月寒"
+    },
+    {
+      "name": "ReplyPage_anonymous",
+      "value": "匿名"
+    },
+    {
+      "name": "ReplyPage_please_input",
+      "value": "回复内容不能为空哦"
+    },
+    {
+      "name": "ReplyPage_sending",
+      "value": "发送中"
+    },
+    {
+      "name": "ReplyPage_reply_success",
+      "value": "回复成功"
     }
   ]
 }

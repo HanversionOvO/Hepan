@@ -12,6 +12,8 @@ import {
   NewThreadResponse,
   PostCategoryGroup,
   PostCategoryItem,
+  ReplyRequest,
+  ReplyResponse,
   TieDetail
 } from './models/ForumModels';
 import { ToastUtil } from '../utils/ToastUtil';
@@ -223,6 +225,26 @@ export class ForumApi {
       const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       ToastUtil.showError(response.data.message);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async reply(request: ReplyRequest): Promise<ReplyResponse> {
+    const path = '/_/thread/reply';
+
+    const response = await ApiClient.getInstance().request<BaseResponse<ReplyResponse>>({
+      path: path,
+      method: http.RequestMethod.POST,
+      includeAuthorization: true,
+      includeCookie: true,
+      data: request,
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      const errorMsg = response.data?.message || `Reply failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
   }
