@@ -155,7 +155,8 @@ export struct TieContentView {
               .fontColor($r('sys.color.font_tertiary'))
               .textAlign(TextAlign.Center)
               .padding({
-                bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
+                bottom: this.vm.isTabletView ? this.vm.window.windowBottomPadding :
+                  CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
               })
           }
         }

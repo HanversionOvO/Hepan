@@ -76,11 +76,9 @@ export struct StateLayout {
           this.content()
         }
         .width(CommonConstant.FullPercent)
-        .height(CommonConstant.FullPercent)
         .transition(CommonConstant.CONF_TRANSITION)
       }
     }
     .width(CommonConstant.FullPercent)
-    .height(CommonConstant.FullPercent)
   }
 }
