@@ -3,7 +3,7 @@ import { CommonConstant } from 'base_common';
 
 const BASE_URL = 'https://bbs.uestc.edu.cn';
 
-// --- 修改：行内样式片段定义，增加 image 类型支持表情 ---
+// 修改：行内样式片段定义，支持 image 类型（用于表情）
 interface InlineSpan {
   type: 'text' | 'image';
   text?: string;
@@ -25,7 +25,6 @@ interface BBSegment {
 export struct CustomMarkdown {
   @Param @Require content: string;
   @Param controller: MarkdownController = new MarkdownController();
-  // ... 其他原有参数保持不变 ...
   @Param titleColor: ResourceColor = $r('sys.color.font_primary');
   @Param textColor: ResourceColor = $r('sys.color.font_primary');
   @Param textSize: number = CommonConstant.TextSizeNormal;
@@ -33,7 +32,6 @@ export struct CustomMarkdown {
   @Param quoteTextColor: ResourceColor = $r('sys.color.font_secondary');
   @Param quoteBgColor: ResourceColor = $r('app.color.tetertiary_window_background');
   @Param hyperlinkTextColor: ResourceColor = CommonConstant.ThemeColor;
-  // 默认为 true，但在 TieContentRender 中我们会传入 false 以启用自定义解析
   @Param useParallel: boolean = true;
   @Local segments: BBSegment[] = [];
 
@@ -41,7 +39,16 @@ export struct CustomMarkdown {
     if (!this.useParallel) {
       this.parseContent();
     }
-    // 并行模式设置省略...
+    // ... 原有的并行模式初始化逻辑 ...
+    if (this.useParallel) {
+      this.controller
+        .setTitleColor(this.titleColor)
+        .setTextColor(this.textColor)
+        .setTextSize(this.textSize)
+        .setQuoteBorderColor(this.quoteBorderColor)
+        .setQuoteBackgroundColor(this.quoteBgColor)
+        .setHyperlinkTextColor(this.hyperlinkTextColor)
+    }
   }
 
   @Monitor('content')
@@ -51,8 +58,7 @@ export struct CustomMarkdown {
     }
   }
 
-  // ... parseContent, parseBBCodeQuote, parseMarkdownQuote, parseImagesAndText 方法保持原有逻辑框架 ...
-  // 注意：parseImagesAndText 方法保持不变，它会调用 parseInlineSpans
+  // --- 解析逻辑 ---
 
   private parseContent() {
     if (!this.content) {
@@ -68,9 +74,11 @@ export struct CustomMarkdown {
     let match: RegExpExecArray | null;
 
     while ((match = combinedRegex.exec(this.content)) !== null) {
+      // 处理引用块之前的内容
       if (match.index > lastIndex) {
         this.parseImagesAndText(this.content.substring(lastIndex, match.index), tempSegments);
       }
+      // 处理引用块
       if (match[1]) {
         tempSegments.push(this.parseBBCodeQuote(match[1]));
       } else if (match[2]) {
@@ -79,6 +87,7 @@ export struct CustomMarkdown {
       lastIndex = combinedRegex.lastIndex;
     }
 
+    // 处理剩余内容
     if (lastIndex < this.content.length) {
       this.parseImagesAndText(this.content.substring(lastIndex), tempSegments);
     }
@@ -108,7 +117,6 @@ export struct CustomMarkdown {
     if (lines.length === 0) {
       return { type: 'quote', content: '' };
     }
-
     let title = '';
     let body = '';
     if (lines[0].includes('发表于')) {
@@ -120,8 +128,8 @@ export struct CustomMarkdown {
     return { type: 'quote', content: body, quoteTitle: title };
   }
 
+  // 解析块级图片 ([img] 或 [attach])，其余部分作为文本处理
   private parseImagesAndText(text: string, results: BBSegment[]) {
-    // 简单的图片标签处理
     const regex = /\[attach\](\d+)\[\/attach\]|\[img\](.*?)\[\/img\]/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
@@ -157,8 +165,9 @@ export struct CustomMarkdown {
   }
 
   /**
-   * --- 核心修改：解析行内 BBCode 样式及表情 ---
-   * 增加对 [mobcent_phiz=...] 的匹配
+   * --- 核心修复 ---
+   * 解析行内样式：[b], [i], [color], [url] 以及 [mobcent_phiz]
+   * 关键修复：正则表达式移除了 'g' 标志，避免 test() 方法的状态残留导致连续标签识别失败
    */
   private parseInlineSpans(text: string): InlineSpan[] {
     const spans: InlineSpan[] = [];
@@ -166,8 +175,8 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    // 正则增加：|\[mobcent_phiz=[^\]]*\]
-    const tagRegex = /(\[(?:\/)?(?:b|i|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\])/gi;
+    // 注意：这里去掉了 'g' 标志。split 会自动分割所有匹配项，且 test() 不会受 lastIndex 影响
+    const tagRegex = /(\[(?:\/)?(?:b|i|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\])/i;
     const parts = text.split(tagRegex);
 
     let boldCount = 0;
@@ -183,7 +192,7 @@ export struct CustomMarkdown {
       if (tagRegex.test(part)) {
         const lowerPart = part.toLowerCase();
 
-        // 处理表情
+        // 1. 处理表情
         if (lowerPart.startsWith('[mobcent_phiz=')) {
           const phizUrl = part.substring(14, part.length - 1);
           spans.push({
@@ -193,7 +202,7 @@ export struct CustomMarkdown {
           continue;
         }
 
-        // 处理其他标签
+        // 2. 处理其他 BBCode 标签
         if (lowerPart === '[b]') {
           boldCount++;
         } else if (lowerPart === '[/b]') {
@@ -223,7 +232,7 @@ export struct CustomMarkdown {
         }
 
       } else {
-        // 普通文本 span
+        // 3. 普通文本
         const currentUrlVal = urlStack.length > 0 ? urlStack[urlStack.length - 1] : undefined;
         const finalUrl = currentUrlVal === 'SELF' ? part : currentUrlVal;
 
@@ -246,11 +255,11 @@ export struct CustomMarkdown {
         Markdown({ text: this.content, controller: this.controller })
           .width(CommonConstant.FullPercent)
       } else {
-        // 自定义解析模式
+        // --- 自定义解析渲染 ---
         Column({ space: CommonConstant.SmallContainerInnerPadding }) {
           ForEach(this.segments, (item: BBSegment) => {
             if (item.type === 'quote') {
-              // 引用块渲染
+              // 引用块
               Column({ space: CommonConstant.SmallContainerInnerPadding }) {
                 if (item.quoteTitle) {
                   Text(item.quoteTitle)
@@ -270,7 +279,7 @@ export struct CustomMarkdown {
               .border({ width: { left: CommonConstant.BorderSizeLarge }, color: this.quoteBorderColor })
 
             } else if (item.type === 'image') {
-              // 图片块渲染
+              // 块级大图 (BBCode [img] / [attach])
               Image(item.content)
                 .width(CommonConstant.FullPercent)
                 .objectFit(ImageFit.Contain)
@@ -279,13 +288,13 @@ export struct CustomMarkdown {
                 .backgroundColor($r('app.color.tetertiary_window_background'))
 
             } else if (item.type === 'text') {
-              // 富文本渲染 (支持表情)
+              // 文本块 (包含行内样式和行内表情)
               Text() {
                 ForEach(item.spans || [], (span: InlineSpan) => {
                   if (span.type === 'image' && span.imageSrc) {
-                    // 渲染表情
+                    // 渲染行内表情
                     ImageSpan(span.imageSrc)
-                      .width(this.textSize * 1.5) // 表情通常比文字稍大
+                      .width(this.textSize * 1.5)
                       .height(this.textSize * 1.5)
                       .objectFit(ImageFit.Contain)
                       .verticalAlign(ImageSpanAlignment.CENTER)
@@ -298,7 +307,7 @@ export struct CustomMarkdown {
                       .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
                       .onClick(() => {
                         if (span.url) {
-                          // TODO: 调用 RouterUtil 打开链接
+                          // TODO: 链接跳转逻辑
                           console.info('Link clicked:', span.url);
                         }
                       })
