@@ -39,7 +39,6 @@ export struct CustomMarkdown {
     if (!this.useParallel) {
       this.parseContent();
     }
-    // ... 原有的并行模式初始化逻辑 ...
     if (this.useParallel) {
       this.controller
         .setTitleColor(this.titleColor)
@@ -58,8 +57,6 @@ export struct CustomMarkdown {
     }
   }
 
-  // --- 解析逻辑 ---
-
   private parseContent() {
     if (!this.content) {
       this.segments = [];
@@ -67,18 +64,15 @@ export struct CustomMarkdown {
     }
 
     const tempSegments: BBSegment[] = [];
-    // 匹配 [quote]...[/quote] 或 Markdown 引用 > ...
     const combinedRegex = /\[quote\]([\s\S]*?)\[\/quote\]|((?:^|\n)(?:>[^\n]*(?:\n|$))+)/g;
 
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
     while ((match = combinedRegex.exec(this.content)) !== null) {
-      // 处理引用块之前的内容
       if (match.index > lastIndex) {
         this.parseImagesAndText(this.content.substring(lastIndex, match.index), tempSegments);
       }
-      // 处理引用块
       if (match[1]) {
         tempSegments.push(this.parseBBCodeQuote(match[1]));
       } else if (match[2]) {
@@ -87,7 +81,6 @@ export struct CustomMarkdown {
       lastIndex = combinedRegex.lastIndex;
     }
 
-    // 处理剩余内容
     if (lastIndex < this.content.length) {
       this.parseImagesAndText(this.content.substring(lastIndex), tempSegments);
     }
@@ -164,11 +157,6 @@ export struct CustomMarkdown {
     }
   }
 
-  /**
-   * --- 核心修复 ---
-   * 解析行内样式：[b], [i], [color], [url] 以及 [mobcent_phiz]
-   * 关键修复：正则表达式移除了 'g' 标志，避免 test() 方法的状态残留导致连续标签识别失败
-   */
   private parseInlineSpans(text: string): InlineSpan[] {
     const spans: InlineSpan[] = [];
     if (!text) {
@@ -279,7 +267,6 @@ export struct CustomMarkdown {
               .border({ width: { left: CommonConstant.BorderSizeLarge }, color: this.quoteBorderColor })
 
             } else if (item.type === 'image') {
-              // 块级大图 (BBCode [img] / [attach])
               Image(item.content)
                 .width(CommonConstant.FullPercent)
                 .objectFit(ImageFit.Contain)
@@ -288,7 +275,6 @@ export struct CustomMarkdown {
                 .backgroundColor($r('app.color.tetertiary_window_background'))
 
             } else if (item.type === 'text') {
-              // 文本块 (包含行内样式和行内表情)
               Text() {
                 ForEach(item.spans || [], (span: InlineSpan) => {
                   if (span.type === 'image' && span.imageSrc) {
@@ -307,7 +293,6 @@ export struct CustomMarkdown {
                       .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
                       .onClick(() => {
                         if (span.url) {
-                          // TODO: 链接跳转逻辑
                           console.info('Link clicked:', span.url);
                         }
                       })
