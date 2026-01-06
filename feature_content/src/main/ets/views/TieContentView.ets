@@ -167,7 +167,8 @@ export struct TieContentView {
             ForEach(this.vm.tieComments || [], (comment: ForumDetailComment) => {
               CommentCard({
                 tieComment: comment,
-                authorID: this.vm.tieTopic?.user_id
+                authorID: this.vm.tieTopic?.user_id,
+                threadId: this.vm.tieTopic?.topic_id
               })
             }, (comment: ForumDetailComment) => comment.reply_posts_id.toString())
 

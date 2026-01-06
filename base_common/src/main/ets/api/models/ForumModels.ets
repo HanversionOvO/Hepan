@@ -297,6 +297,7 @@ export interface ReplyRequest {
   is_anonymous: boolean;
   attachments: UploadedFile[];
   format: number;
+  post_id?: number;
 }
 
 export interface ReplyResponse {

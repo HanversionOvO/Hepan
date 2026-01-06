@@ -249,7 +249,15 @@ export struct ReplyPageImpl {
     .onReady((context: NavDestinationContext) => {
       const params = context.pathInfo.param as Record<string, Object>;
       if (params && params['threadId']) {
-        this.vm.init(params['threadId'] as number);
+        const threadId = params['threadId'] as number;
+        const postId = params['postId'] as number ?? 0;
+        const replyUser = params['replyUser'] as string ?? '';
+
+        this.vm.init(threadId, postId);
+
+        if (replyUser) {
+          this.placeHolder = `回复 @${replyUser}: `;
+        }
       }
 
       AppUtil.getUIContext().animateTo({

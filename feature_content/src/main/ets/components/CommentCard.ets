@@ -1,11 +1,12 @@
 import { NumberUtil, ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, DateUtil, ForumDetailComment, ForumExtraPanel } from 'base_common';
+import { CommonConstant, DateUtil, ForumDetailComment, ForumExtraPanel, RouterUtil } from 'base_common';
 import { TieContentRender } from './TieContentRender';
 
 @ComponentV2
 export struct CommentCard {
   @Param @Require tieComment: ForumDetailComment;
   @Param @Require authorID: number;
+  @Param threadId: number = 0;
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -76,6 +77,15 @@ export struct CommentCard {
             .fontSize(CommonConstant.TextSizeSmall)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('sys.color.font_secondary'))
+            .onClick(() => {
+              if (this.threadId && this.threadId !== 0) {
+                RouterUtil.pushPathByName("ReplyPage", {
+                  "threadId": this.threadId,
+                  "postId": this.tieComment.reply_posts_id,
+                  "replyUser": this.tieComment.reply_name
+                } as Record<string, Object>, undefined, false);
+              }
+            })
         }
       }
       .layoutWeight(1)

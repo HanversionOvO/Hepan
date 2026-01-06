@@ -11,6 +11,7 @@ const BASE_URL = 'https://bbs.uestc.edu.cn';
 @ObservedV2
 export class ReplyPageVM extends BaseVM implements IImagePickerVM {
   @Trace threadId: number = 0;
+  @Trace postId: number = 0;
   @Trace replyContent: string = '';
   @Trace isAnonymous: boolean = false;
   @Trace usesig: boolean = true;
@@ -19,14 +20,14 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
   @Trace isShowAt: boolean = false;
   @Trace isInsertImageMode: boolean = false;
   @Trace isInputting: boolean = false;
-  // 光标控制
   @Trace selectionStart: number = 0;
   @Trace selectionEnd: number = 0;
   @Trace isSendSuccess: boolean = false;
   controller: TextAreaController = new TextAreaController();
 
-  init(threadId: number) {
+  init(threadId: number, postId: number = 0) {
     this.threadId = threadId;
+    this.postId = postId;
   }
 
   // === 实现 IImagePickerVM 接口 ===
@@ -167,7 +168,8 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
       usesig: this.usesig ? 1 : 0,
       is_anonymous: this.isAnonymous,
       attachments: attachments,
-      format: 2
+      format: 2,
+      post_id: this.postId > 0 ? this.postId : undefined
     };
 
     try {
