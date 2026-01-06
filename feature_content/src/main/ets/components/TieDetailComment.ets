@@ -6,6 +6,11 @@ export struct TieDetailComment {
   @Param @Require vm: TieContentPageVM;
   @Param @Require sideNavWidth: number;
 
+  @Computed
+  get isLiked(): number {
+    return this.vm.tieTopic?.extraPanel.find(item => item.type === 'support')?.extParams.isHasRecommendAdd ?? 0;
+  }
+
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       Row({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -34,9 +39,12 @@ export struct TieDetailComment {
       })
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        SymbolGlyph($r('sys.symbol.heart'))
-          .fontColor([$r('sys.color.font_tertiary')])
+        SymbolGlyph(this.isLiked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+          .fontColor(this.isLiked ? [CommonConstant.ThemeColor] : [$r('sys.color.font_tertiary')])
           .fontSize(CommonConstant.IconSizeSmall)
+          .onClick(() => {
+            this.vm.supportTie();
+          })
 
         SymbolGlyph($r('sys.symbol.star'))
           .fontColor([$r('sys.color.font_tertiary')])

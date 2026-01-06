@@ -102,6 +102,8 @@ export interface ForumTieSummary {
   views: number;
   replies: number;
   label: string;
+  recommend_add: number;
+  recommend_sub: number;
 }
 
 export interface TieDetail {
@@ -219,6 +221,7 @@ export interface ForumDetailTopic {
   reply_posts_id: number;
   rateList: Object; // 待做
   reward: Object; // 待做
+  extraPanel: ForumExtraPanel[];
 }
 
 export interface ForumDetailComment {

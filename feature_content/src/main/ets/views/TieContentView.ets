@@ -249,15 +249,13 @@ export struct TieContentView {
                 }
               })
 
-              if (this.vm.isTabletView) {
+              if (this.vm.isTabletView && this.vm.tieTopic) {
                 TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
               }
             }
             .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
 
-            // --- 修复点：手机模式下移除嵌套的 Scroll ---
             if (this.vm.isTabletView) {
-              // 平板模式：使用独立的 Scroll 容器
               Scroll(this.vm.commentScroller) {
                 Column() {
                   this.CommentContent()
@@ -300,7 +298,7 @@ export struct TieContentView {
           }
         })
 
-        if (!this.vm.isTabletView) {
+        if (!this.vm.isTabletView && this.vm.tieTopic) {
           Column() {
             TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
           }

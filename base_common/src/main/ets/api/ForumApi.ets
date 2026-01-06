@@ -14,6 +14,7 @@ import {
   PostCategoryItem,
   TieDetail
 } from './models/ForumModels';
+import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[ForumApi]: ';
 
@@ -202,6 +203,26 @@ export class ForumApi {
     } else {
       const errorMsg = response.data.head?.errInfo || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async supportTie(tid: number): Promise<number> {
+    const path = `/_/post/review?tid=${tid}&support=true`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<number>>({
+      path: path,
+      method: http.RequestMethod.POST,
+      includeAuthorization: true,
+      includeCookie: true,
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      ToastUtil.showError(response.data.message);
       throw new Error(errorMsg);
     }
   }

@@ -77,8 +77,6 @@ export class TieContentPageVM extends BaseVM {
 
           let newComments = result.list || [];
 
-          LogUtil.debug(TAG, JSON.stringify(newComments));
-
           if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
             newComments = newComments.slice(1);
           }
@@ -142,6 +140,13 @@ export class TieContentPageVM extends BaseVM {
       await this.loadData(true);
     } else {
       LogUtil.debug(TAG, 'No more pages');
+    }
+  }
+
+  async supportTie() {
+    if (this.tieSummary) {
+      const result = await ForumApi.supportTie(this.tieSummary.thread_id);
+      // 点赞成功返回0，取消点赞成功返回1
     }
   }
 
