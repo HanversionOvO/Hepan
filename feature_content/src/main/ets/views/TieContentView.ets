@@ -142,7 +142,7 @@ export struct TieContentView {
           uiState: this.vm.commentLoadingState
         }) {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-            LazyForEach(this.vm.commentDataSource, (comment: ForumDetailComment) => {
+            ForEach(this.vm.tieComments || [], (comment: ForumDetailComment) => {
               CommentCard({
                 tieComment: comment,
                 authorID: this.vm.tieTopic?.user_id
@@ -158,6 +158,8 @@ export struct TieContentView {
                 bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
               })
 
+            Column()
+              .height(CommonConstant.)
           }
         }
       }
@@ -233,27 +235,34 @@ export struct TieContentView {
             }
             .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
 
-            // 平板模式下的评论列表滚动容器
-            Scroll(this.vm.commentScroller) {
+            // --- 修复点：手机模式下移除嵌套的 Scroll ---
+            if (this.vm.isTabletView) {
+              // 平板模式：使用独立的 Scroll 容器
+              Scroll(this.vm.commentScroller) {
+                Column() {
+                  this.CommentContent()
+                }
+                .width("auto")
+                .justifyContent(FlexAlign.Start)
+              }
+              .height(CommonConstant.FullPercent)
+              .layoutWeight(1)
+              .align(Alignment.TopStart)
+              .scrollBar(BarState.Off)
+              .nestedScroll({
+                scrollForward: NestedScrollMode.SELF_FIRST,
+                scrollBackward: NestedScrollMode.SELF_FIRST,
+              })
+              .onReachEnd(() => {
+                this.vm.loadMore();
+              })
+            } else {
+              // 手机模式：直接渲染内容，由外层 outerPageScroller 负责滚动
               Column() {
                 this.CommentContent()
               }
-              .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
-              .justifyContent(FlexAlign.Start)
+              .width(CommonConstant.FullPercent)
             }
-            .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
-            .layoutWeight(this.vm.isTabletView ? 1 : 0)
-            .align(Alignment.TopStart)
-            .scrollBar(BarState.Off)
-            .nestedScroll({
-              scrollForward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
-              scrollBackward: this.vm.isTabletView ? NestedScrollMode.SELF_FIRST : NestedScrollMode.PARENT_FIRST,
-            })
-            .onReachEnd(() => {
-              if (this.vm.isTabletView) {
-                this.vm.loadMore();
-              }
-            })
           }
           .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
         }

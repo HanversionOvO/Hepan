@@ -37,7 +37,7 @@ export struct CommentCard {
       .alignItems(HorizontalAlign.Start)
 
       // 2. 主内容区
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         // 用户信息行
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
           Text(this.tieComment.reply_name)
@@ -83,9 +83,10 @@ export struct CommentCard {
           .fontSize(CommonConstant.TextSizeLarge)
           .fontColor([$r('sys.color.font_tertiary')])
 
-        Text(this.tieComment.extraPanel.find((item: ForumExtraPanel) => {
-          item.type === "support"
-        })?.extParams.recommendAdd.toString())
+        Text(
+          (this.tieComment.extraPanel.find((item: ForumExtraPanel) => item.type === "support")
+          ?.extParams?.recommendAdd || 0).toString()
+        )
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor($r('sys.color.font_tertiary'))
       }
