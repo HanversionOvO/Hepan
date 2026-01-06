@@ -87,10 +87,6 @@ export class TieContentPageVM extends BaseVM {
             this.forumName = forumName;
             this.commentDataSource.setData(newComments);
           }
-
-          if (!this.tieComments) {
-            this.commentLoadingState = UiState.EMPTY;
-          }
         }
 
       } catch (error) {
@@ -119,7 +115,7 @@ export class TieContentPageVM extends BaseVM {
     if (this.isLoadingMore || !this.tieComments) {
       return;
     }
-    
+
     if (this.hasNext) {
       this.currentPage++;
       await this.loadData(true);
