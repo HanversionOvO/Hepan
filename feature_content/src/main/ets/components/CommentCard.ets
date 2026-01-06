@@ -62,7 +62,8 @@ export struct CommentCard {
         TieContentRender({
           contents: this.tieComment.reply_content,
           quoteContent: this.tieComment.quote_content_bare,
-          quoteUserName: this.tieComment.quote_user_name
+          quoteUserName: this.tieComment.quote_user_name,
+          isQuote: this.tieComment.is_quote
         })
 
         // 底部元数据 (时间 · 地点 · 回复)

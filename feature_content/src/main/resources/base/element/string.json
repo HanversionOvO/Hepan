@@ -103,6 +103,10 @@
     {
       "name": "TieContentPage_download",
       "value": "下载"
+    },
+    {
+      "name": "TieContentPage_reply",
+      "value": "回复"
     }
   ]
 }

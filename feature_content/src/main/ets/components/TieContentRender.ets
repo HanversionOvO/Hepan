@@ -1,3 +1,4 @@
+import { ResUtil } from '@pura/harmony-utils';
 import { CommonConstant } from 'base_common';
 import { CustomMarkdown, GlassButton } from 'base_ui';
 
@@ -17,6 +18,7 @@ export struct TieContentRender {
   // 接收引用内容和用户名
   @Param quoteContent: string = '';
   @Param quoteUserName: string = '';
+  @Param isQuote: number = 0;
   @Local displayItems: ContentItem[] = [];
   @Local attachmentItems: ContentItem[] = [];
 
@@ -24,7 +26,7 @@ export struct TieContentRender {
     this.processContents();
   }
 
-  @Monitor('contents','quoteContent','quoteUserName')
+  @Monitor('contents', 'quoteContent', 'quoteUserName', 'isQuote')
   onContentsChange() {
     this.processContents();
   }
@@ -38,25 +40,18 @@ export struct TieContentRender {
 
     let tempItems: ContentItem[] = [];
 
-    // 1. 处理引用内容（放在最前面）
-    // 只要有引用内容就显示，不再强依赖用户名或 is_quote 标记
-    if (this.quoteContent && this.quoteContent.trim().length > 0) {
+    if (this.isQuote === 1 && this.quoteContent && this.quoteContent.trim().length > 0) { // [!code ++] 修改判断逻辑
       tempItems.push({
-        type: 6, // 自定义类型：引用块
+        type: 6,
         infor: this.quoteContent,
         originalInfo: this.quoteUserName
       });
     }
 
-    // 2. 处理正文内容
     this.contents.forEach(item => {
-      // 过滤附件
       if (item.type === 5) {
         return;
       }
-
-      // 直接透传内容，不再进行正则拆分
-      // mobcent_phiz 表情将交由 CustomMarkdown 的 ImageSpan 行内渲染
       tempItems.push({
         type: item.type,
         infor: item.infor,
@@ -115,14 +110,12 @@ export struct TieContentRender {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       ForEach(this.displayItems, (item: ContentItem, index: number) => {
         if (item.type === 0) {
-          // 纯文本：使用 CustomMarkdown 并关闭并行模式，以启用 parseInlineSpans 处理 mobcent_phiz
           CustomMarkdown({
             content: item.infor,
             useParallel: false,
             textSize: this.textSize
           })
         } else if (item.type === 1) {
-          // 图片
           Image(item.originalInfo || item.infor)
             .width(CommonConstant.FullPercent)
             .objectFit(ImageFit.Contain)
@@ -131,7 +124,6 @@ export struct TieContentRender {
             .enableAnalyzer(true)
 
         } else if (item.type === 4) {
-          // 链接
           Text(item.infor)
             .fontSize(this.textSize)
             .fontColor(CommonConstant.ThemeColor)
@@ -161,17 +153,16 @@ export struct TieContentRender {
         } else if (item.type === 6) {
           // 引用/回复卡片渲染
           Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-            // 只有当有用户名时，才显示“回复 xxx”的标题
             if (item.originalInfo && item.originalInfo.trim().length > 0) {
               Row() {
-                Text("回复 ")
+                Text(ResUtil.getStringSync($r('app.string.TieContentPage_reply')) + " ")
                   .fontSize(CommonConstant.TextSizeSmall)
                   .fontColor($r('sys.color.font_tertiary'))
                 Text(item.originalInfo)
                   .fontSize(CommonConstant.TextSizeSmall)
                   .fontColor($r('sys.color.font_primary'))
                   .fontWeight(FontWeight.Bold)
-                Text("：")
+                Text(": ")
                   .fontSize(CommonConstant.TextSizeSmall)
                   .fontColor($r('sys.color.font_tertiary'))
               }

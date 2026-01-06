@@ -238,7 +238,7 @@ export struct CustomMarkdown {
         Markdown({ text: this.content, controller: this.controller })
           .width(CommonConstant.FullPercent)
       } else {
-        Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           ForEach(this.segments, (item: BBSegment) => {
             if (item.type === 'quote') {
               Column({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -300,6 +300,7 @@ export struct CustomMarkdown {
               .width(CommonConstant.FullPercent)
               .wordBreak(WordBreak.BREAK_ALL)
               .copyOption(CopyOptions.LocalDevice)
+              .lineHeight(CommonConstant.TextSizeUltraLarge)
             }
           })
         }
