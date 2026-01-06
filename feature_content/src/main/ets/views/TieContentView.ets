@@ -157,9 +157,6 @@ export struct TieContentView {
               .padding({
                 bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
               })
-
-            Column()
-              .height(CommonConstant.)
           }
         }
       }
