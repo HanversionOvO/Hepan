@@ -1,6 +1,6 @@
 import { ReplyPageVM } from '../viewmodels/ReplyPageVM';
 import { KeyboardAvoidMode } from '@kit.ArkUI';
-import { AppUtil } from '@pura/harmony-utils';
+import { AppUtil, ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, RouterUtil } from 'base_common';
 import { CustomAtPanel, CustomFacePanel } from 'base_ui';
 import { ImagePicker } from 'feature_post';
@@ -252,11 +252,14 @@ export struct ReplyPageImpl {
         const threadId = params['threadId'] as number;
         const postId = params['postId'] as number ?? 0;
         const replyUser = params['replyUser'] as string ?? '';
+        const replyDate = params['replyDate'] as string ?? '';
+        const quoteContent = params['quoteContent'] as string ?? '';
 
-        this.vm.init(threadId, postId);
+        this.vm.init(threadId, postId, replyUser, replyDate, quoteContent);
 
         if (replyUser) {
-          this.placeHolder = `回复 @${replyUser}: `;
+          this.placeHolder =
+            `${ResUtil.getStringSync($r('app.string.ReplyPage_reply'))} @${replyUser}: ${quoteContent}`;
         }
       }
 

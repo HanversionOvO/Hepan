@@ -12,6 +12,9 @@ const BASE_URL = 'https://bbs.uestc.edu.cn';
 export class ReplyPageVM extends BaseVM implements IImagePickerVM {
   @Trace threadId: number = 0;
   @Trace postId: number = 0;
+  @Trace replyUser: string = '';
+  @Trace replyDate: string = '';
+  @Trace quoteContent: string = '';
   @Trace replyContent: string = '';
   @Trace isAnonymous: boolean = false;
   @Trace usesig: boolean = true;
@@ -25,9 +28,13 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
   @Trace isSendSuccess: boolean = false;
   controller: TextAreaController = new TextAreaController();
 
-  init(threadId: number, postId: number = 0) {
+  init(threadId: number, postId: number = 0, replyUser: string = '', replyDate: string = '',
+    quoteContent: string = '') {
     this.threadId = threadId;
     this.postId = postId;
+    this.replyUser = replyUser;
+    this.replyDate = replyDate;
+    this.quoteContent = quoteContent;
   }
 
   // === 实现 IImagePickerVM 接口 ===
@@ -161,6 +168,12 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
         }
       }
     });
+
+    if (this.postId > 0) {
+      const quoteHeader =
+        `> ${this.replyUser} 发表于 [${this.replyDate}](/goto/${this.postId})\n> ${this.quoteContent}\n\n`;
+      processedMessage = quoteHeader + processedMessage;
+    }
 
     const request: ReplyRequest = {
       thread_id: this.threadId,

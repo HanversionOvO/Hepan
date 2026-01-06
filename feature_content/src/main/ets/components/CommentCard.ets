@@ -8,6 +8,36 @@ export struct CommentCard {
   @Param @Require authorID: number;
   @Param threadId: number = 0;
 
+  private formatPostDate(timestampStr: string): string {
+    let timestamp = NumberUtil.toNumber(timestampStr);
+    if (!timestamp) {
+      return '';
+    }
+
+    if (timestamp < 10000000000) {
+      timestamp = timestamp * 1000;
+    }
+
+    const date = new Date(timestamp);
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const d = date.getDate().toString().padStart(2, '0');
+    const h = date.getHours().toString().padStart(2, '0');
+    const min = date.getMinutes().toString().padStart(2, '0');
+    return `${y}-${m}-${d} ${h}:${min}`;
+  }
+
+  private getQuoteContent(): string {
+    if (!this.tieComment.reply_content) {
+      return '';
+    }
+    return this.tieComment.reply_content
+      .filter(item => item.type === 0)
+      .map(item => item.infor)
+      .join(' ')
+      .trim();
+  }
+
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       // 1. 头像区
@@ -79,10 +109,15 @@ export struct CommentCard {
             .fontColor($r('sys.color.font_secondary'))
             .onClick(() => {
               if (this.threadId && this.threadId !== 0) {
+                const replyDate = this.formatPostDate(this.tieComment.posts_date);
+                const quoteContent = this.getQuoteContent();
+
                 RouterUtil.pushPathByName("ReplyPage", {
                   "threadId": this.threadId,
                   "postId": this.tieComment.reply_posts_id,
-                  "replyUser": this.tieComment.reply_name
+                  "replyUser": this.tieComment.reply_name,
+                  "replyDate": replyDate,
+                  "quoteContent": quoteContent
                 } as Record<string, Object>, undefined, false);
               }
             })
