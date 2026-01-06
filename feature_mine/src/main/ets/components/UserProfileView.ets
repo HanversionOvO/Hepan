@@ -1,70 +1,72 @@
+// feature_mine/src/main/ets/components/UserProfileView.ets
 import { CommonConstant } from 'base_common';
-import { StickyNavBar } from '../components/StickyNavBar';
-import { UserInfoArea } from '../components/UserInfoArea';
-import { UserPostArea } from '../components/UserPostArea';
 import { MinePageVM } from '../viewmodels/MinePageVM';
+import { StickyNavBar } from './StickyNavBar';
+import { UserInfoArea } from './UserInfoArea';
+import { UserPostArea } from './UserPostArea';
 
 @ComponentV2
 export struct UserProfileView {
   @Param @Require vm: MinePageVM;
+  // 用于测量 UserInfoArea 的高度，确定吸顶阈值
+  @Local userInfoHeight: number = 200;
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
-      Column()
+      // 1. 背景层
+      Image("https://gips2.baidu.com/it/u=2055042668,1190219470&fm=3028&app=3028&f=JPEG&fmt=auto?w=960&h=1280")
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .backgroundColor(Color.Black)
-        .opacity(0.2)
+        .objectFit(ImageFit.Cover)
+        .opacity(0.5)
+        .blur(40)
+        .fillColor($r('app.color.glass_background'))
 
-      // 新增：使用 Refresh 包裹 Scroll
-      Refresh({ refreshing: $$this.vm.isRefreshing }) {
+      Refresh({ refreshing: this.vm.isRefreshing }) {
         Scroll(this.vm.outerScrollScroller) {
-          Column() {
+          Column({ space: CommonConstant.NormalContainerInnerPadding }) {
             UserInfoArea({ vm: this.vm })
-              .padding({
-                left: CommonConstant.NormalContainerLRPadding,
-                right: CommonConstant.NormalContainerLRPadding,
-                top: CommonConstant.NormalContainerTBPadding,
-                bottom: CommonConstant.NormalContainerTBPadding
+              .onAreaChange((oldValue, newValue) => {
+                if (typeof newValue.height === 'number') {
+                  this.userInfoHeight = newValue.height;
+                }
               })
 
             UserPostArea({ vm: this.vm })
+              .height(this.vm.window.windowHeight - CommonConstant.TopBarHeight - this.vm.window.windowTopPadding)
+              .width(CommonConstant.FullPercent)
           }
+          .width(CommonConstant.FullPercent)
         }
         .scrollBar(BarState.Off)
+        .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .onReachEnd(() => {
-          if (!this.vm.isSticky) {
-            this.vm.isSticky = true;
-          }
-        })
-        .onDidScroll(() => {
-          const isAtEnd = this.vm.outerScrollScroller.isAtEnd();
-          if (this.vm.isSticky && !isAtEnd) {
-            this.vm.isSticky = false;
-          }
-          if (!this.vm.isSticky && isAtEnd) {
-            this.vm.isSticky = true;
+        .onScroll(() => {
+          const yOffset = this.vm.outerScrollScroller.currentOffset().yOffset;
+
+          // 计算 StickyNavBar 的不透明度
+          const threshold = this.userInfoHeight / 2;
+          this.vm.navBarOpacity = Math.min(Math.max(yOffset / threshold, 0), 1);
+
+          // 计算 TabBar 的 Glass 效果
+          // 当滚动超过 userInfoHeight - TopBarHeight 时，Tab 栏接触顶部
+          const glassThreshold = this.userInfoHeight - CommonConstant.TopBarHeight - this.vm.window.windowTopPadding;
+          const isSticky = yOffset >= glassThreshold;
+
+          if (this.vm.isTabBarGlass !== isSticky) {
+            this.vm.isTabBarGlass = isSticky;
           }
         })
       }
       .onRefreshing(() => {
-        // 触发刷新数据
-        this.vm.refreshData();
+        this.vm.onRefreshAll();
       })
-      .width(CommonConstant.FullPercent)
-      .height(CommonConstant.FullPercent)
 
-      if (this.vm.isSticky) {
-        StickyNavBar({ vm: this.vm })
-      }
+      StickyNavBar({ vm: this.vm })
+        .opacity(this.vm.navBarOpacity)
+        .hitTestBehavior(this.vm.navBarOpacity > 0.5 ? HitTestMode.Default : HitTestMode.None)
     }
-    .backgroundImage("https://gips2.baidu.com/it/u=2055042668,1190219470&fm=3028&app=3028&f=JPEG&fmt=auto?w=960&h=1280")
-    .backgroundImageSize(ImageSize.Cover)
-    .backgroundImagePosition(Alignment.Center)
-    .backgroundBlurStyle(BlurStyle.Regular)
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
-    .transition(CommonConstant.CONF_TRANSITION)
   }
 }

@@ -140,7 +140,9 @@ export struct UserInfoArea {
     }
     .width(CommonConstant.FullPercent)
     .padding({
-      top: CommonConstant.TopBarHeight + this.vm.window.windowTopPadding
+      top: CommonConstant.TopBarHeight + this.vm.window.windowTopPadding,
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding
     })
   }
 }

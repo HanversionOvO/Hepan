@@ -32,17 +32,17 @@ export class MineTabVM extends BaseVM {
   @Trace list: ForumTieSummary[] = [];
   @Trace state: UiState = UiState.LOADING;
   @Trace isRefreshing: boolean = false;
-  // 页面缩放状态 (每个 Tab 独立管理，互不影响)
+  // 页面缩放状态 (每个 Tab 独立管理)
   @Trace pageScale: number = 1.0;
-  // 瀑布流列数 (支持捏合)
+  // 瀑布流列数
   @Trace columns: number = 2;
   @Trace minColumns: number = 1;
   @Trace maxColumns: number = 2;
   @Trace isScaling: boolean = false;
   private page: number = 1;
   private uid: number | 'me' = 'me';
-  private tabType: 'thread' | 'reply' | 'fav'; // 用于区分 ID 前缀
-  private user: UserProfileData | null = null; // 用于数据映射时的用户信息补全
+  private tabType: 'thread' | 'reply' | 'fav';
+  private user: UserProfileData | null = null;
 
   constructor(tabType: 'thread' | 'reply' | 'fav') {
     super();
@@ -63,7 +63,6 @@ export class MineTabVM extends BaseVM {
     this.maxColumns = max;
   }
 
-  // 生成唯一的组件 ID，解决动画位置错乱的核心
   getUniqueId(tid: number): string {
     return `${this.tabType}_${tid}`;
   }
@@ -93,7 +92,7 @@ export class MineTabVM extends BaseVM {
 
   private async loadThreads(refresh: boolean) {
     const data = await UserApi.getUserThreads(this.page, this.uid);
-    const rows = data.rows;
+    const rows = data.rows as ForumTieSummary[];
     this.handleResult(rows, refresh);
   }
 
@@ -140,7 +139,6 @@ export class MineTabVM extends BaseVM {
     }
   }
 
-  // 这里的 tid 必须是 getUniqueId 返回的值
   enterDetailPage(tid: number, context: UIContext, tieSummary: ForumTieSummary) {
     const uniqueId = this.getUniqueId(tid);
 
@@ -176,17 +174,20 @@ export class MinePageVM extends BaseVM {
   // === 基础状态 ===
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace userPostTabController: TabsController = new TabsController();
-  @Trace isSticky: boolean = false;
+  // 控制 StickyNavBar 的显示 (Opacity)
+  @Trace navBarOpacity: number = 0;
+  // 控制 TabBar 的 Glass 效果
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
   @Trace isShowMedalSheet: boolean = false;
   @Trace allMedals: Medal[] = [];
+  // 全局刷新状态
   @Trace isRefreshing: boolean = false;
   @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
-  // === 子 ViewModel (分别为帖子、回复、收藏) ===
+  // === 子 ViewModel ===
   @Trace threadVM: MineTabVM = new MineTabVM('thread');
   @Trace replyVM: MineTabVM = new MineTabVM('reply');
   @Trace favVM: MineTabVM = new MineTabVM('fav');
@@ -197,7 +198,7 @@ export class MinePageVM extends BaseVM {
   ]
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
-  // 瀑布流布局配置 (用于分发给子 VM)
+  // 瀑布流布局配置
   private defaultColumnsConfig = new BreakpointType({
     sm: 2,
     md: 3,
@@ -222,7 +223,6 @@ export class MinePageVM extends BaseVM {
     return this.uid === 'me';
   }
 
-  // 方便 UI 获取当前激活的 VM
   @Computed
   get currentTabVM(): MineTabVM {
     if (this.currentUserPostTabIndex === 1) {
@@ -240,7 +240,6 @@ export class MinePageVM extends BaseVM {
     const min = this.minColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
     const max = this.maxColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
 
-    // 同步配置给所有子 VM
     this.threadVM.updateGridConfig(cols, min, max);
     this.replyVM.updateGridConfig(cols, min, max);
     this.favVM.updateGridConfig(cols, min, max);
@@ -255,9 +254,22 @@ export class MinePageVM extends BaseVM {
 
   async startMine() {
     this.onBreakpointChange();
-    await this.refreshData();
-    // 初始加载第一个 Tab
-    this.changeUserPostTab(0);
+    await this.onRefreshAll();
+  }
+
+  // === 统一刷新入口 ===
+  async onRefreshAll() {
+    this.isRefreshing = true;
+    try {
+      await Promise.all([
+        this.refreshData(),
+        this.currentTabVM.loadMineData(true)
+      ]);
+    } catch (e) {
+      LogUtil.error(TAG, 'Refresh all failed: ' + JSON.stringify(e));
+    } finally {
+      this.isRefreshing = false;
+    }
   }
 
   async refreshData() {
@@ -265,7 +277,6 @@ export class MinePageVM extends BaseVM {
       const fullProfile = await UserApi.getFullUserProfile(this.uid);
       if (fullProfile && fullProfile.user_summary) {
         this.user = fullProfile;
-        // 同步用户数据给子 VM (主要用于 replyVM 映射用户名)
         this.threadVM.updateUser(fullProfile);
         this.replyVM.updateUser(fullProfile);
         this.favVM.updateUser(fullProfile);
@@ -275,16 +286,12 @@ export class MinePageVM extends BaseVM {
       }
     } catch (error) {
       LogUtil.error(TAG, 'Failed to fetch full user profile.', JSON.stringify(error));
-    } finally {
-      this.isRefreshing = false;
     }
   }
 
-  // 切换 Tab 并触发加载
   changeUserPostTab(index: number) {
     this.currentUserPostTabIndex = index;
     const targetVM = this.currentTabVM;
-    // 如果是初始 Loading 状态且未在刷新，则触发加载
     if (targetVM.state === UiState.LOADING && !targetVM.isRefreshing) {
       targetVM.loadMineData(true);
     }
