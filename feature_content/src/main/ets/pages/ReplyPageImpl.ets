@@ -281,5 +281,9 @@ export struct ReplyPageImpl {
     .onHidden(() => {
       this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.OFFSET)
     })
+    .onBackPressed(() => {
+      this.closeDialog();
+      return true;
+    })
   }
 }
