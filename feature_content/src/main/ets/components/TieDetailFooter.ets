@@ -34,17 +34,12 @@ export struct TieDetailFooter {
           .fontColor($r('sys.color.font_primary'))
       }
       .borderRadius(CommonConstant.RadiusRound)
-      .padding({
-        left: CommonConstant.SmallContainerLRPadding,
-        right: CommonConstant.SmallContainerLRPadding,
-        top: CommonConstant.SmallContainerTBPadding,
-        bottom: CommonConstant.SmallContainerTBPadding
-      })
+      .padding(CommonConstant.SmallContainerInnerPadding)
       .backgroundColor($r('app.color.second_window_background'))
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieTopic?.hits || 0)
-        this.FooterIcon($r('sys.symbol.flame'), this.vm.tieTopic?.hot || 0)
+        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieTopic?.hits ?? 0)
+        this.FooterIcon($r('sys.symbol.flame'), this.vm.tieTopic?.hot ?? 0)
       }
     }
     .width(CommonConstant.FullPercent)

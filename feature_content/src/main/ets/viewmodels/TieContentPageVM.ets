@@ -8,7 +8,6 @@ import {
   ForumDetailResponse,
   ForumDetailTopic,
   ForumTieSummary,
-  TieDetail,
   UiState
 } from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
@@ -25,7 +24,6 @@ export class TieContentPageVM extends BaseVM {
   @Trace tieTopic: ForumDetailTopic | null = null;
   @Trace tieComments: ForumDetailComment[] | null = null;
   @Trace forumName: string = '';
-  @Trace tieDetail: TieDetail | null = null;
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;
   @Trace hasNext: number = 1;
@@ -60,6 +58,12 @@ export class TieContentPageVM extends BaseVM {
     if (this.tieSummary) {
       if (isLoadMore) {
         this.isLoadingMore = true;
+      } else {
+        // 如果不是加载更多（首次加载），且当前没有数据，显示 Loading 状态
+        // 如果是下拉刷新，通常保留当前画面或由 Refresh 组件控制，不强制 Loading
+        if (!this.tieComments || this.tieComments.length === 0) {
+          this.commentLoadingState = UiState.LOADING;
+        }
       }
 
       try {
@@ -70,8 +74,9 @@ export class TieContentPageVM extends BaseVM {
           const topic = result.topic;
           const forumName: string = result.forumName;
           this.hasNext = result.has_next;
+          this.isReachEnd = this.hasNext === 0;
 
-          let newComments = result.list;
+          let newComments = result.list || [];
 
           if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
             newComments = newComments.slice(1);
@@ -80,17 +85,31 @@ export class TieContentPageVM extends BaseVM {
           if (isLoadMore && this.tieComments) {
             const allRows = this.tieComments.concat(newComments);
             this.tieComments = allRows;
-
             this.commentDataSource.addData(newComments);
           } else {
             this.tieTopic = topic;
+            LogUtil.debug(TAG, JSON.stringify(this.tieTopic.hits))
             this.forumName = forumName;
+            this.tieComments = newComments;
             this.commentDataSource.setData(newComments);
+
+            if (this.tieComments.length === 0) {
+              this.commentLoadingState = UiState.EMPTY;
+            } else {
+              this.commentLoadingState = UiState.SUCCESS;
+            }
+          }
+        } else {
+          if (!isLoadMore && !this.tieComments) {
+            this.commentLoadingState = UiState.EMPTY;
           }
         }
 
       } catch (error) {
-
+        LogUtil.error(TAG, `Load data failed: ${JSON.stringify(error)}`);
+        if (!isLoadMore) {
+          this.commentLoadingState = UiState.ERROR;
+        }
       } finally {
         this.isLoadingMore = false;
         this.isRefreshingDetail = false;
@@ -104,6 +123,8 @@ export class TieContentPageVM extends BaseVM {
   async refresh() {
     this.currentPage = 1;
     this.isRefreshingDetail = true;
+    this.hasNext = 1; // 重置分页状态
+    this.isReachEnd = false;
     await this.loadData(false);
   }
 

@@ -1,4 +1,4 @@
-import { CommonConstant, TieRow, TransitionMap } from 'base_common';
+import { CommonConstant, ForumDetailComment, TransitionMap } from 'base_common';
 import { CustomFloatNavTitle, CustomMarkdown, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -7,7 +7,6 @@ import { UserInfoArea } from '../components/UserInfoArea';
 import { TieDetailFooter } from '../components/TieDetailFooter';
 import { TieDetailComment } from '../components/TieDetailComment';
 import { ResUtil } from '@pura/harmony-utils';
-import { CommentCard } from '../components/CommentCard';
 import { ImagePlacer } from '../components/ImagePlacer';
 
 @ComponentV2
@@ -137,30 +136,21 @@ export struct TieContentView {
           uiState: this.vm.commentLoadingState
         }) {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-            LazyForEach(this.vm.commentDataSource, (comment: TieRow) => {
-              CommentCard({
-                thread: this.vm.tieDetail?.thread,
-                comment: comment
-              })
-            }, (comment: TieRow) => comment.post_id.toString())
+            LazyForEach(this.vm.commentDataSource, (comment: ForumDetailComment) => {
+              // CommentCard({
+              //   thread: this.vm.tieDetail?.thread,
+              //   comment: comment
+              // })
+            }, (comment: ForumDetailComment) => comment.reply_id.toString())
 
-            if (this.vm.tieDetail?.rows.length === 1) {
-              Text("- No Content -")
-                .width(CommonConstant.FullPercent)
-                .height(CommonConstant.FullPercent)
-                .fontSize(CommonConstant.TextSizeSmall)
-                .fontColor($r('sys.color.font_tertiary'))
-                .textAlign(TextAlign.Center)
-            } else {
-              Text("- THE END -")
-                .width(CommonConstant.FullPercent)
-                .fontSize(CommonConstant.TextSizeSmall)
-                .fontColor($r('sys.color.font_tertiary'))
-                .textAlign(TextAlign.Center)
-                .padding({
-                  bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
-                })
-            }
+            Text("- THE END -")
+              .width(CommonConstant.FullPercent)
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor($r('sys.color.font_tertiary'))
+              .textAlign(TextAlign.Center)
+              .padding({
+                bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
+              })
 
           }
         }
