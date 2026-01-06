@@ -22,6 +22,7 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
   // 光标控制
   @Trace selectionStart: number = 0;
   @Trace selectionEnd: number = 0;
+  @Trace isSendSuccess: boolean = false;
   controller: TextAreaController = new TextAreaController();
 
   init(threadId: number) {
@@ -173,6 +174,7 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
       await ForumApi.reply(request);
       ToastUtil.hideLoading();
       ToastUtil.showSuccess($r('app.string.ReplyPage_reply_success'));
+      this.isSendSuccess = true;
       return true;
     } catch (e) {
       ToastUtil.hideLoading();

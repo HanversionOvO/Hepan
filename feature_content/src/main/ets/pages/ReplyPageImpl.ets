@@ -16,11 +16,15 @@ export struct ReplyPageImpl {
   }
 
   private closeDialog() {
+    const state: Record<string, boolean> = {
+      "isSend": this.vm.isSendSuccess
+    }
+
     AppUtil.getUIContext().animateTo({
       duration: CommonConstant.AnimationDurationNormal,
       curve: Curve.EaseOut,
       onFinish: () => {
-        RouterUtil.pop(undefined, false)
+        RouterUtil.pop(state, false)
       }
     }, () => {
       this.isShow = false;

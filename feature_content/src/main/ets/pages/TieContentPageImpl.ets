@@ -42,12 +42,18 @@ export struct TieContentPageImpl {
             },
           });
         }
-
         if (params["tieSummary"]) {
           this.vm.tieSummary = params["tieSummary"] as ForumTieSummary;
         }
-
         await this.vm.loadData();
+      }
+    })
+    .onResult(async (result: Record<string, boolean>) => {
+      if (result) {
+        const isSend = result["isSend"];
+        if (isSend) {
+          await this.vm.refresh()
+        }
       }
     })
   }
