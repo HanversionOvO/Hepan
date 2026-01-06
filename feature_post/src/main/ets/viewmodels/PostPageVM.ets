@@ -372,7 +372,7 @@ export class PostPageVM extends BaseVM {
   }
 
   insertFace(url: string) {
-    const faceText = `![](${url})`;
+    const faceText = `[mobcent_phiz=${url}]`;
     this.insertTextAtCursor(faceText);
   }
 

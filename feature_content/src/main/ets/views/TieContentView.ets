@@ -122,7 +122,7 @@ export struct TieContentView {
             .fontWeight(FontWeight.Medium)
             .fontColor($r('sys.color.font_secondary'))
             .layoutWeight(this.vm.isTabletView ? 1 : "auto")
-            .width(this.vm.isTabletView ? "auto" : "100%")
+            .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
 
           CustomTabBar({
             vm: this.vm,
