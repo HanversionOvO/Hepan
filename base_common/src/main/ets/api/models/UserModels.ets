@@ -3,6 +3,8 @@
  * 对应文档: docs/api_new/doc/用户.md
  */
 
+import { ForumTieSummary } from './ForumModels';
+
 // ==========================================
 // 通用响应结构
 // ==========================================
@@ -17,7 +19,7 @@ export interface PaginationData<T> {
   total: number;
   page_size: number;
   page: number;
-  rows: FriendUser[];
+  rows: T[];
   hidden?: boolean; // 部分接口（如好友、留言板）可能包含此字段
 }
 
@@ -172,4 +174,31 @@ export interface InterestingUser {
   username: string;
   avatar: string;
   isFriend: boolean;
+}
+
+export interface UserThread extends ForumTieSummary {
+  forum_name?: string;
+}
+
+export interface UserReply {
+  forum_id: number;
+  thread_id: number;
+  post_id: number;
+  subject: string;
+  summary: string;
+  dateline: number;
+  last_post: number;
+  last_poster: string;
+  views: number;
+  replies: number;
+  forum_name: string;
+}
+
+export interface UserFavorite {
+  favorite_id: number;
+  target_id: number;
+  target_type: string;
+  title: string;
+  dateline: number;
+  thread_details: ForumTieSummary;
 }

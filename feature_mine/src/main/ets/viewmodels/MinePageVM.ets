@@ -1,29 +1,44 @@
+// feature_mine/src/main/ets/viewmodels/MinePageVM.ets
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, DateUtil, RouterMap, RouterUtil, UserApi } from 'base_common';
+import {
+  BaseVM,
+  BreakpointType,
+  CommonConstant,
+  DateUtil,
+  ForumTieSummary,
+  RouterMap,
+  RouterUtil,
+  UiState,
+  UserApi
+} from 'base_common';
 import { Medal, UserProfileData } from 'base_common/src/main/ets/api/models/UserModels';
 import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
 import { UserStatsModel } from '../components/UserStats';
-import { CustomTabItem } from 'base_ui';
+import {
+  CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam
+} from 'base_ui';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
+import { curves } from '@kit.ArkUI';
 
 const TAG = '[MinePageVM]: '
 
 @ObservedV2
 export class MinePageVM extends BaseVM {
+  // === 基础状态 ===
   @Trace outerScrollScroller: Scroller = new Scroller();
   @Trace userPostTabController: TabsController = new TabsController();
   @Trace isSticky: boolean = false;
   @Trace isTabBarGlass: boolean = false;
   @Trace isShowSignatureSheet: boolean = false;
   @Trace isShowUserProfileSheet: boolean = false;
-  // 新增：勋章 Sheet 显示状态
   @Trace isShowMedalSheet: boolean = false;
-  // 新增：所有勋章列表
   @Trace allMedals: Medal[] = [];
   @Trace isRefreshing: boolean = false;
   @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
+  // === Tab 配置 ===
   @Trace userPostTabItems: CustomTabItem[] = [
     { label: $r('app.string.MinePage_mine_post'), icon: $r('sys.symbol.book_closed_right_left') },
     { label: $r('app.string.MinePage_mine_reply'), icon: $r('sys.symbol.message') },
@@ -31,10 +46,41 @@ export class MinePageVM extends BaseVM {
   ]
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
+  // === 列表数据状态 ===
+  // 1. 发布的帖子
+  @Trace threads: ForumTieSummary[] = [];
+  @Trace threadsState: UiState = UiState.LOADING;
+  @Trace isRefreshingThreads: boolean = false;
+  private threadsPage: number = 1;
+  // 2. 回复的内容
+  @Trace replies: ForumTieSummary[] = [];
+  @Trace repliesState: UiState = UiState.LOADING;
+  @Trace isRefreshingReplies: boolean = false;
+  private repliesPage: number = 1;
+  // 3. 收藏的内容
+  @Trace favorites: ForumTieSummary[] = [];
+  @Trace favoritesState: UiState = UiState.LOADING;
+  @Trace isRefreshingFavorites: boolean = false;
+  private favoritesPage: number = 1;
+  // === 瀑布流布局配置 ===
+  @Trace columns: number = 2;
+  private defaultColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 5
+  });
+  // === 动画状态 ===
+  @Trace pageScale: number = 1.0;
 
   @Computed
   get isMe(): boolean {
     return this.uid === 'me';
+  }
+
+  @Monitor("breakPoint.currentBreakPoint")
+  onBreakpointChange() {
+    this.columns = this.defaultColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
   }
 
   init(uid: number | 'me') {
@@ -42,13 +88,15 @@ export class MinePageVM extends BaseVM {
   }
 
   async startMine() {
+    this.onBreakpointChange();
     await this.refreshData();
+    // 初始加载第一个 Tab 的数据
+    this.loadTabContent(0, true);
   }
 
   async refreshData() {
     try {
       const fullProfile = await UserApi.getFullUserProfile(this.uid);
-
       if (fullProfile && fullProfile.user_summary) {
         this.user = fullProfile;
         this.refreshDisplayData();
@@ -61,14 +109,12 @@ export class MinePageVM extends BaseVM {
     }
   }
 
-  // 新增：加载所有勋章
   async loadMedals() {
     if (this.allMedals.length > 0) {
       return;
     }
     try {
-      const medals = await UserApi.getMedals();
-      this.allMedals = medals;
+      this.allMedals = await UserApi.getMedals();
     } catch (error) {
       LogUtil.error(TAG, 'Failed to load medals', JSON.stringify(error));
     }
@@ -77,27 +123,20 @@ export class MinePageVM extends BaseVM {
   private refreshDisplayData() {
     this.userStats = [];
     this.featureCards = [];
-
     const summary = this.user?.user_summary;
     if (this.user && summary) {
       this.userStats.push({
         label: $r("app.string.MinePage_friends"),
         count: summary.friends,
         onClick: () => {
-          RouterUtil.pushPathByName(RouterMap.FANS, {
-            "tab": "fan",
-            "uid": this.uid
-          } as Record<string, Object>);
+          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "fan", "uid": this.uid } as Record<string, Object>);
         }
       });
       this.userStats.push({
         label: $r("app.string.MinePage_views"),
         count: summary.views,
         onClick: () => {
-          RouterUtil.pushPathByName(RouterMap.FANS, {
-            "tab": "visitor",
-            "uid": this.uid
-          } as Record<string, Object>);
+          RouterUtil.pushPathByName(RouterMap.FANS, { "tab": "visitor", "uid": this.uid } as Record<string, Object>);
         }
       });
       this.userStats.push({
@@ -114,7 +153,6 @@ export class MinePageVM extends BaseVM {
         cardIcon: $r('sys.symbol.medal'),
         cardTitle: $r('app.string.MinePage_medal'),
         cardCount: summary.medals?.length ?? 0,
-        // 新增：点击打开勋章 Sheet
         onClick: () => {
           this.isShowMedalSheet = true;
           this.loadMedals();
@@ -123,13 +161,171 @@ export class MinePageVM extends BaseVM {
     }
   }
 
-  // ... (editSignature, getFilteredUserProfile, formatDate, changeUserPostTab 保持不变) ...
-  async editSignature(signature: ResourceStr) {
+  // === 关键修改：列表加载触发逻辑 ===
+  changeUserPostTab(index: number) {
+    this.currentUserPostTabIndex = index;
+
+    // 逻辑修正：只要是初始状态(LOADING)且没有正在刷新，就应该触发加载
+    // 之前错误地判断了 state !== LOADING，导致初始状态无法触发加载
+    if (index === 0) {
+      if (this.threadsState === UiState.LOADING && !this.isRefreshingThreads) {
+        this.loadTabContent(0, true);
+      }
+    } else if (index === 1) {
+      if (this.repliesState === UiState.LOADING && !this.isRefreshingReplies) {
+        this.loadTabContent(1, true);
+      }
+    } else if (index === 2) {
+      if (this.favoritesState === UiState.LOADING && !this.isRefreshingFavorites) {
+        this.loadTabContent(2, true);
+      }
+    }
+  }
+
+  async loadTabContent(index: number, refresh: boolean) {
+    if (index === 0) {
+      await this.loadThreads(refresh);
+    } else if (index ===
+      1) {
+      await this.loadReplies(refresh);
+    } else if (index === 2) {
+      await this.loadFavorites(refresh);
+    }
+  }
+
+  async loadThreads(refresh: boolean) {
+    if (refresh) {
+      this.threadsPage = 1;
+      this.isRefreshingThreads = true;
+    }
+    try {
+      const data = await UserApi.getUserThreads(this.threadsPage, this.uid);
+      const rows = data.rows;
+
+      if (refresh) {
+        this.threads = rows;
+        this.threadsState = this.threads.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
+      } else {
+        this.threads.push(...rows);
+      }
+      if (rows.length > 0) {
+        this.threadsPage++;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Load threads failed: ' + JSON.stringify(e));
+      if (this.threads.length === 0) {
+        this.threadsState = UiState.ERROR;
+      }
+    } finally {
+      this.isRefreshingThreads = false;
+    }
+  }
+
+  async loadReplies(refresh: boolean) {
+    if (refresh) {
+      this.repliesPage = 1;
+      this.isRefreshingReplies = true;
+    }
+    try {
+      const data = await UserApi.getUserReplies(this.repliesPage, this.uid);
+      const mappedReplies: ForumTieSummary[] = (data.rows).map(reply => {
+        return {
+          thread_id: reply.thread_id,
+          forum_id: reply.forum_id,
+          type_id: 0,
+          author: this.user?.user_summary?.username || '',
+          author_id: this.user?.user_summary?.uid || 0,
+          subject: reply.subject,
+          summary: reply.summary,
+          dateline: reply.dateline,
+          last_post: reply.last_post,
+          views: reply.views,
+          replies: reply.replies,
+          forum_name: reply.forum_name
+        } as ForumTieSummary;
+      });
+
+      if (refresh) {
+        this.replies = mappedReplies;
+        this.repliesState = this.replies.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
+      } else {
+        this.replies.push(...mappedReplies);
+      }
+      if (data.rows.length > 0) {
+        this.repliesPage++;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Load replies failed: ' + JSON.stringify(e));
+      if (this.replies.length === 0) {
+        this.repliesState = UiState.ERROR;
+      }
+    } finally {
+      this.isRefreshingReplies = false;
+    }
+  }
+
+  async loadFavorites(refresh: boolean) {
     if (!this.isMe) {
-      this.isShowSignatureSheet = false;
+      this.favoritesState = UiState.EMPTY;
       return;
     }
-    if (!signature) {
+    if (refresh) {
+      this.favoritesPage = 1;
+      this.isRefreshingFavorites = true;
+    }
+    try {
+      const data = await UserApi.getUserFavorites(this.favoritesPage);
+      const mappedFavs: ForumTieSummary[] = (data.rows).map(fav => fav.thread_details);
+
+      if (refresh) {
+        this.favorites = mappedFavs;
+        this.favoritesState = this.favorites.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
+      } else {
+        this.favorites.push(...mappedFavs);
+      }
+      if (data.rows.length > 0) {
+        this.favoritesPage++;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Load favorites failed: ' + JSON.stringify(e));
+      if (this.favorites.length === 0) {
+        this.favoritesState = UiState.ERROR;
+      }
+    } finally {
+      this.isRefreshingFavorites = false;
+    }
+  }
+
+  // === 动画跳转 ===
+  enterDetailPage(tid: string, context: UIContext, tieSummary: ForumTieSummary) {
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.8;
+        })
+      },
+      onBackTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context,
+        tid, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+    if (longTakeTransitionParam) {
+      params["transition"] = longTakeTransitionParam;
+    }
+    params["tieSummary"] = tieSummary;
+
+    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
+  }
+
+  async editSignature(signature: ResourceStr) {
+    if (!this.isMe || !signature) {
       this.isShowSignatureSheet = false;
       return;
     }
@@ -144,7 +340,6 @@ export class MinePageVM extends BaseVM {
     const list: UserProfileSheetItem[] = [];
     const user = this.user;
     const summary = user?.user_summary;
-
     if (!user || !summary) {
       return list;
     }
@@ -186,9 +381,5 @@ export class MinePageVM extends BaseVM {
       }
     });
     return list;
-  }
-
-  changeUserPostTab(index: number) {
-    this.currentUserPostTabIndex = index;
   }
 }

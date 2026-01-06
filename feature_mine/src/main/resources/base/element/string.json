@@ -199,6 +199,14 @@
     {
       "name": "FansUserItem_delete_friend_success",
       "value": "成功删除好友"
+    },
+    {
+      "name": "TieCard_pub_time",
+      "value": "发布于"
+    },
+    {
+      "name": "TieCard_river",
+      "value": "小红畔"
     }
   ]
 }

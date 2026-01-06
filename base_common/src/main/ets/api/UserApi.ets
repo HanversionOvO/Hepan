@@ -6,9 +6,12 @@ import {
   Medal,
   PaginationData,
   RecentVisitor,
+  UserFavorite,
   UserFriends,
   UserProfileData,
-  UserSummary
+  UserReply,
+  UserSummary,
+  UserThread
 } from './models/UserModels';
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
@@ -86,7 +89,7 @@ export class UserApi {
     const idStr = uid === 'me' ? 'me' : uid.toString();
     const path = `/_/user/${idStr}/friends?page=${page}&user_summary`;
 
-    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFriends>>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<FriendUser>>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
@@ -246,6 +249,69 @@ export class UserApi {
       const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
+    }
+  }
+
+  /**
+   * 获取用户发布的主题帖
+   */
+  public static async getUserThreads(page: number, uid: number | 'me' = 'me'): Promise<PaginationData<UserThread>> {
+    const idStr = uid === 'me' ? 'me' : uid.toString();
+    const path = `/_/user/${idStr}/threads?page=${page}&user_summary=0`;
+
+    // 这里的泛型 <BaseResponse<PaginationData<UserThread>>> 会传递给 request
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserThread>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data?.message || 'Fetch user threads failed');
+    }
+  }
+
+  /**
+   * 获取用户发布的回复
+   */
+  public static async getUserReplies(page: number, uid: number | 'me' = 'me'): Promise<PaginationData<UserReply>> {
+    const idStr = uid === 'me' ? 'me' : uid.toString();
+    const path = `/_/user/${idStr}/replies?page=${page}&user_summary=0`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserReply>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data?.message || 'Fetch user replies failed');
+    }
+  }
+
+  /**
+   * 获取用户收藏 (仅限自己)
+   */
+  public static async getUserFavorites(page: number): Promise<PaginationData<UserFavorite>> {
+    const path = `/_/user/me/favorites?page=${page}&collections=0&user_summary=0`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFavorite>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data?.message || 'Fetch user favorites failed');
     }
   }
 }
