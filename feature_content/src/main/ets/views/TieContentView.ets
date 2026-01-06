@@ -1,4 +1,4 @@
-import { CommonConstant, ForumDetailComment, ForumDetailReplyContent, TransitionMap } from 'base_common';
+import { CommonConstant, ForumDetailComment, ForumDetailReplyContent, TransitionMap, UiState } from 'base_common';
 import { CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -35,6 +35,25 @@ export struct TieContentView {
   }
 
   @Builder
+  ArticleSkeleton() {
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      ForEach([1, 2, 3, 4, 5], (index: number) => {
+        Row()
+          .width(index % 2 === 0 ? CommonConstant.FullPercent : CommonConstant.AboveHalfPercent)
+          .height(CommonConstant.TextSizeNormal)
+          .backgroundColor($r('sys.color.font_tertiary'))
+          .opacity(0.1)
+          .borderRadius(CommonConstant.RadiusTiny)
+      })
+    }
+    .width(CommonConstant.FullPercent)
+    .alignItems(HorizontalAlign.Start)
+    .borderRadius(CommonConstant.RadiusLarge)
+    .padding({ top: CommonConstant.NormalContainerInnerPadding })
+    .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
+  }
+
+  @Builder
   TieDetailContent() {
     Stack({ alignContent: Alignment.Top }) {
       Column()
@@ -62,10 +81,13 @@ export struct TieContentView {
 
         UserInfoArea({ vm: this.vm })
 
-        if (this.vm.tieTopic?.content) {
+        if (this.vm.commentLoadingState === UiState.LOADING && !this.vm.tieTopic?.content) {
+          this.ArticleSkeleton()
+        } else if (this.vm.tieTopic?.content) {
           TieContentRender({
             contents: this.vm.tieTopic.content as ForumDetailReplyContent[]
           })
+            .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
 
         if (this.vm.tieTopic) {
