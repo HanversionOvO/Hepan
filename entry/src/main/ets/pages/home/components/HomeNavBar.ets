@@ -68,10 +68,10 @@ export struct HomeNavBar {
 
   @Computed
   get navBarBgColor(): ResourceColor {
-    return $r("app.color.second_window_background");
+    return $r("app.color.glass_background");
   }
 
-  @Monitor("vm.breakPoint.currentBreakPoint", "vm.window.windowWidth", "vm.window.windowHeight")
+  @Monitor("vm.breakPoint.currentBreakPoint","vm.window.windowWidth","vm.window.windowHeight")
   updateLayout() {
     this.calculateOffset(this.vm.currentIndex);
   }
