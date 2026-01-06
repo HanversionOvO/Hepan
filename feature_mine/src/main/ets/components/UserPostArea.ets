@@ -1,6 +1,8 @@
-import { CommonConstant, ForumTieSummary, UiState } from 'base_common';
+// feature_mine/src/main/ets/components/UserPostArea.ets
+import { AppUtil } from '@pura/harmony-utils';
+import { CommonConstant, ForumTieSummary } from 'base_common';
 import { CustomTabBar, StateLayout } from 'base_ui';
-import { MinePageVM } from '../viewmodels/MinePageVM';
+import { MinePageVM, MineTabVM } from '../viewmodels/MinePageVM';
 import { TieCard } from './TieCard';
 
 interface TieWithForumName {
@@ -9,51 +11,18 @@ interface TieWithForumName {
 
 @ComponentV2
 struct UserPostList {
-  @Param @Require vm: MinePageVM;
-  @Param @Require index: number;
+  // 核心变更：接收 MineTabVM 而不是 PageVM
+  @Param @Require vm: MineTabVM;
   @Param @Require scroller: Scroller;
+  @Param isMe: boolean = false; // 用于判断是否显示收藏空文案
   // 记录捏合开始时的列数
   @Local baseColumns: number = 2;
-
-  @Computed
-  get currentState(): UiState {
-    if (this.index === 0) {
-      return this.vm.threadsState;
-    }
-    if (this.index === 1) {
-      return this.vm.repliesState;
-    }
-    return this.vm.favoritesState;
-  }
-
-  @Computed
-  get currentData(): ForumTieSummary[] {
-    if (this.index === 0) {
-      return this.vm.threads;
-    }
-    if (this.index === 1) {
-      return this.vm.replies;
-    }
-    return this.vm.favorites;
-  }
-
-  @Computed
-  get isRefreshing(): boolean {
-    if (this.index === 0) {
-      return this.vm.isRefreshingThreads;
-    }
-    if (this.index === 1) {
-      return this.vm.isRefreshingReplies;
-    }
-    return this.vm.isRefreshingFavorites;
-  }
 
   @Computed
   get columnsTemplate(): string {
     return '1fr '.repeat(this.vm.columns).trim();
   }
 
-  // 生成用于占位的数组
   @Computed
   get spacerArray(): number[] {
     return new Array(this.vm.columns).fill(0);
@@ -66,39 +35,37 @@ struct UserPostList {
 
   @Builder
   renderList() {
-    Refresh({ refreshing: this.isRefreshing }) {
+    Refresh({ refreshing: this.vm.isRefreshing }) {
       WaterFlow({ scroller: this.scroller }) {
         ForEach(this.spacerArray, (_: number, i: number) => {
           FlowItem() {
-            Column().height(CommonConstant.IconSizeUltraLarge)
+            Column().height(CommonConstant.IconSizeLarge)
           }
           .width(CommonConstant.FullPercent)
         }, (_: number, i: number) => `top_spacer_${this.vm.columns}_${i}`)
 
-        ForEach(this.currentData, (tie: ForumTieSummary) => {
+        // === 2. 数据列表 ===
+        ForEach(this.vm.list, (tie: ForumTieSummary) => {
           FlowItem() {
             TieCard({
               tie: tie,
               forumName: tie.forum_name || ''
             })
-              .id(tie.thread_id.toString())
+              .id(this.vm.getUniqueId(tie.thread_id))
               .onClick(() => {
-                this.vm.enterDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
+                this.vm.enterDetailPage(tie.thread_id, this.getUIContext(), tie);
               })
           }
           .width(CommonConstant.FullPercent)
-        }, (tie: ForumTieSummary) => `${this.index}_${tie.thread_id}_${tie.dateline}`)
+        }, (tie: ForumTieSummary) => this.vm.getUniqueId(tie.thread_id))
 
-        if (!this.vm.isTabletView) {
-          ForEach(this.spacerArray, (_: number, i: number) => {
-            FlowItem() {
-              Column()
-                .height((this.vm.isTabletView ? 0 : CommonConstant.BottomBarHeight) +
-                this.vm.window.windowBottomPadding)
-            }
-            .width(CommonConstant.FullPercent)
-          }, (_: number, i: number) => `bottom_spacer_${this.vm.columns}_${i}`)
-        }
+        ForEach(this.spacerArray, (_: number, i: number) => {
+          FlowItem() {
+            Column()
+              .height(this.vm.isTabletView ? 0 : CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding)
+          }
+          .width(CommonConstant.FullPercent)
+        }, (_: number, i: number) => `bottom_spacer_${this.vm.columns}_${i}`)
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
@@ -108,8 +75,6 @@ struct UserPostList {
       .padding({
         left: CommonConstant.NormalContainerInnerPadding,
         right: CommonConstant.NormalContainerInnerPadding,
-        // 移除之前的 padding.bottom，改用内部占位符
-        // bottom: CommonConstant.NormalContainerInnerPadding
       })
       .scrollBar(BarState.Off)
       .nestedScroll({
@@ -121,15 +86,7 @@ struct UserPostList {
         curve: CommonConstant.AnimationCurveSpring
       })
       .onReachEnd(() => {
-        this.onLoadMore();
-      })
-      .onDidScroll(() => {
-        const yOffset = this.scroller.currentOffset().yOffset;
-        if (yOffset > 0 && !this.vm.isTabBarGlass) {
-          this.vm.isTabBarGlass = true;
-        } else if (yOffset <= 0 && this.vm.isTabBarGlass) {
-          this.vm.isTabBarGlass = false;
-        }
+        this.vm.loadMineData(false);
       })
       .priorityGesture(
         PinchGesture()
@@ -148,12 +105,13 @@ struct UserPostList {
             newCols = Math.max(this.vm.minColumns, Math.min(newCols, this.vm.maxColumns));
 
             if (newCols !== this.vm.columns) {
-              animateTo({
-                duration: CommonConstant.AnimationDurationNormal,
-                curve: CommonConstant.AnimationCurveSpring
-              }, () => {
-                this.vm.columns = newCols;
-              });
+              AppUtil.getUIContext()
+                .animateTo({
+                  duration: CommonConstant.AnimationDurationNormal,
+                  curve: CommonConstant.AnimationCurveSpring
+                }, () => {
+                  this.vm.columns = newCols;
+                });
             }
           })
           .onActionEnd(() => {
@@ -162,15 +120,15 @@ struct UserPostList {
       )
     }
     .onRefreshing(() => {
-      this.onRefresh();
+      this.vm.loadMineData(true);
     })
   }
 
   build() {
     StateLayout({
-      uiState: this.currentState,
-      onRetry: this.onRefresh,
-      emptyStr: this.index === 2 && !this.vm.isMe ? $r('app.string.StateLayout_empty') : undefined,
+      uiState: this.vm.state,
+      onRetry: async (): Promise<void> => this.vm.loadMineData(true),
+      emptyStr: !this.isMe && this.vm.list.length === 0 ? $r('app.string.StateLayout_empty') : undefined,
       content: () => {
         this.renderList();
       }
@@ -186,33 +144,30 @@ export struct UserPostArea {
   build() {
     Stack({ alignContent: Alignment.Top }) {
       Tabs({ index: this.vm.currentUserPostTabIndex, controller: this.vm.userPostTabController }) {
+        // Tab 1: 发布的帖子
         TabContent() {
           UserPostList({
-            vm: this.vm,
-            index: 0,
+            vm: this.vm.threadVM,
             scroller: this.listScrollers[0],
-            onLoadMore: async (): Promise<void> => this.vm.loadThreads(false),
-            onRefresh: async (): Promise<void> => this.vm.loadThreads(true)
+            isMe: this.vm.isMe
           })
         }
 
+        // Tab 2: 回复的帖子
         TabContent() {
           UserPostList({
-            vm: this.vm,
-            index: 1,
+            vm: this.vm.replyVM,
             scroller: this.listScrollers[1],
-            onLoadMore: async (): Promise<void> => this.vm.loadReplies(false),
-            onRefresh: async (): Promise<void> => this.vm.loadReplies(true)
+            isMe: this.vm.isMe
           })
         }
 
+        // Tab 3: 收藏的帖子
         TabContent() {
           UserPostList({
-            vm: this.vm,
-            index: 2,
+            vm: this.vm.favVM,
             scroller: this.listScrollers[2],
-            onLoadMore: async (): Promise<void> => this.vm.loadFavorites(false),
-            onRefresh: async (): Promise<void> => this.vm.loadFavorites(true)
+            isMe: this.vm.isMe
           })
         }
       }
@@ -222,8 +177,12 @@ export struct UserPostArea {
       .width(CommonConstant.FullPercent)
       .onChange((index: number) => {
         this.vm.changeUserPostTab(index);
+
+        // 切换 Tab 时处理吸顶状态 (可选优化)
+        // 可以在这里根据 scroller 位置同步 isTabBarGlass 状态
       })
 
+      // 吸顶 TabBar
       CustomTabBar({
         vm: this.vm,
         tabItems: this.vm.userPostTabItems,
@@ -253,13 +212,14 @@ export struct UserPostArea {
       topLeft: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
       topRight: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
     })
+    // 关键：绑定当前激活 Tab VM 的 pageScale
     .scale({
-      x: this.vm.pageScale,
-      y: this.vm.pageScale
+      x: this.vm.currentTabVM.pageScale,
+      y: this.vm.currentTabVM.pageScale
     })
     .animation({
       duration: CommonConstant.AnimationDurationNormal,
-      curve: CommonConstant.AnimationDurationNormal
+      curve: CommonConstant.AnimationCurveSpring
     })
   }
 }

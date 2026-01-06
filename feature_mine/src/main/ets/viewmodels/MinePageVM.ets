@@ -2,7 +2,6 @@
 import { LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
-  BreakpointNameEnum,
   BreakpointType,
   CommonConstant,
   DateUtil,
@@ -24,6 +23,154 @@ import { curves } from '@kit.ArkUI';
 
 const TAG = '[MinePageVM]: '
 
+/**
+ * 独立的 Tab ViewModel，负责管理单个 Tab 的列表数据和动画状态
+ */
+@ObservedV2
+export class MineTabVM extends BaseVM {
+  // 列表数据
+  @Trace list: ForumTieSummary[] = [];
+  @Trace state: UiState = UiState.LOADING;
+  @Trace isRefreshing: boolean = false;
+  // 页面缩放状态 (每个 Tab 独立管理，互不影响)
+  @Trace pageScale: number = 1.0;
+  // 瀑布流列数 (支持捏合)
+  @Trace columns: number = 2;
+  @Trace minColumns: number = 1;
+  @Trace maxColumns: number = 2;
+  @Trace isScaling: boolean = false;
+  private page: number = 1;
+  private uid: number | 'me' = 'me';
+  private tabType: 'thread' | 'reply' | 'fav'; // 用于区分 ID 前缀
+  private user: UserProfileData | null = null; // 用于数据映射时的用户信息补全
+
+  constructor(tabType: 'thread' | 'reply' | 'fav') {
+    super();
+    this.tabType = tabType;
+  }
+
+  init(uid: number | 'me') {
+    this.uid = uid;
+  }
+
+  updateUser(user: UserProfileData | null) {
+    this.user = user;
+  }
+
+  updateGridConfig(columns: number, min: number, max: number) {
+    this.columns = columns;
+    this.minColumns = min;
+    this.maxColumns = max;
+  }
+
+  // 生成唯一的组件 ID，解决动画位置错乱的核心
+  getUniqueId(tid: number): string {
+    return `${this.tabType}_${tid}`;
+  }
+
+  async loadMineData(refresh: boolean) {
+    if (refresh) {
+      this.page = 1;
+      this.isRefreshing = true;
+    }
+    try {
+      if (this.tabType === 'thread') {
+        await this.loadThreads(refresh);
+      } else if (this.tabType === 'reply') {
+        await this.loadReplies(refresh);
+      } else if (this.tabType === 'fav') {
+        await this.loadFavorites(refresh);
+      }
+    } catch (e) {
+      LogUtil.error(TAG, `Load ${this.tabType} failed: ${JSON.stringify(e)}`);
+      if (this.list.length === 0) {
+        this.state = UiState.ERROR;
+      }
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+
+  private async loadThreads(refresh: boolean) {
+    const data = await UserApi.getUserThreads(this.page, this.uid);
+    const rows = data.rows;
+    this.handleResult(rows, refresh);
+  }
+
+  private async loadReplies(refresh: boolean) {
+    const data = await UserApi.getUserReplies(this.page, this.uid);
+    const mappedReplies: ForumTieSummary[] = (data.rows).map(reply => {
+      return {
+        thread_id: reply.thread_id,
+        forum_id: reply.forum_id,
+        type_id: 0,
+        author: this.user?.user_summary?.username || '',
+        author_id: this.user?.user_summary?.uid || 0,
+        subject: reply.subject,
+        summary: reply.summary,
+        dateline: reply.dateline,
+        last_post: reply.last_post,
+        views: reply.views,
+        replies: reply.replies,
+        forum_name: reply.forum_name
+      } as ForumTieSummary;
+    });
+    this.handleResult(mappedReplies, refresh);
+  }
+
+  private async loadFavorites(refresh: boolean) {
+    if (this.uid !== 'me') {
+      this.state = UiState.EMPTY;
+      return;
+    }
+    const data = await UserApi.getUserFavorites(this.page);
+    const mappedFavs: ForumTieSummary[] = (data.rows).map(fav => fav.thread_details);
+    this.handleResult(mappedFavs, refresh);
+  }
+
+  private handleResult(rows: ForumTieSummary[], refresh: boolean) {
+    if (refresh) {
+      this.list = rows;
+      this.state = this.list.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
+    } else {
+      this.list.push(...rows);
+    }
+    if (rows.length > 0) {
+      this.page++;
+    }
+  }
+
+  // 这里的 tid 必须是 getUniqueId 返回的值
+  enterDetailPage(tid: number, context: UIContext, tieSummary: ForumTieSummary) {
+    const uniqueId = this.getUniqueId(tid);
+
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.8;
+        })
+      },
+      onBackTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context,
+        uniqueId, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+    if (longTakeTransitionParam) {
+      params["transition"] = longTakeTransitionParam;
+    }
+    params["tieSummary"] = tieSummary;
+
+    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
+  }
+}
+
 @ObservedV2
 export class MinePageVM extends BaseVM {
   // === 基础状态 ===
@@ -39,7 +186,10 @@ export class MinePageVM extends BaseVM {
   @Trace user: UserProfileData | null = null;
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
-  // === Tab 配置 ===
+  // === 子 ViewModel (分别为帖子、回复、收藏) ===
+  @Trace threadVM: MineTabVM = new MineTabVM('thread');
+  @Trace replyVM: MineTabVM = new MineTabVM('reply');
+  @Trace favVM: MineTabVM = new MineTabVM('fav');
   @Trace userPostTabItems: CustomTabItem[] = [
     { label: $r('app.string.MinePage_mine_post'), icon: $r('sys.symbol.book_closed_right_left') },
     { label: $r('app.string.MinePage_mine_reply'), icon: $r('sys.symbol.message') },
@@ -47,40 +197,19 @@ export class MinePageVM extends BaseVM {
   ]
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
-  // === 列表数据状态 ===
-  @Trace threads: ForumTieSummary[] = [];
-  @Trace threadsState: UiState = UiState.LOADING;
-  @Trace isRefreshingThreads: boolean = false;
-  private threadsPage: number = 1;
-  @Trace replies: ForumTieSummary[] = [];
-  @Trace repliesState: UiState = UiState.LOADING;
-  @Trace isRefreshingReplies: boolean = false;
-  private repliesPage: number = 1;
-  @Trace favorites: ForumTieSummary[] = [];
-  @Trace favoritesState: UiState = UiState.LOADING;
-  @Trace isRefreshingFavorites: boolean = false;
-  private favoritesPage: number = 1;
-  // === 瀑布流布局配置 (与 TieVM 保持完全一致) ===
-  @Trace columns: number = 2;
-  @Trace minColumns: number = 1;
-  @Trace maxColumns: number = 2; // 初始值设为2，会通过 updateGridConfig 更新
-  @Trace isScaling: boolean = false;
-  @Trace pageScale: number = 1.0;
-  // 默认列数配置
+  // 瀑布流布局配置 (用于分发给子 VM)
   private defaultColumnsConfig = new BreakpointType({
     sm: 2,
     md: 3,
     lg: 4,
     xl: 5
   });
-  // 最小列数配置
   private minColumnsConfig = new BreakpointType({
     sm: 1,
     md: 2,
     lg: 3,
     xl: 4
   });
-  // 最大列数配置 (关键：sm 限制为 2，与 TieVM 一致)
   private maxColumnsConfig = new BreakpointType({
     sm: 2,
     md: 4,
@@ -93,28 +222,42 @@ export class MinePageVM extends BaseVM {
     return this.uid === 'me';
   }
 
-  // 监听断点变化
-  @Monitor("breakPoint.currentBreakPoint")
-  onBreakpointChange() {
-    this.updateGridConfig(this.breakPoint.currentBreakPoint);
+  // 方便 UI 获取当前激活的 VM
+  @Computed
+  get currentTabVM(): MineTabVM {
+    if (this.currentUserPostTabIndex === 1) {
+      return this.replyVM;
+    }
+    if (this.currentUserPostTabIndex === 2) {
+      return this.favVM;
+    }
+    return this.threadVM;
   }
 
-  // 更新网格配置
-  updateGridConfig(bp: BreakpointNameEnum) {
-    this.columns = this.defaultColumnsConfig.getValue(bp);
-    this.minColumns = this.minColumnsConfig.getValue(bp);
-    this.maxColumns = this.maxColumnsConfig.getValue(bp);
+  @Monitor("breakPoint.currentBreakPoint")
+  onBreakpointChange() {
+    const cols = this.defaultColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+    const min = this.minColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+    const max = this.maxColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+
+    // 同步配置给所有子 VM
+    this.threadVM.updateGridConfig(cols, min, max);
+    this.replyVM.updateGridConfig(cols, min, max);
+    this.favVM.updateGridConfig(cols, min, max);
   }
 
   init(uid: number | 'me') {
     this.uid = uid;
+    this.threadVM.init(uid);
+    this.replyVM.init(uid);
+    this.favVM.init(uid);
   }
 
   async startMine() {
-    // 启动时初始化网格配置
-    this.updateGridConfig(this.breakPoint.currentBreakPoint);
+    this.onBreakpointChange();
     await this.refreshData();
-    this.loadTabContent(0, true);
+    // 初始加载第一个 Tab
+    this.changeUserPostTab(0);
   }
 
   async refreshData() {
@@ -122,6 +265,11 @@ export class MinePageVM extends BaseVM {
       const fullProfile = await UserApi.getFullUserProfile(this.uid);
       if (fullProfile && fullProfile.user_summary) {
         this.user = fullProfile;
+        // 同步用户数据给子 VM (主要用于 replyVM 映射用户名)
+        this.threadVM.updateUser(fullProfile);
+        this.replyVM.updateUser(fullProfile);
+        this.favVM.updateUser(fullProfile);
+
         this.refreshDisplayData();
         LogUtil.info(TAG, `Full profile fetched. UID: ${fullProfile.user_summary.uid}`);
       }
@@ -129,6 +277,16 @@ export class MinePageVM extends BaseVM {
       LogUtil.error(TAG, 'Failed to fetch full user profile.', JSON.stringify(error));
     } finally {
       this.isRefreshing = false;
+    }
+  }
+
+  // 切换 Tab 并触发加载
+  changeUserPostTab(index: number) {
+    this.currentUserPostTabIndex = index;
+    const targetVM = this.currentTabVM;
+    // 如果是初始 Loading 状态且未在刷新，则触发加载
+    if (targetVM.state === UiState.LOADING && !targetVM.isRefreshing) {
+      targetVM.loadMineData(true);
     }
   }
 
@@ -182,163 +340,6 @@ export class MinePageVM extends BaseVM {
         }
       });
     }
-  }
-
-  changeUserPostTab(index: number) {
-    this.currentUserPostTabIndex = index;
-    if (index === 0) {
-      if (this.threadsState === UiState.LOADING && !this.isRefreshingThreads) {
-        this.loadTabContent(0, true);
-      }
-    } else if (index === 1) {
-      if (this.repliesState === UiState.LOADING && !this.isRefreshingReplies) {
-        this.loadTabContent(1, true);
-      }
-    } else if (index === 2) {
-      if (this.favoritesState === UiState.LOADING && !this.isRefreshingFavorites) {
-        this.loadTabContent(2, true);
-      }
-    }
-  }
-
-  async loadTabContent(index: number, refresh: boolean) {
-    if (index === 0) {
-      await this.loadThreads(refresh);
-    } else if (index ===
-      1) {
-      await this.loadReplies(refresh);
-    } else if (index === 2) {
-      await this.loadFavorites(refresh);
-    }
-  }
-
-  async loadThreads(refresh: boolean) {
-    if (refresh) {
-      this.threadsPage = 1;
-      this.isRefreshingThreads = true;
-    }
-    try {
-      const data = await UserApi.getUserThreads(this.threadsPage, this.uid);
-      const rows = data.rows;
-      if (refresh) {
-        this.threads = rows;
-        this.threadsState = this.threads.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
-      } else {
-        this.threads.push(...rows);
-      }
-      if (rows.length > 0) {
-        this.threadsPage++;
-      }
-    } catch (e) {
-      LogUtil.error(TAG, 'Load threads failed: ' + JSON.stringify(e));
-      if (this.threads.length === 0) {
-        this.threadsState = UiState.ERROR;
-      }
-    } finally {
-      this.isRefreshingThreads = false;
-    }
-  }
-
-  async loadReplies(refresh: boolean) {
-    if (refresh) {
-      this.repliesPage = 1;
-      this.isRefreshingReplies = true;
-    }
-    try {
-      const data = await UserApi.getUserReplies(this.repliesPage, this.uid);
-      const mappedReplies: ForumTieSummary[] = (data.rows).map(reply => {
-        return {
-          thread_id: reply.thread_id,
-          forum_id: reply.forum_id,
-          type_id: 0,
-          author: this.user?.user_summary?.username || '',
-          author_id: this.user?.user_summary?.uid || 0,
-          subject: reply.subject,
-          summary: reply.summary,
-          dateline: reply.dateline,
-          last_post: reply.last_post,
-          views: reply.views,
-          replies: reply.replies,
-          forum_name: reply.forum_name
-        } as ForumTieSummary;
-      });
-
-      if (refresh) {
-        this.replies = mappedReplies;
-        this.repliesState = this.replies.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
-      } else {
-        this.replies.push(...mappedReplies);
-      }
-      if (data.rows.length > 0) {
-        this.repliesPage++;
-      }
-    } catch (e) {
-      LogUtil.error(TAG, 'Load replies failed: ' + JSON.stringify(e));
-      if (this.replies.length === 0) {
-        this.repliesState = UiState.ERROR;
-      }
-    } finally {
-      this.isRefreshingReplies = false;
-    }
-  }
-
-  async loadFavorites(refresh: boolean) {
-    if (!this.isMe) {
-      this.favoritesState = UiState.EMPTY;
-      return;
-    }
-    if (refresh) {
-      this.favoritesPage = 1;
-      this.isRefreshingFavorites = true;
-    }
-    try {
-      const data = await UserApi.getUserFavorites(this.favoritesPage);
-      const mappedFavs: ForumTieSummary[] = (data.rows).map(fav => fav.thread_details);
-
-      if (refresh) {
-        this.favorites = mappedFavs;
-        this.favoritesState = this.favorites.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
-      } else {
-        this.favorites.push(...mappedFavs);
-      }
-      if (data.rows.length > 0) {
-        this.favoritesPage++;
-      }
-    } catch (e) {
-      LogUtil.error(TAG, 'Load favorites failed: ' + JSON.stringify(e));
-      if (this.favorites.length === 0) {
-        this.favoritesState = UiState.ERROR;
-      }
-    } finally {
-      this.isRefreshingFavorites = false;
-    }
-  }
-
-  enterDetailPage(tid: string, context: UIContext, tieSummary: ForumTieSummary) {
-    let options: LongTakeTransitionOptions = {
-      onEnterTransitionStart: () => {
-        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-          this.pageScale = 0.8;
-        })
-      },
-      onBackTransitionStart: () => {
-        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
-          this.pageScale = 1.0;
-        })
-      }
-    };
-
-    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
-      LoneTakeAnimationsTransition.generateLongTakeParam(context,
-        tid, CommonConstant.RadiusLarge, options);
-
-    const params: Record<string, Object> = {};
-    if (longTakeTransitionParam) {
-      params["transition"] = longTakeTransitionParam;
-    }
-    params["tieSummary"] = tieSummary;
-
-    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 
   async editSignature(signature: ResourceStr) {
