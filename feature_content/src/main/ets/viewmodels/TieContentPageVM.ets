@@ -28,6 +28,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace tieDetail: TieDetail | null = null;
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;
+  @Trace hasNext: number = 1;
   @Trace currentImageIndex: number = 0;
   @Trace currentSort: number = 0;
   @Trace currentPage: number = 1;
@@ -68,6 +69,7 @@ export class TieContentPageVM extends BaseVM {
         if (result) {
           const topic = result.topic;
           const forumName: string = result.forumName;
+          this.hasNext = result.has_next;
 
           let newComments = result.list;
 
@@ -114,13 +116,11 @@ export class TieContentPageVM extends BaseVM {
    */
   async loadMore() {
     // 防止重复加载或在没有数据时加载
-    if (this.isLoadingMore || !this.tieDetail) {
+    if (this.isLoadingMore || !this.tieComments) {
       return;
     }
-
-    // 计算总页数，判断是否有下一页
-    const totalPages = Math.ceil(this.tieDetail.total / this.tieDetail.page_size);
-    if (this.currentPage < totalPages) {
+    
+    if (this.hasNext) {
       this.currentPage++;
       await this.loadData(true);
     } else {
