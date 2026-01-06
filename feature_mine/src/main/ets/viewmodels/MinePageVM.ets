@@ -1,6 +1,8 @@
+// feature_mine/src/main/ets/viewmodels/MinePageVM.ets
 import { LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
+  BreakpointNameEnum,
   BreakpointType,
   CommonConstant,
   DateUtil,
@@ -58,43 +60,50 @@ export class MinePageVM extends BaseVM {
   @Trace favoritesState: UiState = UiState.LOADING;
   @Trace isRefreshingFavorites: boolean = false;
   private favoritesPage: number = 1;
-  // === 瀑布流布局配置 (新增捏合缩放支持) ===
+  // === 瀑布流布局配置 (与 TieVM 保持完全一致) ===
   @Trace columns: number = 2;
   @Trace minColumns: number = 1;
-  @Trace maxColumns: number = 3;
-  // 标记是否正在进行手势缩放
+  @Trace maxColumns: number = 2; // 初始值设为2，会通过 updateGridConfig 更新
   @Trace isScaling: boolean = false;
+  @Trace pageScale: number = 1.0;
+  // 默认列数配置
   private defaultColumnsConfig = new BreakpointType({
     sm: 2,
     md: 3,
     lg: 4,
     xl: 5
   });
+  // 最小列数配置
   private minColumnsConfig = new BreakpointType({
     sm: 1,
     md: 2,
     lg: 3,
     xl: 4
   });
+  // 最大列数配置 (关键：sm 限制为 2，与 TieVM 一致)
   private maxColumnsConfig = new BreakpointType({
-    sm: 3,
+    sm: 2,
     md: 4,
     lg: 5,
     xl: 6
   });
-  // === 页面转场动画状态 ===
-  @Trace pageScale: number = 1.0;
 
   @Computed
   get isMe(): boolean {
     return this.uid === 'me';
   }
 
+  // 监听断点变化
   @Monitor("breakPoint.currentBreakPoint")
   onBreakpointChange() {
-    this.columns = this.defaultColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
-    this.minColumns = this.minColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
-    this.maxColumns = this.maxColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+    this.updateGridConfig(this.breakPoint.currentBreakPoint);
+  }
+
+  // 更新网格配置
+  updateGridConfig(bp: BreakpointNameEnum) {
+    this.columns = this.defaultColumnsConfig.getValue(bp);
+    this.minColumns = this.minColumnsConfig.getValue(bp);
+    this.maxColumns = this.maxColumnsConfig.getValue(bp);
   }
 
   init(uid: number | 'me') {
@@ -102,12 +111,11 @@ export class MinePageVM extends BaseVM {
   }
 
   async startMine() {
-    this.onBreakpointChange();
+    // 启动时初始化网格配置
+    this.updateGridConfig(this.breakPoint.currentBreakPoint);
     await this.refreshData();
     this.loadTabContent(0, true);
   }
-
-  // ... (refreshData, loadMedals, refreshDisplayData 等保持不变)
 
   async refreshData() {
     try {
@@ -178,7 +186,6 @@ export class MinePageVM extends BaseVM {
 
   changeUserPostTab(index: number) {
     this.currentUserPostTabIndex = index;
-    // 逻辑修正：只要是初始状态(LOADING)且没有正在刷新，就应该触发加载
     if (index === 0) {
       if (this.threadsState === UiState.LOADING && !this.isRefreshingThreads) {
         this.loadTabContent(0, true);
@@ -334,7 +341,6 @@ export class MinePageVM extends BaseVM {
     RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 
-  // ... (editSignature, getFilteredUserProfile 保持不变，省略以节省空间) ...
   async editSignature(signature: ResourceStr) {
     if (!this.isMe || !signature) {
       this.isShowSignatureSheet = false;
@@ -348,7 +354,6 @@ export class MinePageVM extends BaseVM {
   }
 
   getFilteredUserProfile(): UserProfileSheetItem[] {
-    // ... (代码同前，省略)
     const list: UserProfileSheetItem[] = [];
     const user = this.user;
     const summary = user?.user_summary;
