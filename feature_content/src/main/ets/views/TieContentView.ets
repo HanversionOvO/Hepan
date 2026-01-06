@@ -116,7 +116,7 @@ export struct TieContentView {
           }
         }) {
 
-          Text(this.vm.tieTopic?.replies + " " +
+          Text((this.vm.tieTopic?.replies ?? 0) + " " +
           ResUtil.getStringSync($r('app.string.TieContentPage_comment_num')))
             .fontSize(CommonConstant.TextSizeLarge)
             .fontWeight(FontWeight.Medium)
