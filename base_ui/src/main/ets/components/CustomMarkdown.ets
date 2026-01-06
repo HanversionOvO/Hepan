@@ -3,7 +3,7 @@ import { CommonConstant } from 'base_common';
 
 const BASE_URL = 'https://bbs.uestc.edu.cn';
 
-// 修改：行内样式片段定义，支持 image 类型（用于表情）
+// 行内样式片段定义
 interface InlineSpan {
   type: 'text' | 'image';
   text?: string;
@@ -121,7 +121,6 @@ export struct CustomMarkdown {
     return { type: 'quote', content: body, quoteTitle: title };
   }
 
-  // 解析块级图片 ([img] 或 [attach])，其余部分作为文本处理
   private parseImagesAndText(text: string, results: BBSegment[]) {
     const regex = /\[attach\](\d+)\[\/attach\]|\[img\](.*?)\[\/img\]/g;
     let lastIndex = 0;
@@ -163,7 +162,6 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    // 注意：这里去掉了 'g' 标志。split 会自动分割所有匹配项，且 test() 不会受 lastIndex 影响
     const tagRegex = /(\[(?:\/)?(?:b|i|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\])/i;
     const parts = text.split(tagRegex);
 
@@ -180,7 +178,6 @@ export struct CustomMarkdown {
       if (tagRegex.test(part)) {
         const lowerPart = part.toLowerCase();
 
-        // 1. 处理表情
         if (lowerPart.startsWith('[mobcent_phiz=')) {
           const phizUrl = part.substring(14, part.length - 1);
           spans.push({
@@ -190,7 +187,6 @@ export struct CustomMarkdown {
           continue;
         }
 
-        // 2. 处理其他 BBCode 标签
         if (lowerPart === '[b]') {
           boldCount++;
         } else if (lowerPart === '[/b]') {
@@ -220,7 +216,6 @@ export struct CustomMarkdown {
         }
 
       } else {
-        // 3. 普通文本
         const currentUrlVal = urlStack.length > 0 ? urlStack[urlStack.length - 1] : undefined;
         const finalUrl = currentUrlVal === 'SELF' ? part : currentUrlVal;
 
@@ -243,11 +238,9 @@ export struct CustomMarkdown {
         Markdown({ text: this.content, controller: this.controller })
           .width(CommonConstant.FullPercent)
       } else {
-        // --- 自定义解析渲染 ---
         Column({ space: CommonConstant.SmallContainerInnerPadding }) {
           ForEach(this.segments, (item: BBSegment) => {
             if (item.type === 'quote') {
-              // 引用块
               Column({ space: CommonConstant.SmallContainerInnerPadding }) {
                 if (item.quoteTitle) {
                   Text(item.quoteTitle)
@@ -278,22 +271,27 @@ export struct CustomMarkdown {
               Text() {
                 ForEach(item.spans || [], (span: InlineSpan) => {
                   if (span.type === 'image' && span.imageSrc) {
-                    // 渲染行内表情
                     ImageSpan(span.imageSrc)
                       .width(this.textSize * 1.5)
                       .height(this.textSize * 1.5)
                       .objectFit(ImageFit.Contain)
                       .verticalAlign(ImageSpanAlignment.CENTER)
                   } else {
-                    // 渲染文字
+                    // --- 核心修改：渲染文字链接样式 ---
                     Span(span.text)
                       .fontSize(this.textSize)
                       .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
                       .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
                       .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
+                      .decoration({
+                        type: span.url ? TextDecorationType.Underline : TextDecorationType.None,
+                        color: span.url ? this.hyperlinkTextColor : undefined,
+                        style: span.url ? TextDecorationStyle.DASHED : undefined
+                      })
                       .onClick(() => {
                         if (span.url) {
                           console.info('Link clicked:', span.url);
+                          // RouterUtil.openWeb(span.url);
                         }
                       })
                   }

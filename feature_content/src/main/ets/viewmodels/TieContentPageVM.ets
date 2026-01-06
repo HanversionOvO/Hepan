@@ -59,8 +59,6 @@ export class TieContentPageVM extends BaseVM {
       if (isLoadMore) {
         this.isLoadingMore = true;
       } else {
-        // 如果不是加载更多（首次加载），且当前没有数据，显示 Loading 状态
-        // 如果是下拉刷新，通常保留当前画面或由 Refresh 组件控制，不强制 Loading
         if (!this.tieComments || this.tieComments.length === 0) {
           this.commentLoadingState = UiState.LOADING;
         }
@@ -72,6 +70,7 @@ export class TieContentPageVM extends BaseVM {
 
         if (result) {
           const topic = result.topic;
+
           const forumName: string = result.forumName;
           this.hasNext = result.has_next;
           this.isReachEnd = this.hasNext === 0;
