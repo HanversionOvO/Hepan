@@ -86,24 +86,28 @@ struct UserPostList {
     })
     .priorityGesture(
       PinchGesture()
-        .onActionStart(() => {
-          this.vm.isScaling = true;
-          this.baseColumns = this.vm.columns;
-        })
         .onActionUpdate((event: GestureEvent) => {
-          const scale = event.scale;
-          let newCols = this.baseColumns;
-          if (scale > 0) {
-            newCols = Math.round(this.baseColumns / scale);
+          if (this.vm.isScaling) {
+            return;
           }
-          newCols = Math.max(this.vm.minColumns, Math.min(newCols, this.vm.maxColumns));
-          if (newCols !== this.vm.columns) {
+          if (event.scale < 0.75 && this.vm.columns < this.vm.maxColumns) {
             AppUtil.getUIContext().animateTo({
               duration: CommonConstant.AnimationDurationNormal,
               curve: CommonConstant.AnimationCurveSpring
             }, () => {
-              this.vm.columns = newCols;
+              this.vm.columns += 1;
             });
+            this.vm.isScaling = true;
+          }
+
+          if (event.scale > 1.25 && this.vm.columns > this.vm.minColumns) {
+            animateTo({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            }, () => {
+              this.vm.columns -= 1;
+            });
+            this.vm.isScaling = true;
           }
         })
         .onActionEnd(() => {
@@ -175,6 +179,10 @@ export struct UserPostArea {
         isGlassStyle: this.vm.isTabBarGlass,
         isMax: this.vm.isTabletView
       })
+        .padding({
+          left: CommonConstant.PageLRPadding,
+          right: CommonConstant.PageLRPadding
+        })
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
