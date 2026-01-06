@@ -1,5 +1,5 @@
-import { CommonConstant, ForumDetailComment, TransitionMap } from 'base_common';
-import { CustomFloatNavTitle, CustomMarkdown, CustomTabBar, StateLayout } from 'base_ui';
+import { CommonConstant, ForumDetailComment, ForumDetailReplyContent, TransitionMap } from 'base_common';
+import { CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImageSwiper } from '../components/ImageSwiper';
@@ -8,6 +8,7 @@ import { TieDetailFooter } from '../components/TieDetailFooter';
 import { TieDetailComment } from '../components/TieDetailComment';
 import { ResUtil } from '@pura/harmony-utils';
 import { ImagePlacer } from '../components/ImagePlacer';
+import { TieContentRender } from '../components/TieContentRender';
 
 @ComponentV2
 export struct TieContentView {
@@ -60,11 +61,15 @@ export struct TieContentView {
 
         UserInfoArea({ vm: this.vm })
 
-        CustomMarkdown({
-          content: this.vm.tieTopic?.content[0].infor
-        })
+        if (this.vm.tieTopic?.content) {
+          TieContentRender({
+            contents: this.vm.tieTopic.content as ForumDetailReplyContent[]
+          })
+        }
 
-        TieDetailFooter({ vm: this.vm })
+        if (this.vm.tieTopic) {
+          TieDetailFooter({ vm: this.vm })
+        }
 
         if (this.vm.isTabletView) {
           Column()

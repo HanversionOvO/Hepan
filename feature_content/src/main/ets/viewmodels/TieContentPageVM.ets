@@ -88,7 +88,6 @@ export class TieContentPageVM extends BaseVM {
             this.commentDataSource.addData(newComments);
           } else {
             this.tieTopic = topic;
-            LogUtil.debug(TAG, JSON.stringify(this.tieTopic.hits))
             this.forumName = forumName;
             this.tieComments = newComments;
             this.commentDataSource.setData(newComments);
