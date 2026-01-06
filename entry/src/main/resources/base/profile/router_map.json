@@ -34,6 +34,11 @@
       "name": "TieContentPage",
       "pageSourceFile": "src/main/ets/pages/content/pages/TieContentPage.ets",
       "buildFunction": "TieContentPageBuilder"
+    },
+    {
+      "name": "ReplyPage",
+      "pageSourceFile": "src/main/ets/pages/content/pages/ReplyPage.ets",
+      "buildFunction": "ReplyPageBuilder"
     }
   ]
 }
