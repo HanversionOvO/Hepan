@@ -87,6 +87,22 @@
     {
       "name": "TieContentPage_comment_reply",
       "value": "回复"
+    },
+    {
+      "name": "TieContentPage_attachment_list",
+      "value": "附件下载"
+    },
+    {
+      "name": "TieContentPage_music",
+      "value": "音频内容"
+    },
+    {
+      "name": "TieContentPage_unknown_size",
+      "value": "未知大小"
+    },
+    {
+      "name": "TieContentPage_download",
+      "value": "下载"
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { CommonConstant } from 'base_common';
-import { CustomMarkdown } from 'base_ui';
+import { CustomMarkdown, GlassButton } from 'base_ui';
 
 export interface ContentItem {
   type: number;
@@ -39,39 +39,39 @@ export struct TieContentRender {
   @Builder
   AttachmentCard(item: ContentItem) {
     Row() {
-      Image($r('sys.media.ohos_app_icon'))
-        .width(40)
-        .height(40)
+      Image($r('app.media.file_icon'))
+        .width(CommonConstant.IconSizeLarge)
+        .height(CommonConstant.IconSizeLarge)
         .objectFit(ImageFit.Contain)
         .margin({ right: CommonConstant.NormalContainerInnerPadding })
 
-      Column({ space: 4 }) {
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         Text(item.infor)
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor($r('sys.color.font_primary'))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-        Text(item.desc || '未知大小')
+        Text(item.desc || $r('app.string.TieContentPage_unknown_size'))
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor($r('sys.color.font_tertiary'))
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
 
-      Button('下载')
-        .fontSize(CommonConstant.TextSizeSmall)
-        .height(28)
-        .backgroundColor(CommonConstant.ThemeColor)
+      GlassButton({
+        text: $r('app.string.TieContentPage_download'),
+        innerFontSize: CommonConstant.TextSizeSmall
+      })
         .onClick(() => {
           if (item.url) {
-            console.info('Download requested:', item.url);
+            // TODO: 下载附件逻辑
           }
         })
     }
     .width(CommonConstant.FullPercent)
     .padding(CommonConstant.NormalContainerInnerPadding)
-    .backgroundColor($r('app.color.tetertiary_window_background'))
+    .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusNormal)
     .margin({ top: CommonConstant.SmallContainerInnerPadding })
   }
@@ -80,7 +80,6 @@ export struct TieContentRender {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
       ForEach(this.displayItems, (item: ContentItem, index: number) => {
         if (item.type === 0) {
-          // 文本（自动处理行内链接样式）
           CustomMarkdown({
             content: item.infor,
             useParallel: false,
@@ -92,12 +91,10 @@ export struct TieContentRender {
             .width(CommonConstant.FullPercent)
             .objectFit(ImageFit.Contain)
             .borderRadius(CommonConstant.RadiusNormal)
-            .backgroundColor($r('app.color.tetertiary_window_background'))
+            .backgroundColor($r('app.color.second_window_background'))
             .enableAnalyzer(true)
 
         } else if (item.type === 4) {
-          // --- 核心修改：Type 4 链接改为文本样式展示 ---
-          // "链接应该是在原文本中的" -> 移除卡片背景，使用文本链接样式
           Text(item.infor)
             .fontSize(this.textSize)
             .fontColor(CommonConstant.ThemeColor)
@@ -108,34 +105,37 @@ export struct TieContentRender {
             })
             .onClick(() => {
               const targetUrl = item.url || item.infor;
-              console.info('Open link:', targetUrl);
+              // TODO: 链接点击
             })
-            // 稍微增加一点点击区域，但不像卡片那么大
-            .padding({ top: 4, bottom: 4 })
+            .padding({
+              top: CommonConstant.SmallContainerInnerPadding,
+              bottom: CommonConstant.SmallContainerInnerPadding
+            })
 
         } else if (item.type === 3) {
           // 音频
           Row() {
-            Text("🎵 音频内容").fontColor($r('sys.color.font_secondary'))
+            Text($r('app.string.TieContentPage_music')).fontColor($r('sys.color.font_secondary'))
           }
           .width(CommonConstant.FullPercent)
-          .padding(10)
-          .backgroundColor($r('app.color.tetertiary_window_background'))
+          .padding(CommonConstant.NormalContainerInnerPadding)
+          .backgroundColor($r('app.color.second_window_background'))
         }
       })
 
       if (this.attachmentItems.length > 0) {
-        Column() {
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           Divider()
-            .margin({ top: 10, bottom: 10 })
+            .margin({
+              top: CommonConstant.NormalContainerInnerPadding,
+            })
             .color($r('sys.color.font_tertiary'))
-            .opacity(0.5)
+            .opacity(0.3)
 
-          Text("附件列表")
+          Text($r('app.string.TieContentPage_attachment_list'))
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_secondary'))
             .width(CommonConstant.FullPercent)
-            .margin({ bottom: 5 })
 
           ForEach(this.attachmentItems, (item: ContentItem) => {
             this.AttachmentCard(item)
