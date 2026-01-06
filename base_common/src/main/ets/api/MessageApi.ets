@@ -7,6 +7,7 @@ import {
   Chat,
   ChatSendContent,
   MessageSummary,
+  NotificationResponse,
   RecentMessage,
   SystemNotification
 } from './models/MessageModels';
@@ -61,7 +62,7 @@ export class MessageApi {
     pagesize = 15): Promise<AnPNotification[]> {
     const result =
       await ApiClient.getInstance()
-        .requestLegacy<LegacyResponse>('message', 'notifylist', {
+        .requestLegacy<NotificationResponse>('message', 'notifylist', {
           'type': type,
           'page': page,
           'pagesize': pagesize

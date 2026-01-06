@@ -1,5 +1,5 @@
 import { CommonConstant, TieRow, TransitionMap } from 'base_common';
-import { CustomFloatNavTitle, CustomMarkdown, CustomTabBar } from 'base_ui';
+import { CustomFloatNavTitle, CustomMarkdown, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImageSwiper } from '../components/ImageSwiper';
@@ -18,7 +18,6 @@ export struct TieContentView {
 
   @Builder
   TieTitle(color: ResourceColor, isNavBar: boolean) {
-    // ... (保持不变)
     Text(this.vm.tieSummary?.subject)
       .fontSize(CommonConstant.TextSizeLarge)
       .fontColor(color)
@@ -36,7 +35,6 @@ export struct TieContentView {
 
   @Builder
   TieDetailContent() {
-    // ... (保持不变)
     Stack({ alignContent: Alignment.Top }) {
       Column()
         .backgroundColor($r('app.color.start_window_background'))
@@ -64,7 +62,7 @@ export struct TieContentView {
         UserInfoArea({ vm: this.vm })
 
         CustomMarkdown({
-          content: this.vm.tieDetail?.rows[0].message
+          content: this.vm.tieTopic?.content[0].infor
         })
 
         TieDetailFooter({ vm: this.vm })
@@ -113,7 +111,7 @@ export struct TieContentView {
           }
         }) {
 
-          Text(this.vm.tieDetail?.thread.replies +
+          Text(this.vm.tieTopic?.replies + " " +
           ResUtil.getStringSync($r('app.string.TieContentPage_comment_num')))
             .fontSize(CommonConstant.TextSizeLarge)
             .fontWeight(FontWeight.Medium)
@@ -135,32 +133,36 @@ export struct TieContentView {
         }
         .width(CommonConstant.FullPercent)
 
-        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          LazyForEach(this.vm.commentDataSource, (comment: TieRow) => {
-            CommentCard({
-              thread: this.vm.tieDetail?.thread,
-              comment: comment
-            })
-          }, (comment: TieRow) => comment.post_id.toString())
-
-          if (this.vm.tieDetail?.rows.length === 1) {
-            Text("- No Content -")
-              .width(CommonConstant.FullPercent)
-              .height(CommonConstant.FullPercent)
-              .fontSize(CommonConstant.TextSizeSmall)
-              .fontColor($r('sys.color.font_tertiary'))
-              .textAlign(TextAlign.Center)
-          } else {
-            Text("- THE END -")
-              .width(CommonConstant.FullPercent)
-              .fontSize(CommonConstant.TextSizeSmall)
-              .fontColor($r('sys.color.font_tertiary'))
-              .textAlign(TextAlign.Center)
-              .padding({
-                bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
+        StateLayout({
+          uiState: this.vm.commentLoadingState
+        }) {
+          Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+            LazyForEach(this.vm.commentDataSource, (comment: TieRow) => {
+              CommentCard({
+                thread: this.vm.tieDetail?.thread,
+                comment: comment
               })
-          }
+            }, (comment: TieRow) => comment.post_id.toString())
 
+            if (this.vm.tieDetail?.rows.length === 1) {
+              Text("- No Content -")
+                .width(CommonConstant.FullPercent)
+                .height(CommonConstant.FullPercent)
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_tertiary'))
+                .textAlign(TextAlign.Center)
+            } else {
+              Text("- THE END -")
+                .width(CommonConstant.FullPercent)
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_tertiary'))
+                .textAlign(TextAlign.Center)
+                .padding({
+                  bottom: CommonConstant.NormalContainerTBPadding * 6 + this.vm.window.windowBottomPadding
+                })
+            }
+
+          }
         }
       }
       .padding({
@@ -172,7 +174,6 @@ export struct TieContentView {
   }
 
   build() {
-    // 绑定刷新事件
     Refresh({ refreshing: $$this.vm.isRefreshingDetail }) {
       Stack({ alignContent: Alignment.Top }) {
         CustomFloatNavTitle({

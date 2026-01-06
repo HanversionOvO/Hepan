@@ -1,3 +1,4 @@
+import { LegacyResponse } from './ApiModels';
 import { UploadedFile } from './MessageModels';
 
 export interface ForumCategory {
@@ -185,4 +186,87 @@ export interface TieAuthor {
   last_visit: number;
   credits: number;
   register_time: number;
+}
+
+export interface ForumDetailTopic {
+  topic_id: number;
+  title: string;
+  format: string;
+  type: string;
+  special: number;
+  sortId: number;
+  user_id: number;
+  user_nick_name: string;
+  replies: number;
+  hits: number;
+  essence: number;
+  vote: number;
+  hot: number;
+  top: number;
+  is_favor: number;
+  create_date: string;
+  icon: string;
+  level: number;
+  userTitle: string;
+  userColor: string;
+  isFollow: number;
+  zanList: Object[]; // 暂未获取到
+  content: ForumDetailReplyContent[]; // 内容
+  status: number;
+  reply_status: number;
+  flag: number;
+  gender: number;
+  reply_posts_id: number;
+  rateList: Object; // 待做
+  reward: Object; // 待做
+}
+
+export interface ForumDetailComment {
+  reply_id: number;
+  format: string;
+  reply_content: ForumDetailReplyContent[];
+  reply_type: string;
+  reply_name: string;
+  reply_posts_id: number;
+  poststick: number;
+  position: number;
+  posts_date: string;
+  icon: string;
+  level: number;
+  userTitle: string;
+  userColor: string;
+  location: string;
+  mobileSign: string;
+  reply_status: number;
+  status: number;
+  role_num: number;
+  title: string;
+  gender: number;
+  is_quote: number;
+  quote_pid: number;
+  quote_content: string;
+  quote_user_name: string;
+  delThread: boolean
+}
+
+export interface ForumDetailReplyContent {
+  infor: string;
+  type: number;
+  url?: string;
+  desc?: string;
+  originalInfo?: string;
+  aid?: number;
+}
+
+export interface ForumDetailResponse extends LegacyResponse {
+  topic: ForumDetailTopic;
+  page: number;
+  has_next: number;
+  total_num: number;
+  list: ForumDetailComment[];
+  forumName: string;
+  boardId: number;
+  forumTopicUrl: string;
+  img_url: string;
+  icon_url: string;
 }

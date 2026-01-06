@@ -1,3 +1,5 @@
+import { LegacyResponse } from './ApiModels';
+
 // 1. 新增：定义纯数据接口，用于参数传递和类型检查
 export interface RecentMessageData {
   plid?: number;
@@ -159,4 +161,8 @@ export interface UploadResponse {
   code: number;
   message: string;
   data: UploadData;
+}
+
+export interface NotificationResponse extends LegacyResponse {
+  list: AnPNotification[];
 }

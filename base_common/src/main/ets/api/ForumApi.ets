@@ -5,6 +5,7 @@ import { LogUtil } from '@pura/harmony-utils';
 import {
   AtUser,
   ForumCategory,
+  ForumDetailResponse,
   ForumDetails,
   ForumTieSummary,
   NewThreadRequest,
@@ -180,6 +181,26 @@ export class ForumApi {
       return tieDetail;
     } else {
       const errorMsg = response.data?.message || `Publish thread failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getForumDetailOld(tid: number, authorId: number = 0, order: number = 0, page: number = 1,
+    pageSize: number = 15): Promise<ForumDetailResponse> {
+    const response = await ApiClient.getInstance().requestLegacy<ForumDetailResponse>('forum', 'postlist', {
+      "topicId": tid,
+      "authorId": authorId,
+      "order": order,
+      "page": page,
+      "pageSize": pageSize
+    });
+
+    if (response.status === 200) {
+      const result: ForumDetailResponse = response.data
+      return result;
+    } else {
+      const errorMsg = response.data.head?.errInfo || `Publish thread failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }

@@ -28,7 +28,7 @@ export struct TieDetailFooter {
           .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor))
           .borderRadius(CommonConstant.RadiusRound)
 
-        Text(this.vm.tieDetail?.forum.name)
+        Text(this.vm.forumName)
           .fontSize(CommonConstant.TextSizeSmall)
           .fontWeight(FontWeight.Medium)
           .fontColor($r('sys.color.font_primary'))
@@ -43,8 +43,8 @@ export struct TieDetailFooter {
       .backgroundColor($r('app.color.second_window_background'))
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieDetail?.thread.views || 0)
-        this.FooterIcon($r('sys.symbol.flame'), this.vm.tieDetail?.thread.heats || 0)
+        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieTopic?.hits || 0)
+        this.FooterIcon($r('sys.symbol.flame'), this.vm.tieTopic?.hot || 0)
       }
     }
     .width(CommonConstant.FullPercent)

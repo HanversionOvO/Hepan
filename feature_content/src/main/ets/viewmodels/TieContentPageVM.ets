@@ -1,24 +1,38 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { BaseVM, BasicDataSource, CommonConstant, ForumApi, ForumTieSummary, TieDetail, TieRow } from 'base_common';
+import {
+  BaseVM,
+  BasicDataSource,
+  CommonConstant,
+  ForumApi,
+  ForumDetailComment,
+  ForumDetailResponse,
+  ForumDetailTopic,
+  ForumTieSummary,
+  TieDetail,
+  UiState
+} from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
 
 const TAG = '[TieContentPageVM]: ';
 
-export class CommentDataSource extends BasicDataSource<TieRow> {
+export class CommentDataSource extends BasicDataSource<ForumDetailComment> {
 }
 
 @ObservedV2
 export class TieContentPageVM extends BaseVM {
   @Trace longTakeSession: LongTakeAnimationProperties = new LongTakeAnimationProperties();
   @Trace tieSummary: ForumTieSummary | null = null;
+  @Trace tieTopic: ForumDetailTopic | null = null;
+  @Trace tieComments: ForumDetailComment[] | null = null;
+  @Trace forumName: string = '';
   @Trace tieDetail: TieDetail | null = null;
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;
   @Trace currentImageIndex: number = 0;
   @Trace currentSort: number = 0;
   @Trace currentPage: number = 1;
-  @Trace isLoadingMore: boolean = false; // 新增：标记是否正在加载更多
-
+  @Trace commentLoadingState: UiState = UiState.LOADING;
+  @Trace isLoadingMore: boolean = false;
   @Trace sortMethods: CustomTabItem[] = [
     { label: '正序', icon: $r('sys.symbol.sort') },
     { label: '倒序', icon: $r('sys.symbol.sort_1') },
@@ -48,37 +62,37 @@ export class TieContentPageVM extends BaseVM {
       }
 
       try {
-        const detail = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
+        const result: ForumDetailResponse =
+          await ForumApi.getForumDetailOld(this.tieSummary.thread_id, 0, 0, this.currentPage);
 
-        let newComments = detail.rows;
+        if (result) {
+          const topic = result.topic;
+          const forumName: string = result.forumName;
 
-        if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
-          newComments = newComments.slice(1);
+          let newComments = result.list;
+
+          if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
+            newComments = newComments.slice(1);
+          }
+
+          if (isLoadMore && this.tieComments) {
+            const allRows = this.tieComments.concat(newComments);
+            this.tieComments = allRows;
+
+            this.commentDataSource.addData(newComments);
+          } else {
+            this.tieTopic = topic;
+            this.forumName = forumName;
+            this.commentDataSource.setData(newComments);
+          }
+
+          if (!this.tieComments) {
+            this.commentLoadingState = UiState.EMPTY;
+          }
         }
-
-        if (isLoadMore && this.tieDetail) {
-          const allRows = this.tieDetail.rows.concat(detail.rows);
-          this.tieDetail = {
-            total: detail.total,
-            page_size: detail.page_size,
-            page: detail.page,
-            thread: detail.thread,
-            forum: detail.forum,
-            rows: allRows
-          };
-
-          this.commentDataSource.addData(newComments);
-
-        } else {
-          this.tieDetail = detail;
-
-          this.commentDataSource.setData(newComments);
-        }
-
-        LogUtil.debug(TAG, `Loaded page ${this.currentPage}`);
 
       } catch (error) {
-        // ... error handling
+
       } finally {
         this.isLoadingMore = false;
         this.isRefreshingDetail = false;
