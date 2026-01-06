@@ -1,4 +1,3 @@
-// feature_mine/src/main/ets/viewmodels/MinePageVM.ets
 import { LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
@@ -47,30 +46,43 @@ export class MinePageVM extends BaseVM {
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
   // === 列表数据状态 ===
-  // 1. 发布的帖子
   @Trace threads: ForumTieSummary[] = [];
   @Trace threadsState: UiState = UiState.LOADING;
   @Trace isRefreshingThreads: boolean = false;
   private threadsPage: number = 1;
-  // 2. 回复的内容
   @Trace replies: ForumTieSummary[] = [];
   @Trace repliesState: UiState = UiState.LOADING;
   @Trace isRefreshingReplies: boolean = false;
   private repliesPage: number = 1;
-  // 3. 收藏的内容
   @Trace favorites: ForumTieSummary[] = [];
   @Trace favoritesState: UiState = UiState.LOADING;
   @Trace isRefreshingFavorites: boolean = false;
   private favoritesPage: number = 1;
-  // === 瀑布流布局配置 ===
+  // === 瀑布流布局配置 (新增捏合缩放支持) ===
   @Trace columns: number = 2;
+  @Trace minColumns: number = 1;
+  @Trace maxColumns: number = 3;
+  // 标记是否正在进行手势缩放
+  @Trace isScaling: boolean = false;
   private defaultColumnsConfig = new BreakpointType({
     sm: 2,
     md: 3,
     lg: 4,
     xl: 5
   });
-  // === 动画状态 ===
+  private minColumnsConfig = new BreakpointType({
+    sm: 1,
+    md: 2,
+    lg: 3,
+    xl: 4
+  });
+  private maxColumnsConfig = new BreakpointType({
+    sm: 3,
+    md: 4,
+    lg: 5,
+    xl: 6
+  });
+  // === 页面转场动画状态 ===
   @Trace pageScale: number = 1.0;
 
   @Computed
@@ -81,6 +93,8 @@ export class MinePageVM extends BaseVM {
   @Monitor("breakPoint.currentBreakPoint")
   onBreakpointChange() {
     this.columns = this.defaultColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+    this.minColumns = this.minColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
+    this.maxColumns = this.maxColumnsConfig.getValue(this.breakPoint.currentBreakPoint);
   }
 
   init(uid: number | 'me') {
@@ -90,9 +104,10 @@ export class MinePageVM extends BaseVM {
   async startMine() {
     this.onBreakpointChange();
     await this.refreshData();
-    // 初始加载第一个 Tab 的数据
     this.loadTabContent(0, true);
   }
+
+  // ... (refreshData, loadMedals, refreshDisplayData 等保持不变)
 
   async refreshData() {
     try {
@@ -161,12 +176,9 @@ export class MinePageVM extends BaseVM {
     }
   }
 
-  // === 关键修改：列表加载触发逻辑 ===
   changeUserPostTab(index: number) {
     this.currentUserPostTabIndex = index;
-
     // 逻辑修正：只要是初始状态(LOADING)且没有正在刷新，就应该触发加载
-    // 之前错误地判断了 state !== LOADING，导致初始状态无法触发加载
     if (index === 0) {
       if (this.threadsState === UiState.LOADING && !this.isRefreshingThreads) {
         this.loadTabContent(0, true);
@@ -201,7 +213,6 @@ export class MinePageVM extends BaseVM {
     try {
       const data = await UserApi.getUserThreads(this.threadsPage, this.uid);
       const rows = data.rows;
-
       if (refresh) {
         this.threads = rows;
         this.threadsState = this.threads.length === 0 ? UiState.EMPTY : UiState.SUCCESS;
@@ -296,7 +307,6 @@ export class MinePageVM extends BaseVM {
     }
   }
 
-  // === 动画跳转 ===
   enterDetailPage(tid: string, context: UIContext, tieSummary: ForumTieSummary) {
     let options: LongTakeTransitionOptions = {
       onEnterTransitionStart: () => {
@@ -324,6 +334,7 @@ export class MinePageVM extends BaseVM {
     RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 
+  // ... (editSignature, getFilteredUserProfile 保持不变，省略以节省空间) ...
   async editSignature(signature: ResourceStr) {
     if (!this.isMe || !signature) {
       this.isShowSignatureSheet = false;
@@ -337,6 +348,7 @@ export class MinePageVM extends BaseVM {
   }
 
   getFilteredUserProfile(): UserProfileSheetItem[] {
+    // ... (代码同前，省略)
     const list: UserProfileSheetItem[] = [];
     const user = this.user;
     const summary = user?.user_summary;

@@ -1,24 +1,21 @@
-// feature_mine/src/main/ets/components/UserPostArea.ets
+import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant, ForumTieSummary, UiState } from 'base_common';
 import { CustomTabBar, StateLayout } from 'base_ui';
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { TieCard } from './TieCard';
 
-// 兼容接口：用于访问 ForumTieSummary 中可能不存在但 API 返回了的 forum_name
 interface TieWithForumName {
   forum_name?: string;
 }
 
-/**
- * 独立的列表组件，确保在 Tabs 切换时能正确响应数据变化
- */
 @ComponentV2
 struct UserPostList {
   @Param @Require vm: MinePageVM;
   @Param @Require index: number;
   @Param @Require scroller: Scroller;
+  // 记录捏合开始时的列数
+  @Local baseColumns: number = 2;
 
-  // 动态获取当前 Tab 的状态
   @Computed
   get currentState(): UiState {
     if (this.index === 0) {
@@ -30,7 +27,6 @@ struct UserPostList {
     return this.vm.favoritesState;
   }
 
-  // 动态获取当前 Tab 的数据
   @Computed
   get currentData(): ForumTieSummary[] {
     if (this.index === 0) {
@@ -63,7 +59,6 @@ struct UserPostList {
   @Event onRefresh: () => void = () => {
   };
 
-  // 渲染列表内容，包含 WaterFlow 和 TieCard
   @Builder
   renderList() {
     Refresh({ refreshing: this.isRefreshing }) {
@@ -72,12 +67,9 @@ struct UserPostList {
           FlowItem() {
             TieCard({
               tie: tie,
-              // 使用类型断言安全访问 forum_name
               forumName: tie.forum_name || ''
             })
-            // 关键 1: 设置唯一 ID，用于一镜到底动画定位
               .id(tie.thread_id.toString())
-              // 关键 2: 点击时传递 context 和 ID 给 VM
               .onClick(() => {
                 this.vm.enterDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
               })
@@ -104,7 +96,6 @@ struct UserPostList {
         this.onLoadMore();
       })
       .onDidScroll(() => {
-        // 处理吸顶效果
         const yOffset = this.scroller.currentOffset().yOffset;
         if (yOffset > 0 && !this.vm.isTabBarGlass) {
           this.vm.isTabBarGlass = true;
@@ -112,6 +103,38 @@ struct UserPostList {
           this.vm.isTabBarGlass = false;
         }
       })
+      // === 新增：捏合手势 ===
+      .priorityGesture(
+        PinchGesture()
+          .onActionStart(() => {
+            this.vm.isScaling = true;
+            this.baseColumns = this.vm.columns;
+          })
+          .onActionUpdate((event: GestureEvent) => {
+            const scale = event.scale;
+            let newCols = this.baseColumns;
+
+            // 计算新列数：放大(scale>1)则列数减少，缩小(scale<1)则列数增加
+            if (scale > 0) {
+              newCols = Math.round(this.baseColumns / scale);
+            }
+
+            // 限制范围
+            newCols = Math.max(this.vm.minColumns, Math.min(newCols, this.vm.maxColumns));
+
+            if (newCols !== this.vm.columns) {
+              AppUtil.getUIContext().animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns = newCols;
+              });
+            }
+          })
+          .onActionEnd(() => {
+            this.vm.isScaling = false;
+          })
+      )
     }
     .onRefreshing(() => {
       this.onRefresh();
@@ -122,7 +145,6 @@ struct UserPostList {
     StateLayout({
       uiState: this.currentState,
       onRetry: this.onRefresh,
-      // 如果是收藏页且不是自己，显示空状态提示
       emptyStr: this.index === 2 && !this.vm.isMe ? $r('app.string.StateLayout_empty') : undefined,
       content: () => {
         this.renderList();
@@ -131,16 +153,15 @@ struct UserPostList {
   }
 }
 
+// UserPostArea 组件保持不变，只需引用更新后的 UserPostList
 @ComponentV2
 export struct UserPostArea {
   @Param @Require vm: MinePageVM;
-  // 为每个 Tab 维护一个独立的 Scroller
   private listScrollers: Scroller[] = [new Scroller(), new Scroller(), new Scroller()];
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
       Tabs({ index: this.vm.currentUserPostTabIndex, controller: this.vm.userPostTabController }) {
-        // Tab 1: 发布的帖子
         TabContent() {
           UserPostList({
             vm: this.vm,
@@ -151,7 +172,6 @@ export struct UserPostArea {
           })
         }
 
-        // Tab 2: 回复的帖子
         TabContent() {
           UserPostList({
             vm: this.vm,
@@ -162,7 +182,6 @@ export struct UserPostArea {
           })
         }
 
-        // Tab 3: 收藏的帖子
         TabContent() {
           UserPostList({
             vm: this.vm,
@@ -181,7 +200,6 @@ export struct UserPostArea {
         this.vm.changeUserPostTab(index);
       })
 
-      // 吸顶 TabBar
       CustomTabBar({
         vm: this.vm,
         tabItems: this.vm.userPostTabItems,
@@ -211,7 +229,6 @@ export struct UserPostArea {
       topLeft: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
       topRight: this.vm.isSticky ? 0 : CommonConstant.RadiusUltraLarge,
     })
-    // 关键 3: 绑定缩放动画属性
     .scale({
       x: this.vm.pageScale,
       y: this.vm.pageScale
