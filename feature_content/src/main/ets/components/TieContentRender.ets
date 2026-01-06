@@ -120,6 +120,33 @@ export struct TieContentRender {
           .width(CommonConstant.FullPercent)
           .padding(CommonConstant.NormalContainerInnerPadding)
           .backgroundColor($r('app.color.second_window_background'))
+        } else if (item.type === 6) {
+          // 引用回复
+          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Row() {
+              Text("回复 ")
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_tertiary'))
+              Text(item.originalInfo)
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_primary'))
+                .fontWeight(FontWeight.Bold)
+              Text("：")
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_tertiary'))
+            }
+            .width(CommonConstant.FullPercent)
+
+            Text(item.infor)
+              .fontSize(CommonConstant.TextSizeNormal)
+              .fontColor($r('sys.color.font_secondary'))
+              .maxLines(3)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
+          .width(CommonConstant.FullPercent)
+          .padding(CommonConstant.NormalContainerInnerPadding)
+          .backgroundColor($r('app.color.second_window_background'))
+          .borderRadius(CommonConstant.RadiusNormal)
         }
       })
 

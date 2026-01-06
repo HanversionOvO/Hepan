@@ -5,6 +5,7 @@ import {
   CommonConstant,
   ForumApi,
   ForumDetailComment,
+  ForumDetailReplyContent,
   ForumDetailResponse,
   ForumDetailTopic,
   ForumTieSummary,
@@ -82,6 +83,20 @@ export class TieContentPageVM extends BaseVM {
           if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
             newComments = newComments.slice(1);
           }
+
+          newComments.forEach(comment => {
+            if (comment.is_quote === 1 && comment.quote_content_bare) {
+              const quoteItem: ForumDetailReplyContent = {
+                infor: comment.quote_content_bare,
+                type: 6,
+                originalInfo: comment.quote_user_name
+              };
+              if (!comment.reply_content) {
+                comment.reply_content = [];
+              }
+              comment.reply_content.unshift(quoteItem);
+            }
+          });
 
           if (isLoadMore && this.tieComments) {
             const allRows = this.tieComments.concat(newComments);
