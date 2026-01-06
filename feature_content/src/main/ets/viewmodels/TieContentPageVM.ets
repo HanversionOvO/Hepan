@@ -70,7 +70,6 @@ export class TieContentPageVM extends BaseVM {
 
         if (result) {
           const topic = result.topic;
-
           const forumName: string = result.forumName;
           this.hasNext = result.has_next;
           this.isReachEnd = this.hasNext === 0;
@@ -143,10 +142,13 @@ export class TieContentPageVM extends BaseVM {
     }
   }
 
-  async supportTie() {
-    if (this.tieSummary) {
-      const result = await ForumApi.supportTie(this.tieSummary.thread_id);
-      // 点赞成功返回0，取消点赞成功返回1
+  async supportTie(isSupport: boolean) {
+    if (this.tieSummary && this.tieTopic) {
+      try {
+        await ForumApi.supportTie(this.tieSummary.thread_id, isSupport);
+      } catch (error) {
+        LogUtil.error(TAG, `Support tie failed: ${JSON.stringify(error)}`);
+      }
     }
   }
 

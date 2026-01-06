@@ -5,10 +5,20 @@ import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 export struct TieDetailComment {
   @Param @Require vm: TieContentPageVM;
   @Param @Require sideNavWidth: number;
+  @Local isLiked: boolean = false;
+  @Local isDisliked: boolean = false;
+  @Local likeScale: number = 1;
+  @Local dislikeScale: number = 1;
 
-  @Computed
-  get isLiked(): number {
-    return this.vm.tieTopic?.extraPanel.find(item => item.type === 'support')?.extParams.isHasRecommendAdd ?? 0;
+  aboutToAppear(): void {
+    this.syncState();
+  }
+
+  syncState() {
+    const panel = this.vm.tieTopic?.extraPanel.find(item => item.type === 'support');
+    if (panel) {
+      this.isLiked = (panel.extParams.isHasRecommendAdd === 1);
+    }
   }
 
   build() {
@@ -42,17 +52,46 @@ export struct TieDetailComment {
         SymbolGlyph(this.isLiked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
           .fontColor(this.isLiked ? [CommonConstant.ThemeColor] : [$r('sys.color.font_tertiary')])
           .fontSize(CommonConstant.IconSizeSmall)
+          .scale({ x: this.likeScale, y: this.likeScale })
+          .animation({
+            duration: CommonConstant.AnimationDurationNormal,
+            curve: CommonConstant.AnimationCurveSpring
+          })
           .onClick(() => {
-            this.vm.supportTie();
+            this.isLiked = !this.isLiked;
+
+            this.likeScale = 0.7;
+            setTimeout(() => {
+              this.likeScale = 1.2;
+              setTimeout(() => this.likeScale = 1, 150);
+            }, 100);
+
+            this.vm.supportTie(true);
           })
 
         SymbolGlyph($r('sys.symbol.star'))
           .fontColor([$r('sys.color.font_tertiary')])
           .fontSize(CommonConstant.IconSizeSmall)
 
-        SymbolGlyph($r('sys.symbol.hand_thumbsdown'))
-          .fontColor([$r('sys.color.font_tertiary')])
+        SymbolGlyph(this.isDisliked ? $r('sys.symbol.hand_thumbsdown_fill') : $r('sys.symbol.hand_thumbsdown'))
+          .fontColor(this.isDisliked ? [CommonConstant.InfoColor] : [$r('sys.color.font_tertiary')])
           .fontSize(CommonConstant.IconSizeSmall)
+          .scale({ x: this.dislikeScale, y: this.dislikeScale })
+          .animation({
+            duration: CommonConstant.AnimationDurationNormal,
+            curve: CommonConstant.AnimationCurveSpring
+          })
+          .onClick(() => {
+            this.isDisliked = !this.isDisliked;
+
+            this.dislikeScale = 0.7;
+            setTimeout(() => {
+              this.dislikeScale = 1.2;
+              setTimeout(() => this.dislikeScale = 1, 150);
+            }, 100);
+
+            this.vm.supportTie(false);
+          })
       }
     }
     .width(this.vm.isTabletView ? this.sideNavWidth - CommonConstant.PageLRPadding * 2 : "92%")

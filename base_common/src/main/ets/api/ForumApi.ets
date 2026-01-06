@@ -134,7 +134,7 @@ export class ForumApi {
       method: http.RequestMethod.POST,
       includeAuthorization: true,
       includeCookie: true,
-      data: request
+      data: request,
     });
 
     if (response.status === 200 && response.data.code === 0) {
@@ -207,8 +207,8 @@ export class ForumApi {
     }
   }
 
-  public static async supportTie(tid: number): Promise<number> {
-    const path = `/_/post/review?tid=${tid}&support=true`;
+  public static async supportTie(tid: number, isSupport: boolean): Promise<number> {
+    const path = `/_/post/review?tid=${tid}&support=${isSupport ? "true" : "false"}`;
 
     const response = await ApiClient.getInstance().request<BaseResponse<number>>({
       path: path,
