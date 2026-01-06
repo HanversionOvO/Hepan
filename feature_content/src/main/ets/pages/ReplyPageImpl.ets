@@ -108,7 +108,9 @@ export struct ReplyPageImpl {
               })
           }
           .layoutWeight(1)
-          .constraintSize({ maxHeight: this.vm.window.windowHeight / 2 })
+          .constraintSize({
+            maxHeight: this.vm.isTabletView ? this.vm.window.windowHeight / 2 : this.vm.window.windowHeight / 3
+          })
 
           if (this.vm.uploadedImages.length > 0 || this.vm.isInsertImageMode) {
             Column() {
