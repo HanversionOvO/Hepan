@@ -147,7 +147,7 @@ export struct TieContentView {
                 tieComment: comment,
                 authorID: this.vm.tieTopic?.user_id
               })
-            }, (comment: ForumDetailComment) => comment.reply_id.toString())
+            }, (comment: ForumDetailComment) => comment.reply_posts_id.toString())
 
             Text("- THE END -")
               .width(CommonConstant.FullPercent)
