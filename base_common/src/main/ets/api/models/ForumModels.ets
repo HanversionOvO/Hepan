@@ -244,9 +244,6 @@ export interface ForumDetailComment {
   gender: number;
   is_quote: number;
   quote_pid: number;
-  quote_tid?: string;
-  quote_time?: string;
-  quote_content_bare?: string;
   quote_content: string;
   quote_user_name: string;
   delThread: boolean;
