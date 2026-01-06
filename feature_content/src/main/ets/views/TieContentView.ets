@@ -9,6 +9,7 @@ import { TieDetailComment } from '../components/TieDetailComment';
 import { ResUtil } from '@pura/harmony-utils';
 import { ImagePlacer } from '../components/ImagePlacer';
 import { TieContentRender } from '../components/TieContentRender';
+import { CommentCard } from '../components/CommentCard';
 
 @ComponentV2
 export struct TieContentView {
@@ -142,10 +143,10 @@ export struct TieContentView {
         }) {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
             LazyForEach(this.vm.commentDataSource, (comment: ForumDetailComment) => {
-              // CommentCard({
-              //   thread: this.vm.tieDetail?.thread,
-              //   comment: comment
-              // })
+              CommentCard({
+                tieComment: comment,
+                authorID: this.vm.tieTopic?.user_id
+              })
             }, (comment: ForumDetailComment) => comment.reply_id.toString())
 
             Text("- THE END -")

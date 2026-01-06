@@ -1,24 +1,24 @@
-import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, DateUtil, TieRow, TieThread, UserAvatarUtil } from 'base_common';
-import { CustomMarkdown } from 'base_ui';
+import { NumberUtil, ResUtil } from '@pura/harmony-utils';
+import { CommonConstant, DateUtil, ForumDetailComment, ForumExtraPanel } from 'base_common';
+import { TieContentRender } from './TieContentRender';
 
 @ComponentV2
 export struct CommentCard {
-  @Param @Require thread: TieThread;
-  @Param @Require comment: TieRow;
+  @Param @Require tieComment: ForumDetailComment;
+  @Param @Require authorID: number;
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       // 1. 头像区
       Column() {
         Stack({ alignContent: Alignment.BottomEnd }) {
-          Image(UserAvatarUtil.getAvatarUrl(this.comment.author_id))
+          Image(this.tieComment.icon)
             .width(CommonConstant.IconSizeLarge)
             .height(CommonConstant.IconSizeLarge)
             .borderRadius(CommonConstant.RadiusRound)
             .objectFit(ImageFit.Cover)
 
-          if (this.thread.author_id === this.comment.author_id) {
+          if (this.authorID === this.tieComment.reply_id) {
             Text($r('app.string.TieContentPage_comment_card_author'))
               .fontSize(CommonConstant.TextSizeUltraTiny)
               .fontColor($r('sys.color.font_on_primary'))
@@ -40,13 +40,13 @@ export struct CommentCard {
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         // 用户信息行
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-          Text(this.comment.author)
+          Text(this.tieComment.reply_name)
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_primary'))
             .fontWeight(FontWeight.Bold)
 
           // 等级徽章 (Lv.X)
-          Text(this.comment.author_details?.group_title)
+          Text(this.tieComment.userTitle)
             .fontSize(CommonConstant.TextSizeTiny)
             .fontColor($r('sys.color.font_tertiary'))
             .fontWeight(FontWeight.Bold)
@@ -58,14 +58,13 @@ export struct CommentCard {
         .width(CommonConstant.FullPercent)
 
         // 评论内容
-        CustomMarkdown({
-          content: this.comment.message,
-          useParallel: false
+        TieContentRender({
+          contents: this.tieComment.reply_content
         })
 
         // 底部元数据 (时间 · 地点 · 回复)
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-          Text(`${DateUtil.getRelativeTime(this.comment.dateline)} · ${this.comment.position}${ResUtil.getStringSync($r('app.string.TieContentPage_comment_floor'))}`)
+          Text(`${DateUtil.getRelativeTime(NumberUtil.toNumber(this.tieComment.posts_date))} · ${this.tieComment.position}${ResUtil.getStringSync($r('app.string.TieContentPage_comment_floor'))} ·  ${this.tieComment.mobileSign}`)
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_tertiary'))
 
@@ -84,7 +83,9 @@ export struct CommentCard {
           .fontSize(CommonConstant.TextSizeLarge)
           .fontColor([$r('sys.color.font_tertiary')])
 
-        Text(this.comment.support.toString())
+        Text(this.tieComment.extraPanel.find((item: ForumExtraPanel) => {
+          item.type === "support"
+        })?.extParams.recommendAdd.toString())
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor($r('sys.color.font_tertiary'))
       }

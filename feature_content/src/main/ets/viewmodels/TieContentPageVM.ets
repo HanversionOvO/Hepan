@@ -77,6 +77,8 @@ export class TieContentPageVM extends BaseVM {
 
           let newComments = result.list || [];
 
+          LogUtil.debug(TAG, JSON.stringify(newComments));
+
           if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
             newComments = newComments.slice(1);
           }

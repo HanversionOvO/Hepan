@@ -246,7 +246,22 @@ export interface ForumDetailComment {
   quote_pid: number;
   quote_content: string;
   quote_user_name: string;
-  delThread: boolean
+  delThread: boolean;
+  extraPanel: ForumExtraPanel[];
+}
+
+export interface ForumExtraPanel {
+  action: string;
+  title: string;
+  recommendAdd: string;
+  extParams: ForumExtParams;
+  type: string;
+}
+
+export interface ForumExtParams {
+  beforeAction: string;
+  recommendAdd: number;
+  isHasRecommendAdd: number
 }
 
 export interface ForumDetailReplyContent {
