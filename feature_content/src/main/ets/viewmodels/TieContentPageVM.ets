@@ -33,9 +33,9 @@ export class TieContentPageVM extends BaseVM {
   @Trace commentLoadingState: UiState = UiState.LOADING;
   @Trace isLoadingMore: boolean = false;
   @Trace sortMethods: CustomTabItem[] = [
-    { label: '正序', icon: $r('sys.symbol.sort') },
-    { label: '倒序', icon: $r('sys.symbol.sort_1') },
-    { label: '只看楼主', icon: $r('sys.symbol.eye') },
+    { label: $r('app.string.TieContentPage_sort'), icon: $r('sys.symbol.sort') },
+    { label: $r('app.string.TieContentPage_sort_reverse'), icon: $r('sys.symbol.sort_1') },
+    { label: $r('app.string.TieContentPage_only_author'), icon: $r('sys.symbol.eye') },
   ];
   @Trace titleButtons: NavTitleButtonModel[] = [
     {

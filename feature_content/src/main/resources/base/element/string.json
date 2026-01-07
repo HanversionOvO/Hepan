@@ -109,6 +109,18 @@
       "value": "回复"
     },
     {
+      "name": "TieContentPage_sort",
+      "value": "正序"
+    },
+    {
+      "name": "TieContentPage_sort_reverse",
+      "value": "倒序"
+    },
+    {
+      "name": "TieContentPage_only_author",
+      "value": "只看楼主"
+    },
+    {
       "name": "ReplyPage_cancel",
       "value": "取消"
     },
