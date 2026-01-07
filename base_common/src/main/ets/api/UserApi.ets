@@ -6,6 +6,7 @@ import {
   Medal,
   PaginationData,
   RecentVisitor,
+  ThreadAuthorInfo,
   UserFavorite,
   UserFriends,
   UserProfileData,
@@ -17,6 +18,7 @@ import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { UserAvatarUtil } from '../utils/UserAvatarUtil';
 import { LegacyResponse } from './models/ApiModels';
+import { ForumApi } from './ForumApi';
 
 const TAG = '[UserApi]: ';
 
@@ -289,7 +291,57 @@ export class UserApi {
     });
 
     if (response.status === 200 && response.data.code === 0) {
-      return response.data.data;
+      const data = response.data.data;
+
+      try {
+        const threadIds = new Set<number>();
+        data.rows.forEach(reply => {
+          if (reply.thread_id) {
+            threadIds.add(reply.thread_id);
+          }
+        });
+
+        const fetchTasks = Array.from(threadIds).map(async (tid): Promise<ThreadAuthorInfo | null> => {
+          try {
+            const detail = await ForumApi.getForumDetail(tid, 1);
+            return {
+              author: detail.thread.author,
+              author_id: detail.thread.author_id
+            };
+          } catch (e) {
+            LogUtil.warn(TAG, `Failed to fetch thread info for tid:${tid}, error:${JSON.stringify(e)}`);
+            return null;
+          }
+        });
+
+        const threadInfos = await Promise.all(fetchTasks);
+
+        const threadIdsArray = Array.from(threadIds);
+
+        const threadInfoMap = new Map<number, ThreadAuthorInfo>();
+
+        threadInfos.forEach((info, index) => {
+          if (info) {
+            const tid = threadIdsArray[index];
+            threadInfoMap.set(tid, info);
+          }
+        });
+
+        data.rows.forEach(reply => {
+          const info = threadInfoMap.get(reply.thread_id);
+          if (info) {
+            reply.author = info.author;
+            reply.author_id = info.author_id;
+          } else {
+            reply.author = reply.author || '主题作者';
+            reply.author_id = reply.author_id || 0;
+          }
+        });
+
+      } catch (e) {
+        LogUtil.warn(TAG, 'Error enriching replies with thread info: ' + JSON.stringify(e));
+      }
+      return data;
     } else {
       throw new Error(response.data?.message || 'Fetch user replies failed');
     }

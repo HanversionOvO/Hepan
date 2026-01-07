@@ -180,6 +180,11 @@ export interface UserThread extends ForumTieSummary {
   forum_name?: string;
 }
 
+export interface ThreadAuthorInfo {
+  author: string;
+  author_id: number;
+}
+
 export interface UserReply {
   forum_id: number;
   thread_id: number;
@@ -192,6 +197,8 @@ export interface UserReply {
   views: number;
   replies: number;
   forum_name: string;
+  author?: string;
+  author_id?: number;
 }
 
 export interface UserFavorite {
