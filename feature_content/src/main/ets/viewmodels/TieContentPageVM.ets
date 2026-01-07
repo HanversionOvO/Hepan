@@ -50,6 +50,20 @@ export class TieContentPageVM extends BaseVM {
   @Trace commentScroller: Scroller = new Scroller();
   commentDataSource: CommentDataSource = new CommentDataSource();
 
+  async changeSort(index: number) {
+    if (this.currentSort === index) {
+      return;
+    }
+    this.currentSort = index;
+    this.commentLoadingState = UiState.LOADING;
+    this.tieComments = [];
+    this.commentDataSource.setData([]);
+    this.currentPage = 1;
+    this.hasNext = 1;
+    this.isReachEnd = false;
+    await this.loadData(false);
+  }
+
   /**
    * 加载数据
    * @param isLoadMore 是否为加载更多模式
@@ -65,8 +79,16 @@ export class TieContentPageVM extends BaseVM {
       }
 
       try {
+        let order = 0;
+        let authorId = 0;
+        if (this.currentSort === 1) {
+          order = 1; // 倒序
+        } else if (this.currentSort === 2) {
+          authorId = this.tieSummary.author_id; // 只看楼主
+        }
+
         const result: ForumDetailResponse =
-          await ForumApi.getForumDetailOld(this.tieSummary.thread_id, 0, 0, this.currentPage);
+          await ForumApi.getForumDetailOld(this.tieSummary.thread_id, authorId, order, this.currentPage);
 
         if (result) {
           const topic = result.topic;

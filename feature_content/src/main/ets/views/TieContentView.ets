@@ -151,7 +151,7 @@ export struct TieContentView {
             tabItems: this.vm.sortMethods,
             currentIndex: this.vm.currentSort,
             changeTab: (index: number) => {
-              // this.vm.changeTab(index);
+              this.vm.changeSort(index);
             },
             alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
             isGlassStyle: true,
