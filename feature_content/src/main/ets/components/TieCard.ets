@@ -64,7 +64,7 @@ export struct TieCard {
         top: CommonConstant.SmallContainerTBPadding / 2,
         bottom: CommonConstant.SmallContainerTBPadding / 2
       })
-      .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor))
+      .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor, 0.6))
       .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
       .borderRadius(CommonConstant.RadiusRound)
       .position({ right: CommonConstant.NormalContainerInnerPadding, top: CommonConstant.NormalContainerInnerPadding })
