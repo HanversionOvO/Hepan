@@ -14,6 +14,7 @@ import {
   PostCategoryItem,
   ReplyRequest,
   ReplyResponse,
+  ThreadListResponse,
   TieDetail
 } from './models/ForumModels';
 import { ToastUtil } from '../utils/ToastUtil';
@@ -244,6 +245,26 @@ export class ForumApi {
       return response.data.data;
     } else {
       const errorMsg = response.data?.message || `Reply failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async getForumThreads(forumId: number, sortBy: number, page: number = 1): Promise<ForumTieSummary[]> {
+    const path: string = `/_/thread/list?forum_id=${forumId}&page=${page}&sort_by=${sortBy}&forum_details=1`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<ThreadListResponse>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true,
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      // 接口返回的数据结构中 rows 包含帖子列表
+      return response.data.data.rows || [];
+    } else {
+      const errorMsg = response.data?.message || `Fetch forum threads failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }

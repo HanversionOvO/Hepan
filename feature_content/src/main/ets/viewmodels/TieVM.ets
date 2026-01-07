@@ -6,12 +6,11 @@ import {
   ForumApi,
   ForumCategory,
   ForumTieSummary,
-  PostCategoryGroup,
   RouterMap,
   RouterUtil
 } from 'base_common';
 import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
-import { SortItem, TieSortType } from '../components/SortButton';
+import { SortItem, TieSortType } from '../components/SortButton'; // 确保引入 TieSortType
 import { SubCategoryItem } from '../components/SubCategoryButton';
 import { LogUtil } from '@pura/harmony-utils';
 import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
@@ -47,6 +46,8 @@ export class TieVM extends BaseVM {
   private page: number = 1;
   // 用于缓存板块ID到名称的映射，供TieCard显示使用
   private forumNameMap: Map<number, string> = new Map();
+  // 缓存原始的版块列表数据，用于切换二级版块时无需再次请求网络
+  private rawCategoryList: ForumCategory[] = [];
 
   @Monitor("breakPoint.currentBreakPoint")
   onBreakpointChange() {
@@ -143,43 +144,44 @@ export class TieVM extends BaseVM {
   }
 
   async loadCategory() {
-    const result = await ForumApi.getPostCategories();
-    // 构建FID映射
-    this.buildForumMap(result);
+    try {
+      const result: ForumCategory[] = await ForumApi.getForumCategory();
+      this.rawCategoryList = result; // 缓存
 
-    const categories: CategoryTabItems[] = [];
-    const icon: Resource = $r('sys.symbol.list_number');
+      // 构建FID映射
+      this.buildForumMap(result);
 
-    categories.push({
-      fid: 0,
-      label: $r('app.string.TieView_category_all'),
-      icon
-    })
+      const categories: CategoryTabItems[] = [];
+      const icon: Resource = $r('sys.symbol.list_number');
 
-    result.forEach((category: PostCategoryGroup) => {
       categories.push({
-        fid: category.children[0].fid,
-        label: category.children[0].name,
+        fid: 0,
+        label: $r('app.string.TieView_category_all'),
         icon
-      })
-    })
+      });
 
-    categories.push({
-      fid: -1,
-      label: $r('app.string.TieView_category_more'),
-      icon
-    })
+      result.forEach((category: ForumCategory) => {
+        categories.push({
+          fid: category.fid,
+          label: category.name,
+          icon
+        });
+      });
 
-    this.categoryTabItems = categories;
+      this.categoryTabItems = categories;
+    } catch (e) {
+      LogUtil.error(TAG, 'Load category failed: ' + JSON.stringify(e));
+    }
   }
 
-  private buildForumMap(groups: PostCategoryGroup[]) {
-    groups.forEach(group => {
-      this.forumNameMap.set(group.fid, group.name);
-      if (group.children) {
-        group.children.forEach(child => {
-          this.forumNameMap.set(child.fid, child.name);
-        })
+  private buildForumMap(list: ForumCategory[]) {
+    if (!list || list.length === 0) {
+      return;
+    }
+    list.forEach(item => {
+      this.forumNameMap.set(item.fid, item.name);
+      if (item.children && item.children.length > 0) {
+        this.buildForumMap(item.children);
       }
     });
   }
@@ -189,28 +191,38 @@ export class TieVM extends BaseVM {
     return this.forumNameMap.get(fid) || '';
   }
 
+  /**
+   * 加载二级版块
+   * 修改点：当一级版块为具体版块且有子版块时，不显示“全部”，而是直接显示子版块列表。
+   * 结合 changeCategory 中的 currentSubCategory = 0 重置逻辑，会自动选中第一个子版块。
+   */
   async loadSubCategory() {
-    const fid: number = this.categoryTabItems[this.currentCategory].fid;
+    const currentFid: number = this.categoryTabItems[this.currentCategory]?.fid || 0;
     let categories: SubCategoryItem[] = [];
-    if (fid === 0 || fid === -1) {
-      categories = [
-        { fid: 0, name: $r('app.string.TieView_category_no_sub') },
-      ];
+
+    // 只有当一级版块是“全部”时，才显示“全部”选项
+    if (currentFid === 0) {
+      categories.push({ fid: 0, name: $r('app.string.TieView_category_all') });
     } else {
-      const result = await ForumApi.getForumDetails(fid);
-      if (result.children) {
-        result.children.forEach((subCategory: ForumCategory) => {
-          categories.push({
-            fid: subCategory.fid,
-            name: subCategory.name
-          })
-          // 补充详情中的子版块到映射表
-          this.forumNameMap.set(subCategory.fid, subCategory.name);
-        })
-      } else {
-        categories = [
-          { fid: 0, name: $r('app.string.TieView_category_no_sub') },
-        ];
+      let hasChildren = false;
+      if (this.rawCategoryList.length > 0) {
+        // 在缓存的一级列表中查找当前选中的父版块
+        const parentCategory = this.rawCategoryList.find(item => item.fid === currentFid);
+
+        if (parentCategory && parentCategory.children && parentCategory.children.length > 0) {
+          hasChildren = true;
+          parentCategory.children.forEach((child: ForumCategory) => {
+            categories.push({
+              fid: child.fid,
+              name: child.name
+            });
+          });
+        }
+      }
+
+      // 如果具体版块没有子版块，则显示“全部”（代表父版块自己），避免空白
+      if (!hasChildren) {
+        categories.push({ fid: 0, name: $r('app.string.TieView_category_all') });
       }
     }
 
@@ -247,11 +259,13 @@ export class TieVM extends BaseVM {
       return;
     }
     this.currentCategory = index;
+    // 切换一级版块时，重置二级版块选择为 0
+    // 如果子版块列表中没有“全部”，0 就是第一个子版块
     this.currentSubCategory = 0;
     this.isSorting = false;
     this.loadSubCategory();
     this.updateSortItems();
-    // 如果 updateSortItems 将 currentSort 重置为 0 且原本就是 0，Monitor 不会触发，需要手动加载
+
     if (this.currentSort === 0) {
       this.loadTies(true);
     }
@@ -264,9 +278,29 @@ export class TieVM extends BaseVM {
     this.loadTies(true);
   }
 
+  /**
+   * 将字符串类型的排序转换为 API 需要的数字类型
+   */
+  private getSortByValue(type: TieSortType): number {
+    switch (type) {
+      case "newreply":
+        return 1;
+      case "newthread":
+        return 2;
+      case "allreplies":
+        return 3;
+      case "allvisits":
+        return 4;
+      case "hotlist":
+        return 4;
+      default:
+        return 1;
+    }
+  }
+
   // 加载数据的方法
   async loadTies(refresh: boolean) {
-    if (this.isLoading) {
+    if (this.isLoadingTie) {
       return;
     }
     this.isLoadingTie = true;
@@ -280,7 +314,22 @@ export class TieVM extends BaseVM {
       const currentSortItem = this.sortItems[this.currentSort];
       const idlist: TieSortType = currentSortItem ? currentSortItem.idlist : "newreply";
 
-      const data = await ForumApi.getForumTie(idlist, this.page);
+      let data: ForumTieSummary[] = [];
+
+      const parentFid = this.categoryTabItems[this.currentCategory]?.fid || 0;
+      const subFid = this.subCategoryItems[this.currentSubCategory]?.fid || 0;
+
+      // 确定最终使用的 fid
+      // 如果 subFid > 0，说明选中了具体的子版块（因为已经去掉了具体的fid=0的“全部”选项，除非是 fallback）
+      // 如果 subFid == 0，说明是一级“全部”或者无子版块的Fallback“全部”，此时用 parentFid
+      const targetFid = (subFid > 0) ? subFid : parentFid;
+
+      if (targetFid > 0) {
+        const sortBy = this.getSortByValue(idlist);
+        data = await ForumApi.getForumThreads(targetFid, sortBy, this.page);
+      } else {
+        data = await ForumApi.getForumTie(idlist, this.page);
+      }
 
       if (refresh) {
         this.ties = data;

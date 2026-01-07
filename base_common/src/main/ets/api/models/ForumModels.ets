@@ -304,3 +304,10 @@ export interface ReplyRequest {
 export interface ReplyResponse {
   post_id: number;
 }
+
+export interface ThreadListResponse {
+  total: number;
+  page_size: number;
+  page: number;
+  rows: ForumTieSummary[];
+}
