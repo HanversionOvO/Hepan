@@ -11,16 +11,19 @@
     {
       "name": "release",
       "arkOptions": {
-        "obfuscation" : {
-          "ruleOptions":{
-            "enable": true,
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false,
             "files": [
               "./obfuscation-rules.txt"
             ]
           },
-          "consumerFiles": ["./consumer-rules.txt"]
-          }
-      }    }
+          "consumerFiles": [
+            "./consumer-rules.txt"
+          ]
+        }
+      }
+    }
   ],
   "targets": [
     {

@@ -7,11 +7,24 @@
         "material": {
           "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B37248A5DE0704CB8D7C0E002877C838695798176977A26D5ED2A79C08F3B4B3832EF05D999BC3F",
+          "keyPassword": "0000001BBB70414FAE6AB3E710DCAB1B78D41924D7948F8342954C9450291D9001DE79E972CA284917C9AD",
           "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001B1FA6FC4391693DA00059D4C6C449D7C6B928EF74095375627A460CECCFA2C0B4CA7ADB308B4893"
+          "storePassword": "0000001B3ED512D7F540B452C577C102172C4021A74122898AF90A7311470DDA84AA1BFB5DA4076299BD19"
+        }
+      },
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer",
+          "keyAlias": "mikannqaq",
+          "keyPassword": "00000018E509FF8A335749635F2376E5310E58CC17955BFC3CA539DFACAA47ED3860D5E57FE5B8C3",
+          "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
+          "storePassword": "00000018F5F244862959B887B24AF9D27AB5D506AEDD909C36902F5187F1CF43F227F9AAD506236C"
         }
       }
     ],
@@ -38,6 +51,21 @@
       {
         "name": "release"
       }
+    ],
+    "capabilities": [
+      {
+        "bundleName": "com.mikannqaq.uestc.river",
+        "config": [
+          {
+            "name": "Push Kit",
+            "capability": "com.huawei.service.push.base_service"
+          },
+          {
+            "name": "Safety Detect",
+            "capability": "com.huawei.service.device_security.safety_detect"
+          }
+        ]
+      }
     ]
   },
   "modules": [
@@ -55,27 +83,75 @@
     },
     {
       "name": "base_common",
-      "srcPath": "./base_common"
+      "srcPath": "./base_common",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     },
     {
       "name": "base_ui",
-      "srcPath": "./base_ui"
+      "srcPath": "./base_ui",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     },
     {
       "name": "feature_mine",
-      "srcPath": "./feature_mine"
+      "srcPath": "./feature_mine",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     },
     {
       "name": "feature_message",
       "srcPath": "./feature_message",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     },
     {
       "name": "feature_post",
       "srcPath": "./feature_post",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     },
     {
       "name": "feature_content",
       "srcPath": "./feature_content",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }
