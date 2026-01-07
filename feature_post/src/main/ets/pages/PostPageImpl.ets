@@ -19,7 +19,6 @@ export struct PostPageImpl {
     this.setKeyboardMode();
   }
 
-  // 提取设置键盘模式的逻辑
   private setKeyboardMode() {
     if (!this.vm.isTabletView) {
       this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE_WITH_CARET)
@@ -301,7 +300,7 @@ export struct PostPageImpl {
     .transition(CommonConstant.CONF_TRANSITION)
     .backgroundColor($r('app.color.start_window_background'))
     .onVisibleAreaChange([0.0, 1.0], (isVisible: boolean, currentRatio: number) => {
-      if (isVisible && currentRatio >= 1.0) {
+      if (isVisible) {
         this.setKeyboardMode();
       } else if (!isVisible || currentRatio <= 0.0) {
         this.resetKeyboardMode();
