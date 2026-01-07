@@ -373,7 +373,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
   }
 
   insertFace(url: string) {
-    const faceText = `[mobcent_phiz=${url}]`;
+    const faceText = `![image](${url})`;
     this.insertTextAtCursor(faceText);
   }
 
