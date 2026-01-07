@@ -139,6 +139,10 @@
     {
       "name": "ReplyPage_reply_success",
       "value": "回复成功"
+    },
+    {
+      "name": "ReplyPage_pinned",
+      "value": "置顶"
     }
   ]
 }

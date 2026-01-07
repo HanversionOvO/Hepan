@@ -105,6 +105,7 @@ export interface ForumTieSummary {
   recommend_add: number;
   recommend_sub: number;
   forum_name?: string;
+  display_order: number;
 }
 
 export interface TieDetail {

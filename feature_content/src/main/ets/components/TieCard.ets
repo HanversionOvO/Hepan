@@ -1,5 +1,5 @@
 import { RandomUtil, ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, DateUtil, ForumTieSummary, TransitionMap, UserAvatarUtil } from 'base_common';
+import { ColorUtil, CommonConstant, DateUtil, ForumTieSummary, UserAvatarUtil } from 'base_common';
 
 const BASE_URL: string = 'https://bbs.uestc.edu.cn';
 
@@ -44,6 +44,32 @@ export struct TieCard {
     .borderRadius(CommonConstant.RadiusRound)
     .position({ left: CommonConstant.NormalContainerInnerPadding, top: CommonConstant.NormalContainerInnerPadding })
     .zIndex(2)
+  }
+
+  @Builder
+  PinnedBadge() {
+    if (this.tie.display_order > 0) {
+      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        SymbolGlyph($r('sys.symbol.pin_fill'))
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontColor([$r('sys.color.font_on_primary')])
+        Text($r('app.string.ReplyPage_pinned'))
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontColor($r('sys.color.font_on_primary'))
+          .fontWeight(FontWeight.Medium)
+      }
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding / 2,
+        right: CommonConstant.SmallContainerLRPadding / 2,
+        top: CommonConstant.SmallContainerTBPadding / 2,
+        bottom: CommonConstant.SmallContainerTBPadding / 2
+      })
+      .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor))
+      .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+      .borderRadius(CommonConstant.RadiusRound)
+      .position({ right: CommonConstant.NormalContainerInnerPadding, top: CommonConstant.NormalContainerInnerPadding })
+      .zIndex(2)
+    }
   }
 
   @Builder
@@ -139,6 +165,7 @@ export struct TieCard {
       Stack({ alignContent: Alignment.TopStart }) {
         this.CoverArea()
         this.ViewsBadge()
+        this.PinnedBadge()
       }
       .width(CommonConstant.FullPercent)
       .clip(true)
