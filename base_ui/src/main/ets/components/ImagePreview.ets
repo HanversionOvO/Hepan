@@ -65,7 +65,7 @@ class ImagePreviewOption {
   /**
    * 页码字体大小
    */
-  indexFontSize?: number | string = CommonConstant.TextSizeNormal
+  indexFontSize?: number | string = CommonConstant.TextSizeSmall
   /**
    * 是否循环
    */
@@ -133,7 +133,7 @@ class ImagePreviewParams extends ImagePreviewOption {
     this.indexPosition = params?.indexPosition || PreviewVerticalAlign.Bottom
     this.indexOffset = params?.indexOffset || 40
     this.indexFontColor = params?.indexFontColor || Color.White
-    this.indexFontSize = params?.indexFontSize || CommonConstant.TextSizeNormal
+    this.indexFontSize = params?.indexFontSize || CommonConstant.TextSizeSmall
     this.loop = params?.loop !== undefined ? params.loop : true
     this.doubleScale = params?.doubleScale !== undefined ? params.doubleScale : true
     this.closeOnClickOverlay = params?.closeOnClickOverlay !== undefined ? params.closeOnClickOverlay : true
@@ -194,13 +194,14 @@ struct PreviewContent {
           Column() {
             Text(`${this.active + 1} / ${this.params.list.length}`)
               .fontColor(this.params.indexFontColor)
+              .fontWeight(FontWeight.Bold)
               .fontSize(this.params.indexFontSize ? getSizeByUnit(this.params.indexFontSize, true) : '')
               .constraintSize({ minWidth: 50 })
               .textAlign(TextAlign.Center)
           }
-          .backgroundColor($r('sys.color.mask_fourth'))
-          .borderRadius(16)
-          .padding(4)
+          .backgroundColor($r('app.color.glass_background'))
+          .borderRadius(CommonConstant.RadiusRound)
+          .padding(CommonConstant.SmallContainerTBPadding)
         }
         .offset({
           y: `${this.params.indexPosition === PreviewVerticalAlign.Top ? '' :
