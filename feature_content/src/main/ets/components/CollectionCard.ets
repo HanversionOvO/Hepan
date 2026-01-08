@@ -111,7 +111,12 @@ export struct CollectionCard {
           .fontSize(CommonConstant.TextSizeSmall)
 
         if (this.collection.tags && this.collection.tags.length > 0) {
-          Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding) } }) {
+          Flex({
+            wrap: FlexWrap.Wrap, space: {
+              main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding),
+              cross: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding)
+            }
+          }) {
             ForEach(this.collection.tags, (tag: string) => {
               this.tag(tag)
             }, (tag: string, index: number) => `${tag}_${index}`)

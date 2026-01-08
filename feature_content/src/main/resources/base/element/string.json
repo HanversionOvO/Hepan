@@ -187,6 +187,14 @@
     {
       "name": "CollectionContentPage_last_update",
       "value": "最后更新于"
+    },
+    {
+      "name": "CollectionContentPage_recent_user",
+      "value": "这些用户刚刚关注了"
+    },
+    {
+      "name": "CollectionContentPage_more_collections",
+      "value": "还有这些淘专辑"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { CommonConstant, TransitionMap, UserAvatarUtil } from 'base_common';
+import { CollectionUser, CommonConstant, TransitionMap, UserAvatarUtil } from 'base_common';
 import { CustomFloatNavTitle } from 'base_ui';
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -67,11 +67,66 @@ export struct CollectionContentView {
     .padding(CommonConstant.NormalContainerInnerPadding)
     .borderRadius(CommonConstant.RadiusNormal)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
+    .backgroundColor($r('app.color.second_window_background'))
+  }
+
+  @Builder
+  userSwiper() {
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Text($r('app.string.CollectionContentPage_recent_user'))
+        .fontSize(CommonConstant.TextSizeNormal)
+        .fontWeight(FontWeight.Medium)
+        .width(CommonConstant.FullPercent)
+        .textAlign(TextAlign.Start)
+
+      List({ space: CommonConstant.NormalContainerInnerPadding }) {
+        ForEach(this.vm.collectionDetail?.newSubsUser, (user: CollectionUser) => {
+          ListItem() {
+            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+              Image(UserAvatarUtil.getAvatarUrl(user.uid))
+                .width(CommonConstant.IconSizeSmall)
+                .height(CommonConstant.IconSizeSmall)
+                .borderRadius(CommonConstant.RadiusRound)
+
+              Text(user.username)
+                .fontSize(CommonConstant.TextSizeSmall)
+                .fontColor($r('sys.color.font_secondary'))
+            }
+            .padding(CommonConstant.NormalContainerInnerPadding)
+            .backgroundColor($r('app.color.second_window_background'))
+            .borderRadius(CommonConstant.RadiusNormal)
+          }
+        }, (user: CollectionUser) => user.uid.toString())
+      }
+      .listDirection(Axis.Horizontal)
+      .edgeEffect(EdgeEffect.Spring)
+      .fadingEdge(true)
+      .width(CommonConstant.FullPercent)
+      .scrollBar(BarState.Off)
+    }
+    .width(CommonConstant.FullPercent)
+  }
+
+  @Builder
+  userOtherCollections() {
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Text(`${this.vm.collection?.creator.username} ${ResUtil.getStringSync($r('app.string.CollectionContentPage_more_collections'))}`)
+        .fontSize(CommonConstant.TextSizeNormal)
+        .fontWeight(FontWeight.Medium)
+        .width(CommonConstant.FullPercent)
+        .textAlign(TextAlign.Start)
+
+      Swiper() {
+        // 这里放更多淘专辑
+      }
+      .width(CommonConstant.FullPercent)
+    }
+    .width(CommonConstant.FullPercent)
   }
 
   @Builder
   CollectionDetailContent() {
-    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+    Column({ space: CommonConstant.LargeContainerInnerPadding }) {
       Column()
         .height(CommonConstant.TopBarHeight + this.vm.window.windowTopPadding)
 
@@ -147,7 +202,13 @@ export struct CollectionContentView {
       .justifyContent(FlexAlign.Start)
 
       if (this.vm.collection?.tags && this.vm.collection.tags.length > 0) {
-        Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding) } }) {
+        Flex({
+          wrap: FlexWrap.Wrap,
+          space: {
+            main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding),
+            cross: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding)
+          }
+        }) {
           ForEach(this.vm.collection.tags, (tag: string) => {
             this.tag(tag)
           }, (tag: string, index: number) => `${tag}_${index}`)
@@ -156,6 +217,14 @@ export struct CollectionContentView {
       }
 
       this.description()
+
+      if (this.vm.collectionDetail?.newSubsUser) {
+        this.userSwiper()
+      }
+
+      if (this.vm.collectionDetail?.userMoreCollections) {
+        this.userOtherCollections()
+      }
     }
     .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
   }
