@@ -41,6 +41,7 @@ export struct ImageLongTakeDelegate {
     this.getUIContext().getUIInspector().createComponentObserver(this.photoId);
   private imagePositionX: number = 0;
   private imagePositionY: number = 600;
+  private imageShownScaleRate: number = 0.8;
   @Local imageWidth: number = 1260;
 
   @Monitor('imageWidth')
@@ -78,8 +79,8 @@ export struct ImageLongTakeDelegate {
       if (!properties) {
         return;
       }
-      this.imageWidth = properties.windowRect.width;
-      this.imageHeight = properties.windowRect.height;
+      this.imageWidth = properties.windowRect.width * this.imageShownScaleRate;
+      this.imageHeight = properties.windowRect.height * this.imageShownScaleRate;
       this.displayLeft = 0;
       this.displayTop = 0;
       this.displayRight = properties.windowRect.width;
