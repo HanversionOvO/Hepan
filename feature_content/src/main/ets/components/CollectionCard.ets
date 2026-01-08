@@ -1,5 +1,6 @@
 import { Collection, ColorUtil, CommonConstant, UserAvatarUtil } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @ComponentV2
 export struct CollectionCard {
@@ -110,15 +111,11 @@ export struct CollectionCard {
           .fontSize(CommonConstant.TextSizeSmall)
 
         if (this.collection.tags && this.collection.tags.length > 0) {
-          Grid() {
+          Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(CommonConstant.SmallContainerInnerPadding) } }) {
             ForEach(this.collection.tags, (tag: string) => {
-              GridItem() {
-                this.tag(tag)
-              }
+              this.tag(tag)
             }, (tag: string, index: number) => `${tag}_${index}`)
           }
-          .rowsGap(CommonConstant.SmallContainerInnerPadding)
-          .columnsGap(CommonConstant.SmallContainerInnerPadding)
           .width(CommonConstant.FullPercent)
         }
       }
