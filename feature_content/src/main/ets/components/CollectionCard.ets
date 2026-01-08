@@ -40,9 +40,18 @@ export struct CollectionCard {
     .clip(true)
   }
 
+  @Builder
+  content() {
+    Column() {
+
+    }
+  }
+
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       this.topicIconBuilder()
+
+      this.content()
     }
     .width(CommonConstant.FullPercent)
     .backgroundColor($r('app.color.second_window_background'))

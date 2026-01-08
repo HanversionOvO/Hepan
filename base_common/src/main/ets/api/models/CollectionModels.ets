@@ -40,4 +40,5 @@ export interface Collection {
   creator: CollectionCreator; // 专辑创建用户
   description?: string; // 专辑描述（可能没有）
   lastUpdate: string; // 最后更新时间
+  tags?: string[]; // TAG
 }
