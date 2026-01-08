@@ -1,4 +1,5 @@
 import http from '@ohos.net.http';
+import { Document, parseDocument } from '@ohos/htmlparser2';
 import { LogUtil } from '@pura/harmony-utils';
 import { LegacyUtil } from '../utils/LegacyUtil';
 import { RouterMap, RouterUtil } from '../utils/RouterUtil';
@@ -297,17 +298,11 @@ export class ApiClient {
     return cookies;
   }
 
-  /**
-   * [修正版] 旧版 API 请求方法
-   * 修复问题：将 r 参数移至 URL Query 中，确保服务器能正确识别路由
-   */
   public async requestLegacy<T = Object>(
     module: string,
     action: string,
     params: Record<string, Object> = {}
   ): Promise<ApiResponse<T>> {
-    // [关键修改] 构造带 query 参数的 URL，例如 .../index.php?r=user/login
-    // 这样服务器才能知道你要访问哪个接口，而不是返回 index.php 的首页
     const rParam = `${module}/${action}`;
     const requestUrl = `${this.legacyBaseUrl}?r=${rParam}`;
 
@@ -401,6 +396,81 @@ export class ApiClient {
 
     } catch (error) {
       LogUtil.error(TAG, `Legacy Request failed: ${rParam}`, JSON.stringify(error));
+      throw new Error(String(error));
+    } finally {
+      httpRequest.destroy();
+    }
+  }
+
+  public async requestHtml(
+    phpFile: string,
+    params: Record<string, string | number | boolean> = {}
+  ): Promise<Document> {
+    const apphash = await LegacyUtil.getAppHashValue();
+
+    let finalParams: Record<string, string | number | boolean> = {
+      'apphash': apphash,
+      'platType': '1',
+      'forumKey': 'CBQJazn9Wws8Ivhr6U',
+      'sdkVersion': '2.4.0.2'
+    };
+
+    let keys = Object.keys(params);
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      finalParams[key] = params[key];
+    }
+
+    // 3. 构造 URL Query String
+    let queryParts: string[] = [];
+    const finalKeys = Object.keys(finalParams);
+    for (let i = 0; i < finalKeys.length; i++) {
+      let key = finalKeys[i];
+      let val = finalParams[key];
+      queryParts.push(`${key}=${encodeURIComponent(String(val))}`);
+    }
+    const queryString = queryParts.join('&');
+
+    // 构造完整 URL，如果是 forum.php 这种根目录下的文件
+    let requestUrl = `${this.baseUrl}/${phpFile}`;
+    // 如果有参数则拼接
+    if (queryString) {
+      requestUrl = `${requestUrl}?${queryString}`;
+    }
+
+    const httpRequest = http.createHttp();
+
+    try {
+      // 4. 构造 Header，主要是 Cookie
+      const headers = {
+        'Cookie': this.getCookieHeader(),
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      } as Record<string, Object>;
+
+      const response = await httpRequest.request(requestUrl, {
+        method: http.RequestMethod.GET,
+        header: headers
+      });
+
+      // 处理 Cookie 更新
+      const setCookies = this.extractSetCookies(response);
+      if (setCookies.length > 0) {
+        this.mergeCookies(setCookies);
+      }
+
+      if (response.responseCode === 200) {
+        if (typeof response.result === 'string') {
+          // 6. 使用 htmlparser2 解析响应内容并返回 Document
+          return parseDocument(response.result);
+        } else {
+          throw new Error(`Response result is not string`);
+        }
+      } else {
+        throw new Error(`HTML Request failed with code: ${response.responseCode}`);
+      }
+
+    } catch (error) {
+      LogUtil.error(TAG, `RequestHtml failed: ${requestUrl}`, JSON.stringify(error));
       throw new Error(String(error));
     } finally {
       httpRequest.destroy();
