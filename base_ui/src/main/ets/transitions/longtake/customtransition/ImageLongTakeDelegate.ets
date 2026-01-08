@@ -127,8 +127,20 @@ export struct ImageLongTakeDelegate {
       this.status = Status.IDLE;
       this.disableGesture();
 
-      this.backToFirstPage();
+      this.animateBackToFirstPage();
     }
+  }
+
+  animateBackToFirstPage(): void {
+    this.disableGesture();
+    this.getUIContext().animateTo({
+      duration: 0,
+      curve: CommonConstant.AnimationCurveSpring,
+      onFinish: () => {
+        this.backToFirstPage();
+      },
+    }, () => {
+    });
   }
 
   disableGesture(): void {
