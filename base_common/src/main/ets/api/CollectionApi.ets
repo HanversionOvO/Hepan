@@ -63,6 +63,23 @@ export class CollectionApi {
           const titleA = DomUtils.findOne((e) => e.tagName === 'a', dt ? dt.children : [], true);
           const title = titleA ? DomUtils.textContent(titleA).trim() : '';
 
+          let tags: string[] = [];
+          if (dt) {
+            const tagSpan = DomUtils.findOne((e) => {
+              return !!(e.attribs && e.attribs['class'] && e.attribs['class'].includes('ctag_keyword'));
+            }, dt.children, true); // 递归查找，因为 span 可能在 div 内
+
+            if (tagSpan) {
+              const tagAs = DomUtils.findAll((e) => e.tagName === 'a', tagSpan.children);
+              tagAs.forEach(a => {
+                const t = DomUtils.textContent(a).trim();
+                if (t) {
+                  tags.push(t);
+                }
+              });
+            }
+          }
+
           // 2. 获取 Collection Nums
           const ddM =
             DomUtils.findOne((e) => e.tagName === 'dd' && !!(e.attribs['class']?.includes('m')), item.children);
@@ -125,7 +142,8 @@ export class CollectionApi {
             comment,
             creator,
             description,
-            lastUpdate
+            lastUpdate,
+            tags
           });
 
         } catch (e) {

@@ -1,4 +1,6 @@
-import { Collection, ColorUtil, CommonConstant } from 'base_common';
+import { Collection, ColorUtil, CommonConstant, UserAvatarUtil } from 'base_common';
+import { LengthMetrics } from '@kit.ArkUI';
+import { ResUtil } from '@pura/harmony-utils';
 
 @ComponentV2
 export struct CollectionCard {
@@ -41,9 +43,72 @@ export struct CollectionCard {
   }
 
   @Builder
-  content() {
-    Column() {
+  tag(tagName: string) {
+    Text(tagName)
+      .padding(CommonConstant.SmallContainerInnerPadding)
+      .fontSize(CommonConstant.TextSizeTiny)
+      .backgroundColor($r('app.color.start_window_background'))
+      .borderRadius(CommonConstant.RadiusSmall)
+      .fontColor($r('sys.color.font_tertiary'))
+      .fontWeight(FontWeight.Medium)
+  }
 
+  @Builder
+  content() {
+    Column({ space: CommonConstant.LargeContainerInnerPadding }) {
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Text(this.collection.title)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .width(CommonConstant.FullPercent)
+          .textAlign(TextAlign.Start)
+          .fontWeight(FontWeight.Bold)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .maxLines(1)
+
+        Text(this.collection.description)
+          .width(CommonConstant.FullPercent)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .maxLines(3)
+          .textAlign(TextAlign.Start)
+          .fontColor($r('sys.color.font_secondary'))
+          .fontSize(CommonConstant.TextSizeSmall)
+      }
+      .width(CommonConstant.FullPercent)
+
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Flex({
+          direction: FlexDirection.Row,
+          space: {
+            main: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
+          }
+        }) {
+          ForEach(this.collection?.tags, (tag: string, index: number) => {
+            this.tag(tag)
+          }, (tag: string, index: number) => `${tag}_${index}`)
+        }
+        .width(CommonConstant.FullPercent)
+
+        Row() {
+          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+            Image(UserAvatarUtil.getAvatarUrl(this.collection.creator.uid))
+              .width(CommonConstant.IconSizeSmall)
+              .height(CommonConstant.IconSizeSmall)
+              .borderRadius(CommonConstant.RadiusRound)
+
+            Text(this.collection.creator.username)
+              .fontSize(CommonConstant.TextSizeTiny)
+          }
+
+          Text(`${ResUtil.getStringSync($r('app.string.CollectionView_subs'))}: ${this.collection.subscribe}`)
+            .padding(CommonConstant.SmallContainerInnerPadding)
+            .backgroundColor(CommonConstant.ThemeColor)
+            .borderRadius(CommonConstant.RadiusSmall)
+            .fontColor($r('sys.color.font_on_primary'))
+            .fontSize(CommonConstant.TextSizeTiny)
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+      }
+      .width(CommonConstant.FullPercent)
     }
   }
 
