@@ -99,13 +99,23 @@ export struct CollectionCard {
               .fontSize(CommonConstant.TextSizeSmall)
           }
 
-          Text(`${ResUtil.getStringSync($r('app.string.CollectionView_subs'))}: ${this.collection.subscribe}`)
-            .padding(CommonConstant.SmallContainerInnerPadding)
-            .backgroundColor(CommonConstant.ThemeColor)
-            .borderRadius(CommonConstant.RadiusSmall)
-            .fontColor($r('sys.color.font_on_primary'))
-            .fontWeight(FontWeight.Medium)
-            .fontSize(CommonConstant.TextSizeTiny)
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Text(`${ResUtil.getStringSync($r('app.string.CollectionView_subs'))}: ${this.collection.subscribe}`)
+              .padding(CommonConstant.SmallContainerInnerPadding)
+              .backgroundColor(CommonConstant.ThemeColor)
+              .borderRadius(CommonConstant.RadiusSmall)
+              .fontColor($r('sys.color.font_on_primary'))
+              .fontWeight(FontWeight.Medium)
+              .fontSize(CommonConstant.TextSizeTiny)
+
+            Text(`${ResUtil.getStringSync($r('app.string.CollectionView_comment'))}: ${this.collection.comment}`)
+              .padding(CommonConstant.SmallContainerInnerPadding)
+              .backgroundColor(CommonConstant.ThemeColor)
+              .borderRadius(CommonConstant.RadiusSmall)
+              .fontColor($r('sys.color.font_on_primary'))
+              .fontWeight(FontWeight.Medium)
+              .fontSize(CommonConstant.TextSizeTiny)
+          }
         }
         .width(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.SpaceBetween)
