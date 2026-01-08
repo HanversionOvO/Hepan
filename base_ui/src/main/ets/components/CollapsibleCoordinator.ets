@@ -4,7 +4,8 @@ import { BaseVM, CommonConstant } from 'base_common';
 @ComponentV2
 export struct CollapsibleCoordinator {
   @Param @Require vm: BaseVM;
-  @BuilderParam @Require contentBuilder: (onScrollAction: (yOffset: number, scrollState: ScrollState) => void) => void;
+  @BuilderParam @Require contentBuilder: (onScrollAction: (yOffset: number, scrollState: ScrollState,
+    isAtTop?: boolean) => void) => void;
   @BuilderParam @Require headerBuilder: () => void;
   // 默认参数配置
   @Param topSpace: number = CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding;
@@ -31,7 +32,17 @@ export struct CollapsibleCoordinator {
       (CommonConstant.TopBarHeight - this.headerCoreHeight) / 2;
   }
 
-  private handleScroll(yOffset: number, scrollState: ScrollState) {
+  private handleScroll(yOffset: number, scrollState: ScrollState, isAtTop: boolean = false) {
+    if (isAtTop) {
+      AppUtil.getUIContext()
+        .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
+          () => {
+            this.isHideNavTitle = false;
+            this.isHideTabBar = false;
+          })
+      return;
+    }
+
     if (scrollState === ScrollState.Scroll) {
       if (yOffset > CommonConstant.ScrollAnimationThreshold) {
         AppUtil.getUIContext()
@@ -59,8 +70,8 @@ export struct CollapsibleCoordinator {
             .height(this.initialContentPaddingTop)
         }
 
-        this.contentBuilder((y, s) => {
-          this.handleScroll(y, s);
+        this.contentBuilder((y, s, top) => {
+          this.handleScroll(y, s, top);
         });
       }
       .width(CommonConstant.FullPercent)

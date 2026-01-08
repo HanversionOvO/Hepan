@@ -20,7 +20,7 @@ export struct TieView {
   }
 
   @Builder
-  contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState) => void) {
+  contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState, isAtTop?: boolean) => void) {
     if (this.vm.isSubCategoryExpanded && !this.isHideNavTitle) {
       Column()
         .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerTBPadding +
@@ -55,6 +55,9 @@ export struct TieView {
       })
       .onReachEnd(() => {
         this.vm.loadNextPage();
+      })
+      .onReachStart(() => {
+        onScrollAction(0, ScrollState.Idle, true);
       })
       .priorityGesture(
         PinchGesture()

@@ -15,7 +15,7 @@ export struct CollectionView {
   }
 
   @Builder
-  contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState) => void) {
+  contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState, isAtTop?: boolean) => void) {
     Refresh({ refreshing: $$this.vm.isRefreshing }) {
       WaterFlow() {
         ForEach(this.vm.collections, (collection: Collection) => {
@@ -39,6 +39,9 @@ export struct CollectionView {
       })
       .onReachEnd(() => {
         this.vm.loadMore();
+      })
+      .onReachStart(() => {
+        onScrollAction(0, ScrollState.Idle, true);
       })
       .priorityGesture(
         PinchGesture()
