@@ -155,6 +155,22 @@
     {
       "name": "ReplyPage_pinned",
       "value": "置顶"
+    },
+    {
+      "name": "CollectionView_create_time",
+      "value": "创建时间"
+    },
+    {
+      "name": "CollectionView_comment",
+      "value": "评论数"
+    },
+    {
+      "name": "CollectionView_topic",
+      "value": "主题数"
+    },
+    {
+      "name": "CollectionView_subs",
+      "value": "订阅数"
     }
   ]
 }

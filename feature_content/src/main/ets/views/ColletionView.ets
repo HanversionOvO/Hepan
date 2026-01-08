@@ -1,6 +1,6 @@
-import { LogUtil } from '@pura/harmony-utils';
-import { CollectionApi, CollectionSortOrder, CommonConstant, VMManager } from 'base_common';
+import { Collection, CommonConstant, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
+import { CollectionCard } from '../components/CollectionCard';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 
 const TAG = '[CollectionView]: '
@@ -11,15 +11,64 @@ export struct CollectionView {
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
 
   async aboutToAppear() {
-    const result = await CollectionApi.getCollections(1, CollectionSortOrder.THREAD_NUM);
-    LogUtil.debug(TAG, JSON.stringify(result));
+    await this.vm.loadData();
   }
 
   @Builder
-  contentBody() {
-    Refresh({ refreshing: $$this.vm.isRefreshing })
+  contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState) => void) {
+    Refresh({ refreshing: $$this.vm.isRefreshing }) {
+      Grid() {
+        ForEach(this.vm.collections, (collection: Collection) => {
+          GridItem() {
+            CollectionCard({
+              collection
+            })
+          }
+        }, (collection: Collection) => `${collection.creator.uid}_${collection.title}`)
+      }
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)
+      .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .columnsGap(CommonConstant.NormalContainerInnerPadding)
+      .rowsGap(CommonConstant.NormalContainerInnerPadding)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
+      .onWillScroll((yOffset, scrollState) => {
+        onScrollAction(yOffset, scrollState);
+      })
+      .priorityGesture(
+        PinchGesture()
+          .onActionUpdate((event: GestureEvent) => {
+            if (this.vm.isScaling) {
+              return;
+            }
+            if (event.scale < 0.75 && this.vm.columns < this.vm.maxColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns += 1;
+              });
+              this.vm.isScaling = true;
+            }
+
+            if (event.scale > 1.25 && this.vm.columns > this.vm.minColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns -= 1;
+              });
+              this.vm.isScaling = true;
+            }
+          })
+          .onActionEnd(() => {
+            this.vm.isScaling = false;
+          })
+      )
+    }
+    .width(CommonConstant.FullPercent)
+    .layoutWeight(1)
   }
 
   @Builder
@@ -44,7 +93,7 @@ export struct CollectionView {
               isMax: true,
               isGlassStyle: true,
               alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
-              currentIndex: this.vm.currentSort,
+              currentIndex: this.vm.currentSortIndex,
               changeTab: (index: number) => {
 
               }
