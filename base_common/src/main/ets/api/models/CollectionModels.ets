@@ -27,7 +27,7 @@ export enum CollectionSortOrder {
   FOLLOW_NUM = 'follownum'
 }
 
-export interface CollectionCreator {
+export interface CollectionUser {
   username: string; // 用户昵称
   uid: number; // 用户uid
 }
@@ -38,8 +38,16 @@ export interface Collection {
   collection_nums: number; // 专辑主题数
   subscribe: number; // 专辑订阅数
   comment: number; // 专辑留言数
-  creator: CollectionCreator; // 专辑创建用户
+  creator: CollectionUser; // 专辑创建用户
   description?: string; // 专辑描述（可能没有）
-  lastUpdate: string; // 最后更新时间
+  lastUpdate?: string; // 最后更新时间
   tags?: string[]; // TAG
+}
+
+export interface CollectionDetail {
+  ctid: number; // 专辑ID
+  rate?: number; // 评分（可能没有）
+  newSubsUser?: CollectionUser[]; // 最新订阅用户（可能没有）
+  userMoreCollections?: Collection[]; // 用户更多的淘专辑
+  tid: number; // 所对应帖子的ID
 }
