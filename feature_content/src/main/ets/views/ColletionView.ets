@@ -1,4 +1,4 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CollectionApi, CommonConstant, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 
@@ -6,6 +6,10 @@ import { CollectionVM } from '../viewmodels/CollectionVM';
 export struct CollectionView {
   @Local vm: CollectionVM = VMManager.get(CollectionVM, () => new CollectionVM());
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
+
+  async aboutToAppear() {
+    await CollectionApi.getCollections();
+  }
 
   @Builder
   contentBody() {
