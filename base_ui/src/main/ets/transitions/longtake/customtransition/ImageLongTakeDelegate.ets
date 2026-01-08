@@ -279,8 +279,13 @@ export struct ImageLongTakeDelegate {
 
   // 双击
   doubleClick() {
-    let scale = this.imageScale === 1 ? 2 : 1
-    this.imageScale = this.clamp(scale, +1, +(3 as number) + 1)
+    this.getUIContext().animateTo({
+      duration: CommonConstant.AnimationDurationNormal,
+      curve: Curve.FastOutSlowIn
+    }, () => {
+      let scale = this.imageScale === 1 ? 2 : 1
+      this.imageScale = this.clamp(scale, +1, +(3 as number) + 1)
+    })
   }
 
   // 单击
