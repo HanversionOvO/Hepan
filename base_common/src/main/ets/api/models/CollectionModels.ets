@@ -1,3 +1,5 @@
+import { ForumDetailResponse } from './ForumModels';
+
 /**
  * 淘专辑排序方式
  */
@@ -49,5 +51,5 @@ export interface CollectionDetail {
   rate?: number; // 评分（可能没有）
   newSubsUser?: CollectionUser[]; // 最新订阅用户（可能没有）
   userMoreCollections?: Collection[]; // 用户更多的淘专辑
-  tid: number; // 所对应帖子的ID
+  ties?: ForumDetailResponse[]; // 所对应帖子的详情信息
 }
