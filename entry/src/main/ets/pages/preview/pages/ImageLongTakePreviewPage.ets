@@ -29,28 +29,35 @@ export struct ImageLongTakePreviewPage {
 
   build() {
     NavDestination() {
-      Swiper() {
-        ForEach(this.imageList, (item: string, index: number) => {
-          // 使用封装好的一镜到底手势组件
-          ImageLongTakeDelegate({
-            componentId: this.componentId,
-            imageUrl: item,
-            backToFirstPage: () => {
-              this.backToFirstPage();
-            },
-          })
-        }, (item: string) => item)
+      Stack() {
+        Column()
+          .width(CommonConstant.FullPercent)
+          .height(CommonConstant.FullPercent)
+          .backgroundColor($r('app.color.glass_background'))
+          .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
+        Swiper() {
+          ForEach(this.imageList, (item: string, index: number) => {
+            // 使用封装好的一镜到底手势组件
+            ImageLongTakeDelegate({
+              componentId: this.componentId,
+              imageUrl: item,
+              backToFirstPage: () => {
+                this.backToFirstPage();
+              },
+            })
+          }, (item: string) => item)
+        }
+        .transition(TransitionEffect.opacity(0.99))
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
+        .clip(false)
+        .index(this.selectedIndex)
+        .indicator(false)
+        .loop(false) // 预览通常不循环，可视需求开启
+        .onChange((index: number) => {
+          this.selectedIndex = index;
+        })
       }
-      .transition(TransitionEffect.opacity(0.99))
-      .width(CommonConstant.FullPercent)
-      .height(CommonConstant.FullPercent)
-      .clip(false)
-      .index(this.selectedIndex)
-      .indicator(false)
-      .loop(false) // 预览通常不循环，可视需求开启
-      .onChange((index: number) => {
-        this.selectedIndex = index;
-      })
     }
     .mode(NavDestinationMode.DIALOG) // 设置为 Dialog 模式，背景透明
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])

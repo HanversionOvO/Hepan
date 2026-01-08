@@ -55,7 +55,7 @@ export struct ImageLongTakeDelegate {
   private startGestureOffsetY: number = 0;
   private startGestureScale: number = 1;
   private displayLeft: number = 0;
-  private displayTop: number = 126;
+  private displayTop: number = 0;
   private displayRight: number = 1260;
   private displayBottom: number = 2629;
   private realDisplayBoundsLeft: number = 0;
@@ -75,7 +75,17 @@ export struct ImageLongTakeDelegate {
   getImageWidth() {
     window.getLastWindow(this.getUIContext().getHostContext()).then((data) => {
       let properties = data?.getWindowProperties();
-      this.imageWidth = properties.windowRect.width
+      if (!properties) {
+        return;
+      }
+      this.imageWidth = properties.windowRect.width;
+      this.imageHeight = properties.windowRect.height;
+      this.displayLeft = 0;
+      this.displayTop = 0;
+      this.displayRight = properties.windowRect.width;
+      this.displayBottom = properties.windowRect.height;
+      this.updateExtremeOffset();
+      this.updatePanDirection();
     });
   }
 
@@ -319,17 +329,12 @@ export struct ImageLongTakeDelegate {
 
   build() {
     Stack() {
-      Column()
-        .width(CommonConstant.FullPercent)
-        .height(CommonConstant.FullPercent)
-        .backgroundColor($r('app.color.glass_background'))
-        .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
-        .opacity(this.imagePullingDownScale)
-        .transition(TransitionEffect.OPACITY)
       Stack() {
         Image(this.imageUrl)
+          .id(this.photoId)
           .width(this.getUIContext().px2vp(this.imageWidth) * this.geometryScale)
           .height(this.getUIContext().px2vp(this.imageHeight) * this.geometryScale)
+          .objectFit(ImageFit.Contain)
           .transform(matrix4.identity()
             .scale({
               x: this.imageScale * this.imagePullingDownScale,
