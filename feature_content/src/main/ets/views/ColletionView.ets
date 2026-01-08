@@ -1,5 +1,5 @@
 import { LogUtil } from '@pura/harmony-utils';
-import { CollectionApi, CommonConstant, VMManager } from 'base_common';
+import { CollectionApi, CollectionSortOrder, CommonConstant, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 
@@ -11,7 +11,7 @@ export struct CollectionView {
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
 
   async aboutToAppear() {
-    const result = await CollectionApi.getCollections();
+    const result = await CollectionApi.getCollections(1, CollectionSortOrder.THREAD_NUM);
     LogUtil.debug(TAG, JSON.stringify(result));
   }
 

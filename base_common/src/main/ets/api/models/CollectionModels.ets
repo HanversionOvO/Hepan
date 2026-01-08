@@ -1,3 +1,32 @@
+/**
+ * 淘专辑排序方式
+ */
+export enum CollectionSortOrder {
+  /**
+   * 按创建时间排序 (默认)
+   * 对应参数: &op=all
+   */
+  DATE = '',
+
+  /**
+   * 按主题数排序
+   * 对应参数: &op=all&order=threadnum
+   */
+  THREAD_NUM = 'threadnum',
+
+  /**
+   * 按评论数排序
+   * 对应参数: &op=all&order=commentnum
+   */
+  COMMENT_NUM = 'commentnum',
+
+  /**
+   * 按订阅数排序
+   * 对应参数: &op=all&order=follownum
+   */
+  FOLLOW_NUM = 'follownum'
+}
+
 export interface CollectionCreator {
   username: string; // 用户昵称
   uid: number; // 用户uid
