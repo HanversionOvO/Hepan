@@ -441,7 +441,7 @@ export struct ImageLongTakeDelegate {
           })
           .onActionEnd((event: GestureEvent) => {
             if (this.status === Status.PAN_ONLY) {
-              if (event.offsetY > 100) {
+              if (event.offsetY > 200) {
                 this.status = Status.READY_TO_BACK;
               } else {
                 this.status = Status.IDLE;
