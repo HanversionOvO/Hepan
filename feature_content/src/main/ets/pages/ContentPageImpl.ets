@@ -1,6 +1,7 @@
 import { CommonConstant, VMManager } from 'base_common';
 import { CustomNavTitle, CustomTabBar } from 'base_ui';
 import { ContentPageVM } from '../viewmodels/ContentPageVM';
+import { CollectionView } from '../views/ColletionView';
 import { TieView } from '../views/TieView';
 
 @ComponentV2
@@ -16,6 +17,10 @@ export struct ContentPageImpl {
           Tabs({ index: this.vm.currentIndex }) {
             TabContent() {
               TieView()
+            }
+
+            TabContent() {
+              CollectionView()
             }
           }
           .width(CommonConstant.FullPercent)
