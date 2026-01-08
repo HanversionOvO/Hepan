@@ -24,4 +24,6 @@ export { CollapsibleCoordinator } from './src/main/ets/components/CollapsibleCoo
 
 export { CustomFloatNavTitle } from './src/main/ets/components/CustomFloatNavTitle';
 
+export { imagePreview } from './src/main/ets/components/ImagePreview';
+
 export * from './src/main/ets/transitions/longtake/Index';

@@ -20,6 +20,8 @@ export { ToastShowType, ToastState, ToastOptions, ToastParams, ToastUtil } from 
 
 export { DateUtil } from './src/main/ets/utils/DateUtil';
 
+export * from './src/main/ets/utils/ImageUtils';
+
 export { MessageManager } from './src/main/ets/utils/MessageManager';
 
 export {

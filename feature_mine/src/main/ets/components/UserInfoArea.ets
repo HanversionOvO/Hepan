@@ -2,7 +2,7 @@ import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { CommonConstant, UserAvatarUtil } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
-import { GlassButton } from 'base_ui';
+import { GlassButton, imagePreview } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 import { signatureSheetBuilder } from './SignatureSheet';
@@ -30,6 +30,9 @@ export struct UserInfoArea {
             .height(this.userAvatarSize)
             .borderRadius(CommonConstant.RadiusRound)
             .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
+            .onClick(() => {
+              imagePreview.show([UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!)])
+            })
 
           Column({ space: CommonConstant.NormalContainerTBPadding }) {
             // 昵称部分
