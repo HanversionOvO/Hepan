@@ -22,6 +22,10 @@ export struct ContentPageImpl {
             TabContent() {
               CollectionView()
             }
+
+            TabContent() {
+              Text("To Do...")
+            }
           }
           .width(CommonConstant.FullPercent)
           .layoutWeight(1)
