@@ -1,8 +1,9 @@
-import { CollectionUser, CommonConstant, TransitionMap, UserAvatarUtil } from 'base_common';
+import { Collection, CollectionUser, CommonConstant, TransitionMap, UserAvatarUtil } from 'base_common';
 import { CustomFloatNavTitle } from 'base_ui';
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
+import { CollectionCard } from '../components/CollectionCard';
 
 @ComponentV2
 export struct CollectionContentView {
@@ -117,7 +118,23 @@ export struct CollectionContentView {
         .textAlign(TextAlign.Start)
 
       Swiper() {
-        // 这里放更多淘专辑
+        Swiper() {
+          ForEach(this.vm.collectionDetail?.userMoreCollections, (collection: Collection) => {
+            Column() {
+              CollectionCard({ collection: collection })
+            }
+            .width(CommonConstant.FullPercent)
+            .onClick(() => {
+              this.vm.enterDetailPage(collection.ctid, this.getUIContext(), collection)
+            })
+          }, (item: Collection) => item.ctid.toString())
+        }
+        .width(CommonConstant.FullPercent)
+        .autoPlay(true)
+        .loop(true)
+        .itemSpace(CommonConstant.NormalContainerInnerPadding)
+        .indicator(false)
+        .effectMode(EdgeEffect.Spring)
       }
       .width(CommonConstant.FullPercent)
     }
