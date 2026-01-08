@@ -37,6 +37,9 @@ export struct CollectionView {
       .onWillScroll((yOffset, scrollState) => {
         onScrollAction(yOffset, scrollState);
       })
+      .onReachEnd(() => {
+        this.vm.loadMore();
+      })
       .priorityGesture(
         PinchGesture()
           .onActionUpdate((event: GestureEvent) => {
@@ -70,6 +73,9 @@ export struct CollectionView {
     }
     .width(CommonConstant.FullPercent)
     .layoutWeight(1)
+    .onRefreshing(() => {
+      this.vm.refresh();
+    })
   }
 
   @Builder
@@ -96,7 +102,7 @@ export struct CollectionView {
               alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
               currentIndex: this.vm.currentSortIndex,
               changeTab: (index: number) => {
-
+                this.vm.changeSort(index);
               }
             })
           }

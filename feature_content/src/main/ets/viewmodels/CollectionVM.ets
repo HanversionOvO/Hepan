@@ -24,6 +24,7 @@ export class CollectionVM extends BaseVM {
   @Trace currentSortIndex: number = 0;
   @Trace currentPage: number = 1;
   @Trace isRefreshing: boolean = false;
+  @Trace isLoadingMore: boolean = false;
   @Trace columns: number = 2;
   @Trace minColumns: number = 1;
   @Trace maxColumns: number = 3;
@@ -63,5 +64,62 @@ export class CollectionVM extends BaseVM {
     this.collections = await CollectionApi.getCollections(this.currentPage, this.currentSort);
     this.updateGridConfig(this.breakPoint.currentBreakPoint);
     LogUtil.debug(TAG, JSON.stringify(this.collections));
+  }
+
+  async refresh() {
+    this.currentPage = 1;
+    try {
+      const data = await CollectionApi.getCollections(this.currentPage, this.currentSort);
+      this.collections = data;
+    } catch (e) {
+      LogUtil.error(TAG, 'Refresh failed', JSON.stringify(e));
+    } finally {
+      this.isRefreshing = false;
+    }
+  }
+
+  async loadMore() {
+    if (this.isLoadingMore || this.isRefreshing) {
+      return;
+    }
+    this.isLoadingMore = true;
+    try {
+      const nextPage = this.currentPage + 1;
+      const data = await CollectionApi.getCollections(nextPage, this.currentSort);
+      if (data && data.length > 0) {
+        this.collections.push(...data);
+        this.currentPage = nextPage;
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Load more failed', JSON.stringify(e));
+    } finally {
+      this.isLoadingMore = false;
+    }
+  }
+
+  async changeSort(index: number) {
+    if (this.currentSortIndex === index) {
+      return;
+    }
+    this.currentSortIndex = index;
+    switch (index) {
+      case 0:
+        this.currentSort = CollectionSortOrder.DATE;
+        break;
+      case 1:
+        this.currentSort = CollectionSortOrder.THREAD_NUM;
+        break;
+      case 2:
+        this.currentSort = CollectionSortOrder.COMMENT_NUM;
+        break;
+      case 3:
+        this.currentSort = CollectionSortOrder.FOLLOW_NUM;
+        break;
+      default:
+        this.currentSort = CollectionSortOrder.DATE;
+        break;
+    }
+    this.isRefreshing = true;
+    await this.refresh();
   }
 }
