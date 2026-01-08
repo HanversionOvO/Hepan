@@ -26,6 +26,8 @@ export struct ImageLongTakeDelegate {
   @Local minOffsetY: number = 0;
   @Local gestureDisabled: boolean = false;
   @Local gestureCount: number = 0;
+  @Event onPullingScaleChange: (scale: number) => void = () => {
+  };
 
   @Monitor('gestureCount')
   onAllGestureFinishFn() {
@@ -107,6 +109,7 @@ export struct ImageLongTakeDelegate {
         onFinish: () => {
           this.updatePanDirection();
           this.resumeGesture();
+          this.onPullingScaleChange(1);
         },
       }, () => {
         this.imagePullingDownScale = 1;
@@ -314,6 +317,7 @@ export struct ImageLongTakeDelegate {
     this.centerX = 0;
     this.centerY = 0;
     this.updateExtremeOffset();
+    this.onPullingScaleChange(1);
   }
 
   cannotPan(): boolean {
@@ -423,6 +427,7 @@ export struct ImageLongTakeDelegate {
               this.imageTranslateX = this.getUIContext().vp2px(this.startGestureOffsetX + offsetX);
               this.imageTranslateY = this.getUIContext().vp2px(this.startGestureOffsetY + offsetY);
               this.imagePullingDownScale = 1 - Math.abs(event.offsetY) / this.getUIContext().px2vp(2720);
+              this.onPullingScaleChange(this.imagePullingDownScale);
             }
             if (this.status !== Status.PAN_ONLY) {
               if (offsetX + this.startGestureOffsetX > this.maxOffsetX) {
