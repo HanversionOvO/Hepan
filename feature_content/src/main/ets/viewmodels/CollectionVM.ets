@@ -5,9 +5,14 @@ import {
   BreakpointType,
   Collection,
   CollectionApi,
-  CollectionSortOrder
+  CollectionSortOrder,
+  CommonConstant,
+  RouterMap,
+  RouterUtil
 } from 'base_common';
-import { CustomTabItem } from 'base_ui';
+import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
+import { curves } from '@kit.ArkUI';
 
 const TAG = '[CollectionVM]: ';
 
@@ -29,6 +34,7 @@ export class CollectionVM extends BaseVM {
   @Trace minColumns: number = 1;
   @Trace maxColumns: number = 3;
   @Trace isScaling: boolean = false;
+  @Trace pageScale: number = 1.0;
 
   @Monitor("breakPoint.currentBreakPoint")
   onBreakpointChange() {
@@ -43,15 +49,15 @@ export class CollectionVM extends BaseVM {
   });
   private minColumnsConfig = new BreakpointType({
     sm: 1,
-    md: 2,
-    lg: 3,
-    xl: 4
+    md: 1,
+    lg: 2,
+    xl: 3
   });
   private maxColumnsConfig = new BreakpointType({
     sm: 1,
-    md: 3,
-    lg: 5,
-    xl: 6
+    md: 2,
+    lg: 3,
+    xl: 4
   });
 
   updateGridConfig(bp: BreakpointNameEnum) {
@@ -120,5 +126,33 @@ export class CollectionVM extends BaseVM {
     }
     this.isRefreshing = true;
     await this.refresh();
+  }
+
+  enterDetailPage(ctid: string, context: UIContext, collection: Collection) {
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.8;
+        })
+      },
+      onBackTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context,
+        ctid, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+
+    if (longTakeTransitionParam) {
+      let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
+      params["transition"] = transitionParam;
+    }
+
+    RouterUtil.pushPathByName(RouterMap.COLLECTION_CONTENT_PAGE, params);
   }
 }

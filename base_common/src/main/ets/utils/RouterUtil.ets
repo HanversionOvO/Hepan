@@ -15,7 +15,8 @@ export enum RouterMap {
   CHAT_PAGE = 'ChatPage',
   TIE_CONTENT_PAGE = 'TieContentPage',
   REPLY_PAGE = 'ReplyPage',
-  IMAGE_LONG_TAKE_PREVIEW = 'ImageLongTakePreviewPage'
+  IMAGE_LONG_TAKE_PREVIEW = 'ImageLongTakePreviewPage',
+  COLLECTION_CONTENT_PAGE = 'CollectionContentPage',
 }
 
 @ObservedV2
