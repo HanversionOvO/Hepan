@@ -1,4 +1,5 @@
 import { inspector, matrix4, window } from '@kit.ArkUI';
+import { CommonConstant } from 'base_common';
 
 enum Status {
   IDLE,
@@ -25,10 +26,12 @@ export struct ImageLongTakeDelegate {
   @Local minOffsetY: number = 0;
   @Local gestureDisabled: boolean = false;
   @Local gestureCount: number = 0;
+
   @Monitor('gestureCount')
   onAllGestureFinishFn() {
     this.onAllGestureFinish()
   }
+
   @Local geometryPositionX: number = 0;
   @Local geometryPositionY: number = 0;
   @Local geometryScale: number = 1;
@@ -38,11 +41,13 @@ export struct ImageLongTakeDelegate {
     this.getUIContext().getUIInspector().createComponentObserver(this.photoId);
   private imagePositionX: number = 0;
   private imagePositionY: number = 600;
-  @Local  imageWidth: number = 1260;
+  @Local imageWidth: number = 1260;
+
   @Monitor('imageWidth')
   getImageWidthFn() {
     this.getImageWidth()
   }
+
   private imageHeight: number = 1680;
   private lastCenterX: number = 0;
   private lastCenterY: number = 0;
@@ -58,7 +63,8 @@ export struct ImageLongTakeDelegate {
   private realDisplayBoundsRight: number = 0;
   private realDisplayBoundsBottom: number = 0;
   private firstStarted = true;
-  @Event backToFirstPage: () => void = () => {};
+  @Event backToFirstPage: () => void = () => {
+  };
 
   init(): void {
     let photoInfo = this.getUIContext().getComponentUtils().getRectangleById(this.photoId);
@@ -120,20 +126,8 @@ export struct ImageLongTakeDelegate {
     if (this.status === Status.READY_TO_BACK) {
       this.status = Status.IDLE;
       this.disableGesture();
-      this.getUIContext().animateTo({
-        duration: 200,
-        onFinish: () => {
-          this.resumeGesture();
-          this.updatePanDirection();
-        },
-      }, () => {
-        let leftTopPoint = this.calculateLeftTopPoint();
-        this.geometryPositionX = leftTopPoint[0] - this.imagePositionX;
-        this.geometryPositionY = leftTopPoint[1] - this.imagePositionY;
-        this.geometryScale = this.imageScale * this.imagePullingDownScale;
-        this.resetTransform();
-        this.backToFirstPage();
-      })
+
+      this.backToFirstPage();
     }
   }
 
@@ -257,7 +251,7 @@ export struct ImageLongTakeDelegate {
     this.maxOffsetY = this.getUIContext().px2vp(this.realDisplayBoundsTop - leftTopPointY);
   }
 
-  clamp (num: number, min: number, max: number): number {
+  clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
   }
 
@@ -314,9 +308,10 @@ export struct ImageLongTakeDelegate {
   build() {
     Stack() {
       Column()
-        .width('100%')
-        .height('100%')
-        .backgroundColor(Color.Black)
+        .width(CommonConstant.FullPercent)
+        .height(CommonConstant.FullPercent)
+        .backgroundColor($r('app.color.glass_background'))
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
         .opacity(this.imagePullingDownScale)
         .transition(TransitionEffect.OPACITY)
       Stack() {

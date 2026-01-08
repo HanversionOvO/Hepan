@@ -1,8 +1,8 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics } from '@kit.ArkUI';
-import { CommonConstant, UserAvatarUtil } from 'base_common';
+import { CommonConstant, RouterMap, RouterUtil, UserAvatarUtil } from 'base_common';
 import { ResUtil } from '@pura/harmony-utils';
-import { GlassButton, imagePreview } from 'base_ui';
+import { GlassButton } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 import { signatureSheetBuilder } from './SignatureSheet';
@@ -13,6 +13,13 @@ import { userMedalSheetBuilder } from './UserMedalSheet'; // 新增
 export struct UserInfoArea {
   @Param @Require vm: MinePageVM;
   @Local userAvatarSize: number = 96;
+  @Local isAvatarShow: boolean = true;
+  private baseComponentId: string = 'user_avatar_transition';
+
+  @Computed
+  get avatarTransitionId(): string {
+    return `user_avatar_${this.vm.user?.user_summary?.uid || 'default'}`;
+  }
 
   build() {
     Flex({
@@ -25,14 +32,49 @@ export struct UserInfoArea {
     }) {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         Row({ space: CommonConstant.NormalContainerLRPadding }) {
-          Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
-            .width(this.userAvatarSize)
-            .height(this.userAvatarSize)
-            .borderRadius(CommonConstant.RadiusRound)
-            .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-            .onClick(() => {
-              imagePreview.show([UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!)])
-            })
+          Stack() {
+            if (this.isAvatarShow && this.vm.user) {
+              Image(UserAvatarUtil.getAvatarUrl(this.vm.user?.user_summary?.uid!))
+                .width(this.userAvatarSize)
+                .height(this.userAvatarSize)
+                .borderRadius(CommonConstant.RadiusRound)
+                .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
+                .geometryTransition(UserAvatarUtil.getAvatarUrl(this.vm.user.user_summary?.uid) + this.baseComponentId)
+                .transition(TransitionEffect.opacity(0.99))
+                .onClick(() => {
+                  const uid = this.vm.user?.user_summary?.uid;
+                  if (!uid) {
+                    return;
+                  }
+
+                  const avatarUrl = UserAvatarUtil.getAvatarUrl(uid);
+
+                  // 构造参数
+                  let param: Record<string, Object> = {};
+                  param.componentId = this.baseComponentId;
+                  param.imageList = [avatarUrl]; // 预览列表（此处只有一张）
+                  param.selectedIndex = 0;
+
+                  param.onBackToFirstPage = () => {
+                    this.isAvatarShow = true;
+                  };
+
+                  this.getUIContext().animateTo({
+                    duration: CommonConstant.AnimationDurationNormal,
+                    curve: CommonConstant.AnimationCurveSpring,
+                  }, () => {
+                    // 跳转到预览页
+                    RouterUtil.pushPathByName(RouterMap.IMAGE_LONG_TAKE_PREVIEW, param, () => {
+                    }, false);
+                  });
+
+                  // 隐藏当前页面的头像，交由预览页接管
+                  this.isAvatarShow = false;
+                })
+            }
+          }
+          .width(this.userAvatarSize)
+          .height(this.userAvatarSize)
 
           Column({ space: CommonConstant.NormalContainerTBPadding }) {
             // 昵称部分

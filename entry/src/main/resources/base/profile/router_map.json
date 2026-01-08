@@ -39,6 +39,11 @@
       "name": "ReplyPage",
       "pageSourceFile": "src/main/ets/pages/content/pages/ReplyPage.ets",
       "buildFunction": "ReplyPageBuilder"
+    },
+    {
+      "name": "ImageLongTakePreviewPage",
+      "pageSourceFile": "src/main/ets/pages/preview/pages/ImageLongTakePreviewPage.ets",
+      "buildFunction": "ImageLongTakePreviewPageBuilder"
     }
   ]
 }
