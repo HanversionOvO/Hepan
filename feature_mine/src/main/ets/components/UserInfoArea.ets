@@ -40,7 +40,6 @@ export struct UserInfoArea {
                 .borderRadius(CommonConstant.RadiusRound)
                 .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
                 .geometryTransition(UserAvatarUtil.getAvatarUrl(this.vm.user.user_summary?.uid) + this.baseComponentId)
-                .transition(TransitionEffect.opacity(0.99))
                 .onClick(() => {
                   const uid = this.vm.user?.user_summary?.uid;
                   if (!uid) {

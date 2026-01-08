@@ -79,7 +79,6 @@ export struct ImageLongTakePreviewPage {
       this.backToFirstPage();
       return true;
     })
-    .transition(TransitionEffect.opacity(0.99))
     .onReady((navDestContext: NavDestinationContext) => {
       this.pageInfos = navDestContext.pathStack;
       // 获取路由传递的参数
