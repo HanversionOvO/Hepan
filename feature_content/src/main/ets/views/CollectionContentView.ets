@@ -118,25 +118,24 @@ export struct CollectionContentView {
         .textAlign(TextAlign.Start)
 
       Swiper() {
-        Swiper() {
-          ForEach(this.vm.collectionDetail?.userMoreCollections, (collection: Collection) => {
-            Column() {
-              CollectionCard({ collection: collection })
-            }
-            .width(CommonConstant.FullPercent)
-            .onClick(() => {
-              this.vm.enterDetailPage(collection.ctid, this.getUIContext(), collection)
-            })
-          }, (item: Collection) => item.ctid.toString())
-        }
-        .width(CommonConstant.FullPercent)
-        .autoPlay(true)
-        .loop(true)
-        .itemSpace(CommonConstant.NormalContainerInnerPadding)
-        .indicator(false)
-        .effectMode(EdgeEffect.Spring)
+        ForEach(this.vm.collectionDetail?.userMoreCollections, (collection: Collection) => {
+          Column() {
+            CollectionCard({ collection: collection })
+          }
+          .width(CommonConstant.FullPercent)
+          .onClick(() => {
+            this.vm.enterDetailPage(collection.ctid, this.getUIContext(), collection)
+          })
+        }, (item: Collection) => item.ctid.toString())
       }
       .width(CommonConstant.FullPercent)
+      .autoPlay(true)
+      .loop(true)
+      .itemSpace(CommonConstant.NormalContainerInnerPadding)
+      .indicator(false)
+      .effectMode(EdgeEffect.Spring)
+      .width(CommonConstant.FullPercent)
+
     }
     .width(CommonConstant.FullPercent)
   }
