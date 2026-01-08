@@ -2,7 +2,8 @@ import { Document, DomUtils } from '@ohos/htmlparser2';
 import { LogUtil } from '@pura/harmony-utils';
 import { Element } from 'domhandler';
 import { ApiClient } from './ApiClient';
-import { Collection, CollectionSortOrder, CollectionUser } from './models/CollectionModels';
+import { ForumApi } from './ForumApi';
+import { Collection, CollectionDetail, CollectionSortOrder, CollectionUser } from './models/CollectionModels';
 
 const TAG = '[CollectionApi]: ';
 
@@ -168,6 +169,168 @@ export class CollectionApi {
     } catch (error) {
       LogUtil.error(TAG, 'getCollections failed', JSON.stringify(error));
       throw new Error(error);
+    }
+  }
+
+  public static async getCollectionDetail(ctid: number): Promise<CollectionDetail> {
+    try {
+      // 1. 请求页面
+      const params: Record<string, string | number> = {
+        'mod': 'collection',
+        'action': 'view',
+        'ctid': ctid
+      };
+      const doc: Document = await ApiClient.getInstance().requestHtml('forum.php', params);
+
+      const detail: CollectionDetail = {
+        ctid: ctid,
+        ties: []
+      };
+
+      // 2. 解析评分 (rate)
+      const rateStarSpan = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('clct_ratestar'));
+      }, doc.children, true);
+
+      if (rateStarSpan) {
+        const starElem = DomUtils.findOne((elem) => {
+          return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('star'));
+        }, rateStarSpan.children);
+        if (starElem) {
+          const classStr = starElem.attribs['class'] || '';
+          const match = classStr.match(/star(\d+)/);
+          if (match) {
+            detail.rate = parseInt(match[1]);
+          }
+        }
+      }
+
+      // 3. 解析最新订阅用户 (newSubsUser)
+      const bmDivs = DomUtils.findAll((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('bm'));
+      }, doc.children);
+
+      const subBm = bmDivs.find(bm => {
+        const h2 = DomUtils.findOne(e => e.tagName === 'h2', bm.children, true);
+        return h2 && DomUtils.textContent(h2).includes('最新订阅');
+      });
+
+      if (subBm) {
+        const ul = DomUtils.findOne(e => e.tagName === 'ul', subBm.children, true);
+        if (ul) {
+          const lis = DomUtils.findAll(e => e.tagName === 'li', ul.children);
+          const users: CollectionUser[] = [];
+          lis.forEach(li => {
+            const p = DomUtils.findOne(e => e.tagName === 'p', li.children);
+            if (p) {
+              const a = DomUtils.findOne(e => e.tagName === 'a', p.children);
+              if (a) {
+                const username = DomUtils.textContent(a).trim();
+                const href = a.attribs['href'] || '';
+                const uidMatch = href.match(/uid=(\d+)/);
+                if (username && uidMatch) {
+                  users.push({ username: username, uid: parseInt(uidMatch[1]) });
+                }
+              }
+            }
+          });
+          detail.newSubsUser = users;
+        }
+      }
+
+      // 4. 解析用户更多淘专辑 (userMoreCollections)
+      const moreBm = bmDivs.find(bm => {
+        const h2 = DomUtils.findOne(e => e.tagName === 'h2', bm.children, true);
+        return h2 && DomUtils.textContent(h2).includes('他还有这些淘帖');
+      });
+
+      // 获取当前专辑的创建者信息
+      let currentCreator: CollectionUser = { username: '', uid: 0 };
+      const pTags = DomUtils.findAll(e => e.tagName === 'p', doc.children);
+      const creatorP = pTags.find(p => DomUtils.textContent(p).includes('专辑创建人'));
+      if (creatorP) {
+        const aTag = DomUtils.findOne(e => e.tagName === 'a', creatorP.children);
+        if (aTag) {
+          currentCreator.username = DomUtils.textContent(aTag).trim();
+          const href = aTag.attribs['href'] || '';
+          const uidMatch = href.match(/uid=(\d+)/);
+          if (uidMatch) {
+            currentCreator.uid = parseInt(uidMatch[1]);
+          }
+        }
+      }
+
+      if (moreBm) {
+        const bmC =
+          DomUtils.findOne(e => !!(e.attribs['class'] && e.attribs['class'].includes('bm_c')), moreBm.children);
+        if (bmC) {
+          const moreCols: Collection[] = [];
+          const children = bmC.children.filter(c => c.type === 'tag');
+          // 两个一组：pbn 是标题链接，pbm 是统计数据
+          for (let i = 0; i < children.length - 1; i += 2) {
+            const nodeTitle = children[i] as Element;
+            const nodeInfo = children[i + 1];
+
+            const a = DomUtils.findOne(e => e.tagName === 'a', nodeTitle.children);
+            if (a) {
+              const colTitle = DomUtils.textContent(a).trim();
+              const colHref = a.attribs['href'] || '';
+              const colCtidMatch = colHref.match(/ctid=(\d+)/);
+              const colCtid = colCtidMatch ? parseInt(colCtidMatch[1]) : 0;
+
+              const infoText = DomUtils.textContent(nodeInfo);
+              const infoMatch = infoText.match(/主题\s*(\d+).*订阅\s*(\d+).*评论\s*(\d+)/);
+
+              if (colCtid) {
+                moreCols.push({
+                  ctid: colCtid,
+                  title: colTitle,
+                  collection_nums: infoMatch ? parseInt(infoMatch[1]) : 0,
+                  subscribe: infoMatch ? parseInt(infoMatch[2]) : 0,
+                  comment: infoMatch ? parseInt(infoMatch[3]) : 0,
+                  creator: currentCreator
+                });
+              }
+            }
+          }
+          detail.userMoreCollections = moreCols;
+        }
+      }
+
+      // 5. 解析帖子列表 (ties) 并获取详情
+      // 修复：直接在 .tl.bm 容器中查找所有的 a.xst (帖子链接)，避免因表头表格结构导致找不到帖子
+      const tlBm = DomUtils.findOne(e => {
+        return !!(e.attribs && e.attribs['class'] && e.attribs['class'].includes('tl') &&
+        e.attribs['class'].includes('bm'));
+      }, doc.children, true);
+
+      const tids: number[] = [];
+      if (tlBm) {
+        const threadLinks = DomUtils.findAll((e) => {
+          return e.tagName === 'a' && !!(e.attribs['class'] && e.attribs['class'].includes('xst'));
+        }, tlBm.children); // 递归查找所有帖子链接
+
+        threadLinks.forEach((a) => {
+          const href = a.attribs['href'] || '';
+          const tidMatch = href.match(/tid=(\d+)/);
+          if (tidMatch) {
+            tids.push(parseInt(tidMatch[1]));
+          }
+        });
+      }
+
+      // 并发获取所有帖子的详情，pageSize 置 1
+      if (tids.length > 0) {
+        const tiePromises = tids.map(tid => ForumApi.getForumDetailOld(tid, 0, 0, 1, 1));
+        const ties = await Promise.all(tiePromises);
+        detail.ties = ties;
+      }
+
+      return detail;
+
+    } catch (error) {
+      LogUtil.error(TAG, 'getCollectionDetail failed', JSON.stringify(error));
+      return { ctid: ctid };
     }
   }
 }

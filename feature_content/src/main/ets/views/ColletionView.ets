@@ -1,4 +1,4 @@
-import { Collection, CommonConstant, VMManager } from 'base_common';
+import { Collection, CollectionApi, CommonConstant, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { CollectionCard } from '../components/CollectionCard';
 import { CollectionVM } from '../viewmodels/CollectionVM';
@@ -23,6 +23,9 @@ export struct CollectionView {
             CollectionCard({
               collection
             })
+              .onClick(async () => {
+                const result = await CollectionApi.getCollectionDetail(collection.ctid);
+              })
           }
           .width(CommonConstant.FullPercent)
         }, (collection: Collection) => collection.ctid.toString())

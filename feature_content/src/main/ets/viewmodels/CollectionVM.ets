@@ -63,7 +63,6 @@ export class CollectionVM extends BaseVM {
   async loadData() {
     this.collections = await CollectionApi.getCollections(this.currentPage, this.currentSort);
     this.updateGridConfig(this.breakPoint.currentBreakPoint);
-    LogUtil.debug(TAG, JSON.stringify(this.collections));
   }
 
   async refresh() {
