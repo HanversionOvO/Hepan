@@ -49,6 +49,8 @@ export { AttachmentApi } from './src/main/ets/api/AttachmentApi';
 
 export { ForumApi } from './src/main/ets/api/ForumApi';
 
+export { CollectionApi } from './src/main/ets/api/CollectionApi';
+
 export { UserFriends, RecentVisitor, InterestingUser, Medal } from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
@@ -58,5 +60,7 @@ export { BasicDataSource } from './src/main/ets/utils/BasicDataSource';
 export * from './src/main/ets/api/models/MessageModels';
 
 export * from './src/main/ets/api/models/ForumModels';
+
+export * from './src/main/ets/api/models/CollectionModels';
 
 export * from './src/main/ets/models/TabIndexModel';
