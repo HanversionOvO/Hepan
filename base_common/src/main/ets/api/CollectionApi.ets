@@ -2,7 +2,7 @@ import { Document, DomUtils } from '@ohos/htmlparser2';
 import { LogUtil } from '@pura/harmony-utils';
 import { Element } from 'domhandler';
 import { ApiClient } from './ApiClient';
-import { Collection, CollectionCreator, CollectionSortOrder } from './models/CollectionModels';
+import { Collection, CollectionSortOrder, CollectionUser } from './models/CollectionModels';
 
 const TAG = '[CollectionApi]: ';
 
@@ -107,7 +107,7 @@ export class CollectionApi {
           let subscribe = 0;
           let comment = 0;
           let description = '';
-          let creator: CollectionCreator = { username: '', uid: 0 };
+          let creator: CollectionUser = { username: '', uid: 0 };
           let lastUpdate = '';
 
           if (infoDd) {
