@@ -33,6 +33,7 @@ export interface CollectionCreator {
 }
 
 export interface Collection {
+  ctid: number; // 专辑ID
   title: string; // 专辑名
   collection_nums: number; // 专辑主题数
   subscribe: number; // 专辑订阅数

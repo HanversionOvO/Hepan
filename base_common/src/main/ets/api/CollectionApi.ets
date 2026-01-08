@@ -61,7 +61,18 @@ export class CollectionApi {
           // 1. 获取 Title
           const dt = DomUtils.findOne((e) => e.tagName === 'dt', item.children);
           const titleA = DomUtils.findOne((e) => e.tagName === 'a', dt ? dt.children : [], true);
-          const title = titleA ? DomUtils.textContent(titleA).trim() : '';
+
+          let title = '';
+          let ctid = 0;
+
+          if (titleA) {
+            title = DomUtils.textContent(titleA).trim();
+            const href = titleA.attribs['href'] || '';
+            const ctidMatch = href.match(/ctid=(\d+)/);
+            if (ctidMatch) {
+              ctid = parseInt(ctidMatch[1]);
+            }
+          }
 
           let tags: string[] = [];
           if (dt) {
@@ -136,6 +147,7 @@ export class CollectionApi {
           }
 
           collections.push({
+            ctid,
             title,
             collection_nums,
             subscribe,

@@ -25,7 +25,7 @@ export struct CollectionView {
             })
           }
           .width(CommonConstant.FullPercent)
-        }, (collection: Collection) => `${collection.creator.uid}_${collection.title}`)
+        }, (collection: Collection) => collection.ctid.toString())
       }
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)
