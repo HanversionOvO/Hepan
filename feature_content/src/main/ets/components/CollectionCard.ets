@@ -1,126 +1,156 @@
 import { Collection, ColorUtil, CommonConstant, UserAvatarUtil } from 'base_common';
-import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
 
 @ComponentV2
 export struct CollectionCard {
   @Param @Require collection: Collection;
-  @Local topCardSize: number = 58;
+  @Local topCardSize: number = 64;
 
   @Builder
   topicIconBuilder() {
-    Stack({ alignContent: Alignment.Top }) {
-      Divider()
+    Stack({ alignContent: Alignment.Center }) {
+      // 背景装饰
+      Column()
         .width(CommonConstant.FullPercent)
-        .strokeWidth(CommonConstant.BorderSizeHuge)
+        .height(CommonConstant.FullPercent)
+        .backgroundColor(CommonConstant.ThemeColor)
+        .opacity(0.1) // 极淡的背景色
+        .borderRadius(CommonConstant.RadiusNormal)
+
+      // 左侧装饰条
+      Divider()
+        .vertical(false)
+        .width(CommonConstant.FullPercent)
+        .strokeWidth(CommonConstant.BorderSizeHuge) // 顶部装饰条
         .color(CommonConstant.ThemeColor)
+        .position({ x: 0, y: 0 })
 
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
         Text($r('app.string.CollectionView_topic'))
-          .width(CommonConstant.FullPercent)
           .fontSize(CommonConstant.TextSizeTiny)
-          .textAlign(TextAlign.Start)
-          .fontColor($r('sys.color.font_on_primary'))
+          .fontColor(CommonConstant.ThemeColor)
           .fontWeight(FontWeight.Medium)
+          .opacity(0.8)
 
         Text(this.collection.collection_nums.toString())
-          .fontSize(CommonConstant.TextSizeLarge)
-          .fontColor($r('sys.color.font_on_primary'))
-          .fontWeight(FontWeight.Bolder)
+          .fontSize(CommonConstant.TextSizeUltraLarge)
+          .fontColor(CommonConstant.ThemeColor)
+          .fontWeight(FontWeight.Bold)
       }
-      .padding({
-        left: CommonConstant.SmallContainerTBPadding / 2,
-        right: CommonConstant.SmallContainerTBPadding / 2,
-        top: CommonConstant.SmallContainerTBPadding,
-        bottom: CommonConstant.SmallContainerTBPadding
-      })
     }
     .width(this.topCardSize)
     .height(this.topCardSize)
     .borderRadius(CommonConstant.RadiusNormal)
-    .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor))
     .clip(true)
   }
 
   @Builder
   tag(tagName: string) {
     Text(tagName)
-      .padding(CommonConstant.SmallContainerInnerPadding)
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding / 2,
+        right: CommonConstant.SmallContainerLRPadding / 2,
+        top: CommonConstant.SmallContainerTBPadding / 2,
+        bottom: CommonConstant.SmallContainerTBPadding / 2
+      })
       .fontSize(CommonConstant.TextSizeTiny)
       .backgroundColor($r('app.color.start_window_background'))
       .borderRadius(CommonConstant.RadiusSmall)
-      .fontColor($r('sys.color.font_tertiary'))
-      .fontWeight(FontWeight.Medium)
+      .fontColor($r('sys.color.font_secondary'))
+  }
+
+  @Builder
+  dataPill(label: string, value: string | number) {
+    Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Text(label)
+        .fontSize(CommonConstant.TextSizeTiny)
+        .fontColor(CommonConstant.ThemeColor)
+      Text(value.toString())
+        .fontSize(CommonConstant.TextSizeTiny)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(CommonConstant.ThemeColor)
+    }
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding / 2,
+      right: CommonConstant.SmallContainerLRPadding / 2,
+      top: CommonConstant.SmallContainerTBPadding / 2,
+      bottom: CommonConstant.SmallContainerTBPadding / 2
+    })
+    .backgroundColor(ColorUtil.opacity(CommonConstant.ThemeColor, 0.1))
+    .borderRadius(CommonConstant.RadiusSmall)
   }
 
   @Builder
   content() {
     Column({ space: CommonConstant.LargeContainerInnerPadding }) {
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Text(this.collection.title)
-          .fontSize(CommonConstant.TextSizeNormal)
-          .width(CommonConstant.FullPercent)
-          .textAlign(TextAlign.Start)
-          .fontWeight(FontWeight.Bold)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-          .maxLines(1)
+      Column({ space: CommonConstant.SmallContainerTBPadding }) {
+        Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+          Text(this.collection.title)
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('sys.color.font_primary'))
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .layoutWeight(1)
 
+          // 新增：更新时间
+          Text(this.collection.lastUpdate)
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor($r('sys.color.font_tertiary'))
+        }
+        .width(CommonConstant.FullPercent)
+        .alignItems(VerticalAlign.Center)
+
+        // 第二行：描述
         Text(this.collection.description)
           .width(CommonConstant.FullPercent)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
           .maxLines(3)
-          .textAlign(TextAlign.Start)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
           .fontColor($r('sys.color.font_secondary'))
           .fontSize(CommonConstant.TextSizeSmall)
+
+        if (this.collection.tags && this.collection.tags.length > 0) {
+          Grid() {
+            ForEach(this.collection.tags, (tag: string) => {
+              GridItem() {
+                this.tag(tag)
+              }
+            }, (tag: string, index: number) => `${tag}_${index}`)
+          }
+          .rowsGap(CommonConstant.SmallContainerInnerPadding)
+          .columnsGap(CommonConstant.SmallContainerInnerPadding)
+          .width(CommonConstant.FullPercent)
+        }
       }
       .width(CommonConstant.FullPercent)
 
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Flex({
-          direction: FlexDirection.Row,
-          space: {
-            main: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
-          }
-        }) {
-          ForEach(this.collection?.tags, (tag: string, index: number) => {
-            this.tag(tag)
-          }, (tag: string, index: number) => `${tag}_${index}`)
+      // 第四行：底部信息（用户 + 数据）
+      Row() {
+        // 左侧：用户信息
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          Image(UserAvatarUtil.getAvatarUrl(this.collection.creator.uid))
+            .width(CommonConstant.IconSizeTiny)
+            .height(CommonConstant.IconSizeTiny)
+            .borderRadius(CommonConstant.RadiusRound)
+            .objectFit(ImageFit.Cover)
+
+          Text(this.collection.creator.username)
+            .fontSize(CommonConstant.TextSizeSmall)
+            .fontColor($r('sys.color.font_secondary'))
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
-        .width(CommonConstant.FullPercent)
+        .layoutWeight(1)
 
-        Row() {
-          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-            Image(UserAvatarUtil.getAvatarUrl(this.collection.creator.uid))
-              .width(CommonConstant.IconSizeSmall)
-              .height(CommonConstant.IconSizeSmall)
-              .borderRadius(CommonConstant.RadiusRound)
-
-            Text(this.collection.creator.username)
-              .fontSize(CommonConstant.TextSizeSmall)
-          }
-
-          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-            Text(`${ResUtil.getStringSync($r('app.string.CollectionView_subs'))}: ${this.collection.subscribe}`)
-              .padding(CommonConstant.SmallContainerInnerPadding)
-              .backgroundColor(CommonConstant.ThemeColor)
-              .borderRadius(CommonConstant.RadiusSmall)
-              .fontColor($r('sys.color.font_on_primary'))
-              .fontWeight(FontWeight.Medium)
-              .fontSize(CommonConstant.TextSizeTiny)
-
-            Text(`${ResUtil.getStringSync($r('app.string.CollectionView_comment'))}: ${this.collection.comment}`)
-              .padding(CommonConstant.SmallContainerInnerPadding)
-              .backgroundColor(CommonConstant.ThemeColor)
-              .borderRadius(CommonConstant.RadiusSmall)
-              .fontColor($r('sys.color.font_on_primary'))
-              .fontWeight(FontWeight.Medium)
-              .fontSize(CommonConstant.TextSizeTiny)
-          }
+        // 右侧：数据统计
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          this.dataPill(ResUtil.getStringSync($r('app.string.CollectionView_subs')), this.collection.subscribe)
+          this.dataPill(ResUtil.getStringSync($r('app.string.CollectionView_comment')), this.collection.comment)
         }
-        .width(CommonConstant.FullPercent)
-        .justifyContent(FlexAlign.SpaceBetween)
       }
       .width(CommonConstant.FullPercent)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .alignItems(VerticalAlign.Center)
     }
     .layoutWeight(1)
   }
@@ -128,14 +158,12 @@ export struct CollectionCard {
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       this.topicIconBuilder()
-
       this.content()
     }
     .width(CommonConstant.FullPercent)
     .backgroundColor($r('app.color.second_window_background'))
-    .padding(CommonConstant.NormalContainerInnerPadding)
+    .padding(CommonConstant.NormalContainerInnerPadding) // 稍微增加内边距
     .borderRadius(CommonConstant.RadiusLarge)
     .alignItems(VerticalAlign.Top)
-    .justifyContent(FlexAlign.Start)
   }
 }

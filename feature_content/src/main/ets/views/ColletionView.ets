@@ -17,13 +17,14 @@ export struct CollectionView {
   @Builder
   contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState) => void) {
     Refresh({ refreshing: $$this.vm.isRefreshing }) {
-      Grid() {
+      WaterFlow() {
         ForEach(this.vm.collections, (collection: Collection) => {
-          GridItem() {
+          FlowItem() {
             CollectionCard({
               collection
             })
           }
+          .width(CommonConstant.FullPercent)
         }, (collection: Collection) => `${collection.creator.uid}_${collection.title}`)
       }
       .width(CommonConstant.FullPercent)
