@@ -89,14 +89,14 @@ export struct CollectionCard {
         .width(CommonConstant.FullPercent)
 
         Row() {
-          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
             Image(UserAvatarUtil.getAvatarUrl(this.collection.creator.uid))
               .width(CommonConstant.IconSizeSmall)
               .height(CommonConstant.IconSizeSmall)
               .borderRadius(CommonConstant.RadiusRound)
 
             Text(this.collection.creator.username)
-              .fontSize(CommonConstant.TextSizeTiny)
+              .fontSize(CommonConstant.TextSizeSmall)
           }
 
           Text(`${ResUtil.getStringSync($r('app.string.CollectionView_subs'))}: ${this.collection.subscribe}`)
@@ -104,12 +104,15 @@ export struct CollectionCard {
             .backgroundColor(CommonConstant.ThemeColor)
             .borderRadius(CommonConstant.RadiusSmall)
             .fontColor($r('sys.color.font_on_primary'))
+            .fontWeight(FontWeight.Medium)
             .fontSize(CommonConstant.TextSizeTiny)
         }
+        .width(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.SpaceBetween)
       }
       .width(CommonConstant.FullPercent)
     }
+    .layoutWeight(1)
   }
 
   build() {
