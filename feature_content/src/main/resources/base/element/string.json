@@ -171,6 +171,22 @@
     {
       "name": "CollectionView_subs",
       "value": "订阅数"
+    },
+    {
+      "name": "CollectionContentPage_rate",
+      "value": "评分"
+    },
+    {
+      "name": "CollectionContentPage_no_rate",
+      "value": "暂无评分"
+    },
+    {
+      "name": "CollectionContentPage_no_desc",
+      "value": "这个人很懒，没有写简介~"
+    },
+    {
+      "name": "CollectionContentPage_last_update",
+      "value": "最后更新于"
     }
   ]
 }

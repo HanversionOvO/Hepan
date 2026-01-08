@@ -153,6 +153,8 @@ export class CollectionVM extends BaseVM {
       params["transition"] = transitionParam;
     }
 
+    params["collection"] = collection;
+
     RouterUtil.pushPathByName(RouterMap.COLLECTION_CONTENT_PAGE, params);
   }
 }

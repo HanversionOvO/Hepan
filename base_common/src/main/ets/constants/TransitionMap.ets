@@ -6,4 +6,5 @@ export class TransitionMap {
   static readonly TiePageSubCategory: string = "TiePageSubCategory";
   static readonly TieDetailPageTitle: string = "TieDetailPageTitle";
   static readonly TieDetailComment: string = "TieDetailComment";
+  static readonly CollectionDetailPage: string = "CollectionDetailPage";
 }

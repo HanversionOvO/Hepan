@@ -1,3 +1,4 @@
+import { Collection } from 'base_common'
 import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui'
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM'
 import { CollectionContentView } from '../views/CollectionContentView'
@@ -41,6 +42,12 @@ export struct CollectionContentPageImpl {
             },
           });
         }
+
+        if (params["collection"]) {
+          this.vm.collection = params["collection"] as Collection;
+        }
+
+        await this.vm.loadData();
       }
     })
   }
