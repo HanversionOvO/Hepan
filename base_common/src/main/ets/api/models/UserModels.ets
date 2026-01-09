@@ -176,8 +176,9 @@ export interface InterestingUser {
   isFriend: boolean;
 }
 
-export interface UserThread extends ForumTieSummary {
-  forum_name?: string;
+@ObservedV2
+export class UserThread extends ForumTieSummary {
+  @Trace forum_name?: string;
 }
 
 export interface ThreadAuthorInfo {

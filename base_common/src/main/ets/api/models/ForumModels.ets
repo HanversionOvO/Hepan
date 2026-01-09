@@ -1,55 +1,61 @@
 import { LegacyResponse } from './ApiModels';
 import { UploadedFile } from './MessageModels';
 
-export interface ForumCategory {
-  fid: number;
-  name: string;
-  can_post_thread: boolean;
-  can_post_reply: boolean;
-  hidden_home: boolean;
-  threads: number;
-  posts: number;
-  todayposts: number;
-  yesterdayposts: number;
-  latest_thread?: LatestThread[];
-  moderators: string[];
-  children?: ForumCategory[];
+@ObservedV2
+export class ForumCategory {
+  @Trace fid: number = 0;
+  @Trace name: string = "";
+  @Trace can_post_thread: boolean = false;
+  @Trace can_post_reply: boolean = false;
+  @Trace hidden_home: boolean = false;
+  @Trace threads: number = 0;
+  @Trace posts: number = 0;
+  @Trace todayposts: number = 0;
+  @Trace yesterdayposts: number = 0;
+  @Trace latest_thread?: LatestThread[] = [];
+  @Trace moderators: string[] = [];
+  @Trace children?: ForumCategory[];
 }
 
-export interface LatestThread {
-  thread_id: number;
-  subject: string;
-  lastpost_time: number;
-  lastpost_author: string;
-  lastpost_authorid: number;
+@ObservedV2
+export class LatestThread {
+  @Trace thread_id: number = 0;
+  @Trace subject: string = "";
+  @Trace lastpost_time: number = 0;
+  @Trace lastpost_author: string = "";
+  @Trace lastpost_authorid: number = 0;
 }
 
-export interface PostCategoryGroup {
-  fid: number;
-  name: string;
-  children: PostCategoryItem[];
+@ObservedV2
+export class PostCategoryGroup {
+  @Trace fid: number = 0;
+  @Trace name: string = "";
+  @Trace children: PostCategoryItem[] = [];
 }
 
-export interface PostCategoryItem {
-  fid: number;
-  name: string;
-  description?: string;
-  parentName?: string;
+@ObservedV2
+export class PostCategoryItem {
+  @Trace fid: number = 0;
+  @Trace name: string = "";
+  @Trace description?: string;
+  @Trace parentName?: string;
 }
 
-export interface AtUser {
-  uid: number;
-  username: string;
-  status: string;
+@ObservedV2
+export class AtUser {
+  @Trace uid: number = 0;
+  @Trace username: string = "";
+  @Trace status: string = "";
 }
 
-export interface ForumDetails {
-  fid: number;
-  name: string;
-  thread_types: ThreadType[];
-  optional_thread_type: boolean;
-  can_post_thread: boolean;
-  children?: ForumCategory[];
+@ObservedV2
+export class ForumDetails {
+  @Trace fid: number = 0;
+  @Trace name: string = "";
+  @Trace thread_types: ThreadType[] = [];
+  @Trace optional_thread_type: boolean = false;
+  @Trace can_post_thread: boolean = false;
+  @Trace children?: ForumCategory[];
 }
 
 export interface ThreadType {
@@ -88,195 +94,205 @@ export interface SummaryAttachments {
   raw_url: string;
 }
 
-export interface ForumTieSummary {
-  thread_id: number;
-  forum_id: number;
-  type_id: number;
-  author: string;
-  author_id: number;
-  subject: string;
-  summary: string;
-  summary_attachments?: SummaryAttachments[];
-  dateline: number;
-  last_post: number;
-  views: number;
-  replies: number;
-  label: string;
-  recommend_add: number;
-  recommend_sub: number;
-  forum_name?: string;
-  display_order: number;
+@ObservedV2
+export class ForumTieSummary {
+  @Trace thread_id: number = 0;
+  @Trace forum_id: number = 0;
+  @Trace type_id: number = 0;
+  @Trace author: string = "";
+  @Trace author_id: number = 0;
+  @Trace subject: string = "";
+  @Trace summary: string = "";
+  @Trace summary_attachments?: SummaryAttachments[];
+  @Trace dateline: number = 0;
+  @Trace last_post: number = 0;
+  @Trace views: number = 0;
+  @Trace replies: number = 0;
+  @Trace label: string = "";
+  @Trace recommend_add: number = 0;
+  @Trace recommend_sub: number = 0;
+  @Trace forum_name?: string;
+  @Trace display_order: number = 0;
 }
 
-export interface TieDetail {
-  total: number;
-  page_size: number;
-  page: number;
-  thread: TieThread;
-  forum: ForumDetails;
-  rows: TieRow[];
+@ObservedV2
+export class TieDetail {
+  @Trace total: number = 0;
+  @Trace page_size: number = 0;
+  @Trace page: number = 0;
+  @Trace thread: TieThread = new TieThread();
+  @Trace forum: ForumDetails = new ForumDetails();
+  @Trace rows: TieRow[] = [];
 }
 
-export interface TieThread {
-  thread_id: number;
-  forum_id: number;
-  type_id: number;
-  author: string;
-  author_id: number;
-  subject: string;
-  dateline: number;
-  last_post: number;
-  last_poster: string;
-  views: number;
-  replies: number;
-  display_order: number;
-  is_rated: number;
-  special: number;
-  attachment: number;
-  is_moderated: number,
-  has_stick_reply: number,
-  is_closed: number,
-  recommends: number,
-  recommend_add: number,
-  recommend_sub: number,
-  heats: number,
-  status: number,
-  favorite_times: number,
-  share_times: number,
-  stamp: number,
-  icon: number,
-  cover: number,
-  max_position: number,
-  comments: number,
-  can_reply: boolean
+@ObservedV2
+export class TieThread {
+  @Trace thread_id: number = 0;
+  @Trace forum_id: number = 0;
+  @Trace type_id: number = 0;
+  @Trace author: string = "";
+  @Trace author_id: number = 0;
+  @Trace subject: string = "";
+  @Trace dateline: number = 0;
+  @Trace last_post: number = 0;
+  @Trace last_poster: string = "";
+  @Trace views: number = 0;
+  @Trace replies: number = 0;
+  @Trace display_order: number = 0;
+  @Trace is_rated: number = 0;
+  @Trace special: number = 0;
+  @Trace attachment: number = 0;
+  @Trace is_moderated: number = 0;
+  @Trace has_stick_reply: number = 0;
+  @Trace is_closed: number = 0;
+  @Trace recommends: number = 0;
+  @Trace recommend_add: number = 0;
+  @Trace recommend_sub: number = 0;
+  @Trace heats: number = 0;
+  @Trace status: number = 0;
+  @Trace favorite_times: number = 0;
+  @Trace share_times: number = 0;
+  @Trace stamp: number = 0;
+  @Trace icon: number = 0;
+  @Trace cover: number = 0;
+  @Trace max_position: number = 0;
+  @Trace comments: number = 0;
+  @Trace can_reply: boolean = false;
 }
 
-export interface TieRow {
-  post_id: number;
-  forum_id: number;
-  thread_id: number;
-  position: number;
-  is_first: number;
-  subject: string;
-  support: number,
-  oppose: number;
-  message: string;
-  dateline: number;
-  format: number;
-  usesig: number;
-  smileyoff: number;
-  parseurloff: number;
-  status: number;
-  attachments?: SummaryAttachments[];
-  author: string;
-  author_id: number;
-  author_details: TieAuthor;
+@ObservedV2
+export class TieRow {
+  @Trace post_id: number = 0;
+  @Trace forum_id: number = 0;
+  @Trace thread_id: number = 0;
+  @Trace position: number = 0;
+  @Trace is_first: number = 0;
+  @Trace subject: string = "";
+  @Trace support: number = 0;
+  @Trace oppose: number = 0;
+  @Trace message: string = "";
+  @Trace dateline: number = 0;
+  @Trace format: number = 0;
+  @Trace usesig: number = 0;
+  @Trace smileyoff: number = 0;
+  @Trace parseurloff: number = 0;
+  @Trace status: number = 0;
+  @Trace attachments?: SummaryAttachments[];
+  @Trace author: string = "";
+  @Trace author_id: number = 0;
+  @Trace author_details: TieAuthor = new TieAuthor();
 }
 
-export interface TieAuthor {
-  group_id: number;
-  level_id: number;
-  group_title?: string;
-  group_subtitle: string;
-  group_icon: string;
-  ext_credits: Record<string, number>;
-  posts: number;
-  digests: number;
-  medals: number[];
-  signature: string;
-  signature_format: string;
-  custom_title: string;
-  online_time: number;
-  last_visit: number;
-  credits: number;
-  register_time: number;
+@ObservedV2
+export class TieAuthor {
+  @Trace group_id: number = 0;
+  @Trace level_id: number = 0;
+  @Trace group_title?: string;
+  @Trace group_subtitle: string = "";
+  @Trace group_icon: string = "";
+  @Trace ext_credits: Record<string, number> = {};
+  @Trace posts: number = 0;
+  @Trace digests: number = 0;
+  @Trace medals: number[] = [];
+  @Trace signature: string = "";
+  @Trace signature_format: string = "";
+  @Trace custom_title: string = "";
+  @Trace online_time: number = 0;
+  @Trace last_visit: number = 0;
+  @Trace credits: number = 0;
+  @Trace register_time: number = 0;
 }
 
-export interface ForumDetailTopic {
-  topic_id: number;
-  title: string;
-  format: string;
-  type: string;
-  special: number;
-  sortId: number;
-  user_id: number;
-  user_nick_name: string;
-  replies: number;
-  hits: number;
-  essence: number;
-  vote: number;
-  hot: number;
-  top: number;
-  is_favor: number;
-  create_date: string;
-  icon: string;
-  level: number;
-  userTitle: string;
-  userColor: string;
-  isFollow: number;
-  zanList: Object[]; // 暂未获取到
-  content: ForumDetailReplyContent[]; // 内容
-  status: number;
-  reply_status: number;
-  flag: number;
-  gender: number;
-  reply_posts_id: number;
-  rateList: Object; // 待做
-  reward: Object; // 待做
-  extraPanel: ForumExtraPanel[];
+@ObservedV2
+export class ForumDetailTopic {
+  @Trace topic_id: number = 0;
+  @Trace title: string = "";
+  @Trace format: string = "";
+  @Trace type: string = "";
+  @Trace special: number = 0;
+  @Trace sortId: number = 0;
+  @Trace user_id: number = 0;
+  @Trace user_nick_name: string = "";
+  @Trace replies: number = 0;
+  @Trace hits: number = 0;
+  @Trace essence: number = 0;
+  @Trace vote: number = 0;
+  @Trace hot: number = 0;
+  @Trace top: number = 0;
+  @Trace is_favor: number = 0;
+  @Trace create_date: string = "";
+  @Trace icon: string = "";
+  @Trace level: number = 0;
+  @Trace userTitle: string = "";
+  @Trace userColor: string = "";
+  @Trace isFollow: number = 0;
+  // @Trace zanList: Object[]; // 暂未获取到
+  @Trace content: ForumDetailReplyContent[] = []; // 内容
+  @Trace status: number = 0;
+  @Trace reply_status: number = 0;
+  @Trace flag: number = 0;
+  @Trace gender: number = 0;
+  @Trace reply_posts_id: number = 0;
+  // @Trace rateList: Object ; // 待做
+  // @Trace reward: Object; // 待做
+  @Trace extraPanel: ForumExtraPanel[] = [];
 }
 
-export interface ForumDetailComment {
-  reply_id: number;
-  format: string;
-  reply_content: ForumDetailReplyContent[];
-  reply_type: string;
-  reply_name: string;
-  reply_posts_id: number;
-  poststick: number;
-  position: number;
-  posts_date: string;
-  icon: string;
-  level: number;
-  userTitle: string;
-  userColor: string;
-  location: string;
-  mobileSign: string;
-  reply_status: number;
-  status: number;
-  role_num: number;
-  title: string;
-  gender: number;
-  is_quote: number;
-  quote_pid: number;
-  quote_content: string;
-  quote_content_bare?: string;
-  quote_user_name: string;
-  delThread: boolean;
-  extraPanel: ForumExtraPanel[];
+@ObservedV2
+export class ForumDetailComment {
+  @Trace reply_id: number = 0;
+  @Trace format: string = "";
+  @Trace reply_content: ForumDetailReplyContent[] = [];
+  @Trace reply_type: string = "";
+  @Trace reply_name: string = "";
+  @Trace reply_posts_id: number = 0;
+  @Trace poststick: number = 0;
+  @Trace position: number = 0;
+  @Trace posts_date: string = "";
+  @Trace icon: string = "";
+  @Trace level: number = 0;
+  @Trace userTitle: string = "";
+  @Trace userColor: string = "";
+  @Trace location: string = "";
+  @Trace mobileSign: string = "";
+  @Trace reply_status: number = 0;
+  @Trace status: number = 0;
+  @Trace role_num: number = 0;
+  @Trace title: string = "";
+  @Trace gender: number = 0;
+  @Trace is_quote: number = 0;
+  @Trace quote_pid: number = 0;
+  @Trace quote_content: string = "";
+  @Trace quote_content_bare?: string = "";
+  @Trace quote_user_name: string = "";
+  @Trace delThread: boolean = false;
+  @Trace extraPanel: ForumExtraPanel[] = [];
 }
 
-export interface ForumExtraPanel {
-  action: string;
-  title: string;
-  recommendAdd: string;
-  extParams: ForumExtParams;
-  type: string;
+@ObservedV2
+export class ForumExtraPanel {
+  @Trace action: string = '';
+  @Trace title: string = '';
+  @Trace recommendAdd: string = '';
+  @Trace extParams: ForumExtParams = new ForumExtParams();
+  @Trace type: string = '';
 }
 
-export interface ForumExtParams {
-  beforeAction: string;
-  recommendAdd: number;
-  isHasRecommendAdd: number
+@ObservedV2
+export class ForumExtParams {
+  @Trace beforeAction: string = "";
+  @Trace recommendAdd: number = 0;
+  @Trace isHasRecommendAdd: number = 0
 }
 
-export interface ForumDetailReplyContent {
-  infor: string;
-  type: number;
-  url?: string;
-  desc?: string;
-  originalInfo?: string;
-  aid?: number;
+@ObservedV2
+export class ForumDetailReplyContent {
+  @Trace infor: string = "";
+  @Trace type: number = 0;
+  @Trace url?: string;
+  @Trace desc?: string;
+  @Trace originalInfo?: string;
+  @Trace aid?: number;
 }
 
 export interface ForumDetailResponse extends LegacyResponse {

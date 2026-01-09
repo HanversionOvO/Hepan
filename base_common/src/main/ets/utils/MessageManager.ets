@@ -1,11 +1,7 @@
 import { LogUtil } from '@pura/harmony-utils';
 import { MessageApi } from '../api/MessageApi';
 import {
-  MessageSummary,
-  NewChat,
-  NewMessagesSummary,
-  RecentMessage,
-  RecentMessageData
+  MessageSummary, NewChat, NewMessagesSummary, RecentMessage,
 } from '../api/models/MessageModels';
 
 const TAG = '[MessageManager]: ';
@@ -51,7 +47,7 @@ export class MessageManager {
       // 显式传递第一页
       const rawList = await MessageApi.getMessageList(1);
       // 转换为类实例
-      this.messageList = rawList.map(item => new RecentMessage(item as RecentMessageData));
+      this.messageList = rawList.map(item => new RecentMessage(item));
       this.notifyMessageListListeners(this.messageList);
     } catch (error) {
       LogUtil.error(TAG, `Refresh message list failed: ${JSON.stringify(error)}`);
@@ -66,7 +62,7 @@ export class MessageManager {
 
       if (rawList && rawList.length > 0) {
         // 转换为类实例
-        const newItems = rawList.map(item => new RecentMessage(item as RecentMessageData));
+        const newItems = rawList.map(item => new RecentMessage(item));
         // 追加到现有列表
         this.messageList = [...this.messageList, ...newItems];
         // 更新当前页码
@@ -134,19 +130,19 @@ export class MessageManager {
   }
 
   private convertNewChatToRecent(chat: NewChat): RecentMessage {
-    return new RecentMessage({
-      plid: Number(chat.conversation_id),
-      pmid: Number(chat.conversation_id),
-      lastUserId: chat.last_author_id,
-      lastUserName: chat.last_author,
-      lastSummary: chat.last_summary,
-      lastDateline: chat.last_dateline * 1000,
-      toUserId: chat.to_uid,
-      toUserName: chat.to_username,
-      toUserAvatar: `https://bbs.uestc.edu.cn/uc_server/avatar.php?uid=${chat.to_uid}&size=middle`,
-      toUserIsBlack: '0',
-      isNew: chat.unread ? '1' : '0'
-    } as RecentMessageData);
+    const recentMessage = new RecentMessage();
+    recentMessage.plid = Number(chat.conversation_id);
+    recentMessage.pmid = Number(chat.conversation_id);
+    recentMessage.lastUserId = chat.last_author_id;
+    recentMessage.lastUserName = chat.last_author;
+    recentMessage.lastSummary = chat.last_summary;
+    recentMessage.lastDateline = chat.last_dateline * 1000;
+    recentMessage.toUserId = chat.to_uid;
+    recentMessage.toUserName = chat.to_username;
+    recentMessage.toUserAvatar = `https://bbs.uestc.edu.cn/uc_server/avatar.php?uid=${chat.to_uid}&size=middle`;
+    recentMessage.toUserIsBlack = '0';
+    recentMessage.isNew = chat.unread ? '1' : '0';
+    return recentMessage;
   }
 
   public registerListener(listener: (summary: NewMessagesSummary) => void) {

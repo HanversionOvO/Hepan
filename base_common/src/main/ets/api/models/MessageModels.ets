@@ -1,20 +1,5 @@
 import { LegacyResponse } from './ApiModels';
 
-// 1. 新增：定义纯数据接口，用于参数传递和类型检查
-export interface RecentMessageData {
-  plid?: number;
-  pmid?: number;
-  lastUserId?: number;
-  lastUserName?: string;
-  lastSummary?: string;
-  lastDateline?: number;
-  toUserId?: number;
-  toUserAvatar?: string;
-  toUserName?: string;
-  toUserIsBlack?: string;
-  isNew?: string;
-}
-
 // 2. 修改：RecentMessage 类使用该接口
 @ObservedV2
 export class RecentMessage {
@@ -31,7 +16,7 @@ export class RecentMessage {
   @Trace isNew: string = '0';
 
   // 构造函数接收接口类型
-  constructor(data?: RecentMessageData) {
+  constructor(data?: Partial<RecentMessage>) {
     if (data) {
       this.plid = data.plid ?? 0;
       this.pmid = data.pmid ?? 0;
@@ -49,112 +34,123 @@ export class RecentMessage {
 }
 
 // ... 保持其他接口 (NewChat, MessageSummary 等) 不变
-export interface PostSummary {
-  reply: number;
-  comment: number;
-  at: number;
-  rate: number;
-  other: number;
+@ObservedV2
+export class PostSummary {
+  @Trace reply: number = 0;
+  @Trace comment: number = 0;
+  @Trace at: number = 0;
+  @Trace rate: number = 0;
+  @Trace other: number = 0;
 }
 
-export interface SystemSummary {
-  friend: number;
-  space: number;
-  task: number;
-  report: number;
-  system: number;
-  admin: number;
-  app: number;
+@ObservedV2
+export class SystemSummary {
+  @Trace friend: number = 0;
+  @Trace space: number = 0;
+  @Trace task: number = 0;
+  @Trace report: number = 0;
+  @Trace system: number = 0;
+  @Trace admin: number = 0;
+  @Trace app: number = 0;
 }
 
-export interface NewMessagesSummary {
-  chat: number;
-  posts: PostSummary;
-  system: SystemSummary;
+@ObservedV2
+export class NewMessagesSummary {
+  @Trace chat: number = 0;
+  @Trace posts: PostSummary = new PostSummary();
+  @Trace system: SystemSummary = new SystemSummary();
 }
 
-export interface NewChat {
-  last_author_id: number;
-  last_author: string;
-  last_summary: string;
-  to_uid: number;
-  to_username: string;
-  conversation_id: string;
-  unread: boolean;
-  message_count: number;
-  last_update: number;
-  last_dateline: number;
-  author_id: number;
-  type: string;
-  subject: string;
-  member_count: number;
-  create_time: number;
+@ObservedV2
+export class NewChat {
+  @Trace last_author_id: number = 0;
+  @Trace last_author: string = "";
+  @Trace last_summary: string = "";
+  @Trace to_uid: number = 0;
+  @Trace to_username: string = "";
+  @Trace conversation_id: string = "";
+  @Trace unread: boolean = false;
+  @Trace message_count: number = 0;
+  @Trace last_update: number = 0;
+  @Trace last_dateline: number = 0;
+  @Trace author_id: number = 0;
+  @Trace type: string = "";
+  @Trace subject: string = "";
+  @Trace member_count: number = 0;
+  @Trace create_time: number = 0;
 }
 
-export interface MessageSummary {
-  new_messages: NewMessagesSummary;
-  new_chats: NewChat[];
+@ObservedV2
+export class MessageSummary {
+  @Trace new_messages: NewMessagesSummary = new NewMessagesSummary();
+  @Trace new_chats: NewChat[] = [];
 }
 
-export interface AnPNotification {
-  board_name: string;
-  board_id: number;
-  topic_id: number;
-  topic_subject: string;
-  topic_content?: string;
-  topic_url?: string;
-  reply_content: string;
-  reply_url: string;
-  reply_remind_id?: number;
-  reply_nick_name: string;
-  user_id: number;
-  icon: string;
-  is_read: number;
-  replied_date: string;
-  mod?: string;
-  type?: string;
+@ObservedV2
+export class AnPNotification {
+  @Trace board_name: string = "";
+  @Trace board_id: number = 0;
+  @Trace topic_id: number = 0;
+  @Trace topic_subject: string = "";
+  @Trace topic_content?: string;
+  @Trace topic_url?: string;
+  @Trace reply_content: string = "";
+  @Trace reply_url: string = "";
+  @Trace reply_remind_id?: number;
+  @Trace reply_nick_name: string = "";
+  @Trace user_id: number = 0;
+  @Trace icon: string = "";
+  @Trace is_read: number = 0;
+  @Trace replied_date: string = "";
+  @Trace mod?: string;
+  @Trace type?: string;
 }
 
-export interface SystemNotification {
-  replied_date: string;
-  type: string;
-  icon: string;
-  user_name: string;
-  user_id: string;
-  mod: string;
-  note: string;
-  is_read: string;
+@ObservedV2
+export class SystemNotification {
+  @Trace replied_date: string = "";
+  @Trace type: string = "";
+  @Trace icon: string = "";
+  @Trace user_name: string = "";
+  @Trace user_id: string = "";
+  @Trace mod: string = "";
+  @Trace note: string = "";
+  @Trace is_read: string = "";
 }
 
-export interface Chat {
-  sender: number;
-  mid: number;
-  content: string;
-  type: "image" | "text";
-  time: string
+@ObservedV2
+export class Chat {
+  @Trace sender: number = 0;
+  @Trace mid: number = 0;
+  @Trace content: string = "";
+  @Trace type: "image" | "text" = "text";
+  @Trace time: string = ""
 }
 
-export interface ChatSendContent {
-  type: "text" | "image";
-  content: string;
+@ObservedV2
+export class ChatSendContent {
+  @Trace type: "text" | "image" = "text";
+  @Trace content: string = "";
 }
 
-export interface UploadedFile {
-  attachment_id: number;
-  dateline: number;
-  filename: string;
-  size: number;
-  path: string;
-  remote: number;
-  is_image: number;
-  width: number;
-  thumb: boolean;
-  thumbnail_url?: string;
-  raw_url?: string;
+@ObservedV2
+export class UploadedFile {
+  @Trace attachment_id: number = 0;
+  @Trace dateline: number = 0;
+  @Trace filename: string = "";
+  @Trace size: number = 0;
+  @Trace path: string = "";
+  @Trace remote: number = 0;
+  @Trace is_image: number = 0;
+  @Trace width: number = 0;
+  @Trace thumb: boolean = false;
+  @Trace thumbnail_url?: string;
+  @Trace raw_url?: string;
 }
 
-export interface UploadData {
-  uploaded: UploadedFile[];
+@ObservedV2
+export class UploadData {
+  @Trace uploaded: UploadedFile[] = [];
 }
 
 export interface UploadResponse {
