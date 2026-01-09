@@ -12,7 +12,7 @@ export function userMedalSheetBuilder(vm: MinePageVM) {
 @ComponentV2
 struct UserMedalSheet {
   @Param @Require vm: MinePageVM;
-  @Local selectedMedal: Medal | null = null;
+  @Local selectedMedal: Medal = new Medal();
   // 新增：控制预览区是否为紧凑模式
   @Local isCompact: boolean = false;
   // 新增：列表滚动控制器

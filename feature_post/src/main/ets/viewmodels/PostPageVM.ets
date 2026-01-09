@@ -31,7 +31,7 @@ export class PostImageModel {
   @Trace localUri: string = '';
   @Trace remoteUrl: string = '';
   @Trace isLoading: boolean = false;
-  attachment: UploadedFile | null = null;
+  attachment: UploadedFile = new UploadedFile();
 
   constructor(localUri: string) {
     this.localUri = localUri;

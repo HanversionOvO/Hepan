@@ -15,7 +15,7 @@ struct PostDraft {
   @Param @Require pVM: PostPageVM;
   @Local isShowContent: boolean = false;
   @Local isHideSave: boolean = false;
-  @Local selectedDraft: DraftModel | null = null;
+  @Local selectedDraft: DraftModel = new DraftModel("", "");
 
   onBackPress() {
     if (this.isShowContent) {
@@ -23,7 +23,6 @@ struct PostDraft {
         .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring },
           () => {
             this.isShowContent = false;
-            this.selectedDraft = null;
           })
     }
   }
@@ -171,7 +170,6 @@ struct PostDraft {
               },
                 () => {
                   this.isShowContent = false;
-                  this.selectedDraft = null;
                 })
           })
 

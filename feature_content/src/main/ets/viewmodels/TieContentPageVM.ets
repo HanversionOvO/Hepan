@@ -20,9 +20,9 @@ export class CommentDataSource extends BasicDataSource<ForumDetailComment> {
 @ObservedV2
 export class TieContentPageVM extends BaseVM {
   @Trace longTakeSession: LongTakeAnimationProperties = new LongTakeAnimationProperties();
-  @Trace tieSummary: ForumTieSummary | null = null;
-  @Trace tieTopic: ForumDetailTopic | null = null;
-  @Trace tieComments: ForumDetailComment[] | null = null;
+  @Trace tieSummary: ForumTieSummary = new ForumTieSummary();
+  @Trace tieTopic: ForumDetailTopic = new ForumDetailTopic();
+  @Trace tieComments: ForumDetailComment[] = [];
   @Trace forumName: string = '';
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;

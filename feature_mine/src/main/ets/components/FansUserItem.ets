@@ -6,20 +6,21 @@ export enum FansUserItemType {
   LIST
 }
 
-export interface FansUserItems {
-  uid: number;
-  username: string;
-  signature?: ResourceStr;
-  avatar: string;
-  level?: string;
-  date: number;
-  isFriend?: boolean;
+@ObservedV2
+export class FansUserItems {
+  @Trace uid: number = 0;
+  @Trace username: string = "";
+  @Trace signature?: ResourceStr;
+  @Trace avatar: string = "";
+  @Trace level?: string;
+  @Trace date: number = 0;
+  @Trace isFriend?: boolean;
 }
 
 @ComponentV2
 export struct FansUserItem {
-  @Param user: FansUserItems | undefined = undefined;
-  @Param recommendUser: InterestingUser | undefined = undefined;
+  @Param user: FansUserItems = new FansUserItems();
+  @Param recommendUser: InterestingUser = new InterestingUser();
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
   @Param isShowDeleteButton: boolean = false;
   @Param deleteFriends: () => void = () => {

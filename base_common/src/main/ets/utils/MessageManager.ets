@@ -11,7 +11,7 @@ export class MessageManager {
   private timer: number = -1;
   private listeners: ((summary: NewMessagesSummary) => void)[] = [];
   private messageListListeners: ((list: RecentMessage[]) => void)[] = [];
-  private lastSummary: NewMessagesSummary | null = null;
+  private lastSummary: NewMessagesSummary = new NewMessagesSummary();
   private messageList: RecentMessage[] = [];
   private currentPage: number = 1;
 

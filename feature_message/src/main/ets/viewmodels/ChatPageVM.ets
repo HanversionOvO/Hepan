@@ -23,7 +23,7 @@ export class ChatPageVM extends BaseVM {
   @Trace isShowFacePanel: boolean = false;
   @Trace isShowFilePanel: boolean = false;
   @Trace chatScroller: Scroller = new Scroller();
-  @Trace recentMessage: RecentMessage | undefined = undefined;
+  @Trace recentMessage: RecentMessage = new RecentMessage();
   @Trace richEditorController: RichEditorController = new RichEditorController();
   @Trace chats: Chat[] = [];
   @Trace isUserOnline: boolean = false;

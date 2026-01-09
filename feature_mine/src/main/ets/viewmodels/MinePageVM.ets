@@ -42,7 +42,7 @@ export class MineTabVM extends BaseVM {
   private page: number = 1;
   private uid: number | 'me' = 'me';
   private tabType: 'thread' | 'reply' | 'fav';
-  private user: UserProfileData | null = null;
+  private user: UserProfileData = new UserProfileData();
 
   constructor(tabType: 'thread' | 'reply' | 'fav') {
     super();
@@ -53,7 +53,7 @@ export class MineTabVM extends BaseVM {
     this.uid = uid;
   }
 
-  updateUser(user: UserProfileData | null) {
+  updateUser(user: UserProfileData) {
     this.user = user;
   }
 
@@ -184,7 +184,7 @@ export class MinePageVM extends BaseVM {
   @Trace allMedals: Medal[] = [];
   // 全局刷新状态
   @Trace isRefreshing: boolean = false;
-  @Trace user: UserProfileData | null = null;
+  @Trace user: UserProfileData = new UserProfileData();
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
   // === 子 ViewModel ===
