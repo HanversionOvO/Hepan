@@ -222,7 +222,7 @@ export struct TieContentView {
             Stack({ alignContent: Alignment.Bottom }) {
               Scroll(this.vm.detailScroller) {
                 Column() {
-                  if (this.vm.tieSummary?.summary_attachments) {
+                  if (this.vm.tieSummary?.summary_attachments && this.vm.tieSummary.summary_attachments.length > 0) {
                     ImageSwiper({ vm: this.vm, swiperHeight: this.swiperHeight })
                   } else {
                     ImagePlacer({ vm: this.vm, swiperHeight: this.swiperHeight })

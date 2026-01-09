@@ -49,13 +49,13 @@ export class CollectionContentPageVM extends BaseVM {
   private defaultColumnsConfig = new BreakpointType({
     sm: 2,
     md: 2,
-    lg: 2,
+    lg: 3,
     xl: 4
   });
   private minColumnsConfig = new BreakpointType({
     sm: 1,
     md: 1,
-    lg: 3,
+    lg: 2,
     xl: 4
   });
   private maxColumnsConfig = new BreakpointType({
