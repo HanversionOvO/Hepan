@@ -38,7 +38,7 @@ export struct CollectionContentView {
         bottom: CommonConstant.SmallContainerTBPadding
       })
       .fontSize(CommonConstant.TextSizeSmall)
-      .backgroundColor($r('app.color.start_window_background'))
+      .backgroundColor($r('app.color.second_window_background'))
       .borderRadius(CommonConstant.RadiusSmall)
       .fontColor($r('sys.color.font_secondary'))
   }

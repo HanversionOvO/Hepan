@@ -5,26 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
+          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BDD38F2AD14DAE9EFE4FBDA2271694E622A8F05990C931DF0ED63D0EC6867C50826A14F35DF65B5",
-          "profile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
+          "keyPassword": "0000001B0BC678D9B8506161DBB916DAD99DCCAE4C114E6DBC97E0ACB47BDB8A8FB1F92D43CE877041EAF9",
+          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001BFA0D7FC52C46699512D1C0705FE7CAC5158EA7B88756AB6118DB4DA136F73BC1D983D4103E84B4"
-        }
-      },
-      {
-        "name": "release",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer",
-          "keyAlias": "mikannqaq",
-          "keyPassword": "00000018F7860FF601CBD76B315906C7D332230A674EC25DF51F67E2E0AEF9E03C2D30A17F2D3FC4",
-          "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
-          "storePassword": "00000018B446DB1B0A8BFEFB2D1B1A20DF8D75E82C57ED94B6C208406782BB28A0891F1BDA4552E0"
+          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p12",
+          "storePassword": "0000001BEA4A91E62A80BF16962D7FE829CD3E1FB002609C4F6AAC342D6EB10F8A456F5CA39F62469795CC"
         }
       }
     ],
