@@ -29,34 +29,84 @@ export enum CollectionSortOrder {
   FOLLOW_NUM = 'follownum'
 }
 
-export interface CollectionUser {
-  username: string; // 用户昵称
-  uid: number; // 用户uid
-}
-
-export interface Collection {
-  ctid: number; // 专辑ID
-  title: string; // 专辑名
-  collection_nums: number; // 专辑主题数
-  subscribe: number; // 专辑订阅数
-  comment: number; // 专辑留言数
-  creator: CollectionUser; // 专辑创建用户
-  description?: string; // 专辑描述（可能没有）
-  lastUpdate?: string; // 最后更新时间
-  tags?: string[]; // TAG
-}
-
-export interface CollectionDetail {
-  ctid: number; // 专辑ID
-  rate?: number; // 评分（可能没有）
-  isFollow?: boolean; // 是否已订阅 (0:未订阅, 1:已订阅)
-  formhash?: string; // 用于订阅或取消订阅的校验码
-  newSubsUser?: CollectionUser[]; // 最新订阅用户（可能没有）
-  userMoreCollections?: Collection[]; // 用户更多的淘专辑
-  ties?: ForumDetailResponse[]; // 所对应帖子的详情信息
-}
-
 export interface CollectionFollowResult {
   success: boolean;
   message: string;
+}
+
+/**
+ * 用户信息模型
+ */
+@ObservedV2
+export class CollectionUser {
+  @Trace username: string = '';
+  @Trace uid: number = 0;
+
+  constructor(data?: Partial<CollectionUser>) {
+    if (data) {
+      this.username = data.username ?? '';
+      this.uid = data.uid ?? 0;
+    }
+  }
+}
+
+/**
+ * 淘专辑模型
+ */
+@ObservedV2
+export class Collection {
+  @Trace ctid: number = 0;
+  @Trace title: string = '';
+  @Trace collection_nums: number = 0;
+  @Trace subscribe: number = 0;
+  @Trace comment: number = 0;
+  @Trace creator: CollectionUser = new CollectionUser(); // 嵌套对象初始化
+  @Trace description: string = '';
+  @Trace lastUpdate: string = '';
+  @Trace tags: string[] = [];
+
+  constructor(data?: Partial<Collection>) {
+    if (data) {
+      this.ctid = data.ctid ?? 0;
+      this.title = data.title ?? '';
+      this.collection_nums = data.collection_nums ?? 0;
+      this.subscribe = data.subscribe ?? 0;
+      this.comment = data.comment ?? 0;
+      // 关键：嵌套对象必须实例化，否则无法监听内部变化
+      this.creator = data.creator ? new CollectionUser(data.creator) : new CollectionUser();
+      this.description = data.description ?? '';
+      this.lastUpdate = data.lastUpdate ?? '';
+      this.tags = data.tags ?? [];
+    }
+  }
+}
+
+@ObservedV2
+export class CollectionDetail {
+  @Trace ctid: number = 0;
+  @Trace rate: number = 0;
+  @Trace isFollow: boolean = false;
+  @Trace formhash: string = '';
+  @Trace newSubsUser: CollectionUser[] = [];
+  @Trace userMoreCollections: Collection[] = [];
+  @Trace ties: ForumDetailResponse[] = [];
+
+  constructor(data?: Partial<CollectionDetail>) {
+    if (data) {
+      this.ctid = data.ctid ?? 0;
+      this.rate = data.rate ?? 0;
+      this.isFollow = data.isFollow === true;
+      this.formhash = data.formhash ?? '';
+
+      if (data.newSubsUser && Array.isArray(data.newSubsUser)) {
+        this.newSubsUser = data.newSubsUser.map((item: CollectionUser) => new CollectionUser(item));
+      }
+
+      if (data.userMoreCollections && Array.isArray(data.userMoreCollections)) {
+        this.userMoreCollections = data.userMoreCollections.map((item: Collection) => new Collection(item));
+      }
+
+      this.ties = data.ties ?? [];
+    }
+  }
 }

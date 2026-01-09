@@ -63,7 +63,7 @@ export class CollectionApi {
 
       itemDivs.forEach((item) => {
         try {
-          // --- 解析单个专辑 (逻辑保持不变) ---
+          // --- 解析单个专辑 ---
 
           // 1. 获取 Title
           const dt = DomUtils.findOne((e) => e.tagName === 'dt', item.children);
@@ -85,7 +85,7 @@ export class CollectionApi {
           if (dt) {
             const tagSpan = DomUtils.findOne((e) => {
               return !!(e.attribs && e.attribs['class'] && e.attribs['class'].includes('ctag_keyword'));
-            }, dt.children, true); // 递归查找，因为 span 可能在 div 内
+            }, dt.children, true);
 
             if (tagSpan) {
               const tagAs = DomUtils.findAll((e) => e.tagName === 'a', tagSpan.children);
@@ -114,7 +114,8 @@ export class CollectionApi {
           let subscribe = 0;
           let comment = 0;
           let description = '';
-          let creator: CollectionUser = { username: '', uid: 0 };
+          // 变动点：直接实例化 CollectionUser
+          let creator = new CollectionUser();
           let lastUpdate = '';
 
           if (infoDd) {
@@ -153,17 +154,20 @@ export class CollectionApi {
             });
           }
 
-          collections.push({
-            ctid,
-            title,
-            collection_nums,
-            subscribe,
-            comment,
-            creator,
-            description,
-            lastUpdate,
-            tags
-          });
+          // 变动点：使用 new Collection() 并赋值
+          // 如果你的 Collection 构造函数支持传入对象 (constructor(data?: any))，也可以直接 new Collection({...})
+          const collection = new Collection();
+          collection.ctid = ctid;
+          collection.title = title;
+          collection.collection_nums = collection_nums;
+          collection.subscribe = subscribe;
+          collection.comment = comment;
+          collection.creator = creator; // 这里的 creator 已经是类实例
+          collection.description = description;
+          collection.lastUpdate = lastUpdate;
+          collection.tags = tags;
+
+          collections.push(collection);
 
         } catch (e) {
           LogUtil.error(TAG, 'Parse item error', JSON.stringify(e));
@@ -189,12 +193,12 @@ export class CollectionApi {
       };
       const doc: Document = await ApiClient.getInstance().requestHtml('forum.php', params);
 
-      const detail: CollectionDetail = {
-        ctid: ctid,
-        ties: [],
-        isFollow: false,
-        formhash: ''
-      };
+      // 变动点：实例化 CollectionDetail
+      const detail = new CollectionDetail();
+      detail.ctid = ctid;
+      detail.ties = [];
+      detail.isFollow = false;
+      detail.formhash = '';
 
       const scripts = DomUtils.getElementsByTagName('script', doc.children);
       for (const script of scripts) {
@@ -260,7 +264,11 @@ export class CollectionApi {
                 const href = a.attribs['href'] || '';
                 const uidMatch = href.match(/uid=(\d+)/);
                 if (username && uidMatch) {
-                  users.push({ username: username, uid: parseInt(uidMatch[1]) });
+                  // 变动点：实例化 CollectionUser
+                  const u = new CollectionUser();
+                  u.username = username;
+                  u.uid = parseInt(uidMatch[1]);
+                  users.push(u);
                 }
               }
             }
@@ -276,7 +284,7 @@ export class CollectionApi {
       });
 
       // 获取当前专辑的创建者信息
-      let currentCreator: CollectionUser = { username: '', uid: 0 };
+      let currentCreator = new CollectionUser(); // 变动点：实例化
       const pTags = DomUtils.findAll(e => e.tagName === 'p', doc.children);
       const creatorP = pTags.find(p => DomUtils.textContent(p).includes('专辑创建人'));
       if (creatorP) {
@@ -313,14 +321,15 @@ export class CollectionApi {
               const infoMatch = infoText.match(/主题\s*(\d+).*订阅\s*(\d+).*评论\s*(\d+)/);
 
               if (colCtid) {
-                moreCols.push({
-                  ctid: colCtid,
-                  title: colTitle,
-                  collection_nums: infoMatch ? parseInt(infoMatch[1]) : 0,
-                  subscribe: infoMatch ? parseInt(infoMatch[2]) : 0,
-                  comment: infoMatch ? parseInt(infoMatch[3]) : 0,
-                  creator: currentCreator
-                });
+                // 变动点：实例化 Collection
+                const col = new Collection();
+                col.ctid = colCtid;
+                col.title = colTitle;
+                col.collection_nums = infoMatch ? parseInt(infoMatch[1]) : 0;
+                col.subscribe = infoMatch ? parseInt(infoMatch[2]) : 0;
+                col.comment = infoMatch ? parseInt(infoMatch[3]) : 0;
+                col.creator = currentCreator; // 传入类实例
+                moreCols.push(col);
               }
             }
           }
@@ -328,8 +337,7 @@ export class CollectionApi {
         }
       }
 
-      // 5. 解析帖子列表 (ties) 并获取详情
-      // 修复：直接在 .tl.bm 容器中查找所有的 a.xst (帖子链接)，避免因表头表格结构导致找不到帖子
+      // 5. 解析帖子列表 (ties)
       const tlBm = DomUtils.findOne(e => {
         return !!(e.attribs && e.attribs['class'] && e.attribs['class'].includes('tl') &&
         e.attribs['class'].includes('bm'));
@@ -339,7 +347,7 @@ export class CollectionApi {
       if (tlBm) {
         const threadLinks = DomUtils.findAll((e) => {
           return e.tagName === 'a' && !!(e.attribs['class'] && e.attribs['class'].includes('xst'));
-        }, tlBm.children); // 递归查找所有帖子链接
+        }, tlBm.children);
 
         threadLinks.forEach((a) => {
           const href = a.attribs['href'] || '';
@@ -350,7 +358,7 @@ export class CollectionApi {
         });
       }
 
-      // 并发获取所有帖子的详情，pageSize 置 1
+      // 并发获取所有帖子的详情
       if (tids.length > 0) {
         const tiePromises = tids.map(tid => ForumApi.getForumDetailOld(tid, 0, 0, 1, 1));
         const ties = await Promise.all(tiePromises);
@@ -361,17 +369,16 @@ export class CollectionApi {
 
     } catch (error) {
       LogUtil.error(TAG, 'getCollectionDetail failed', JSON.stringify(error));
-      return { ctid: ctid };
+      // 变动点：返回空对象实例
+      const empty = new CollectionDetail();
+      empty.ctid = ctid;
+      return empty;
     }
   }
 
-  /**
-   * 订阅/取消订阅淘专辑
-   * @param ctid 淘专辑ID
-   * @param isFollow 当前是否已订阅 (true: 执行取消订阅, false: 执行订阅)
-   * @param formhash 校验码
-   */
+  // toggleFollow 方法通常只返回操作结果，不涉及 UI 观察，保持原样即可，或者确保返回值类型兼容
   public static async toggleFollow(ctid: number, isFollow: boolean, formhash: string): Promise<CollectionFollowResult> {
+    // ... (代码保持不变，只需确保 CollectionFollowResult 引用正确)
     try {
       const op = isFollow ? 'unfo' : 'follow';
       const params: Record<string, string | number> = {
