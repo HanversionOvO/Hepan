@@ -319,9 +319,6 @@ export class TieVM extends BaseVM {
       const parentFid = this.categoryTabItems[this.currentCategory]?.fid || 0;
       const subFid = this.subCategoryItems[this.currentSubCategory]?.fid || 0;
 
-      // 确定最终使用的 fid
-      // 如果 subFid > 0，说明选中了具体的子版块（因为已经去掉了具体的fid=0的“全部”选项，除非是 fallback）
-      // 如果 subFid == 0，说明是一级“全部”或者无子版块的Fallback“全部”，此时用 parentFid
       const targetFid = (subFid > 0) ? subFid : parentFid;
 
       if (targetFid > 0) {
