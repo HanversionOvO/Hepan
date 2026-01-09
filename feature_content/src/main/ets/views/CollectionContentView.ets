@@ -123,10 +123,12 @@ export struct CollectionContentView {
         ForEach(this.vm.collectionDetail?.userMoreCollections, (collection: Collection) => {
           Column() {
             CollectionCard({ collection: collection })
+              .id(this.vm.collection?.ctid.toString() + "_" + collection.ctid.toString())
           }
           .width(CommonConstant.FullPercent)
           .onClick(() => {
-            this.vm.enterDetailPage(collection.ctid, this.getUIContext(), collection)
+            this.vm.enterDetailPage(this.vm.collection?.ctid.toString() + "_" + collection.ctid.toString(),
+              this.getUIContext(), collection)
           })
         }, (item: Collection) => item.ctid.toString())
       }
@@ -262,8 +264,10 @@ export struct CollectionContentView {
               tie: tie,
               forumName: tie.forum_name
             })
+              .id(this.vm.collection?.ctid.toString() + "_" + tie.thread_id.toString())
               .onClick(() => {
-                this.vm.enterTieDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
+                this.vm.enterTieDetailPage(this.vm.collection?.ctid.toString() + "_" + tie.thread_id.toString(),
+                  this.getUIContext(), tie);
               })
           }
           .width(CommonConstant.FullPercent)

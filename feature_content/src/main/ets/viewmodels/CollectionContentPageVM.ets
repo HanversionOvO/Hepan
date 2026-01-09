@@ -214,7 +214,7 @@ export class CollectionContentPageVM extends BaseVM {
     };
   }
 
-  enterDetailPage(ctid: number, context: UIContext, collection: Collection) {
+  enterDetailPage(componentId: string, context: UIContext, collection: Collection) {
     let options: LongTakeTransitionOptions = {
       onEnterTransitionStart: () => {
         context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
@@ -230,7 +230,7 @@ export class CollectionContentPageVM extends BaseVM {
 
     let longTakeTransitionParam: LongTakeTransitionParam | undefined =
       LoneTakeAnimationsTransition.generateLongTakeParam(context,
-        ctid.toString(), CommonConstant.RadiusLarge, options);
+        componentId, CommonConstant.RadiusLarge, options);
 
     const params: Record<string, Object> = {};
 
@@ -247,7 +247,7 @@ export class CollectionContentPageVM extends BaseVM {
   /**
    * 跳转到帖子详情页
    */
-  enterTieDetailPage(tid: string, context: UIContext, tie: ForumTieSummary) {
+  enterTieDetailPage(componentId: string, context: UIContext, tie: ForumTieSummary) {
     let options: LongTakeTransitionOptions = {
       onEnterTransitionStart: () => {
         context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
@@ -263,7 +263,7 @@ export class CollectionContentPageVM extends BaseVM {
 
     let longTakeTransitionParam: LongTakeTransitionParam | undefined =
       LoneTakeAnimationsTransition.generateLongTakeParam(context,
-        tid, CommonConstant.RadiusLarge, options);
+        componentId, CommonConstant.RadiusLarge, options);
 
     const params: Record<string, Object> = {};
 
