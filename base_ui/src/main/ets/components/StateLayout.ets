@@ -9,6 +9,7 @@ export struct StateLayout {
   @Param onRetry: () => void = () => {
   }; // 点击错误页面的重试回调
   @Param emptyStr: ResourceStr = $r('app.string.StateLayout_empty'); // 可配置的空文案
+  @Local topPadding: number = CommonConstant.TopBarHeight;
 
   build() {
     Stack() {
@@ -25,9 +26,12 @@ export struct StateLayout {
             .fontSize(CommonConstant.TextSizeNormal)
         }
         .width(CommonConstant.FullPercent)
+        .height(this.uiState === UiState.LOADING ? CommonConstant.FullPercent : undefined)
         .layoutWeight(1)
-        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Start)
         .transition(CommonConstant.FADE_TRANSITION)
+        .padding({ top: this.topPadding })
       }
 
       // 2. 错误状态
@@ -48,12 +52,14 @@ export struct StateLayout {
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Start)
+        .padding({ top: this.topPadding })
       }
 
       // 3. 空数据状态
       else if (this.uiState === UiState.EMPTY) {
-        Column({ space: 10 }) {
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
             LottieView({
               lottieId: 'empty',
@@ -67,7 +73,9 @@ export struct StateLayout {
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Start)
+        .padding({ top: this.topPadding })
       }
 
       // 4. 成功状态（显示实际内容）
