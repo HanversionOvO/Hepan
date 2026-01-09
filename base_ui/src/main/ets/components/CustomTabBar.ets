@@ -1,8 +1,9 @@
 import { BaseVM, CommonConstant } from 'base_common';
 
-export interface CustomTabItem {
-  label: ResourceStr;
-  icon: Resource;
+@ObservedV2
+export class CustomTabItem {
+  @Trace label: ResourceStr = "";
+  @Trace icon: Resource = $r('sys.symbol.person');
 }
 
 @ComponentV2

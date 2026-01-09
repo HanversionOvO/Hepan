@@ -18,8 +18,9 @@ import { curves } from '@kit.ArkUI';
 
 const TAG = '[TieVM]: ';
 
-export interface CategoryTabItems extends CustomTabItem {
-  fid: number;
+@ObservedV2
+export class CategoryTabItems extends CustomTabItem {
+  @Trace fid: number = 0;
 }
 
 @ObservedV2

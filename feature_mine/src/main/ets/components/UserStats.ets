@@ -1,8 +1,10 @@
 import { CommonConstant } from 'base_common';
-export interface UserStatsModel {
-  label: ResourceStr,
-  count: number,
-  onClick?: () => void,
+
+@ObservedV2
+export class UserStatsModel {
+  @Trace label: ResourceStr = "";
+  @Trace count: number = 0;
+  @Trace onClick?: () => void;
 }
 
 @ComponentV2

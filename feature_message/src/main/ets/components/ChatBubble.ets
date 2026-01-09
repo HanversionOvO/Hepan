@@ -1,8 +1,9 @@
 import { Chat, CommonConstant, DateUtil, StorageManager, UserAvatarUtil } from 'base_common';
 
-interface ChatSegment {
-  type: 'text' | 'image';
-  content: string;
+@ObservedV2
+class ChatSegment {
+  @Trace type: 'text' | 'image' = "text";
+  @Trace content: string = "";
 }
 
 function parseChatContent(content: string): ChatSegment[] {
