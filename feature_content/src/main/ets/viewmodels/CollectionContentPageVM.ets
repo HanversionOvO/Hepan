@@ -74,12 +74,30 @@ export class CollectionContentPageVM extends BaseVM {
   async loadData() {
     if (this.collection) {
       try {
-        this.collectionDetail = await CollectionApi.getCollectionDetail(this.collection.ctid);
-        await this.loadTies(true);
+        this.tieLoadingState = UiState.LOADING;
 
-        this.updateGridConfig(this.breakPoint.currentBreakPoint)
+        this.collectionDetail = await CollectionApi.getCollectionDetail(this.collection.ctid);
+
+        const detailTies = this.collectionDetail.ties || [];
+        const newTies = detailTies.map(t => this.convertDetailToSummary(t));
+
+        if (newTies.length > 0) {
+          this.ties = newTies;
+          this.page = 2;
+          this.hasMore = true;
+          this.tieLoadingState = UiState.SUCCESS;
+        } else {
+          this.ties = [];
+          this.hasMore = false;
+          this.tieLoadingState = UiState.EMPTY;
+        }
+
+        this.updateGridConfig(this.breakPoint.currentBreakPoint);
       } catch (e) {
         LogUtil.error(TAG, "Load data error", e);
+        this.tieLoadingState = UiState.ERROR;
+      } finally {
+        this.isCollectionRefreshing = false;
       }
     }
   }
