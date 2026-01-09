@@ -244,11 +244,11 @@ export struct CollectionContentView {
 
       this.description()
 
-      if (this.vm.collectionDetail?.newSubsUser) {
+      if (this.vm.collectionDetail.newSubsUser.length > 0) {
         this.userSwiper()
       }
 
-      if (this.vm.collectionDetail?.userMoreCollections) {
+      if (this.vm.collectionDetail.userMoreCollections.length > 0) {
         this.userOtherCollections()
       }
     }

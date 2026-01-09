@@ -31,7 +31,7 @@ struct UserMedalSheet {
 
   @Monitor("vm.allMedals")
   onMedalsChange() {
-    if (this.selectedMedal === null && this.vm.allMedals.length > 0) {
+    if (this.vm.allMedals.length > 0) {
       this.selectedMedal = this.vm.allMedals[0];
     }
   }
