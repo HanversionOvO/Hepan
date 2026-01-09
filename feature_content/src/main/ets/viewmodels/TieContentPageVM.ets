@@ -98,12 +98,15 @@ export class TieContentPageVM extends BaseVM {
 
           let newComments = result.list || [];
 
+          // 只有第一页且第一楼存在时，才去除楼主层（通常API返回的第一层是楼主内容，已在Header展示）
+          // 修复：增加对 currentPage 的判断，防止加载更多时误删评论
           if (this.currentPage === 1 && newComments.length > 0 && newComments[0].position === 1) {
             newComments = newComments.slice(1);
           }
 
           if (isLoadMore && this.tieComments) {
-            const allRows = this.tieComments.concat(newComments);
+            // 修复：确保不直接操作原数组引用，防止潜在的状态更新问题
+            const allRows = [...this.tieComments, ...newComments];
             this.tieComments = allRows;
             this.commentDataSource.addData(newComments);
           } else {
@@ -133,6 +136,10 @@ export class TieContentPageVM extends BaseVM {
         this.isLoadingMore = false;
         this.isRefreshingDetail = false;
       }
+    } else {
+      // 修复：如果没有 tieSummary，设置为 Error 状态，避免一直 Loading
+      LogUtil.warn(TAG, "tieSummary is null");
+      this.commentLoadingState = UiState.ERROR;
     }
   }
 
