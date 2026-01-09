@@ -1,9 +1,17 @@
-import { Collection, CollectionUser, CommonConstant, TransitionMap, UserAvatarUtil } from 'base_common';
-import { CustomFloatNavTitle } from 'base_ui';
+import {
+  Collection,
+  CollectionUser,
+  CommonConstant,
+  ForumTieSummary,
+  TransitionMap,
+  UserAvatarUtil
+} from 'base_common';
+import { CustomFloatNavTitle, StateLayout } from 'base_ui';
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
 import { CollectionCard } from '../components/CollectionCard';
+import { TieCard } from '../components/TieCard';
 
 @ComponentV2
 export struct CollectionContentView {
@@ -38,7 +46,7 @@ export struct CollectionContentView {
         bottom: CommonConstant.SmallContainerTBPadding
       })
       .fontSize(CommonConstant.TextSizeSmall)
-      .backgroundColor($r('app.color.second_window_background'))
+      .backgroundColor($r('app.color.start_window_background'))
       .borderRadius(CommonConstant.RadiusSmall)
       .fontColor($r('sys.color.font_secondary'))
   }
@@ -245,6 +253,43 @@ export struct CollectionContentView {
     .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
   }
 
+  @Builder
+  TieList() {
+    StateLayout({
+      uiState: this.vm.tieLoadingState,
+      onRetry: () => {
+        this.vm.loadTies(true);
+      }
+    }) {
+      WaterFlow() {
+        ForEach(this.vm.ties, (tie: ForumTieSummary) => {
+          FlowItem() {
+            TieCard({
+              tie: tie,
+              forumName: tie.forum_name
+            })
+              .onClick(() => {
+                this.vm.enterTieDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
+              })
+          }
+          .width(CommonConstant.FullPercent) // 修复：添加宽度为100%，让FlowItem填满列宽
+        }, (item: ForumTieSummary) => item.thread_id.toString())
+      }
+      .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .columnsGap(CommonConstant.NormalContainerInnerPadding)
+      .rowsGap(CommonConstant.NormalContainerInnerPadding)
+      .nestedScroll({
+        scrollForward: NestedScrollMode.PARENT_FIRST,
+        scrollBackward: NestedScrollMode.PARENT_FIRST
+      })
+      .onReachEnd(() => {
+        this.vm.loadTies(false);
+      })
+      .width(CommonConstant.FullPercent)
+      .layoutWeight(1)
+    }
+  }
+
   build() {
     Refresh({ refreshing: $$this.vm.isCollectionRefreshing }) {
       Stack({ alignContent: Alignment.Top }) {
@@ -303,10 +348,7 @@ export struct CollectionContentView {
             if (this.vm.isTabletView) {
               Scroll(this.vm.tieScroller) {
                 Column() {
-                  // 占位
-                  Column()
-                    .width(CommonConstant.FullPercent)
-                    .layoutWeight(1)
+                  this.TieList()
                 }
                 .width("auto")
                 .justifyContent(FlexAlign.Start)
@@ -320,14 +362,11 @@ export struct CollectionContentView {
                 scrollBackward: NestedScrollMode.SELF_FIRST,
               })
               .onReachEnd(() => {
-                // this.vm.loadMore();
+                this.vm.loadTies(false);
               })
             } else {
               Column() {
-                // 占位
-                Column()
-                  .width(CommonConstant.FullPercent)
-                  .layoutWeight(1)
+                this.TieList()
               }
               .width(CommonConstant.FullPercent)
             }
@@ -344,7 +383,7 @@ export struct CollectionContentView {
         })
         .onReachEnd(() => {
           if (!this.vm.isTabletView) {
-            // this.vm.loadMore();
+            this.vm.loadTies(false);
           }
         })
       }
@@ -352,5 +391,8 @@ export struct CollectionContentView {
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)
     .backgroundColor($r('app.color.start_window_background'))
+    .onRefreshing(() => {
+      this.vm.loadTies(true);
+    })
   }
 }

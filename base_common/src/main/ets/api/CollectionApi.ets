@@ -172,13 +172,14 @@ export class CollectionApi {
     }
   }
 
-  public static async getCollectionDetail(ctid: number): Promise<CollectionDetail> {
+  public static async getCollectionDetail(ctid: number, page: number = 1): Promise<CollectionDetail> {
     try {
       // 1. 请求页面
       const params: Record<string, string | number> = {
         'mod': 'collection',
         'action': 'view',
-        'ctid': ctid
+        'ctid': ctid,
+        'page': page
       };
       const doc: Document = await ApiClient.getInstance().requestHtml('forum.php', params);
 
