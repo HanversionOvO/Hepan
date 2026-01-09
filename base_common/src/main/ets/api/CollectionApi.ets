@@ -185,8 +185,22 @@ export class CollectionApi {
 
       const detail: CollectionDetail = {
         ctid: ctid,
-        ties: []
+        ties: [],
+        isFollow: false
       };
+
+      const scripts = DomUtils.getElementsByTagName('script', doc.children);
+      for (const script of scripts) {
+        const text = DomUtils.textContent(script);
+        if (text && text.includes('var followstatus')) {
+          const match = text.match(/var\s+followstatus\s*=\s*(\d+);/);
+          if (match) {
+            const status = parseInt(match[1]);
+            detail.isFollow = status === 1;
+          }
+          break;
+        }
+      }
 
       // 2. 解析评分 (rate)
       const rateStarSpan = DomUtils.findOne((elem) => {
