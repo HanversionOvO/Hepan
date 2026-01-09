@@ -5,20 +5,33 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
+          "certpath": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BA0EBAA0845057654D03041FF197405D460A2D91B0E9572273A50CB69A4CC1107EE9CC4E0DE3BA8",
-          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
+          "keyPassword": "0000001B53F94D1ABB4EC3D43CB4CD588BC3E1C539F1D3E0A4DCAE5DA782FE37700304332A9F39052FCA70",
+          "profile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001BB8254F70C40DD6B8A01EEDF418A549506741DC56F982F23185ABB8BBDACDCA4ACC8A1C6029C6B0"
+          "storeFile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
+          "storePassword": "0000001B05C6FBDEB5299956A286B9E523036C93BB711DF3B5B2793696021A378A39E3036675B27C57345D"
+        }
+      },
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
+          "storePassword": "00000018C92E3532644868642B21FD00B6972A1508A6FC6D53BE081CDBFF48684A155088C7F86B77",
+          "keyAlias": "mikannqaq",
+          "keyPassword": "00000018FD6127E66674CEA0672636E52DDB385743D93643486840F1594DF1F326853B17FA1467D1",
+          "signAlg": "SHA256withECDSA",
+          "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
+          "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer"
         }
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "release",
         "buildOption": {
           "strictMode": {
             "noExternalImportByPath": true,
