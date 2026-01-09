@@ -418,7 +418,6 @@ export struct CollectionContentView {
               .width(CommonConstant.FullPercent)
             }
           }
-          .height(this.vm.isTabletView ? CommonConstant.FullPercent : undefined)
         }
         .height(CommonConstant.FullPercent)
         .scrollable(this.vm.isTabletView ? ScrollDirection.None : ScrollDirection.Vertical)
