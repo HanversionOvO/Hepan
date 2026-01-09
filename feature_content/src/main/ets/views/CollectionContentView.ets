@@ -65,7 +65,10 @@ export struct CollectionContentView {
         .width(CommonConstant.FullPercent)
         .textAlign(TextAlign.Start)
 
-      Text(`${ResUtil.getStringSync($r('app.string.CollectionContentPage_last_update'))}: ${this.vm.collection?.lastUpdate ??
+      Text(
+        `${ResUtil.getStringSync(
+          $r('app.string.CollectionContentPage_last_update')
+        )}: ${this.vm.collection?.lastUpdate ??
         '--'}`)
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor($r('sys.color.font_tertiary'))
@@ -119,7 +122,11 @@ export struct CollectionContentView {
   @Builder
   userOtherCollections() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-      Text(`${this.vm.collection?.creator.username} ${ResUtil.getStringSync($r('app.string.CollectionContentPage_more_collections'))}`)
+      Text(
+        `${this.vm.collection?.creator.username} ${ResUtil.getStringSync(
+          $r('app.string.CollectionContentPage_more_collections')
+        )}`
+      )
         .fontSize(CommonConstant.TextSizeNormal)
         .fontWeight(FontWeight.Medium)
         .width(CommonConstant.FullPercent)
@@ -207,7 +214,11 @@ export struct CollectionContentView {
           }
 
           Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-            Text(`${ResUtil.getStringSync($r('app.string.CollectionView_topic'))} ${this.vm.collection?.collection_nums}`)
+            Text(
+              `${ResUtil.getStringSync(
+                $r('app.string.CollectionView_topic')
+              )} ${this.vm.collection?.collection_nums}`
+            )
               .fontSize(CommonConstant.TextSizeTiny)
               .fontColor($r('sys.color.font_tertiary'))
 
@@ -288,7 +299,8 @@ export struct CollectionContentView {
           .width(CommonConstant.FullPercent)
         }, (item: ForumTieSummary) => item.thread_id.toString())
       }
-      .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .columnsTemplate('1fr '.repeat(this.vm.columns)
+        .trim())
       .padding({
         left: CommonConstant.PageLRPadding,
         right: CommonConstant.PageLRPadding
@@ -346,7 +358,11 @@ export struct CollectionContentView {
           .height(CommonConstant.IconSizeNormal)
           .borderRadius(CommonConstant.RadiusRound)
 
-        Text(`${this.vm.collection?.creator.username} ${ResUtil.getStringSync($r('app.string.CollectionContentPage_created'))}`)
+        Text(
+          `${this.vm.collection?.creator.username} ${ResUtil.getStringSync(
+            $r('app.string.CollectionContentPage_created')
+          )}`
+        )
           .fontSize(CommonConstant.TextSizeSmall)
       }
 

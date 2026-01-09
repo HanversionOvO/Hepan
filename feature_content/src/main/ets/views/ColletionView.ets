@@ -1,6 +1,7 @@
 import { Collection, CommonConstant, VMManager } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { CollectionCard } from '../components/CollectionCard';
+import { collectionCreateSheetBuilder } from '../components/CollectionCreateSheet';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 
 const TAG = '[CollectionView]: '
@@ -18,6 +19,46 @@ export struct CollectionView {
   contentBody(onScrollAction: (yOffset: number, scrollState: ScrollState, isAtTop?: boolean) => void) {
     Refresh({ refreshing: $$this.vm.isRefreshing }) {
       WaterFlow() {
+        FlowItem() {
+          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+            SymbolGlyph($r('sys.symbol.plus'))
+              .fontSize(CommonConstant.IconSizeLarge)
+              .fontColor([CommonConstant.ThemeColor])
+              .fontWeight(FontWeight.Bold)
+
+            Text("创建淘专辑")
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontColor(CommonConstant.ThemeColor)
+              .fontWeight(FontWeight.Bold)
+          }
+          .width(CommonConstant.FullPercent)
+          .padding(CommonConstant.NormalContainerInnerPadding)
+          .border(
+            {
+              width: CommonConstant.BorderSizeLarge,
+              color: CommonConstant.ThemeColor,
+              style: BorderStyle.Dashed
+            }
+          )
+          .borderRadius(CommonConstant.RadiusLarge)
+          .backgroundColor($r('app.color.second_window_background'))
+          .onClick(() => {
+            this.vm.isShowCollectionCreateSheet = true;
+          })
+          .bindSheet($$this.vm.isShowCollectionCreateSheet, collectionCreateSheetBuilder(this.vm), {
+            showClose: true,
+            detents: [SheetSize.FIT_CONTENT],
+            enableOutsideInteractive: false,
+            preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+            backgroundColor: $r('app.color.start_window_background'),
+            blurStyle: BlurStyle.BACKGROUND_THICK,
+            title: {
+              title: $r('app.string.CollectionPage_create_collection')
+            }
+          })
+        }
+        .width(CommonConstant.FullPercent)
+
         ForEach(this.vm.collections, (collection: Collection) => {
           FlowItem() {
             CollectionCard({
@@ -33,7 +74,8 @@ export struct CollectionView {
       }
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)
-      .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .columnsTemplate('1fr '.repeat(this.vm.columns)
+        .trim())
       .columnsGap(CommonConstant.NormalContainerInnerPadding)
       .rowsGap(CommonConstant.NormalContainerInnerPadding)
       .scrollBar(BarState.Off)

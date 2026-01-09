@@ -30,6 +30,7 @@ export class CollectionVM extends BaseVM {
   @Trace currentPage: number = 1;
   @Trace isRefreshing: boolean = false;
   @Trace isLoadingMore: boolean = false;
+  @Trace isShowCollectionCreateSheet: boolean = false;
   @Trace columns: number = 2;
   @Trace minColumns: number = 1;
   @Trace maxColumns: number = 3;
@@ -156,5 +157,9 @@ export class CollectionVM extends BaseVM {
     params["collection"] = collection;
 
     RouterUtil.pushPathByName(RouterMap.COLLECTION_CONTENT_PAGE, params);
+  }
+
+  async getCreateHash(): Promise<string> {
+    return await CollectionApi.getCollectionCreateFormHash();
   }
 }

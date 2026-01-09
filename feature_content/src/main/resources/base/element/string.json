@@ -207,6 +207,22 @@
     {
       "name": "CollectionContentPage_has_collect",
       "value": "已收藏"
+    },
+    {
+      "name": "CollectionPage_create_collection",
+      "value": "创建淘专辑"
+    },
+    {
+      "name": "CollectionPage_collection_title",
+      "value": "淘专辑名称"
+    },
+    {
+      "name": "CollectionPage_collection_desc",
+      "value": "淘专辑简介"
+    },
+    {
+      "name": "CollectionPage_collection_tags",
+      "value": "添加标签"
     }
   ]
 }

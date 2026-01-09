@@ -340,7 +340,7 @@ export class CollectionApi {
       // 5. 解析帖子列表 (ties)
       const tlBm = DomUtils.findOne(e => {
         return !!(e.attribs && e.attribs['class'] && e.attribs['class'].includes('tl') &&
-        e.attribs['class'].includes('bm'));
+          e.attribs['class'].includes('bm'));
       }, doc.children, true);
 
       const tids: number[] = [];
@@ -409,6 +409,36 @@ export class CollectionApi {
     } catch (e) {
       LogUtil.error(TAG, 'toggleFollow failed', JSON.stringify(e));
       return { success: false, message: '网络错误' };
+    }
+  }
+
+  /**
+     * 获取创建淘专辑所需的 formhash
+     * 请求地址: forum.php?mod=collection&action=edit
+     */
+  public static async getCollectionCreateFormHash(): Promise<string> {
+    try {
+      const params: Record<string, string | number> = {
+        'mod': 'collection',
+        'action': 'edit'
+      };
+
+      // 1. 请求页面
+      const doc: Document = await ApiClient.getInstance().requestHtml('forum.php', params);
+
+
+      const input = DomUtils.getElementById('formhash', doc);
+
+      if (input && input.attribs && input.attribs['value']) {
+        return input.attribs['value'];
+      }
+
+      LogUtil.warn(TAG, 'getCollectionCreateFormHash: formhash input not found');
+      return '';
+
+    } catch (e) {
+      LogUtil.error(TAG, 'getCollectionCreateFormHash failed', JSON.stringify(e));
+      return '';
     }
   }
 }

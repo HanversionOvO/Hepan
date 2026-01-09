@@ -3,35 +3,22 @@
     "signingConfigs": [
       {
         "name": "default",
-        "type": "HarmonyOS",
         "material": {
-          "certpath": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
+          "storePassword": "0000002001C1D387749C05F9436FE91489D3203FE5AEDD9535ABE87FAE1024BD9D4CE2C0C43D299DCED5C40A6D26AD68",
+          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B53F94D1ABB4EC3D43CB4CD588BC3E1C539F1D3E0A4DCAE5DA782FE37700304332A9F39052FCA70",
-          "profile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
+          "keyPassword": "0000002001C1D387749C05F9436FE91489D3203FE5AEDD9535ABE87FAE1024BD9D4CE2C0C43D299DCED5C40A6D26AD68",
+          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:/Users/hanve/.ohos/config/default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001B05C6FBDEB5299956A286B9E523036C93BB711DF3B5B2793696021A378A39E3036675B27C57345D"
-        }
-      },
-      {
-        "name": "release",
-        "type": "HarmonyOS",
-        "material": {
-          "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
-          "storePassword": "00000018C92E3532644868642B21FD00B6972A1508A6FC6D53BE081CDBFF48684A155088C7F86B77",
-          "keyAlias": "mikannqaq",
-          "keyPassword": "00000018FD6127E66674CEA0672636E52DDB385743D93643486840F1594DF1F326853B17FA1467D1",
-          "signAlg": "SHA256withECDSA",
-          "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
-          "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer"
-        }
+          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p12"
+        },
+        "type": "HarmonyOS"
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "release",
+        "signingConfig": "default",
         "buildOption": {
           "strictMode": {
             "noExternalImportByPath": true,
@@ -50,21 +37,6 @@
       },
       {
         "name": "release"
-      }
-    ],
-    "capabilities": [
-      {
-        "bundleName": "com.mikannqaq.uestc.river",
-        "config": [
-          {
-            "name": "Push Kit",
-            "capability": "com.huawei.service.push.base_service"
-          },
-          {
-            "name": "Safety Detect",
-            "capability": "com.huawei.service.device_security.safety_detect"
-          }
-        ]
       }
     ]
   },
