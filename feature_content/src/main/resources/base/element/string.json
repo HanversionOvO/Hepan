@@ -195,6 +195,18 @@
     {
       "name": "CollectionContentPage_more_collections",
       "value": "还有这些淘专辑"
+    },
+    {
+      "name": "CollectionContentPage_created",
+      "value": "创建"
+    },
+    {
+      "name": "CollectionContentPage_collect",
+      "value": "收藏"
+    },
+    {
+      "name": "CollectionContentPage_has_collect",
+      "value": "已收藏"
     }
   ]
 }

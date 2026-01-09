@@ -297,7 +297,7 @@ export struct CollectionContentView {
       .rowsGap(CommonConstant.NormalContainerInnerPadding)
       .nestedScroll({
         scrollForward: NestedScrollMode.PARENT_FIRST,
-        scrollBackward: NestedScrollMode.PARENT_FIRST
+        scrollBackward: NestedScrollMode.SELF_FIRST
       })
       .onReachEnd(() => {
         this.vm.loadTies(false);
@@ -335,6 +335,61 @@ export struct CollectionContentView {
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)
     }
+  }
+
+  @Builder
+  followCard() {
+    Row() {
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Image(UserAvatarUtil.getAvatarUrl(this.vm.collection?.creator.uid || 0))
+          .width(CommonConstant.IconSizeNormal)
+          .height(CommonConstant.IconSizeNormal)
+          .borderRadius(CommonConstant.RadiusRound)
+
+        Text(`${this.vm.collection?.creator.username} ${ResUtil.getStringSync($r('app.string.CollectionContentPage_created'))}`)
+          .fontSize(CommonConstant.TextSizeSmall)
+      }
+
+      Button() {
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          SymbolGlyph(this.vm.collectionDetail?.isFollow ? $r('sys.symbol.star_fill') : $r('sys.symbol.star'))
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor(this.vm.collectionDetail?.isFollow ? [$r('sys.color.font_secondary')] :
+              [$r('sys.color.font_on_primary')])
+
+          Text(this.vm.collectionDetail?.isFollow ? $r('app.string.CollectionContentPage_has_collect') :
+            $r('app.string.CollectionContentPage_collect'))
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor(this.vm.collectionDetail?.isFollow ? $r('sys.color.font_secondary') :
+              $r('sys.color.font_on_primary'))
+        }
+      }
+      .height(CommonConstant.IconSizeNormal)
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding,
+        right: CommonConstant.SmallContainerLRPadding
+      })
+      .backgroundColor(this.vm.collectionDetail?.isFollow ? $r('sys.color.font_tertiary') : CommonConstant.ThemeColor)
+      .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width(this.vm.isTabletView ? this.sideNavWidth - CommonConstant.PageLRPadding * 2 : "92%")
+    .borderRadius(CommonConstant.RadiusRound)
+    .backgroundColor($r('app.color.glass_background'))
+    .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
+    .padding({
+      top: CommonConstant.NormalContainerTBPadding,
+      bottom: CommonConstant.NormalContainerTBPadding,
+      left: CommonConstant.NormalContainerLRPadding,
+      right: CommonConstant.NormalContainerLRPadding,
+    })
+    .position({
+      left: this.vm.isTabletView ? CommonConstant.PageLRPadding : "4%",
+      bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerInnerPadding
+    })
+    .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
+      .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring }))
   }
 
   build() {
@@ -432,6 +487,10 @@ export struct CollectionContentView {
             this.vm.loadTies(false);
           }
         })
+
+        if (this.vm.collectionDetail) {
+          this.followCard()
+        }
       }
     }
     .width(CommonConstant.FullPercent)
