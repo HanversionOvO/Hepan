@@ -50,6 +50,7 @@ export interface CollectionDetail {
   ctid: number; // 专辑ID
   rate?: number; // 评分（可能没有）
   isFollow?: boolean; // 是否已订阅 (0:未订阅, 1:已订阅)
+  formhash?: string; // 用于订阅或取消订阅的校验码
   newSubsUser?: CollectionUser[]; // 最新订阅用户（可能没有）
   userMoreCollections?: Collection[]; // 用户更多的淘专辑
   ties?: ForumDetailResponse[]; // 所对应帖子的详情信息

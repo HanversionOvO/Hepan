@@ -186,14 +186,30 @@ export class CollectionApi {
       const detail: CollectionDetail = {
         ctid: ctid,
         ties: [],
-        isFollow: false
+        isFollow: false,
+        formhash: ''
       };
 
-      const followLink = DomUtils.getElementById('followlink', doc);
-      if (followLink) {
-        const text = DomUtils.textContent(followLink).trim();
-        if (text.includes('取消')) {
-          detail.isFollow = true;
+      const scripts = DomUtils.getElementsByTagName('script', doc.children);
+      for (const script of scripts) {
+        const text = DomUtils.textContent(script);
+        if (!text) {
+          continue;
+        }
+
+        if (text.includes('var followstatus')) {
+          const match = text.match(/var\s+followstatus\s*=\s*(\d+);/);
+          if (match) {
+            const status = parseInt(match[1]);
+            detail.isFollow = status === 1;
+          }
+        }
+
+        if (text.includes('function followcollectionurl()')) {
+          const hashMatch = text.match(/formhash=([a-zA-Z0-9]+)/);
+          if (hashMatch) {
+            detail.formhash = hashMatch[1];
+          }
         }
       }
 
