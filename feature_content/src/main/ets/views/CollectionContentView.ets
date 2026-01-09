@@ -54,7 +54,8 @@ export struct CollectionContentView {
   @Builder
   description() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-      Text(this.vm.collection?.description ?? $r('app.string.CollectionContentPage_no_desc'))
+      Text(this.vm.collection?.description && this.vm.collection.description !== "" ? this.vm.collection.description :
+        $r('app.string.CollectionContentPage_no_desc'))
         .fontSize(CommonConstant.TextSizeNormal)
         .width(CommonConstant.FullPercent)
         .textAlign(TextAlign.Start)
