@@ -1,5 +1,7 @@
 import {
   BaseVM,
+  BreakpointNameEnum,
+  BreakpointType,
   Collection,
   CollectionApi,
   CollectionDetail,
@@ -30,26 +32,52 @@ export class CollectionContentPageVM extends BaseVM {
   @Trace collection: Collection | null = null;
   @Trace collectionDetail: CollectionDetail | null = null;
   @Trace isSticky: boolean = false;
+  @Trace isScaling: boolean = false;
   @Trace titleButtons: NavTitleButtonModel[] = [];
   @Trace outerPageScroller: Scroller = new Scroller();
   @Trace detailScroller: Scroller = new Scroller();
   @Trace tieScroller: Scroller = new Scroller();
   @Trace isReachEnd: boolean = false;
   @Trace pageScale: number = 1.0;
-  // 帖子列表相关状态
   @Trace ties: ForumTieSummary[] = [];
   @Trace tieLoadingState: UiState = UiState.LOADING;
   @Trace page: number = 1;
   @Trace hasMore: boolean = true;
-  @Trace columns: number = 2; // 瀑布流列数
+  @Trace columns: number = 2;
+  @Trace minColumns: number = 1;
+  @Trace maxColumns: number = 3;
+  private defaultColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 2,
+    lg: 2,
+    xl: 4
+  });
+  private minColumnsConfig = new BreakpointType({
+    sm: 1,
+    md: 1,
+    lg: 3,
+    xl: 4
+  });
+  private maxColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 2,
+    lg: 3,
+    xl: 5
+  });
+
+  updateGridConfig(bp: BreakpointNameEnum) {
+    this.columns = this.defaultColumnsConfig.getValue(bp);
+    this.minColumns = this.minColumnsConfig.getValue(bp);
+    this.maxColumns = this.maxColumnsConfig.getValue(bp);
+  }
 
   async loadData() {
     if (this.collection) {
       try {
-        // 加载专辑详情
         this.collectionDetail = await CollectionApi.getCollectionDetail(this.collection.ctid);
-        // 初始化加载帖子
         await this.loadTies(true);
+
+        this.updateGridConfig(this.breakPoint.currentBreakPoint)
       } catch (e) {
         LogUtil.error(TAG, "Load data error", e);
       }

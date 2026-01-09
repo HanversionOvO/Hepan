@@ -59,18 +59,12 @@ export struct CollectionContentView {
         .width(CommonConstant.FullPercent)
         .textAlign(TextAlign.Start)
 
-      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Text(`${ResUtil.getStringSync($r('app.string.CollectionContentPage_last_update'))}: ${this.vm.collection?.lastUpdate ??
-          '--'}`)
-          .fontSize(CommonConstant.TextSizeTiny)
-          .fontColor($r('sys.color.font_tertiary'))
-
-        Text("展开")
-          .fontSize(CommonConstant.TextSizeTiny)
-          .fontColor(CommonConstant.ThemeColor)
-      }
-      .width(CommonConstant.FullPercent)
-      .justifyContent(FlexAlign.End)
+      Text(`${ResUtil.getStringSync($r('app.string.CollectionContentPage_last_update'))}: ${this.vm.collection?.lastUpdate ??
+        '--'}`)
+        .fontSize(CommonConstant.TextSizeTiny)
+        .fontColor($r('sys.color.font_tertiary'))
+        .width(CommonConstant.FullPercent)
+        .textAlign(TextAlign.End)
     }
     .width(CommonConstant.FullPercent)
     .padding(CommonConstant.NormalContainerInnerPadding)
@@ -276,6 +270,10 @@ export struct CollectionContentView {
         }, (item: ForumTieSummary) => item.thread_id.toString())
       }
       .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+      .padding({
+        left: CommonConstant.PageLRPadding,
+        right: CommonConstant.PageLRPadding
+      })
       .columnsGap(CommonConstant.NormalContainerInnerPadding)
       .rowsGap(CommonConstant.NormalContainerInnerPadding)
       .nestedScroll({
@@ -285,6 +283,36 @@ export struct CollectionContentView {
       .onReachEnd(() => {
         this.vm.loadTies(false);
       })
+      .priorityGesture(
+        PinchGesture()
+          .onActionUpdate((event: GestureEvent) => {
+            if (this.vm.isScaling) {
+              return;
+            }
+            if (event.scale < 0.75 && this.vm.columns < this.vm.maxColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns += 1;
+              });
+              this.vm.isScaling = true;
+            }
+
+            if (event.scale > 1.25 && this.vm.columns > this.vm.minColumns) {
+              animateTo({
+                duration: CommonConstant.AnimationDurationNormal,
+                curve: CommonConstant.AnimationCurveSpring
+              }, () => {
+                this.vm.columns -= 1;
+              });
+              this.vm.isScaling = true;
+            }
+          })
+          .onActionEnd(() => {
+            this.vm.isScaling = false;
+          })
+      )
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)
     }
