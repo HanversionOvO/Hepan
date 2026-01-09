@@ -371,6 +371,9 @@ export struct CollectionContentView {
       })
       .backgroundColor(this.vm.collectionDetail?.isFollow ? $r('sys.color.font_tertiary') : CommonConstant.ThemeColor)
       .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+      .onClick(async () => {
+        await this.vm.toggleSubs()
+      })
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width(this.vm.isTabletView ? this.sideNavWidth - CommonConstant.PageLRPadding * 2 : "92%")

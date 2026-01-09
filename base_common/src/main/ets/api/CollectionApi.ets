@@ -3,7 +3,13 @@ import { LogUtil } from '@pura/harmony-utils';
 import { Element } from 'domhandler';
 import { ApiClient } from './ApiClient';
 import { ForumApi } from './ForumApi';
-import { Collection, CollectionDetail, CollectionSortOrder, CollectionUser } from './models/CollectionModels';
+import {
+  Collection,
+  CollectionDetail,
+  CollectionFollowResult,
+  CollectionSortOrder,
+  CollectionUser
+} from './models/CollectionModels';
 
 const TAG = '[CollectionApi]: ';
 
@@ -356,6 +362,46 @@ export class CollectionApi {
     } catch (error) {
       LogUtil.error(TAG, 'getCollectionDetail failed', JSON.stringify(error));
       return { ctid: ctid };
+    }
+  }
+
+  /**
+   * 订阅/取消订阅淘专辑
+   * @param ctid 淘专辑ID
+   * @param isFollow 当前是否已订阅 (true: 执行取消订阅, false: 执行订阅)
+   * @param formhash 校验码
+   */
+  public static async toggleFollow(ctid: number, isFollow: boolean, formhash: string): Promise<CollectionFollowResult> {
+    try {
+      const op = isFollow ? 'unfo' : 'follow';
+      const params: Record<string, string | number> = {
+        'mod': 'collection',
+        'action': 'follow',
+        'op': op,
+        'ctid': ctid,
+        'formhash': formhash,
+        'inajax': '1'
+      };
+
+      const doc = await ApiClient.getInstance().requestHtml('forum.php', params);
+
+      const xml = DomUtils.getOuterHTML(doc);
+
+      if (xml.includes('alert_info')) {
+        const match = xml.match(/class="alert_info">(.+?)<script/);
+        const msg = match ? match[1].trim() : '操作成功';
+        return { success: true, message: msg };
+      } else if (xml.includes('alert_error')) {
+        const match = xml.match(/class="alert_error">(.+?)<script/);
+        const msg = match ? match[1].trim() : '操作失败';
+        return { success: false, message: msg };
+      }
+
+      return { success: false, message: '请求异常' };
+
+    } catch (e) {
+      LogUtil.error(TAG, 'toggleFollow failed', JSON.stringify(e));
+      return { success: false, message: '网络错误' };
     }
   }
 }

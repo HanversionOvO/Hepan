@@ -5,6 +5,7 @@ import {
   Collection,
   CollectionApi,
   CollectionDetail,
+  CollectionFollowResult,
   CommonConstant,
   ForumDetailResponse,
   ForumTieSummary,
@@ -308,6 +309,19 @@ export class CollectionContentPageVM extends BaseVM {
       animateTo({ duration: CommonConstant.AnimationDurationNormal }, () => {
         this.isSticky = shouldBeSticky;
       })
+    }
+  }
+
+  async toggleSubs() {
+    if (this.collection && this.collectionDetail && (this.collectionDetail.isFollow !== undefined) &&
+    this.collectionDetail.formhash) {
+      const result: CollectionFollowResult =
+        await CollectionApi.toggleFollow(this.collection.ctid, this.collectionDetail.isFollow,
+          this.collectionDetail.formhash)
+
+      if (result.success) {
+        this.collectionDetail.isFollow = !this.collectionDetail.isFollow
+      }
     }
   }
 }

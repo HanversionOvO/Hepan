@@ -55,3 +55,8 @@ export interface CollectionDetail {
   userMoreCollections?: Collection[]; // 用户更多的淘专辑
   ties?: ForumDetailResponse[]; // 所对应帖子的详情信息
 }
+
+export interface CollectionFollowResult {
+  success: boolean;
+  message: string;
+}
