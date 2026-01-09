@@ -30,8 +30,8 @@ const TAG = '[CollectionContentPageVM]: ';
 export class CollectionContentPageVM extends BaseVM {
   @Trace isCollectionRefreshing: boolean = false;
   @Trace longTakeSession: LongTakeAnimationProperties = new LongTakeAnimationProperties();
-  @Trace collection: Collection | null = null;
-  @Trace collectionDetail: CollectionDetail | null = null;
+  @Trace collection: Collection = new Collection();
+  @Trace collectionDetail: CollectionDetail = new CollectionDetail();
   @Trace isSticky: boolean = false;
   @Trace isScaling: boolean = false;
   @Trace titleButtons: NavTitleButtonModel[] = [];
