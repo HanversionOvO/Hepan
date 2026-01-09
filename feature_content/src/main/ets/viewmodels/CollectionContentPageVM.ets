@@ -144,8 +144,18 @@ export class CollectionContentPageVM extends BaseVM {
     // 解析时间
     let dateline = 0;
     try {
-      dateline = new Date(topic.create_date).getTime() / 1000;
+      // 修复：增强时间解析的兼容性
+      let dateStr = topic.create_date;
+      if (dateStr) {
+        // 将 - 替换为 /，解决部分环境 new Date 解析失败问题
+        dateStr = dateStr.replace(/-/g, '/');
+        const ts = new Date(dateStr).getTime();
+        if (!isNaN(ts)) {
+          dateline = ts / 1000;
+        }
+      }
     } catch (e) {
+      LogUtil.error(TAG, 'Parse time error', e);
     }
 
     // 提取文本摘要
@@ -234,7 +244,6 @@ export class CollectionContentPageVM extends BaseVM {
       params["transition"] = transitionParam;
     }
 
-    // 修复：同时传入 tid 和 thread_id，防止VM参数获取失败
     const idNum = parseInt(tid);
     params["tid"] = idNum;
     params["thread_id"] = idNum;
