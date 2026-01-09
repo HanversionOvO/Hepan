@@ -272,7 +272,7 @@ export struct CollectionContentView {
                 this.vm.enterTieDetailPage(tie.thread_id.toString(), this.getUIContext(), tie);
               })
           }
-          .width(CommonConstant.FullPercent) // 修复：添加宽度为100%，让FlowItem填满列宽
+          .width(CommonConstant.FullPercent)
         }, (item: ForumTieSummary) => item.thread_id.toString())
       }
       .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
@@ -334,7 +334,7 @@ export struct CollectionContentView {
               })
               .onDidScroll(() => {
                 if (this.vm.isTabletView) {
-                  // this.vm.handleScroll(this.swiperHeight);
+                  this.vm.handleScroll();
                 }
               })
               .onScroll(() => {
@@ -378,7 +378,7 @@ export struct CollectionContentView {
         .scrollBar(BarState.Off)
         .onDidScroll(() => {
           if (!this.vm.isTabletView) {
-            // this.vm.handleScroll(this.swiperHeight);
+            this.vm.handleScroll();
           }
         })
         .onReachEnd(() => {

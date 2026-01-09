@@ -248,4 +248,20 @@ export class CollectionContentPageVM extends BaseVM {
 
     RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
+
+  handleScroll() {
+    const yOffset = this.isTabletView
+      ? this.detailScroller.currentOffset().yOffset
+      : this.outerPageScroller.currentOffset().yOffset;
+
+    const threshold = this.window.windowTopPadding + CommonConstant.TopBarHeight;
+
+    const shouldBeSticky = yOffset > threshold;
+
+    if (this.isSticky !== shouldBeSticky) {
+      animateTo({ duration: CommonConstant.AnimationDurationNormal }, () => {
+        this.isSticky = shouldBeSticky;
+      })
+    }
+  }
 }
