@@ -1,4 +1,4 @@
-import { BaseVM, CommonConstant, ColorUtil } from "base_common"
+import { BaseVM, CommonConstant, ColorUtil, ToastUtil } from "base_common"
 import { LengthMetrics } from "@kit.ArkUI";
 import { CollectionVM } from "../viewmodels/CollectionVM";
 
@@ -13,6 +13,8 @@ struct CollectionCreateSheet {
   @Local tags: string[] = [];
   @Local formHash: string = "";
   @Local tagInput: string = "";
+  @Local title: string = "";
+  @Local desc: string = "";
 
   async aboutToAppear() {
     this.formHash = await this.vm.getCreateHash();
@@ -53,6 +55,9 @@ struct CollectionCreateSheet {
         .borderRadius(CommonConstant.RadiusSmall)
         .backgroundColor($r('app.color.second_window_background'))
         .caretColor(CommonConstant.ThemeColor)
+        .onChange((value: string) => {
+          this.title = value;
+        })
 
 
      TextArea({ placeholder: $r('app.string.CollectionPage_collection_desc') })
@@ -60,8 +65,9 @@ struct CollectionCreateSheet {
         .height(CommonConstant.TextInputSizeNormal)
         .backgroundColor($r('app.color.second_window_background'))
         .caretColor(CommonConstant.ThemeColor)
-
-
+        .onChange((value: string) => {
+          this.desc = value;
+        })
 
         Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center, space: {
           cross: LengthMetrics.vp(CommonConstant.SmallContainerTBPadding)
@@ -98,6 +104,14 @@ struct CollectionCreateSheet {
       .borderRadius(CommonConstant.RadiusSmall)
       .fontColor($r('sys.color.font_on_primary'))
       .backgroundColor(CommonConstant.ThemeColor)
+      .onClick(async () => {
+        if (this.title === "") {
+          ToastUtil.showWarn($r('app.string.CollectionPage_collection_input_title'))
+          return;
+        }
+
+        await this.vm.createCollection(this.title, this.formHash, this.desc, this.tags);
+      })
     }
     .width(CommonConstant.FullPercent)
     .padding({

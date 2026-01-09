@@ -217,12 +217,20 @@
       "value": "淘专辑名称"
     },
     {
+      "name": "CollectionPage_collection_input_title",
+      "value": "请先输入淘专辑名称"
+    },
+    {
       "name": "CollectionPage_collection_desc",
       "value": "淘专辑简介"
     },
     {
       "name": "CollectionPage_collection_tags",
       "value": "添加标签"
+    },
+    {
+      "name": "CollectionPage_collection_create_success",
+      "value": "创建淘专辑成功"
     }
   ]
 }

@@ -406,10 +406,12 @@ export class ApiClient {
 
   public async requestHtml(
     phpFile: string,
-    params: Record<string, string | number | boolean> = {}
+    params: Record<string, string | number | boolean> = {},
+    method: http.RequestMethod = http.RequestMethod.GET // [新增参数]
   ): Promise<Document> {
     const apphash = await LegacyUtil.getAppHashValue();
 
+    // 1. 准备所有参数（公共参数 + 业务参数）
     let finalParams: Record<string, string | number | boolean> = {
       'apphash': apphash,
       'platType': '1',
@@ -423,27 +425,10 @@ export class ApiClient {
       finalParams[key] = params[key];
     }
 
-    // 3. 构造 URL Query String
-    let queryParts: string[] = [];
-    const finalKeys = Object.keys(finalParams);
-    for (let i = 0; i < finalKeys.length; i++) {
-      let key = finalKeys[i];
-      let val = finalParams[key];
-      queryParts.push(`${key}=${encodeURIComponent(String(val))}`);
-    }
-    const queryString = queryParts.join('&');
-
-    // 构造完整 URL，如果是 forum.php 这种根目录下的文件
-    let requestUrl = `${this.baseUrl}/${phpFile}`;
-    // 如果有参数则拼接
-    if (queryString) {
-      requestUrl = `${requestUrl}?${queryString}`;
-    }
-
     const httpRequest = http.createHttp();
 
     try {
-      // 4. 构造 Header，主要是 Cookie
+      // 2. 构造 Header
       const headers = {
         'Cookie': this.getCookieHeader(),
         'User-Agent': this.USER_AGENT,
@@ -451,12 +436,44 @@ export class ApiClient {
         'Host': 'bbs.uestc.edu.cn'
       } as Record<string, Object>;
 
+      let requestUrl = `${this.baseUrl}/${phpFile}`;
+      let extraData: string | undefined = undefined;
+
+      // 3. 根据 Method 处理参数位置
+      if (method === http.RequestMethod.POST) {
+        // POST: 参数放入 Body (x-www-form-urlencoded)
+        let bodyParts: string[] = [];
+        const finalKeys = Object.keys(finalParams);
+        for (let i = 0; i < finalKeys.length; i++) {
+          let key = finalKeys[i];
+          let val = finalParams[key];
+          bodyParts.push(`${key}=${encodeURIComponent(String(val))}`);
+        }
+        extraData = bodyParts.join('&');
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      } else {
+        // GET: 参数拼接到 URL Query
+        let queryParts: string[] = [];
+        const finalKeys = Object.keys(finalParams);
+        for (let i = 0; i < finalKeys.length; i++) {
+          let key = finalKeys[i];
+          let val = finalParams[key];
+          queryParts.push(`${key}=${encodeURIComponent(String(val))}`);
+        }
+        const queryString = queryParts.join('&');
+        if (queryString) {
+          requestUrl = `${requestUrl}?${queryString}`;
+        }
+      }
+
+      // 4. 发起请求
       const response = await httpRequest.request(requestUrl, {
-        method: http.RequestMethod.GET,
-        header: headers
+        method: method,
+        header: headers,
+        extraData: extraData
       });
 
-      // 处理 Cookie 更新
+      // 5. 处理 Cookie 和 返回结果
       const setCookies = this.extractSetCookies(response);
       if (setCookies.length > 0) {
         this.mergeCookies(setCookies);
@@ -473,7 +490,7 @@ export class ApiClient {
       }
 
     } catch (error) {
-      LogUtil.error(TAG, `RequestHtml failed: ${requestUrl}`, JSON.stringify(error));
+      LogUtil.error(TAG, `RequestHtml failed: ${phpFile}`, JSON.stringify(error));
       throw new Error(String(error));
     } finally {
       httpRequest.destroy();

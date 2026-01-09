@@ -10,6 +10,7 @@ import {
   CollectionSortOrder,
   CollectionUser
 } from './models/CollectionModels';
+import { http } from '@kit.NetworkKit';
 
 const TAG = '[CollectionApi]: ';
 
@@ -439,6 +440,85 @@ export class CollectionApi {
     } catch (e) {
       LogUtil.error(TAG, 'getCollectionCreateFormHash failed', JSON.stringify(e));
       return '';
+    }
+  }
+
+  public static async createCollection(
+    title: string,
+    formhash: string,
+    desc?: string,
+    tags?: string[],
+  ): Promise<boolean> {
+    try {
+      // 1. 构造参数
+      const params: Record<string, string | number | boolean> = {
+        'mod': 'collection',
+        'action': 'edit',
+        'title': title,
+        'desc': desc || '', // 确保不传 undefined
+        'keyword': (tags && tags.length > 0) ? tags.join(' ') : '', // 标签空格分隔，处理空数组或 undefined
+        'submitcollection': '1',
+        'op': '',
+        'ctid': '0', // 0 代表新建
+        'formhash': formhash,
+        'collectionsubmit': 'submit'
+      };
+
+      // 2. 调用 requestHtml 发送 POST 请求
+      const doc: Document = await ApiClient.getInstance().requestHtml(
+        'forum.php',
+        params,
+        http.RequestMethod.POST
+      );
+
+      // 3. 解析结果 - 检查成功提示
+      // 成功示例: <div id="messagetext" class="alert_info">...<a href="...ctid=1158">...</div>
+      const alertInfo = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_info'));
+      }, doc.children, true);
+
+      if (alertInfo) {
+        let ctid = 0;
+        // 尝试从跳转链接中提取 ctid
+        const link = DomUtils.findOne((elem) => {
+          return elem.tagName ===
+            'a' &&
+            !!(elem.attribs &&
+              elem.attribs['href'] &&
+              elem.attribs['href'].includes('ctid='));
+        }, alertInfo.children, true);
+
+        if (link) {
+          const href = link.attribs['href'];
+          const match = href.match(/ctid=(\d+)/);
+          if (match) {
+            ctid = parseInt(match[1]);
+          }
+        }
+
+        return true;
+      }
+
+      // 4. 解析结果 - 检查失败提示
+      // 失败示例: <div class="alert_error">...</div>
+      const alertError = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_error'));
+      }, doc.children, true);
+
+      if (alertError) {
+        let errorMsg = DomUtils.textContent(alertError).trim();
+        // 清理可能包含的脚本代码文本
+        if (errorMsg.includes('window.location')) {
+          errorMsg = errorMsg.split('window.location')[0].trim();
+        }
+        throw new Error(errorMsg)
+      }
+
+      return false
+
+    } catch (e) {
+      LogUtil.error(TAG, 'createCollection failed', JSON.stringify(e));
+      throw new Error(e)
     }
   }
 }

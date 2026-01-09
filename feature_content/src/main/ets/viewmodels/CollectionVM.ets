@@ -8,7 +8,8 @@ import {
   CollectionSortOrder,
   CommonConstant,
   RouterMap,
-  RouterUtil
+  RouterUtil,
+  ToastUtil
 } from 'base_common';
 import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
 import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
@@ -161,5 +162,17 @@ export class CollectionVM extends BaseVM {
 
   async getCreateHash(): Promise<string> {
     return await CollectionApi.getCollectionCreateFormHash();
+  }
+
+  async createCollection(title: string, hash: string, description?: string, tags?: string[]) {
+    try {
+      const result = await CollectionApi.createCollection(title, hash, description, tags);
+      if (result) {
+        this.isShowCollectionCreateSheet = false;
+        ToastUtil.showSuccess($r('app.string.CollectionPage_collection_create_success'))
+      }
+    } catch (e) {
+      LogUtil.error(TAG, 'Create collection failed', JSON.stringify(e));
+    }
   }
 }
