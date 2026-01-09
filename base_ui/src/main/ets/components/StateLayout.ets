@@ -28,7 +28,7 @@ export struct StateLayout {
         .width(CommonConstant.FullPercent)
         .height(this.uiState === UiState.LOADING ? CommonConstant.FullPercent : undefined)
         .layoutWeight(1)
-        .alignItems(HorizontalAlign.Start)
+        .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Start)
         .transition(CommonConstant.FADE_TRANSITION)
         .padding({ top: this.topPadding })
@@ -52,7 +52,7 @@ export struct StateLayout {
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .alignItems(HorizontalAlign.Start)
+        .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Start)
         .padding({ top: this.topPadding })
       }
@@ -73,7 +73,7 @@ export struct StateLayout {
         }
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)
-        .alignItems(HorizontalAlign.Start)
+        .alignItems(HorizontalAlign.Center)
         .justifyContent(FlexAlign.Start)
         .padding({ top: this.topPadding })
       }
