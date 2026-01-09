@@ -36,6 +36,8 @@ export class ApiClient {
   private static instance: ApiClient | null = null;
   private readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
   private readonly legacyBaseUrl: string = 'https://bbs.uestc.edu.cn/mobcent/app/web/index.php';
+  private readonly USER_AGENT =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
   private isRedirecting: boolean = false; // 防止并发跳转
@@ -444,7 +446,9 @@ export class ApiClient {
       // 4. 构造 Header，主要是 Cookie
       const headers = {
         'Cookie': this.getCookieHeader(),
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': this.USER_AGENT,
+        'Referer': 'https://bbs.uestc.edu.cn/',
+        'Host': 'bbs.uestc.edu.cn'
       } as Record<string, Object>;
 
       const response = await httpRequest.request(requestUrl, {
@@ -460,7 +464,6 @@ export class ApiClient {
 
       if (response.responseCode === 200) {
         if (typeof response.result === 'string') {
-          // 6. 使用 htmlparser2 解析响应内容并返回 Document
           return parseDocument(response.result);
         } else {
           throw new Error(`Response result is not string`);

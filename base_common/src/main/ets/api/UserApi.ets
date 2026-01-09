@@ -351,7 +351,7 @@ export class UserApi {
    * 获取用户收藏 (仅限自己)
    */
   public static async getUserFavorites(page: number): Promise<PaginationData<UserFavorite>> {
-    const path = `/_/user/me/favorites?page=${page}&collections=0&user_summary=0`;
+    const path = `/_/user/me/favorites?page=${page}&collections=1&user_summary=0`;
 
     const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFavorite>>>({
       path: path,

@@ -189,20 +189,14 @@ export class CollectionApi {
         isFollow: false
       };
 
-      const scripts = DomUtils.getElementsByTagName('script', doc.children);
-      for (const script of scripts) {
-        const text = DomUtils.textContent(script);
-        if (text && text.includes('var followstatus')) {
-          const match = text.match(/var\s+followstatus\s*=\s*(\d+);/);
-          if (match) {
-            const status = parseInt(match[1]);
-            detail.isFollow = status === 1;
-          }
-          break;
+      const followLink = DomUtils.getElementById('followlink', doc);
+      if (followLink) {
+        const text = DomUtils.textContent(followLink).trim();
+        if (text.includes('取消')) {
+          detail.isFollow = true;
         }
       }
 
-      // 2. 解析评分 (rate)
       const rateStarSpan = DomUtils.findOne((elem) => {
         return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('clct_ratestar'));
       }, doc.children, true);
