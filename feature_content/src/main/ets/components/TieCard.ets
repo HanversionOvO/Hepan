@@ -16,7 +16,6 @@ export struct TieCard {
     if (this.tie.summary_attachments && this.tie.summary_attachments.length > 0) {
       const imgItem = this.tie.summary_attachments.find(item => item.is_image === 1);
       if (imgItem) {
-        // 修复：判断是否为完整链接，如果是则直接使用，否则拼接域名
         if (imgItem.thumbnail_url.startsWith('http')) {
           return imgItem.thumbnail_url;
         }

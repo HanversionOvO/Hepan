@@ -121,10 +121,10 @@ export class CollectionContentPageVM extends BaseVM {
     if (topic.content && topic.content.length > 0) {
       topic.content.forEach(c => {
         // 假设 type 1 或有 url 的是图片，根据具体业务调整
-        if ((c.type === 1 || c.url) && c.url) {
+        if (c.type === 1 && c.infor) {
           attachments.push({
             is_image: 1,
-            thumbnail_url: c.url,
+            thumbnail_url: c.infor,
             raw_url: c.url,
             attachment_id: 0,
             dateline: 0,
@@ -144,7 +144,7 @@ export class CollectionContentPageVM extends BaseVM {
     // 解析时间
     let dateline = 0;
     try {
-      // 修复：增强时间解析的兼容性
+      // 【修复】增强时间解析的兼容性
       let dateStr = topic.create_date;
       if (dateStr) {
         // 将 - 替换为 /，解决部分环境 new Date 解析失败问题
@@ -174,7 +174,7 @@ export class CollectionContentPageVM extends BaseVM {
       subject: topic.title,
       summary: summary,
       summary_attachments: attachments,
-      dateline: dateline,
+      dateline: Number(topic.create_date),
       last_post: 0,
       views: topic.hits,
       replies: topic.replies,
@@ -244,10 +244,7 @@ export class CollectionContentPageVM extends BaseVM {
       params["transition"] = transitionParam;
     }
 
-    const idNum = parseInt(tid);
-    params["tid"] = idNum;
-    params["thread_id"] = idNum;
-    params["tie"] = tie;
+    params["tieSummary"] = tie;
 
     RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }

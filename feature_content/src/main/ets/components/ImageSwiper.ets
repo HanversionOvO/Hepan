@@ -14,7 +14,8 @@ export struct ImageSwiper {
         Swiper() {
           ForEach(this.vm.tieSummary.summary_attachments, (attachment: SummaryAttachments) => {
             if (attachment.is_image) {
-              Image(BASE_URL + attachment.thumbnail_url)
+              Image(attachment.thumbnail_url.startsWith("http") ? attachment.thumbnail_url :
+                BASE_URL + attachment.thumbnail_url)
                 .objectFit(ImageFit.Cover)
                 .height(CommonConstant.FullPercent)
                 .width(CommonConstant.FullPercent)
