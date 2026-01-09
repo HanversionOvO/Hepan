@@ -19,6 +19,11 @@ export struct CollectionContentView {
   @Local sideNavWidth: number = 380;
   @Local decoCardSize: number = 108;
 
+  @Computed
+  get spacerArray(): number[] {
+    return new Array(this.vm.columns).fill(0);
+  }
+
   @Builder
   CollectionTitle(color: ResourceColor, isNavBar: boolean) {
     Text(this.vm.collection?.title)
@@ -46,7 +51,7 @@ export struct CollectionContentView {
         bottom: CommonConstant.SmallContainerTBPadding
       })
       .fontSize(CommonConstant.TextSizeSmall)
-      .backgroundColor($r('app.color.start_window_background'))
+      .backgroundColor($r('app.color.second_window_background'))
       .borderRadius(CommonConstant.RadiusSmall)
       .fontColor($r('sys.color.font_secondary'))
   }
@@ -259,6 +264,15 @@ export struct CollectionContentView {
       }
     }) {
       WaterFlow() {
+        if (this.vm.isTabletView) {
+          ForEach(this.spacerArray, (_: number, i: number) => {
+            FlowItem() {
+              Column().height(this.vm.window.windowTopPadding)
+            }
+            .width(CommonConstant.FullPercent)
+          }, (_: number, i: number) => `top_spacer_${this.vm.columns}_${i}`)
+        }
+
         ForEach(this.vm.ties, (tie: ForumTieSummary) => {
           FlowItem() {
             TieCard({
