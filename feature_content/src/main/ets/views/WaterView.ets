@@ -28,6 +28,29 @@ export struct WaterView {
   }
 
   @Builder
+  WaterDetailSheet() {
+    List({ space: CommonConstant.NormalContainerInnerPadding }) {
+      ForEach(this.vm.water.records, (record: WaterRecord, index: number) => {
+        ListItem() {
+          this.WaterDetailCard(record)
+        }
+      }, (record: WaterRecord, index: number) => index.toString())
+
+      if (!this.vm.isTabletView) {
+        ListItem()
+          .height(this.vm.window.windowBottomPadding)
+      }
+    }
+    .layoutWeight(1)
+    .scrollBar(BarState.Off)
+    .edgeEffect(EdgeEffect.Spring)
+    .padding({
+      left: this.vm.isTabletView ? 0 : CommonConstant.NormalContainerLRPadding,
+      right: this.vm.isTabletView ? 0 : CommonConstant.NormalContainerLRPadding,
+    })
+  }
+
+  @Builder
   WaterDetailCard(record: WaterRecord) {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       SymbolGlyph($r('sys.symbol.plus_circle'))
@@ -107,6 +130,20 @@ export struct WaterView {
             .borderRadius(CommonConstant.RadiusSmall)
             .backgroundColor($r('app.color.glass_background'))
             .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+            .onClick(() => {
+              this.vm.isShowWaterDetailSheet = true;
+            })
+            .bindSheet($$this.vm.isShowWaterDetailSheet, this.WaterDetailSheet(), {
+              showClose: true,
+              detents: [SheetSize.FIT_CONTENT],
+              enableOutsideInteractive: false,
+              preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+              backgroundColor: $r('app.color.start_window_background'),
+              blurStyle: BlurStyle.BACKGROUND_THICK,
+              title: {
+                title: $r('app.string.WaterPage_water_detail')
+              }
+            })
           }
         }
         .width(CommonConstant.FullPercent)
@@ -117,16 +154,7 @@ export struct WaterView {
             .strokeWidth(CommonConstant.BorderSizeNormal)
             .color($r('sys.color.font_on_tertiary'))
 
-          List({ space: CommonConstant.NormalContainerInnerPadding }) {
-            ForEach(this.vm.water.records, (record: WaterRecord, index: number) => {
-              ListItem() {
-                this.WaterDetailCard(record)
-              }
-            }, (record: WaterRecord, index: number) => index.toString())
-          }
-          .layoutWeight(1)
-          .scrollBar(BarState.Off)
-          .edgeEffect(EdgeEffect.Spring)
+          this.WaterDetailSheet()
         }
       }
       .layoutWeight(1)
