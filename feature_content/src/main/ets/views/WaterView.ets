@@ -194,11 +194,6 @@ export struct WaterView {
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusLarge)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-    .margin({
-      top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
-    })
-    .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
-    .height(this.vm.isTabletView ? CommonConstant.FullPercent : "auto")
     .layoutWeight(1)
   }
 
@@ -240,6 +235,9 @@ export struct WaterView {
 
           this.WaterContent()
         }
+        .margin({
+          top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
+        })
         .layoutWeight(1)
       }
       .width(CommonConstant.FullPercent)
