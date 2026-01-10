@@ -54,6 +54,10 @@ export struct NoticePageImpl {
                         vm: this.vm,
                         noticeCard: messageCard
                       })
+                        .id(messageCard.topic_id.toString())
+                        .onClick(() => {
+                          this.vm.enterDetailPage(messageCard, this.getUIContext());
+                        })
                     }
                   }, (messageCard: AnPNotification) => {
                     if (messageCard.reply_remind_id) {

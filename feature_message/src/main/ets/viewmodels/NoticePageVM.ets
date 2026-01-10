@@ -3,13 +3,18 @@ import {
   AnPNotification,
   BaseVM,
   CommonConstant,
+  ForumTieSummary,
   MessageApi,
+  RouterMap,
   RouterUtil,
   StackEnum,
   SystemNotification,
   UiState
 } from 'base_common';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
+import { curves } from '@kit.ArkUI';
+import { LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
 
 const TAG = '[NoticePageVM]: ';
 
@@ -105,5 +110,51 @@ export class NoticePageVM extends BaseVM {
         () => {
           RouterUtil.pop(undefined, false, StackEnum.MESSAGE);
         })
+  }
+
+  enterDetailPage(item: AnPNotification, context: UIContext) {
+    if (!item.topic_id) {
+      return;
+    }
+
+    // 1. 构造 ForumTieSummary，用于详情页加载数据
+    // 注意：通知中可能没有完整的帖子信息（如作者ID），这里只填必要字段
+    const tieSummary = new ForumTieSummary();
+    tieSummary.thread_id = item.topic_id;
+    tieSummary.subject = item.topic_subject;
+    tieSummary.author_id = 0; // 暂时置0，详情页会重新加载
+
+    // 2. 构造一镜到底动画参数
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+        })
+      },
+      onBackTransitionStart: () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+        })
+      }
+    };
+
+    // 生成动画参数，使用 topic_id 作为唯一标识
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context,
+        item.topic_id.toString(), CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+
+    if (longTakeTransitionParam) {
+      params["transition"] = longTakeTransitionParam;
+    }
+
+    params["tieSummary"] = tieSummary;
+
+    // 3. 传入需要滚动的目标楼层PID (reply_remind_id 通常对应 pid)
+    if (item.reply_remind_id) {
+      params["targetPid"] = item.reply_remind_id.toString();
+    }
+
+    // 4. 路由跳转
+    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 }

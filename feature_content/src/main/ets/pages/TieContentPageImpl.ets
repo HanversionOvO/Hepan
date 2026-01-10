@@ -45,6 +45,10 @@ export struct TieContentPageImpl {
         if (params["tieSummary"]) {
           this.vm.tieSummary = params["tieSummary"] as ForumTieSummary;
         }
+
+        if (params["targetPid"]) {
+          this.vm.targetPid = params["targetPid"] as string;
+        }
         await this.vm.loadData();
       }
     })
