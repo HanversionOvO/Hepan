@@ -231,6 +231,14 @@
     {
       "name": "CollectionPage_collection_create_success",
       "value": "创建淘专辑成功"
+    },
+    {
+      "name": "ApplicationPage_Water",
+      "value": "水滴"
+    },
+    {
+      "name": "ApplicationPage_Water_desc",
+      "value": "水滴的相关操作"
     }
   ]
 }

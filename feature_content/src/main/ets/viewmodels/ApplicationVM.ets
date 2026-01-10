@@ -29,9 +29,9 @@ export class ApplicationVM extends BaseVM {
     this.applications = [
       new ApplicationCardItem({
         icon: $r('sys.symbol.drop_fill'),
-        name: "水滴",
+        name: $r('app.string.ApplicationPage_Water'),
         iconColor: CommonConstant.InfoColor,
-        desc: "水滴的XXX"
+        desc: $r('app.string.ApplicationPage_Water_desc')
       })
     ];
 
