@@ -230,7 +230,8 @@ export struct WaterView {
             tabItems: this.vm.tabItems,
             vm: this.vm,
             isGlassStyle: true,
-            isMax: true
+            isMax: true,
+            alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
           })
 
           this.WaterContent()

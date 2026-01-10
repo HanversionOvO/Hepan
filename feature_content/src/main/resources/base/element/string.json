@@ -251,6 +251,18 @@
     {
       "name": "WaterPage_water_detail",
       "value": "收支详情"
+    },
+    {
+      "name": "WaterPage_get_water",
+      "value": "赚水滴"
+    },
+    {
+      "name": "WaterPage_store",
+      "value": "道具商城"
+    },
+    {
+      "name": "WaterPage_backpack",
+      "value": "背包"
     }
   ]
 }
