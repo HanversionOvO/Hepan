@@ -48,6 +48,7 @@ export struct WaterView {
         })
         .hitTestBehavior(HitTestMode.None)
     }
+    .clip(true)
     .width(this.waterCardWidth)
     .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor($r('app.color.glass_background'))
