@@ -9,6 +9,6 @@ export class WaterRecord {
 
 @ObservedV2
 export class WaterModels {
-  @Trace water_nums: number = 0;
-  @Trace records: WaterRecord[] = [];
+  @Trace water_nums: number = 0; // 水滴数量
+  @Trace records: WaterRecord[] = []; // 水滴操作记录
 }

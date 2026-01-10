@@ -51,6 +51,8 @@ export { ForumApi } from './src/main/ets/api/ForumApi';
 
 export { CollectionApi } from './src/main/ets/api/CollectionApi';
 
+export { WaterApi } from './src/main/ets/api/WaterApi';
+
 export * from './src/main/ets/api/models/UserModels';
 
 export { AuthModel } from './src/main/ets/models/AuthModel';
@@ -62,5 +64,7 @@ export * from './src/main/ets/api/models/MessageModels';
 export * from './src/main/ets/api/models/ForumModels';
 
 export * from './src/main/ets/api/models/CollectionModels';
+
+export * from './src/main/ets/api/models/WaterModels';
 
 export * from './src/main/ets/models/TabIndexModel';

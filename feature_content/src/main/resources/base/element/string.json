@@ -239,6 +239,10 @@
     {
       "name": "ApplicationPage_Water_desc",
       "value": "水滴的相关操作"
+    },
+    {
+      "name": "WaterPage_water",
+      "value": "水滴"
     }
   ]
 }
