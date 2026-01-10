@@ -5,3 +5,5 @@ export { TieContentPageImpl } from './src/main/ets/pages/TieContentPageImpl';
 export { ReplyPageImpl } from './src/main/ets/pages/ReplyPageImpl';
 
 export { CollectionContentPageImpl } from './src/main/ets/pages/CollectionContentPageImpl';
+
+export { WaterPageImpl } from './src/main/ets/pages/WaterPageImpl';

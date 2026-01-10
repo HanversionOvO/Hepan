@@ -17,6 +17,7 @@ export enum RouterMap {
   REPLY_PAGE = 'ReplyPage',
   IMAGE_LONG_TAKE_PREVIEW = 'ImageLongTakePreviewPage',
   COLLECTION_CONTENT_PAGE = 'CollectionContentPage',
+  WATER_PAGE = 'WaterPage',
 }
 
 @ObservedV2

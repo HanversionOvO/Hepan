@@ -1,5 +1,9 @@
-import { BaseVM, BreakpointNameEnum, BreakpointType, CommonConstant } from 'base_common';
+import { AppUtil } from '@pura/harmony-utils';
+import { BaseVM, BreakpointNameEnum, BreakpointType, CommonConstant, RouterMap, RouterUtil } from 'base_common';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
 import { ApplicationCardItem } from '../components/ApplicationCard';
+import { curves } from '@kit.ArkUI';
+import { LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
 
 @ObservedV2
 export class ApplicationVM extends BaseVM {
@@ -26,15 +30,50 @@ export class ApplicationVM extends BaseVM {
   }
 
   async loadData() {
-    this.applications = [
-      new ApplicationCardItem({
-        icon: $r('sys.symbol.drop_fill'),
-        name: $r('app.string.ApplicationPage_Water'),
-        iconColor: CommonConstant.InfoColor,
-        desc: $r('app.string.ApplicationPage_Water_desc')
-      })
-    ];
+    const waterApplication: ApplicationCardItem = new ApplicationCardItem({
+      icon: $r('sys.symbol.drop_fill'),
+      name: $r('app.string.ApplicationPage_Water'),
+      iconColor: CommonConstant.InfoColor,
+      desc: $r('app.string.ApplicationPage_Water_desc'),
+      onClick: () => {
+        this.enterPage('water', RouterMap.WATER_PAGE)
+      }
+    })
+
+    this.applications = [waterApplication];
 
     this.updateGridConfig(this.breakPoint.currentBreakPoint)
+  }
+
+  enterPage(componentId: string, route: RouterMap, param?: Record<string, Object>) {
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.8;
+        })
+      },
+      onBackTransitionStart: () => {
+        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(AppUtil.getUIContext(),
+        "application_" + componentId, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+
+    if (longTakeTransitionParam) {
+      let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
+      params["transition"] = transitionParam;
+    }
+
+    if (param) {
+      params["param"] = param;
+    }
+
+    RouterUtil.pushPathByName(route, params);
   }
 }
