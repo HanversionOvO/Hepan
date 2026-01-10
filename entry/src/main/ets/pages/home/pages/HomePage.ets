@@ -13,7 +13,7 @@ export function HomePageBuilder() {
 
 @ComponentV2
 struct HomePage {
-  @Local vm: HomePageVM = VMManager.get(HomePageVM, () => new HomePageVM())
+  @Local vm: HomePageVM = new HomePageVM()
 
   aboutToDisappear(): void {
     this.vm.aboutToDisappear();

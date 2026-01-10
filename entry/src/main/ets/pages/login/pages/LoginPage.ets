@@ -14,7 +14,7 @@ export function LoginPageBuilder() {
 
 @ComponentV2
 struct LoginPage {
-  @Local vm: LoginPageVM = VMManager.get(LoginPageVM, () => new LoginPageVM());
+  @Local vm: LoginPageVM = new LoginPageVM();
   @Local logoSize: number = 48;
   @Local maxMiddleWidth: number = 320;
 

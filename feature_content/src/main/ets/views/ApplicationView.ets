@@ -4,7 +4,7 @@ import { ApplicationVM } from '../viewmodels/ApplicationVM';
 
 @ComponentV2
 export struct ApplicationView {
-  @Local vm: ApplicationVM = VMManager.get(ApplicationVM, () => new ApplicationVM());
+  @Local vm: ApplicationVM = new ApplicationVM();
   @Param topSpace: number = CommonConstant.IconSizeLarge + CommonConstant.NormalContainerInnerPadding;
 
   @Computed

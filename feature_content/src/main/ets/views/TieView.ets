@@ -12,7 +12,7 @@ const TAG = '[TieView]: ';
 
 @ComponentV2
 export struct TieView {
-  @Local vm: TieVM = VMManager.get(TieVM, () => new TieVM())
+  @Local vm: TieVM = new TieVM()
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
 
   async aboutToAppear() {

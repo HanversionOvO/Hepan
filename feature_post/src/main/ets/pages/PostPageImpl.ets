@@ -12,7 +12,7 @@ const TAG = '[PostPageImpl]: ';
 
 @ComponentV2
 export struct PostPageImpl {
-  @Local vm: PostPageVM = VMManager.get(PostPageVM, () => new PostPageVM())
+  @Local vm: PostPageVM = new PostPageVM()
 
   @Monitor("vm.isTabletView")
   changeKeyBoardMode() {

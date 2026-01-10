@@ -8,7 +8,7 @@ const TAG = '[CollectionView]: '
 
 @ComponentV2
 export struct CollectionView {
-  @Local vm: CollectionVM = VMManager.get(CollectionVM, () => new CollectionVM());
+  @Local vm: CollectionVM = new CollectionVM();
   @Consumer("isHideNavTitle") isHideNavTitle: boolean = false;
 
   async aboutToAppear() {

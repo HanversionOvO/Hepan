@@ -7,7 +7,7 @@ import { TieView } from '../views/TieView';
 
 @ComponentV2
 export struct ContentPageImpl {
-  @Local vm: ContentPageVM = VMManager.get(ContentPageVM, () => new ContentPageVM())
+  @Local vm: ContentPageVM = new ContentPageVM();
   @Provider("isHideNavTitle") isHideNavTitle: boolean = false;
   @Provider("isHideTabBar") isHideTabBar: boolean = false;
 

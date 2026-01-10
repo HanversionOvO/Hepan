@@ -6,7 +6,7 @@ import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
 @ComponentV2
 export struct MessagePageImpl {
-  @Local vm: MessagePageVM = VMManager.get(MessagePageVM, () => new MessagePageVM());
+  @Local vm: MessagePageVM = new MessagePageVM();
   @Local minNavBarWidth: number = 340;
   @Local gridLanes: number = this.vm.isTabletView ? 2 : 1;
 

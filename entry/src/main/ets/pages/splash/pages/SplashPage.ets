@@ -6,7 +6,7 @@ import { SplashPageVM } from '../viewmodels/SplashPageVM';
 @Entry
 @ComponentV2
 struct SplashPage {
-  @Local vm: SplashPageVM = VMManager.get(SplashPageVM, () => new SplashPageVM());
+  @Local vm: SplashPageVM = new SplashPageVM()
   @Local logoSize: number = 96;
 
   aboutToAppear(): void {
