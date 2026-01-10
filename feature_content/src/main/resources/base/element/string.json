@@ -243,6 +243,14 @@
     {
       "name": "WaterPage_water",
       "value": "水滴"
+    },
+    {
+      "name": "WaterPage_current_water",
+      "value": "当前水滴"
+    },
+    {
+      "name": "WaterPage_water_detail",
+      "value": "收支详情"
     }
   ]
 }

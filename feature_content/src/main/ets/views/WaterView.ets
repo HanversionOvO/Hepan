@@ -1,7 +1,8 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, WaterRecord } from 'base_common';
 import { FloatButton } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 import { LengthMetrics } from '@kit.ArkUI';
+import { ResUtil } from '@pura/harmony-utils';
 
 @ComponentV2
 export struct WaterView {
@@ -14,7 +15,12 @@ export struct WaterView {
 
   @Computed
   get waterCardHeight(): Length {
-    return this.vm.isTabletView ? CommonConstant.FullPercent : "auto";
+    if (this.vm.isTabletView) {
+      const topOffset =
+        this.vm.window.windowTopPadding + CommonConstant.TopBarHeight + CommonConstant.NormalContainerInnerPadding;
+      return `calc(${CommonConstant.FullPercent} - ${topOffset}vp)`;
+    }
+    return "auto";
   }
 
   async aboutToAppear() {
@@ -22,20 +28,108 @@ export struct WaterView {
   }
 
   @Builder
+  WaterDetailCard(record: WaterRecord) {
+    Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+      SymbolGlyph($r('sys.symbol.plus_circle'))
+        .fontColor(record.modify_state ? [CommonConstant.ErrorColor] : [CommonConstant.SuccessColor])
+        .fontSize(CommonConstant.IconSizeLarge)
+        .fontWeight(FontWeight.Bold)
+
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Text(record.modify_desc)
+          .fontSize(CommonConstant.TextSizeSmall)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.MARQUEE })
+          .fontColor($r('sys.color.font_on_secondary'))
+
+        Text(`${ResUtil.getStringSync($r('app.string.WaterPage_water'))} ${record.modify_water.toString()}`)
+          .fontSize(CommonConstant.TextSizeLarge)
+          .fontColor($r('sys.color.font_on_primary'))
+
+        Text(record.modyfy_info)
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_on_secondary'))
+
+        Text(record.modify_time)
+          .textAlign(TextAlign.End)
+          .width(CommonConstant.FullPercent)
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontColor($r('sys.color.font_on_tertiary'))
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+    }
+    .alignItems(VerticalAlign.Center)
+    .borderRadius(CommonConstant.RadiusNormal)
+    .padding(CommonConstant.NormalContainerInnerPadding)
+    .layoutWeight(1)
+    .backgroundColor($r('app.color.glass_background'))
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+  }
+
+  @Builder
   WaterCard() {
     Stack({ alignContent: this.vm.isTabletView ? Alignment.Top : Alignment.Center }) {
-      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Text("当前水滴")
-          .fontSize(CommonConstant.TextSizeSmall)
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('sys.color.font_secondary'))
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Row() {
+          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Text($r('app.string.WaterPage_current_water'))
+              .fontSize(CommonConstant.TextSizeSmall)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('sys.color.font_on_secondary'))
 
-        Text(this.vm.water.water_nums.toString())
-          .fontSize(CommonConstant.TextSizeUltraLarge)
-          .fontWeight(FontWeight.Bolder)
+            Text(this.vm.water.water_nums.toString())
+              .fontSize(CommonConstant.TextSizeUltraLarge)
+              .fontWeight(FontWeight.Bolder)
+              .fontColor($r('sys.color.font_on_primary'))
+          }
+          .layoutWeight(1)
+          .alignItems(HorizontalAlign.Start)
+
+          if (!this.vm.isTabletView) {
+            Button() {
+              Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+                SymbolGlyph($r('sys.symbol.list_number'))
+                  .fontSize(CommonConstant.TextSizeSmall)
+                  .fontColor([$r('sys.color.font_on_secondary')])
+
+                Text($r('app.string.WaterPage_water_detail'))
+                  .fontSize(CommonConstant.TextSizeSmall)
+                  .fontColor($r('sys.color.font_on_secondary'))
+              }
+            }
+            .padding({
+              left: CommonConstant.SmallContainerLRPadding,
+              right: CommonConstant.SmallContainerLRPadding,
+              top: CommonConstant.SmallContainerTBPadding,
+              bottom: CommonConstant.SmallContainerTBPadding
+            })
+            .borderRadius(CommonConstant.RadiusSmall)
+            .backgroundColor($r('app.color.glass_background'))
+            .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+          }
+        }
+        .width(CommonConstant.FullPercent)
+        .justifyContent(FlexAlign.SpaceBetween)
+
+        if (this.vm.isTabletView) {
+          Divider()
+            .strokeWidth(CommonConstant.BorderSizeNormal)
+            .color($r('sys.color.font_on_tertiary'))
+
+          List({ space: CommonConstant.NormalContainerInnerPadding }) {
+            ForEach(this.vm.water.records, (record: WaterRecord, index: number) => {
+              ListItem() {
+                this.WaterDetailCard(record)
+              }
+            }, (record: WaterRecord, index: number) => index.toString())
+          }
+          .layoutWeight(1)
+          .scrollBar(BarState.Off)
+          .edgeEffect(EdgeEffect.Spring)
+        }
       }
-      .width(CommonConstant.FullPercent)
-      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
 
       SymbolGlyph($r('sys.symbol.drop_fill'))
         .fontSize(CommonConstant.IconSizeUltraLarge)
@@ -97,7 +191,8 @@ export struct WaterView {
       .height(CommonConstant.FullPercent)
       .padding({
         left: CommonConstant.PageLRPadding,
-        right: CommonConstant.PageLRPadding
+        right: CommonConstant.PageLRPadding,
+        bottom: this.vm.isTabletView ? this.vm.window.windowBottomPadding : 0
       })
     }
     .backgroundColor($r('app.color.water_color'))
