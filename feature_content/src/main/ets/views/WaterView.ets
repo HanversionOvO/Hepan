@@ -22,24 +22,6 @@ export struct WaterView {
   }
 
   @Builder
-  WaterOverlay() {
-    Stack({ alignContent: Alignment.BottomEnd }) {
-      SymbolGlyph($r('sys.symbol.drop_fill'))
-        .fontSize(CommonConstant.IconSizeUltraLarge)
-        .fontColor([$r('sys.color.font_on_primary')])
-        .opacity(0.15)
-        .rotate({ angle: 15 })
-        .position({
-          right: -CommonConstant.NormalContainerInnerPadding,
-          bottom: -CommonConstant.NormalContainerInnerPadding
-        })
-    }
-    .width(CommonConstant.FullPercent)
-    .height(CommonConstant.FullPercent)
-    .hitTestBehavior(HitTestMode.None)
-  }
-
-  @Builder
   WaterCard() {
     Stack({ alignContent: this.vm.isTabletView ? Alignment.Top : Alignment.Center }) {
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -54,12 +36,22 @@ export struct WaterView {
       }
       .width(CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
+
+      SymbolGlyph($r('sys.symbol.drop_fill'))
+        .fontSize(CommonConstant.IconSizeUltraLarge)
+        .fontColor([$r('sys.color.font_on_primary')])
+        .opacity(0.15)
+        .rotate({ angle: 15 })
+        .position({
+          right: -CommonConstant.NormalContainerInnerPadding,
+          bottom: -CommonConstant.NormalContainerInnerPadding
+        })
+        .hitTestBehavior(HitTestMode.None)
     }
     .width(this.waterCardWidth)
     .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor($r('app.color.glass_background'))
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
-    .overlay(this.WaterOverlay())
     .borderRadius(CommonConstant.RadiusLarge)
     .height(this.waterCardHeight)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
