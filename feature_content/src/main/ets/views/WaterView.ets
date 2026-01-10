@@ -193,6 +193,7 @@ export struct WaterView {
     .backgroundColor($r('app.color.glass_background'))
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusLarge)
+    .width(CommonConstant.FullPercent)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
     .layoutWeight(1)
   }
