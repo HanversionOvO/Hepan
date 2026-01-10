@@ -204,30 +204,27 @@ export class TieContentPageVM extends BaseVM {
   }
 
   scrollToTargetPid() {
-    // 设置延时，等待列表渲染完成
-    setTimeout(() => {
-      try {
-        // 获取目标组件的布局信息
-        const rectInfo = componentUtils.getRectangleById(this.targetPid);
-        if (rectInfo) {
-          // 获取当前 Scroller 的偏移量
-          const currentYOffset = this.isTabletView ?
-            this.commentScroller.currentOffset().yOffset :
-            this.outerPageScroller.currentOffset().yOffset;
+    try {
+      // 获取目标组件的布局信息
+      const rectInfo = componentUtils.getRectangleById(this.targetPid);
+      if (rectInfo) {
+        // 获取当前 Scroller 的偏移量
+        const currentYOffset = this.isTabletView ?
+          this.commentScroller.currentOffset().yOffset :
+          this.outerPageScroller.currentOffset().yOffset;
 
-          const targetScreenY = rectInfo.windowOffset.y;
+        const targetScreenY = rectInfo.windowOffset.y;
 
-          const topAvoidHeight = this.window.windowTopPadding + CommonConstant.TopBarHeight;
-          if (this.isTabletView) {
-            this.commentScroller.scrollBy(0, targetScreenY - topAvoidHeight);
-          } else {
-            this.outerPageScroller.scrollBy(0, targetScreenY - topAvoidHeight);
-          }
+        const topAvoidHeight = this.window.windowTopPadding + CommonConstant.TopBarHeight;
+        if (this.isTabletView) {
+          this.commentScroller.scrollBy(0, targetScreenY - topAvoidHeight);
+        } else {
+          this.outerPageScroller.scrollBy(0, targetScreenY - topAvoidHeight);
         }
-      } catch (e) {
-        LogUtil.error(TAG, 'Scroll to pid failed: ' + JSON.stringify(e));
       }
-      this.targetPid = '';
-    }, 500)
+    } catch (e) {
+      LogUtil.error(TAG, 'Scroll to pid failed: ' + JSON.stringify(e));
+    }
+    this.targetPid = '';
   }
 }
