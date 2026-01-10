@@ -1,5 +1,5 @@
 import { CommonConstant, WaterRecord } from 'base_common';
-import { FloatButton } from 'base_ui';
+import { CustomTabBar, FloatButton } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
@@ -194,12 +194,12 @@ export struct WaterView {
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .borderRadius(CommonConstant.RadiusLarge)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
-    .layoutWeight(1)
     .margin({
       top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
     })
     .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
     .height(this.vm.isTabletView ? CommonConstant.FullPercent : "auto")
+    .layoutWeight(1)
   }
 
   build() {
@@ -230,7 +230,17 @@ export struct WaterView {
 
         this.WaterCard()
 
-        this.WaterContent()
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          CustomTabBar({
+            tabItems: this.vm.tabItems,
+            vm: this.vm,
+            isGlassStyle: true,
+            isMax: true
+          })
+
+          this.WaterContent()
+        }
+        .layoutWeight(1)
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
