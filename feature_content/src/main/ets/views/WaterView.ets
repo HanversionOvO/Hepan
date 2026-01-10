@@ -139,7 +139,7 @@ export struct WaterView {
               enableOutsideInteractive: false,
               preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
               backgroundColor: $r('app.color.glass_background'),
-              blurStyle: BlurStyle.BACKGROUND_THICK,
+              blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
               title: {
                 title: $r('app.string.WaterPage_water_detail')
               }

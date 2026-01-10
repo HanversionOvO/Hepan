@@ -45,7 +45,7 @@ export struct UserInfoArea {
                   if (!uid) {
                     return;
                   }
-                  
+
                   ImageLongTakePreviewUtil.show({
                     uiContext: this.getUIContext(),
                     componentId: this.baseComponentId,
@@ -96,7 +96,7 @@ export struct UserInfoArea {
             enableOutsideInteractive: false,
             preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
             backgroundColor: $r('app.color.glass_background'),
-            blurStyle: BlurStyle.BACKGROUND_THICK,
+            blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
             title: {
               title: $r('app.string.MinePage_edit_sig')
             }
@@ -124,7 +124,7 @@ export struct UserInfoArea {
                 enableOutsideInteractive: false,
                 preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
                 backgroundColor: $r('app.color.glass_background'),
-                blurStyle: BlurStyle.BACKGROUND_THICK,
+                blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
                 title: {
                   title: $r('app.string.MinePage_user_profile')
                 }
@@ -165,7 +165,7 @@ export struct UserInfoArea {
         preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
         scrollSizeMode: ScrollSizeMode.CONTINUOUS,
         backgroundColor: $r('app.color.glass_background'),
-        blurStyle: BlurStyle.BACKGROUND_THICK,
+        blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
         title: {
           title: $r('app.string.MinePage_medal_center') // 确保 string.json 中有这个 key，或者使用 Resource
         }
