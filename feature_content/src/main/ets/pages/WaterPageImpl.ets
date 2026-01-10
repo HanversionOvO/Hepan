@@ -1,6 +1,6 @@
-import { CommonConstant } from 'base_common';
 import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
+import { WaterView } from '../views/WaterView';
 
 @ComponentV2
 export struct WaterPageImpl {
@@ -8,10 +8,7 @@ export struct WaterPageImpl {
 
   @Builder
   ContentBuilder() {
-    Stack()
-      .backgroundColor($r('app.color.start_window_background'))
-      .width(CommonConstant.FullPercent)
-      .height(CommonConstant.FullPercent)
+    WaterView({ vm: this.vm })
   }
 
   build() {

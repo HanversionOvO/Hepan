@@ -27,6 +27,10 @@
     {
       "name": "mask_color",
       "value": "#4D000000"
+    },
+    {
+      "name": "water_color",
+      "value": "#FF4F8AFF"
     }
   ]
 }
