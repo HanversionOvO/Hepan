@@ -11,7 +11,6 @@ import {
   UiState
 } from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
-import { componentUtils } from '@kit.ArkUI';
 
 const TAG = '[TieContentPageVM]: ';
 
@@ -122,10 +121,6 @@ export class TieContentPageVM extends BaseVM {
             } else {
               this.commentLoadingState = UiState.SUCCESS;
             }
-
-            if (this.targetPid) {
-              this.scrollToTargetPid();
-            }
           }
         } else {
           if (!isLoadMore && !this.tieComments) {
@@ -201,30 +196,5 @@ export class TieContentPageVM extends BaseVM {
         this.isSticky = shouldBeSticky;
       })
     }
-  }
-
-  scrollToTargetPid() {
-    try {
-      // 获取目标组件的布局信息
-      const rectInfo = componentUtils.getRectangleById(this.targetPid);
-      if (rectInfo) {
-        // 获取当前 Scroller 的偏移量
-        const currentYOffset = this.isTabletView ?
-          this.commentScroller.currentOffset().yOffset :
-          this.outerPageScroller.currentOffset().yOffset;
-
-        const targetScreenY = rectInfo.windowOffset.y;
-
-        const topAvoidHeight = this.window.windowTopPadding + CommonConstant.TopBarHeight;
-        if (this.isTabletView) {
-          this.commentScroller.scrollBy(0, targetScreenY - topAvoidHeight);
-        } else {
-          this.outerPageScroller.scrollBy(0, targetScreenY - topAvoidHeight);
-        }
-      }
-    } catch (e) {
-      LogUtil.error(TAG, 'Scroll to pid failed: ' + JSON.stringify(e));
-    }
-    this.targetPid = '';
   }
 }
