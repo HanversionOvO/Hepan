@@ -26,6 +26,7 @@ export struct ApplicationView {
           ForEach(this.vm.applications, (application: ApplicationCardItem, index: number) => {
             FlowItem() {
               ApplicationCard({ application })
+                .id(application.id)
             }
             .width(CommonConstant.FullPercent)
           }, (application: ApplicationCardItem, index: number) => index.toString())

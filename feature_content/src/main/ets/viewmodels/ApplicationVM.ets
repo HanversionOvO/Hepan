@@ -31,12 +31,13 @@ export class ApplicationVM extends BaseVM {
 
   async loadData() {
     const waterApplication: ApplicationCardItem = new ApplicationCardItem({
+      id: "water_application",
       icon: $r('sys.symbol.drop_fill'),
       name: $r('app.string.ApplicationPage_Water'),
       iconColor: CommonConstant.InfoColor,
       desc: $r('app.string.ApplicationPage_Water_desc'),
       onClick: () => {
-        this.enterPage('water', RouterMap.WATER_PAGE)
+        this.enterPage('water_application', RouterMap.WATER_PAGE)
       }
     })
 
@@ -61,7 +62,7 @@ export class ApplicationVM extends BaseVM {
 
     let longTakeTransitionParam: LongTakeTransitionParam | undefined =
       LoneTakeAnimationsTransition.generateLongTakeParam(AppUtil.getUIContext(),
-        "application_" + componentId, CommonConstant.RadiusLarge, options);
+        componentId, CommonConstant.RadiusLarge, options);
 
     const params: Record<string, Object> = {};
 

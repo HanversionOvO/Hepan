@@ -1,6 +1,7 @@
 import { CommonConstant } from 'base_common';
 
 export interface ApplicationCardItemOptions {
+  id: string;
   icon?: Resource;
   iconColor?: ResourceColor;
   name?: ResourceStr;
@@ -11,6 +12,7 @@ export interface ApplicationCardItemOptions {
 
 @ObservedV2
 export class ApplicationCardItem {
+  @Trace id: string = "";
   @Trace icon: Resource = $r('sys.symbol.person');
   @Trace iconColor: ResourceColor = ""; // 建议设置默认颜色或处理空逻辑
   @Trace name: ResourceStr = "";
@@ -20,7 +22,7 @@ export class ApplicationCardItem {
 
   constructor(data?: ApplicationCardItemOptions) {
     if (data) {
-      // 使用空值合并运算符 ?? 只有当 data.icon 为 undefined/null 时才使用默认值
+      this.id = data.id ?? this.id;
       this.icon = data.icon ?? this.icon;
       this.iconColor = data.iconColor ?? this.iconColor;
       this.name = data.name ?? this.name;
