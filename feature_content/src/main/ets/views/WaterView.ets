@@ -184,6 +184,24 @@ export struct WaterView {
     })
   }
 
+  @Builder
+  WaterContent() {
+    Column() {
+      Text("test")
+    }
+    .padding(CommonConstant.NormalContainerInnerPadding)
+    .backgroundColor($r('app.color.glass_background'))
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+    .borderRadius(CommonConstant.RadiusLarge)
+    .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
+    .layoutWeight(1)
+    .margin({
+      top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
+    })
+    .width(this.vm.isTabletView ? "auto" : CommonConstant.FullPercent)
+    .height(this.vm.isTabletView ? CommonConstant.FullPercent : "auto")
+  }
+
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -212,8 +230,7 @@ export struct WaterView {
 
         this.WaterCard()
 
-        Column()
-          .layoutWeight(1)
+        this.WaterContent()
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)
