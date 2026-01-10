@@ -1,6 +1,6 @@
-import { BaseVM, CommonConstant, ColorUtil, ToastUtil } from "base_common"
-import { LengthMetrics } from "@kit.ArkUI";
-import { CollectionVM } from "../viewmodels/CollectionVM";
+import { CommonConstant, ToastUtil } from 'base_common';
+import { LengthMetrics } from '@kit.ArkUI';
+import { CollectionVM } from '../viewmodels/CollectionVM';
 
 @Builder
 export function collectionCreateSheetBuilder(vm: CollectionVM) {
@@ -40,7 +40,6 @@ struct CollectionCreateSheet {
     .margin({ right: CommonConstant.SmallContainerInnerPadding, bottom: CommonConstant.SmallContainerInnerPadding })
   }
 
-
   addTag() {
     if (this.tagInput.trim().length > 0) {
       this.tags.push(this.tagInput.trim());
@@ -53,65 +52,67 @@ struct CollectionCreateSheet {
 
       TextInput({ placeholder: $r('app.string.CollectionPage_collection_title') })
         .borderRadius(CommonConstant.RadiusSmall)
-        .backgroundColor($r('app.color.second_window_background'))
         .caretColor(CommonConstant.ThemeColor)
+        .backgroundColor($r('app.color.glass_background'))
         .onChange((value: string) => {
           this.title = value;
         })
 
 
-     TextArea({ placeholder: $r('app.string.CollectionPage_collection_desc') })
+      TextArea({ placeholder: $r('app.string.CollectionPage_collection_desc') })
         .borderRadius(CommonConstant.RadiusSmall)
         .height(CommonConstant.TextInputSizeNormal)
-        .backgroundColor($r('app.color.second_window_background'))
         .caretColor(CommonConstant.ThemeColor)
+        .backgroundColor($r('app.color.glass_background'))
         .onChange((value: string) => {
           this.desc = value;
         })
 
-        Flex({ wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center, space: {
+      Flex({
+        wrap: FlexWrap.Wrap, alignItems: ItemAlign.Center, space: {
           cross: LengthMetrics.vp(CommonConstant.SmallContainerTBPadding)
-        } }) {
-          TextInput({ text: this.tagInput, placeholder: $r('app.string.CollectionPage_collection_tags') })
-            .onChange((value) => {
-              this.tagInput = value;
-            })
-            .onSubmit(() => {
-              this.addTag(); 
-            })
-            .fontSize(CommonConstant.TextSizeNormal)
-            .backgroundColor(Color.Transparent)
-            .caretColor(CommonConstant.ThemeColor)
-            .layoutWeight(1)
-            .padding(0)
-
-          ForEach(this.tags, (tag: string, index: number) => {
-            this.tagBuilder(tag, index)
-          })
         }
+      }) {
+        TextInput({ text: this.tagInput, placeholder: $r('app.string.CollectionPage_collection_tags') })
+          .onChange((value) => {
+            this.tagInput = value;
+          })
+          .onSubmit(() => {
+            this.addTag();
+          })
+          .fontSize(CommonConstant.TextSizeNormal)
+          .backgroundColor(Color.Transparent)
+          .caretColor(CommonConstant.ThemeColor)
+          .layoutWeight(1)
+          .padding(0)
+
+        ForEach(this.tags, (tag: string, index: number) => {
+          this.tagBuilder(tag, index)
+        })
+      }
       .width(CommonConstant.FullPercent)
-      .backgroundColor($r('app.color.second_window_background'))
+      .backgroundColor($r('app.color.glass_background'))
       .borderRadius(CommonConstant.RadiusSmall)
       .padding({
         left: CommonConstant.SmallContainerLRPadding,
         right: CommonConstant.SmallContainerLRPadding,
         bottom: CommonConstant.SmallContainerTBPadding,
-        top:CommonConstant.SmallContainerTBPadding
+        top: CommonConstant.SmallContainerTBPadding
       })
 
       Button($r('app.string.CollectionPage_create_collection'))
-      .width(CommonConstant.FullPercent)
-      .borderRadius(CommonConstant.RadiusSmall)
-      .fontColor($r('sys.color.font_on_primary'))
-      .backgroundColor(CommonConstant.ThemeColor)
-      .onClick(async () => {
-        if (this.title === "") {
-          ToastUtil.showWarn($r('app.string.CollectionPage_collection_input_title'))
-          return;
-        }
+        .width(CommonConstant.FullPercent)
+        .borderRadius(CommonConstant.RadiusSmall)
+        .fontColor($r('sys.color.font_on_primary'))
+        .backgroundColor(CommonConstant.ThemeColor)
+        .onClick(async () => {
+          if (this.title === "") {
+            ToastUtil.showWarn($r('app.string.CollectionPage_collection_input_title'))
+            return;
+          }
 
-        await this.vm.createCollection(this.title, this.formHash, this.desc, this.tags);
-      })
+          await this.vm.createCollection(this.title, this.formHash, this.desc, this.tags);
+        })
     }
     .width(CommonConstant.FullPercent)
     .padding({

@@ -507,7 +507,7 @@ export struct CollectionContentView {
           }
         })
 
-        if (this.vm.collectionDetail.isFollow) {
+        if (this.vm.collectionDetail.isFollow !== undefined) {
           this.followCard()
         }
       }
