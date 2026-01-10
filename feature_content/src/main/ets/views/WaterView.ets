@@ -53,7 +53,7 @@ export struct WaterView {
   @Builder
   WaterDetailCard(record: WaterRecord) {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-      SymbolGlyph(record.modify_state ? $r('sys.symbol.xmark_circle') : $r('sys.symbol.plus_circle'))
+      SymbolGlyph(record.modify_state ? $r('sys.symbol.minus_circle') : $r('sys.symbol.plus_circle'))
         .fontColor(record.modify_state ? [CommonConstant.ErrorColor] : [CommonConstant.SuccessColor])
         .fontSize(CommonConstant.IconSizeLarge)
         .fontWeight(FontWeight.Bold)
