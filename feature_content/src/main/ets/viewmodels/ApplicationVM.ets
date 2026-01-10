@@ -36,9 +36,7 @@ export class ApplicationVM extends BaseVM {
       name: $r('app.string.ApplicationPage_Water'),
       iconColor: CommonConstant.InfoColor,
       desc: $r('app.string.ApplicationPage_Water_desc'),
-      onClick: () => {
-        this.enterPage('water_application', RouterMap.WATER_PAGE)
-      }
+      route: RouterMap.WATER_PAGE
     })
 
     this.applications = [waterApplication];
@@ -46,15 +44,15 @@ export class ApplicationVM extends BaseVM {
     this.updateGridConfig(this.breakPoint.currentBreakPoint)
   }
 
-  enterPage(componentId: string, route: RouterMap, param?: Record<string, Object>) {
+  enterPage(componentId: string, route: RouterMap, context: UIContext, param?: Record<string, Object>) {
     let options: LongTakeTransitionOptions = {
       onEnterTransitionStart: () => {
-        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
           this.pageScale = 0.8;
         })
       },
       onBackTransitionStart: () => {
-        AppUtil.getUIContext().animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
           this.pageScale = 1.0;
         })
       }

@@ -23,13 +23,16 @@ export struct ApplicationView {
 
       Stack() {
         WaterFlow() {
-          ForEach(this.vm.applications, (application: ApplicationCardItem, index: number) => {
+          ForEach(this.vm.applications, (application: ApplicationCardItem) => {
             FlowItem() {
-              ApplicationCard({ application })
+              ApplicationCard({ application: application, vm: this.vm, context: this.getUIContext() })
                 .id(application.id)
+                .onClick(() => {
+                  this.vm.enterPage(application.id, application.route, this.getUIContext())
+                })
             }
             .width(CommonConstant.FullPercent)
-          }, (application: ApplicationCardItem, index: number) => index.toString())
+          }, (application: ApplicationCardItem) => application.id)
         }
         .width(CommonConstant.FullPercent)
         .layoutWeight(1)

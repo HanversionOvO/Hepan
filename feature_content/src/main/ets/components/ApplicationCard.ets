@@ -1,4 +1,5 @@
-import { CommonConstant } from 'base_common';
+import { CommonConstant, RouterMap } from 'base_common';
+import { ApplicationVM } from '../viewmodels/ApplicationVM';
 
 export interface ApplicationCardItemOptions {
   id: string;
@@ -7,7 +8,7 @@ export interface ApplicationCardItemOptions {
   name?: ResourceStr;
   desc?: ResourceStr;
   author?: ResourceStr;
-  onClick?: () => void;
+  route?: RouterMap;
 }
 
 @ObservedV2
@@ -18,7 +19,7 @@ export class ApplicationCardItem {
   @Trace name: ResourceStr = "";
   @Trace desc: ResourceStr = "";
   @Trace author?: ResourceStr;
-  @Trace onClick?: () => void;
+  @Trace route: RouterMap = RouterMap.HOME;
 
   constructor(data?: ApplicationCardItemOptions) {
     if (data) {
@@ -28,7 +29,7 @@ export class ApplicationCardItem {
       this.name = data.name ?? this.name;
       this.desc = data.desc ?? this.desc;
       this.author = data.author;
-      this.onClick = data.onClick;
+      this.route = data.route ?? this.route;
     }
   }
 }
@@ -36,6 +37,8 @@ export class ApplicationCardItem {
 @ComponentV2
 export struct ApplicationCard {
   @Param @Require application: ApplicationCardItem;
+  @Param @Require vm: ApplicationVM;
+  @Param @Require context: UIContext;
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -81,10 +84,5 @@ export struct ApplicationCard {
     })
     .alignItems(VerticalAlign.Top)
     .backgroundColor($r('app.color.second_window_background'))
-    .onClick(() => {
-      if (this.application.onClick) {
-        this.application.onClick();
-      }
-    })
   }
 }

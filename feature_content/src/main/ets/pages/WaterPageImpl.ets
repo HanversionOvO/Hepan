@@ -1,14 +1,17 @@
-import { VMManager } from 'base_common'
-import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui'
-import { WaterVM } from '../viewmodels/WaterVM'
+import { CommonConstant } from 'base_common';
+import { CardLongTakeDelegate, LongTakeTransitionParam } from 'base_ui';
+import { WaterVM } from '../viewmodels/WaterVM';
 
 @ComponentV2
 export struct WaterPageImpl {
-  @Local vm: WaterVM = VMManager.get(WaterVM, () => new WaterVM())
+  @Local vm: WaterVM = new WaterVM();
 
   @Builder
   ContentBuilder() {
-    Text("Water Page")
+    Stack()
+      .backgroundColor($r('app.color.start_window_background'))
+      .width(CommonConstant.FullPercent)
+      .height(CommonConstant.FullPercent)
   }
 
   build() {
