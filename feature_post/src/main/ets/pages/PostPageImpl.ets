@@ -1,5 +1,5 @@
 import { AppUtil } from '@pura/harmony-utils'
-import { AtUser, CommonConstant, TransitionMap, VMManager } from 'base_common'
+import { AtUser, CommonConstant, TransitionMap } from 'base_common'
 import { CustomAtPanel, CustomFacePanel, CustomMarkdown, CustomNavTitle, FloatButton } from 'base_ui'
 import { CategoryPicker } from '../components/CategoryPicker'
 import { ImagePicker } from '../components/ImagePicker'
@@ -48,7 +48,7 @@ export struct PostPageImpl {
             detents: [SheetSize.LARGE],
             enableOutsideInteractive: false,
             preferType: SheetType.CENTER,
-            backgroundColor: $r('app.color.start_window_background'),
+            backgroundColor: $r('app.color.glass_background'),
             blurStyle: BlurStyle.BACKGROUND_THICK,
             title: {
               title: $r('app.string.PostPage_draft_title')
