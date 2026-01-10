@@ -3,16 +3,29 @@
     "signingConfigs": [
       {
         "name": "default",
+        "type": "HarmonyOS",
         "material": {
-          "storePassword": "0000002001C1D387749C05F9436FE91489D3203FE5AEDD9535ABE87FAE1024BD9D4CE2C0C43D299DCED5C40A6D26AD68",
-          "certpath": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.cer",
+          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000002001C1D387749C05F9436FE91489D3203FE5AEDD9535ABE87FAE1024BD9D4CE2C0C43D299DCED5C40A6D26AD68",
-          "profile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p7b",
+          "keyPassword": "0000001B909E13AFAE7B4CC57732499BCB30794F4F2C38C62AEE87089FB4D683275E545866DF460CE8625B",
+          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/storage/Users/currentUser/appdata/el2/base/com.huawei.devecostudio/files/ohos/config/default_HepanbhKPWiK4cXXEx3QQhJHegYMZrD8K9rsd5pGAt2VGqA8.p12"
-        },
-        "type": "HarmonyOS"
+          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
+          "storePassword": "0000001BCD54B2224F58C5D78F6AF28DFF6683132E334C3991687C0F65BEEFDDAE68A8B5866DF6D4C4E328"
+        }
+      },
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer",
+          "keyAlias": "mikannqaq",
+          "keyPassword": "000000182A50E615822A3AF273777E204E675D4FC4561934B4E1D68225308A0A333F171E3A1D1113",
+          "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
+          "storePassword": "000000183A3B2C6375B2E4613811E3F18AC98CDF8C467C197CB93D6A27746F183ECAC9EEE1C2CE6C"
+        }
       }
     ],
     "products": [

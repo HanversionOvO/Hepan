@@ -69,7 +69,7 @@ export struct CollectionContentView {
         `${ResUtil.getStringSync(
           $r('app.string.CollectionContentPage_last_update')
         )}: ${this.vm.collection?.lastUpdate ??
-        '--'}`)
+          '--'}`)
         .fontSize(CommonConstant.TextSizeTiny)
         .fontColor($r('sys.color.font_tertiary'))
         .width(CommonConstant.FullPercent)
@@ -507,7 +507,7 @@ export struct CollectionContentView {
           }
         })
 
-        if (this.vm.collectionDetail) {
+        if (this.vm.collectionDetail.isFollow) {
           this.followCard()
         }
       }
