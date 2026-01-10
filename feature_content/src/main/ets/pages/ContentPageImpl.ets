@@ -1,6 +1,7 @@
 import { CommonConstant, VMManager } from 'base_common';
 import { CustomNavTitle, CustomTabBar } from 'base_ui';
 import { ContentPageVM } from '../viewmodels/ContentPageVM';
+import { ApplicationView } from '../views/ApplicationView';
 import { CollectionView } from '../views/ColletionView';
 import { TieView } from '../views/TieView';
 
@@ -24,7 +25,7 @@ export struct ContentPageImpl {
             }
 
             TabContent() {
-              Text("To Do...")
+              ApplicationView()
             }
           }
           .width(CommonConstant.FullPercent)

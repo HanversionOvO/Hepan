@@ -12,7 +12,7 @@ export class ContentPageVM extends BaseVM {
   @Trace contentPageTabItems: CustomTabItem[] = [
     { label: $r('app.string.ContentPage_tab_tie'), icon: $r('sys.symbol.book') },
     { label: $r('app.string.ContentPage_tab_collection'), icon: $r('sys.symbol.folder') },
-    { label: $r('app.string.ContentPage_tab_water_drop'), icon: $r('sys.symbol.drop') }
+    { label: $r('app.string.ContentPage_tab_app'), icon: $r('sys.symbol.more') }
   ];
   @Trace currentIndex: number = 0;
 
