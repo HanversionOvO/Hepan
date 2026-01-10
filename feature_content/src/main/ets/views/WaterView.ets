@@ -238,6 +238,9 @@ export struct WaterView {
         .margin({
           top: this.vm.isTabletView ? this.vm.window.windowTopPadding : 0
         })
+        .padding({
+          bottom: this.vm.isTabletView ? 0 : this.vm.window.windowBottomPadding
+        })
         .layoutWeight(1)
       }
       .width(CommonConstant.FullPercent)
