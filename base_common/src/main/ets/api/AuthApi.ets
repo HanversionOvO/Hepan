@@ -3,8 +3,10 @@ import { LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from './ApiClient';
 import {
   AdoptLegacyAuthResponse,
-  LegacyLoginData, LegacyLoginResponse, LoginResult
-} from './models/AuthModels';
+  LegacyLoginData,
+  LegacyLoginResponse,
+  LoginResult
+} from '../models/AuthModel';
 import { StorageManager } from '../utils/StorageManager'; // [新增]
 
 const TAG = '[AuthApi]: ';

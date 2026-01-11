@@ -1,4 +1,4 @@
-import { LegacyResponse } from './ApiModels';
+import { LegacyResponse } from '../ApiClient';
 import { UploadedFile } from './MessageModels';
 
 @ObservedV2

@@ -17,7 +17,7 @@ import {
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { UserAvatarUtil } from '../utils/UserAvatarUtil';
-import { LegacyResponse } from './models/ApiModels';
+import { LegacyResponse } from './ApiClient';
 import { ForumApi } from './ForumApi';
 
 const TAG = '[UserApi]: ';

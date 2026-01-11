@@ -1,4 +1,4 @@
-import { ApiClient } from './ApiClient';
+import { ApiClient, LegacyResponse } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
@@ -11,7 +11,6 @@ import {
   RecentMessage,
   SystemNotification
 } from './models/MessageModels';
-import { LegacyResponse } from './models/ApiModels';
 import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[MessageApi]: ';

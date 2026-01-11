@@ -32,6 +32,20 @@ export interface ApiResponse<T = Object> {
   raw: http.HttpResponse;
 }
 
+export interface LegacyResponse<T = Object> {
+  rs: number; // 成功标记: 1 为成功, 0 为失败
+  errcode: string; // 错误码
+  head?: LegacyHead; // 响应头信息
+  body?: T; // 响应体
+  pois?: Record<string, string>[];
+  status?: number;
+}
+
+export interface LegacyHead {
+  errInfo?: string; // 错误描述信息
+  version?: string;
+}
+
 /**
  * 统一的 HTTP 客户端，负责处理 Cookie、Authorization 以及常用默认头
  */

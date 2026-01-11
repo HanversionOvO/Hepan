@@ -1,4 +1,4 @@
-import { LegacyResponse } from './ApiModels';
+import { LegacyResponse } from '../ApiClient';
 
 // 2. 修改：RecentMessage 类使用该接口
 @ObservedV2
