@@ -12,7 +12,7 @@ export class WaterApi {
    * 1. 访问 op=base 获取当前水滴数
    * 2. 访问 op=log 获取水滴变更记录
    */
-  public static async getWaterSummary(): Promise<WaterModels> {
+  public static async getWaterSummary(page: number = 1): Promise<WaterModels> {
     const waterModel = new WaterModels();
 
     // 并发执行两个请求以提高速度，或者按顺序执行。此处为了逻辑清晰按顺序执行。
@@ -51,14 +51,13 @@ export class WaterApi {
         'ac': 'credit',
         'op': 'log',
         'exttype': 2,
-        'income': 0,
-        'search': true
+        'page': page
       };
 
       const logDoc: Document = await ApiClient.getInstance().requestHtml(
         'home.php',
         logParams,
-        http.RequestMethod.POST
+        http.RequestMethod.GET
       );
 
       // 解析 page2.html 结构: <table class="dt">...</table>

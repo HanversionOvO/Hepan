@@ -48,6 +48,9 @@ export struct WaterView {
       left: this.vm.isTabletView ? 0 : CommonConstant.NormalContainerLRPadding,
       right: this.vm.isTabletView ? 0 : CommonConstant.NormalContainerLRPadding,
     })
+    .onReachEnd(async () => {
+      await this.vm.loadMore();
+    })
   }
 
   @Builder
