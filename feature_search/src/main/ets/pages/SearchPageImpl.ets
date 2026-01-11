@@ -58,7 +58,7 @@ export struct SearchPageImpl {
 
           Column() {
             if (this.vm.searchStatus === SearchStatus.QUERY) {
-              QueryView()
+              QueryView({ vm: this.vm })
             } else if (this.vm.searchStatus === SearchStatus.REVIEW) {
               ReviewView({ vm: this.vm })
             } else if (this.vm.searchStatus === SearchStatus.RESULT) {

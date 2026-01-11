@@ -6,7 +6,7 @@ import { LengthMetrics } from '@kit.ArkUI';
 
 @ComponentV2
 export struct QueryView {
-  @Param vm: SearchPageVM = new SearchPageVM();
+  @Param @Require vm: SearchPageVM;
 
   build() {
     StateLayout({
@@ -113,6 +113,7 @@ export struct QueryView {
     .animation({ duration: CommonConstant.AnimationDurationNormal })
     .onClick(() => {
       if (!this.vm.isHistoryDeleteMode) {
+        this.vm.keyword = keyword
         this.vm.onSearchSubmit(keyword)
       }
     })
