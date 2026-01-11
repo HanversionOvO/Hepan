@@ -224,23 +224,6 @@ export struct WaterView {
 
   build() {
     Stack({ alignContent: Alignment.TopStart }) {
-      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        FloatButton({ isFloating: true })
-          .onClick(() => {
-            RouterUtil.pop()
-          })
-        Text($r('app.string.WaterPage_water'))
-          .fontSize(CommonConstant.TextSizeUltraLarge)
-          .fontColor($r('sys.color.font_on_primary'))
-          .fontWeight(FontWeight.Bold)
-      }
-      .alignItems(VerticalAlign.Center)
-      .height(CommonConstant.TopBarHeight + this.vm.window.windowTopPadding)
-      .padding({
-        left: CommonConstant.PageLRPadding,
-        top: this.vm.window.windowTopPadding
-      })
-
       Flex({
         direction: this.vm.isTabletView ? FlexDirection.Row : FlexDirection.Column, space: {
           main: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
@@ -282,6 +265,24 @@ export struct WaterView {
         left: CommonConstant.PageLRPadding,
         right: CommonConstant.PageLRPadding,
         bottom: this.vm.isTabletView ? this.vm.window.windowBottomPadding : 0
+      })
+
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        FloatButton({ isFloating: true, floatIconColor: $r('sys.color.font_on_primary') })
+          .onClick(() => {
+            RouterUtil.pop()
+          })
+          .zIndex(999)
+        Text($r('app.string.WaterPage_water'))
+          .fontSize(CommonConstant.TextSizeUltraLarge)
+          .fontColor($r('sys.color.font_on_primary'))
+          .fontWeight(FontWeight.Bold)
+      }
+      .alignItems(VerticalAlign.Center)
+      .height(CommonConstant.TopBarHeight + this.vm.window.windowTopPadding)
+      .padding({
+        left: CommonConstant.PageLRPadding,
+        top: this.vm.window.windowTopPadding
       })
     }
     .backgroundColor($r('app.color.water_color'))
