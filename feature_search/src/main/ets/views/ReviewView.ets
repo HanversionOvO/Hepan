@@ -95,7 +95,10 @@ export struct ReviewView {
     .height(CommonConstant.FullPercent)
     .scrollBar(BarState.Off)
     .edgeEffect(EdgeEffect.Spring)
-    .padding(CommonConstant.NormalContainerInnerPadding)
+    .padding({
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding
+    })
     .align(Alignment.TopStart)
   }
 
