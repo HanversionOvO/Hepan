@@ -1,4 +1,4 @@
-import { CommonConstant, ForumTieSummary, VMManager } from 'base_common';
+import { CommonConstant, ForumTieSummary } from 'base_common';
 import {
   CollapsibleCoordinator, CustomTabBar, FloatButton
 } from 'base_ui';

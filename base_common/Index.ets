@@ -16,8 +16,6 @@ export { UrlUtil } from './src/main/ets/utils/UrlUtil';
 
 export { RouterUtil, RouterMap, StackEnum } from './src/main/ets/utils/RouterUtil';
 
-export { VMManager } from './src/main/ets/utils/VMManager';
-
 export { ColorUtil, ColorVariants } from './src/main/ets/utils/ColorUtil';
 
 export { ToastShowType, ToastState, ToastOptions, ToastParams, ToastUtil } from './src/main/ets/utils/ToastUtil';

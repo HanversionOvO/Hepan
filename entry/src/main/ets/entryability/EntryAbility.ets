@@ -2,7 +2,7 @@ import { DialogHub } from '@hadss/dialoghub';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { MessageManager, StorageManager, VMManager, WindowManager } from 'base_common';
+import { MessageManager, StorageManager, WindowManager } from 'base_common';
 import { LoneTakeAnimationsTransition } from 'base_ui';
 
 const TAG = '[EntryAbility]: ';
@@ -24,7 +24,6 @@ export default class EntryAbility extends UIAbility {
     WindowManager.offAvoidAreaChange();
     WindowManager.offWindowChange();
     MessageManager.getInstance().stop();
-    VMManager.clearAll();
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {

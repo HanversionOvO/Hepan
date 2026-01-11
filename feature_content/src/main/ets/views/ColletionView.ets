@@ -1,4 +1,4 @@
-import { Collection, CommonConstant, VMManager } from 'base_common';
+import { Collection, CommonConstant } from 'base_common';
 import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { CollectionCard } from '../components/CollectionCard';
 import { collectionCreateSheetBuilder } from '../components/CollectionCreateSheet';

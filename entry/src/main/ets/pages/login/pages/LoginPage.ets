@@ -1,4 +1,4 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CommonConstant } from 'base_common';
 import { LoginButton } from '../components/LoginButton';
 import { LoginInput } from '../components/LoginInput';
 import { LoginPageVM } from '../viewmodels/LoginPageVM';

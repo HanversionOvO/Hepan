@@ -1,4 +1,4 @@
-import { CommonConstant, RecentMessage, RouterUtil, StackEnum, TransitionMap, VMManager } from 'base_common';
+import { CommonConstant, RecentMessage, RouterUtil, StackEnum, TransitionMap } from 'base_common';
 import { CustomNavTitle, CustomSearch, FloatButton } from 'base_ui';
 import { MessageCard } from '../components/MessageCard';
 import { MessageNotifyCard } from '../components/MessageNotifyCard';

@@ -1,4 +1,4 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CommonConstant } from 'base_common';
 import { MinePageImpl } from 'feature_mine';
 import { HomeNavBar } from '../components/HomeNavBar';
 import { HomePageVM } from '../viewmodels/HomePageVM';

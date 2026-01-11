@@ -1,5 +1,5 @@
 import { AppUtil } from '@pura/harmony-utils';
-import { CommonConstant, ToastUtil, VMManager } from 'base_common';
+import { CommonConstant, ToastUtil } from 'base_common';
 import { CustomMarkdown, FloatButton, GlassButton } from 'base_ui';
 import { DraftModel, DraftVM } from '../viewmodels/DraftVM';
 import { PostPageVM } from '../viewmodels/PostPageVM';
@@ -11,7 +11,7 @@ export function postDraftBuilder(pVM: PostPageVM) {
 
 @ComponentV2
 struct PostDraft {
-  @Local vm: DraftVM = VMManager.get(DraftVM, () => new DraftVM());
+  @Local vm: DraftVM = new DraftVM();
   @Param @Require pVM: PostPageVM;
   @Local isShowContent: boolean = false;
   @Local isHideSave: boolean = false;

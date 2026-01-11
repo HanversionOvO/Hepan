@@ -1,5 +1,5 @@
 import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, RouterUtil, VMManager } from 'base_common';
+import { CommonConstant, RouterUtil } from 'base_common';
 import { GlassButton, LoneTakeAnimationsTransition } from 'base_ui';
 import { SplashPageVM } from '../viewmodels/SplashPageVM';
 
@@ -15,8 +15,6 @@ struct SplashPage {
 
   aboutToDisappear(): void {
     this.vm.stopSplash();
-
-    VMManager.destroy(SplashPageVM);
   }
 
   build() {

@@ -1,4 +1,4 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CommonConstant } from 'base_common';
 import { CustomNavTitle, CustomTabBar } from 'base_ui';
 import { ContentPageVM } from '../viewmodels/ContentPageVM';
 import { ApplicationView } from '../views/ApplicationView';

@@ -1,4 +1,4 @@
-import { CommonConstant, VMManager } from 'base_common';
+import { CommonConstant } from 'base_common';
 import { ApplicationCard, ApplicationCardItem } from '../components/ApplicationCard';
 import { ApplicationVM } from '../viewmodels/ApplicationVM';
 
