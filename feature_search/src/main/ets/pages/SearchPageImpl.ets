@@ -25,7 +25,11 @@ export struct SearchPageImpl {
             CustomTabBar({
               vm: this.vm,
               tabItems: this.vm.tabItems,
-              alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
+              alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
+              currentIndex: this.vm.currentSearchIndex,
+              changeTab: (index: number) => {
+                this.vm.changeTab(index);
+              }
             })
           }
           .width(CommonConstant.FullPercent)
@@ -56,6 +60,16 @@ export struct SearchPageImpl {
     .onBackPressed(() => {
       this.vm.back();
       return true;
+    })
+    .onReady((navDestContext: NavDestinationContext) => {
+      let params = navDestContext.pathInfo?.param as Record<string, Object>;
+      if (params) {
+        if (params["searchType"]) {
+          if (params["searchType"] === "user") {
+            this.vm.currentSearchIndex = 1;
+          }
+        }
+      }
     })
   }
 }

@@ -8,6 +8,7 @@ export class SearchPageVM extends BaseVM {
     { label: $r('app.string.SearchPage_query_tie'), icon: $r('sys.symbol.book') },
     { label: $r('app.string.SearchPage_query_user'), icon: $r('sys.symbol.person') }
   ]
+  @Trace currentSearchIndex: number = 0;
 
   back() {
     AppUtil.getUIContext()
@@ -15,5 +16,9 @@ export class SearchPageVM extends BaseVM {
         () => {
           RouterUtil.pop(undefined, false);
         })
+  }
+
+  changeTab(index: number) {
+    this.currentSearchIndex = index;
   }
 }
