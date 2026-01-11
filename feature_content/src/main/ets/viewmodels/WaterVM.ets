@@ -5,7 +5,8 @@ import {
   WaterApi,
   WaterMission,
   WaterMissionState,
-  WaterModels
+  WaterModels,
+  WaterShopItem
 } from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties } from 'base_ui';
 
@@ -17,8 +18,10 @@ export class WaterVM extends BaseVM {
   @Trace isShowWaterDetailSheet: boolean = false;
   @Trace isLoadingMore: boolean = false;
   @Trace isRefreshMission: boolean = false;
+  @Trace isRefreshShop: boolean = false;
   @Trace currentPage: number = 1;
   @Trace columns: number = 2;
+  @Trace shopColumns: number = 2;
   @Trace tabItems: CustomTabItem[] = [
     { label: $r('app.string.WaterPage_get_water'), icon: $r('sys.symbol.light') },
     { label: $r('app.string.WaterPage_store'), icon: $r('sys.symbol.store') },
@@ -37,9 +40,16 @@ export class WaterVM extends BaseVM {
     lg: 2,
     xl: 3
   });
+  private shopColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 2,
+    lg: 4,
+    xl: 6
+  });
 
   updateGridConfig(bp: BreakpointNameEnum) {
     this.columns = this.defaultColumnsConfig.getValue(bp);
+    this.shopColumns = this.shopColumnsConfig.getValue(bp);
   }
 
   async loadData() {
@@ -76,6 +86,10 @@ export class WaterVM extends BaseVM {
     this.isRefreshMission = false;
 
     return [...newMissions, ...doingMissions, ...finishMissions, ...failMissions];
+  }
+
+  async getShop(): Promise<WaterShopItem[]> {
+    return await WaterApi.getWaterShop();
   }
 
   changeTab(index: number) {

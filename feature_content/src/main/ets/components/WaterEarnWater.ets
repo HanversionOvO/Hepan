@@ -72,7 +72,6 @@ export struct WaterEarnWater {
         Row() {
           Row({ space: CommonConstant.SmallContainerInnerPadding }) {
             Text(mission.mission_name)
-              .fontColor($r('sys.color.font_on_primary'))
               .fontSize(CommonConstant.TextSizeNormal)
               .fontWeight(FontWeight.Medium)
 
@@ -81,7 +80,7 @@ export struct WaterEarnWater {
 
           Text(`${ResUtil.getStringSync($r('app.string.WaterPage_mission_hot'))} ${mission.mission_hot.toString()}`)
             .fontSize(CommonConstant.TextSizeTiny)
-            .fontColor($r('sys.color.font_on_tertiary'))
+            .fontColor($r('sys.color.font_tertiary'))
         }
         .width(CommonConstant.FullPercent)
         .justifyContent(FlexAlign.SpaceBetween)
@@ -94,13 +93,13 @@ export struct WaterEarnWater {
 
           Text(mission.mission_reward)
             .fontSize(CommonConstant.TextSizeTiny)
-            .fontColor($r('sys.color.font_on_tertiary'))
+            .fontColor($r('sys.color.font_tertiary'))
         }
 
         if (mission.mission_desc) {
           Text(mission.mission_desc)
             .fontSize(CommonConstant.TextSizeSmall)
-            .fontColor($r('sys.color.font_on_secondary'))
+            .fontColor($r('sys.color.font_secondary'))
         }
 
         if (mission.mission_progress !== undefined) {
@@ -116,8 +115,7 @@ export struct WaterEarnWater {
     .alignItems(VerticalAlign.Top)
     .padding(CommonConstant.NormalContainerInnerPadding)
     .borderRadius(CommonConstant.RadiusNormal)
-    .backgroundColor($r('app.color.glass_background'))
-    .backgroundBlurStyle(BlurStyle.BACKGROUND_ULTRA_THICK)
+    .backgroundColor($r('app.color.start_window_background'))
     .opacity(mission.mission_state === WaterMissionState.FAIL ? 0.3 : 1)
   }
 

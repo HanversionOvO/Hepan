@@ -287,6 +287,14 @@
     {
       "name": "WaterPage_mission_hot",
       "value": "热度"
+    },
+    {
+      "name": "WaterPage_shop_buy",
+      "value": "兑换"
+    },
+    {
+      "name": "WaterPage_shop_cant_buy",
+      "value": "此道具不可兑换"
     }
   ]
 }

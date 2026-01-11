@@ -1,6 +1,6 @@
 import { Document, DomUtils } from '@ohos/htmlparser2';
 import { ApiClient } from './ApiClient';
-import { WaterMission, WaterMissionState, WaterModels, WaterRecord } from './models/WaterModels';
+import { WaterMission, WaterMissionState, WaterModels, WaterRecord, WaterShopItem } from './models/WaterModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
 
@@ -257,5 +257,108 @@ export class WaterApi {
     }
 
     return missions;
+  }
+
+  /**
+   * 获取道具商店列表 (水滴商店)
+   */
+  public static async getWaterShop(): Promise<WaterShopItem[]> {
+    const shopItems: WaterShopItem[] = [];
+    const baseUrl = ApiClient.getInstance().baseUrl;
+    ;
+
+    try {
+      // 1. 构造请求
+      const params: Record<string, string> = {
+        'mod': 'magic',
+        'action': 'shop'
+      };
+
+      // 2. 获取 HTML
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params);
+
+      // 3. 解析
+      // 查找列表容器: <ul class="mtm mgcl cl">
+      const listUl = DomUtils.findOne((elem) => {
+        return elem.tagName === 'ul' &&
+          !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('mgcl'));
+      }, doc.children, true);
+
+      if (!listUl) {
+        return shopItems;
+      }
+
+      // 查找所有 li
+      const lis = DomUtils.findAll((elem) => elem.tagName === 'li', listUl.children);
+
+      lis.forEach((li) => {
+        const item = new WaterShopItem();
+
+        // --- 1. 图标 (div.mg_img > img) ---
+        const imgDiv = DomUtils.findOne((elem) => {
+          return elem.tagName === 'div' &&
+            !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('mg_img'));
+        }, li.children);
+
+        if (imgDiv) {
+          const img = DomUtils.findOne((elem) => elem.tagName === 'img', imgDiv.children);
+          if (img && img.attribs && img.attribs['src']) {
+            let src = img.attribs['src'];
+            if (!src.startsWith('http')) {
+              src = baseUrl + '/' + src;
+            }
+            item.shop_icon = src;
+          }
+        }
+
+        // --- 2. 名称 (p > strong) ---
+        // 通常是第一个 p 标签
+        const pTags = DomUtils.findAll((elem) => elem.tagName === 'p', li.children);
+
+        // 第一个 p 通常是名称
+        if (pTags.length > 0) {
+          const strong = DomUtils.findOne((elem) => elem.tagName === 'strong', pTags[0].children);
+          if (strong) {
+            item.shop_name = DomUtils.textContent(strong).trim();
+          }
+        }
+
+        // --- 3. 价格 (第二个 p, 内容类似 "水滴 5 滴/张") ---
+        if (pTags.length > 1) {
+          const priceText = DomUtils.textContent(pTags[1]).trim();
+          // 匹配数字
+          const match = priceText.match(/(\d+)/);
+          if (match) {
+            item.shop_price = parseInt(match[1]);
+          }
+        }
+
+        // --- 4. 购买链接与状态 (查找 a 标签, href 包含 mid=) ---
+        const buyLink = DomUtils.findOne((elem) => {
+          return elem.tagName === 'a' &&
+            !!(elem.attribs && elem.attribs['href'] && elem.attribs['href'].includes('mid='));
+        }, li.children, true);
+
+        if (buyLink) {
+          item.can_buy = true;
+          // 提取 mid
+          const href = buyLink.attribs['href'];
+          const midMatch = href.match(/mid=([^&]+)/);
+          if (midMatch) {
+            item.shop_mid = midMatch[1];
+          }
+        } else {
+          item.can_buy = false;
+          item.shop_mid = "";
+        }
+
+        shopItems.push(item);
+      });
+
+    } catch (e) {
+      LogUtil.error(TAG, 'getWaterShop failed', JSON.stringify(e));
+    }
+
+    return shopItems;
   }
 }
