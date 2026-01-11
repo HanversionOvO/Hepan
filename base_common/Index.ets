@@ -12,6 +12,8 @@ export { UserAvatarUtil } from './src/main/ets/utils/UserAvatarUtil';
 
 export { AppPreferenceKeys, AuthPreferenceKeys, PreferenceUtil } from './src/main/ets/utils/PreferenceUtil';
 
+export { UrlUtil } from './src/main/ets/utils/UrlUtil';
+
 export { RouterUtil, RouterMap, StackEnum } from './src/main/ets/utils/RouterUtil';
 
 export { VMManager } from './src/main/ets/utils/VMManager';

@@ -7,6 +7,7 @@ import { AppPreferenceKeys, PreferenceUtil } from '../utils/PreferenceUtil';
 import { RouterMap, RouterUtil } from '../utils/RouterUtil';
 import { StorageManager } from '../utils/StorageManager';
 import { ToastUtil } from '../utils/ToastUtil';
+import { UrlUtil } from '../utils/UrlUtil';
 
 const TAG = '[ApiClient]: ';
 
@@ -38,8 +39,7 @@ export class ApiClient {
   private static instance: ApiClient | null = null;
   private baseUrlValue: string = CommonConstant.BASE_URL;
   private readonly legacyBasePath: string = '/mobcent/app/web/index.php';
-  private readonly USER_AGENT =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+  private readonly USER_AGENT = CommonConstant.USER_AGENT;
   private readonly cookieJar: Map<string, string> = new Map();
   private authorization: string = '';
   private isRedirecting: boolean = false; // 防止并发跳转
@@ -138,7 +138,7 @@ export class ApiClient {
   }
 
   public async request<T = Object>(options: ApiRequestOptions, isRetry: boolean = false): Promise<ApiResponse<T>> {
-    const requestUrl = this.buildUrl(options.path);
+    const requestUrl = UrlUtil.buildUrl(this.baseUrlValue, options.path);
 
     // 1. 请求前拦截：检查是否需要登录但本地无凭证
     if (options.includeAuthorization !== false) {
@@ -293,13 +293,6 @@ export class ApiClient {
     }
 
     return headers;
-  }
-
-  private buildUrl(path: string): string {
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path;
-    }
-    return `${this.baseUrl}${path}`;
   }
 
   private mergeCookies(setCookies: string[]): void {
@@ -471,7 +464,7 @@ export class ApiClient {
         'User-Agent': this.USER_AGENT
       } as Record<string, Object>;
 
-      let requestUrl = `${this.baseUrl}/${phpFile}`;
+      let requestUrl = UrlUtil.buildUrl(this.baseUrlValue, phpFile);
       let extraData: string | undefined = undefined;
 
       // 3. 根据 Method 处理参数位置
