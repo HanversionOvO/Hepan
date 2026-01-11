@@ -1,21 +1,22 @@
 import { BaseVM, InputOverlayStore, InputOverlayVisibilityEvent, RouterUtil, StorageManager } from 'base_common';
 import { HomeNavBarItem } from '../components/HomeNavBar';
 
-const TAG = '[HomePageVM]: ';
-
 @ObservedV2
 export class HomePageVM extends BaseVM {
   @Trace homeNavBarItem: HomeNavBarItem[] = [
-    { name: 'home', icon: $r('sys.symbol.house'), title: '首页' },
-    { name: 'video', icon: $r('sys.symbol.doc_plaintext_and_pencil'), title: '发帖' },
-    { name: 'message', icon: $r('sys.symbol.message_on_message'), title: '消息' },
-    { name: 'mine', icon: $r('sys.symbol.person'), title: '我的' }
+    { name: 'home', icon: $r('sys.symbol.house'), title: $r('app.string.HomePage_home') },
+    { name: 'video', icon: $r('sys.symbol.doc_plaintext_and_pencil'), title: $r('app.string.HomePage_post') },
+    { name: 'message', icon: $r('sys.symbol.message_on_message'), title: $r('app.string.HomePage_message') },
+    { name: 'mine', icon: $r('sys.symbol.person'), title: $r('app.string.HomePage_mine') }
   ];
   @Trace currentIndex: number = StorageManager.tabIndexModel.homeTabIndex;
   @Trace controller: TabsController = new TabsController();
-  @Trace isKeyBoardOpen: boolean = false;
   @Trace isInputOverlayOpen: boolean = false;
-  private inputOverlayListener: ((visible: boolean) => void) | null = null;
+  private inputOverlayListenerRegistered: boolean = false;
+  private navHideTimerId: number = -1;
+  private readonly inputOverlayListener = (visible: boolean): void => {
+    this.isInputOverlayOpen = visible;
+  };
 
   @Computed
   get isNavBarVisible(): boolean {
@@ -39,25 +40,66 @@ export class HomePageVM extends BaseVM {
   }
 
   startHome() {
-    if (!this.inputOverlayListener) {
-      this.inputOverlayListener = (visible: boolean) => {
-        this.isInputOverlayOpen = visible;
-      };
-      InputOverlayStore.on(InputOverlayVisibilityEvent, this.inputOverlayListener);
-    }
-    setTimeout(() => {
-      this.window.showNavigation = false
-    }, 50)
+    this.registerListeners();
+    this.syncStoredIndex();
+    this.scheduleHideNavigation();
   }
   
   aboutToDisappear() {
-    if (this.inputOverlayListener) {
-      InputOverlayStore.off(InputOverlayVisibilityEvent, this.inputOverlayListener);
-      this.inputOverlayListener = null;
-    }
+    this.unregisterListeners();
+    this.clearHideNavigationTimer();
   }
 
   changeNavBar(index: number) {
+    if (index < 0 || index >= this.homeNavBarItem.length) {
+      return;
+    }
+    if (this.currentIndex === index) {
+      return;
+    }
     this.currentIndex = index;
+    StorageManager.tabIndexModel.homeTabIndex = index;
+  }
+
+  private registerListeners(): void {
+    if (this.inputOverlayListenerRegistered) {
+      return;
+    }
+    InputOverlayStore.on(InputOverlayVisibilityEvent, this.inputOverlayListener);
+    this.inputOverlayListenerRegistered = true;
+  }
+
+  private unregisterListeners(): void {
+    if (!this.inputOverlayListenerRegistered) {
+      return;
+    }
+    InputOverlayStore.off(InputOverlayVisibilityEvent, this.inputOverlayListener);
+    this.inputOverlayListenerRegistered = false;
+    this.isInputOverlayOpen = false;
+  }
+
+  private scheduleHideNavigation(): void {
+    this.clearHideNavigationTimer();
+    this.navHideTimerId = setTimeout(() => {
+      this.window.showNavigation = false;
+      this.navHideTimerId = -1;
+    }, 50);
+  }
+
+  private clearHideNavigationTimer(): void {
+    if (this.navHideTimerId !== -1) {
+      clearTimeout(this.navHideTimerId);
+      this.navHideTimerId = -1;
+    }
+  }
+
+  private syncStoredIndex(): void {
+    const storedIndex = StorageManager.tabIndexModel.homeTabIndex;
+    if (storedIndex < 0 || storedIndex >= this.homeNavBarItem.length) {
+      StorageManager.tabIndexModel.homeTabIndex = 0;
+      this.currentIndex = 0;
+      return;
+    }
+    this.currentIndex = storedIndex;
   }
 }

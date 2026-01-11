@@ -75,6 +75,22 @@
     {
       "name": "Home_please_login_content",
       "value": "您的登录信息已过期，请重新登录"
+    },
+    {
+      "name": "HomePage_home",
+      "value": "首页"
+    },
+    {
+      "name": "HomePage_post",
+      "value": "发帖"
+    },
+    {
+      "name": "HomePage_message",
+      "value": "消息"
+    },
+    {
+      "name": "HomePage_mine",
+      "value": "我的"
     }
   ]
 }

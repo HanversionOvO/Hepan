@@ -8,7 +8,7 @@ const TAG = "[HomeNavBar]: ";
 export interface HomeNavBarItem {
   name: string;
   icon: Resource;
-  title: string;
+  title: ResourceStr;
 }
 
 @ComponentV2
@@ -79,7 +79,6 @@ export struct HomeNavBar {
   aboutToAppear(): void {
     window.getLastWindow(this.getUIContext().getHostContext()).then(currentWindow => {
       currentWindow.on('keyboardHeightChange', (data: number) => {
-        this.vm.isKeyBoardOpen = data > 0;
         InputOverlayStore.emit(InputOverlayVisibilityEvent, data > 0);
       })
     })

@@ -11,6 +11,8 @@ export class SplashPageVM extends BaseVM {
   private timerId: number = -1;
   private isNavigating: boolean = false;
   private isCheckingLogin: boolean = false;
+  private isCountdownFinished: boolean = false;
+  private pendingRoute: string | null = null;
 
   /**
    * 开始启动流程
@@ -18,19 +20,19 @@ export class SplashPageVM extends BaseVM {
   startSplash() {
     this.bpUtil = new BreakPointUtil(AppUtil.getUIContext().getMediaQuery());
     this.bpUtil?.register();
+    this.isCountdownFinished = false;
+    this.pendingRoute = null;
     // 避免重复启动
-    if (this.timerId !== -1) {
-      return;
+    if (this.timerId === -1) {
+      this.timerId = setInterval(() => {
+        this.countDown--;
+        if (this.countDown <= 0) {
+          this.jumpToNext();
+        }
+      }, 1000);
     }
 
-    this.timerId = setInterval(() => {
-      this.countDown--;
-      if (this.countDown <= 0) {
-        this.jumpToNext();
-      }
-    }, 1000);
-
-    // 进入启动页后立即检查登录并尝试自动登录
+    // 进入启动页后立即检查登录并尝试自动登录（与倒计时并行）
     this.startLoginCheck();
   }
 
@@ -41,10 +43,14 @@ export class SplashPageVM extends BaseVM {
     if (this.isNavigating) {
       return;
     }
-    if (this.isCheckingLogin) {
-      return;
+    this.isCountdownFinished = true;
+    if (this.timerId !== -1) {
+      clearInterval(this.timerId);
+      this.timerId = -1;
     }
-    this.startLoginCheck();
+    if (this.pendingRoute) {
+      this.navigateTo(this.pendingRoute);
+    }
   }
 
   private startLoginCheck() {
@@ -69,17 +75,20 @@ export class SplashPageVM extends BaseVM {
           // 尝试使用存储的密码自动登录以获取最新凭证
           await AuthApi.getInstance().login(authModel.username, authModel.password);
           // 登录成功，跳转首页
-          this.navigateTo(RouterMap.HOME);
+          this.pendingRoute = RouterMap.HOME;
         } catch (e) {
           LogUtil.warn(TAG, '启动页自动登录失败，跳转登录页');
-          this.navigateTo(RouterMap.LOGIN);
+          this.pendingRoute = RouterMap.LOGIN;
         }
       } else {
         // 未登录/无密码记录 -> 跳转登录页
-        this.navigateTo(RouterMap.LOGIN);
+        this.pendingRoute = RouterMap.LOGIN;
       }
     } finally {
       this.isCheckingLogin = false;
+      if (this.isCountdownFinished && this.pendingRoute) {
+        this.navigateTo(this.pendingRoute);
+      }
     }
   }
 
