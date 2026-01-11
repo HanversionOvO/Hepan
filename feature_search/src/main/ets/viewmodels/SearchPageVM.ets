@@ -38,6 +38,7 @@ export class SearchPageVM extends BaseVM {
   ]
   @Trace currentSearchIndex: number = 0;
   @Trace columns: number = 2;
+  @Trace postColumn: number = 2;
   // 搜索相关状态
   @Trace searchStatus: SearchStatus = SearchStatus.QUERY;
   @Trace keyword: string = '';
@@ -77,9 +78,16 @@ export class SearchPageVM extends BaseVM {
     lg: 4,
     xl: 5
   });
+  private postColumnsConfig = new BreakpointType({
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 5
+  })
 
   updateGridConfig(bp: BreakpointNameEnum) {
     this.columns = this.defaultColumnsConfig.getValue(bp);
+    this.postColumn = this.postColumnsConfig.getValue(bp);
   }
 
   back() {

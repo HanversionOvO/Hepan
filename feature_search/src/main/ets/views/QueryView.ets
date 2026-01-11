@@ -113,7 +113,7 @@ export struct QueryView {
     .animation({ duration: CommonConstant.AnimationDurationNormal })
     .onClick(() => {
       if (!this.vm.isHistoryDeleteMode) {
-        this.vm.onSearchSubmit(keyword);
+        this.vm.onSearchSubmit(keyword)
       }
     })
     .gesture(
