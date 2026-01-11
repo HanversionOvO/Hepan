@@ -4,6 +4,7 @@ import { WaterVM } from '../viewmodels/WaterVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
 import { WaterEarnWater } from '../components/WaterEarnWater';
+import { WaterShop } from '../components/WaterShop';
 
 @ComponentV2
 export struct WaterView {
@@ -197,7 +198,7 @@ export struct WaterView {
         }
 
         TabContent() {
-          Text("2")
+          WaterShop({ vm: this.vm })
         }
 
         TabContent() {
