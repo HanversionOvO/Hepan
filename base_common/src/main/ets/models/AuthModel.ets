@@ -1,17 +1,8 @@
 import { LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from '../api/ApiClient';
-import { PreferenceUtil } from '../utils/PreferenceUtil';
+import { AuthPreferenceKeys, PreferenceUtil } from '../utils/PreferenceUtil';
 
 const TAG = '[AuthModel]';
-const PREF_NAME = 'auth_data_pref';
-const KEY_AUTH = 'authorization';
-const KEY_COOKIE = 'cookie';
-const KEY_UID = 'uid';
-const KEY_USERNAME = 'username';
-const KEY_PASSWORD = 'password';
-const KEY_ACCESS_TOKEN = 'access_token';
-const KEY_ACCESS_SECRET = 'access_secret';
-
 @ObservedV2
 export class AuthModel {
   @Trace authorization: string = '';
@@ -50,14 +41,14 @@ export class AuthModel {
    * 保存数据到首选项
    */
   public saveToDisk(): void {
-    const saved = PreferenceUtil.write(PREF_NAME, (pref) => {
-      pref.putSync(KEY_AUTH, this.authorization);
-      pref.putSync(KEY_COOKIE, this.cookie);
-      pref.putSync(KEY_UID, this.uid);
-      pref.putSync(KEY_USERNAME, this.username);
-      pref.putSync(KEY_PASSWORD, this.password);
-      pref.putSync(KEY_ACCESS_TOKEN, this.accessToken);
-      pref.putSync(KEY_ACCESS_SECRET, this.accessSecret);
+    const saved = PreferenceUtil.write(AuthPreferenceKeys.prefName, (pref) => {
+      pref.putSync(AuthPreferenceKeys.authorization, this.authorization);
+      pref.putSync(AuthPreferenceKeys.cookie, this.cookie);
+      pref.putSync(AuthPreferenceKeys.uid, this.uid);
+      pref.putSync(AuthPreferenceKeys.username, this.username);
+      pref.putSync(AuthPreferenceKeys.password, this.password);
+      pref.putSync(AuthPreferenceKeys.accessToken, this.accessToken);
+      pref.putSync(AuthPreferenceKeys.accessSecret, this.accessSecret);
     });
     if (saved) {
       LogUtil.info(TAG, 'Auth data saved to disk.');
@@ -68,14 +59,14 @@ export class AuthModel {
    * 从首选项加载数据
    */
   private loadFromDisk(): void {
-    const loaded = PreferenceUtil.read(PREF_NAME, (pref) => {
-      this.authorization = pref.getSync(KEY_AUTH, '') as string;
-      this.cookie = pref.getSync(KEY_COOKIE, '') as string;
-      this.uid = pref.getSync(KEY_UID, 0) as number;
-      this.username = pref.getSync(KEY_USERNAME, '') as string;
-      this.password = pref.getSync(KEY_PASSWORD, '') as string;
-      this.accessToken = pref.getSync(KEY_ACCESS_TOKEN, '') as string;
-      this.accessSecret = pref.getSync(KEY_ACCESS_SECRET, '') as string;
+    const loaded = PreferenceUtil.read(AuthPreferenceKeys.prefName, (pref) => {
+      this.authorization = pref.getSync(AuthPreferenceKeys.authorization, '') as string;
+      this.cookie = pref.getSync(AuthPreferenceKeys.cookie, '') as string;
+      this.uid = pref.getSync(AuthPreferenceKeys.uid, 0) as number;
+      this.username = pref.getSync(AuthPreferenceKeys.username, '') as string;
+      this.password = pref.getSync(AuthPreferenceKeys.password, '') as string;
+      this.accessToken = pref.getSync(AuthPreferenceKeys.accessToken, '') as string;
+      this.accessSecret = pref.getSync(AuthPreferenceKeys.accessSecret, '') as string;
       return true;
     }, false);
 
