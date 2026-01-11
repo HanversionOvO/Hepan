@@ -190,7 +190,25 @@ export struct WaterView {
   @Builder
   WaterContent() {
     Column() {
-      Text("test")
+      Tabs({ index: this.vm.currentIndex }) {
+        TabContent() {
+          this.EarnWater()
+        }
+
+        TabContent() {
+          Text("2")
+        }
+
+        TabContent() {
+          Text("3")
+        }
+
+        TabContent() {
+          Text("4")
+        }
+      }
+      .barHeight(0)
+      .scrollable(false)
     }
     .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor($r('app.color.glass_background'))
@@ -199,6 +217,11 @@ export struct WaterView {
     .width(CommonConstant.FullPercent)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
     .layoutWeight(1)
+  }
+
+  @Builder
+  EarnWater() {
+
   }
 
   build() {
@@ -234,8 +257,12 @@ export struct WaterView {
             tabItems: this.vm.tabItems,
             vm: this.vm,
             isGlassStyle: true,
+            currentIndex: this.vm.currentIndex,
             isMax: this.vm.isTabletView ? true : false,
-            alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center
+            alignMode: this.vm.isTabletView ? FlexAlign.Start : FlexAlign.Center,
+            changeTab: (index: number) => {
+              this.vm.changeTab(index)
+            }
           })
 
           this.WaterContent()

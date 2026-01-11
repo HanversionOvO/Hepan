@@ -5,6 +5,7 @@ import { CustomTabItem, LongTakeAnimationProperties } from 'base_ui';
 export class WaterVM extends BaseVM {
   @Trace longTakeSession: LongTakeAnimationProperties = new LongTakeAnimationProperties();
   @Trace water: WaterModels = new WaterModels();
+  @Trace currentIndex: number = 0;
   @Trace isShowWaterDetailSheet: boolean = false;
   @Trace isLoadingMore: boolean = false;
   @Trace currentPage: number = 1;
@@ -37,5 +38,9 @@ export class WaterVM extends BaseVM {
     }
 
     this.isLoadingMore = false;
+  }
+
+  changeTab(index: number) {
+    this.currentIndex = index;
   }
 }
