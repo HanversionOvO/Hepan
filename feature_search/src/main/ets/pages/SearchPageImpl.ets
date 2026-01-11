@@ -40,6 +40,12 @@ export struct SearchPageImpl {
             bottomLeft: CommonConstant.RadiusLarge,
             bottomRight: CommonConstant.RadiusLarge
           })
+
+          Column() {
+
+          }
+          .width(CommonConstant.FullPercent)
+          .layoutWeight(1)
         }
         .width(CommonConstant.FullPercent)
         .layoutWeight(1)
