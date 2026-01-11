@@ -62,7 +62,7 @@ export struct SearchPageImpl {
             } else if (this.vm.searchStatus === SearchStatus.REVIEW) {
               ReviewView({ vm: this.vm })
             } else if (this.vm.searchStatus === SearchStatus.RESULT) {
-              ResultView()
+              ResultView({ vm: this.vm })
             }
           }
           .width(CommonConstant.FullPercent)

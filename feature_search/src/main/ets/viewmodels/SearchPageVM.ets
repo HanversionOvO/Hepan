@@ -7,6 +7,7 @@ import {
   BreakpointType,
   CommonConstant,
   ForumTieSummary,
+  RouterMap,
   RouterUtil,
   SearchApi,
   SearchSummaryData,
@@ -14,7 +15,9 @@ import {
   ToastUtil,
   UiState
 } from 'base_common';
-import { CustomTabItem } from 'base_ui';
+import { CustomTabItem, LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
+import { curves } from '@kit.ArkUI';
+import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
 
 // 搜索状态枚举
 export enum SearchStatus {
@@ -39,10 +42,13 @@ export class SearchPageVM extends BaseVM {
   @Trace searchStatus: SearchStatus = SearchStatus.QUERY;
   @Trace keyword: string = '';
   // 历史记录相关
-  @Trace searchHistory: string[] = []; // 搜索历史列表
-  @Trace historyUiState: UiState = UiState.EMPTY; // 历史记录区域的状态
-  @Trace isHistoryDeleteMode: boolean = false; // 是否处于删除模式
-
+  @Trace searchHistory: string[] = [];
+  @Trace historyUiState: UiState = UiState.EMPTY;
+  @Trace isHistoryDeleteMode: boolean = false;
+  // 搜索结果相关 UI 状态 [新增]
+  @Trace resultUiState: UiState = UiState.LOADING;
+  // 页面缩放比例（用于一镜到底转场动画） [新增]
+  @Trace pageScale: number = 1.0;
   // 预览数据
   @Trace searchSummary: SearchSummaryData | null = null;
   // 结果数据
@@ -89,6 +95,7 @@ export class SearchPageVM extends BaseVM {
       return;
     }
     this.currentSearchIndex = index;
+    // 切换 Tab 时，如果有搜索词且在结果页，立即执行新类型的搜索
     if (this.searchStatus === SearchStatus.RESULT && this.keyword.trim().length > 0) {
       this.doSearch(true);
     }
@@ -104,6 +111,7 @@ export class SearchPageVM extends BaseVM {
       this.searchSummary = null;
       return;
     }
+    // 输入时只请求预览，不改变 Result 状态
     this.debounceTimer = setTimeout(() => {
       this.fetchSearchSummary(value);
     }, 500);
@@ -121,34 +129,25 @@ export class SearchPageVM extends BaseVM {
     // 保存搜索历史
     this.addHistory(value);
 
+    // 执行搜索
     this.doSearch(true);
   }
 
   // ================= 历史记录逻辑 =================
-
-  /**
-   * 添加历史记录
-   */
+  // (保持原有逻辑不变)
   addHistory(keyword: string) {
-    // 移除已存在的相同关键词，将其移到最前
     const index = this.searchHistory.indexOf(keyword);
     if (index !== -1) {
       this.searchHistory.splice(index, 1);
     }
     this.searchHistory.unshift(keyword);
-
-    // 限制历史记录数量，例如 20 条
     if (this.searchHistory.length > 20) {
       this.searchHistory.pop();
     }
-
     this.updateHistoryState();
     this.saveHistoryToDisk();
   }
 
-  /**
-   * 删除单条历史
-   */
   deleteHistoryItem(keyword: string) {
     const index = this.searchHistory.indexOf(keyword);
     if (index !== -1) {
@@ -158,9 +157,6 @@ export class SearchPageVM extends BaseVM {
     }
   }
 
-  /**
-   * 清空所有历史
-   */
   clearHistory() {
     this.searchHistory = [];
     this.updateHistoryState();
@@ -168,53 +164,32 @@ export class SearchPageVM extends BaseVM {
     this.saveHistoryToDisk();
   }
 
-  /**
-   * 更新历史记录页面的 UI 状态
-   */
   private updateHistoryState() {
-    if (this.searchHistory.length > 0) {
-      this.historyUiState = UiState.SUCCESS;
-    } else {
-      this.historyUiState = UiState.EMPTY;
-    }
+    this.historyUiState = this.searchHistory.length > 0 ? UiState.SUCCESS : UiState.EMPTY;
   }
 
-  /**
-   * 退出删除模式
-   */
   exitDeleteMode() {
     this.isHistoryDeleteMode = false;
   }
 
-  // ================= 持久化存储逻辑 =================
-
-  /**
-   * 保存历史记录到首选项
-   */
   private saveHistoryToDisk(): void {
     try {
       const context = AppUtil.getContext();
       const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
       pref.putSync(KEY_SEARCH_HISTORY, this.searchHistory);
-      pref.flush(); // 强制刷盘
+      pref.flush();
     } catch (err) {
       LogUtil.error(TAG, 'Failed to save search history', JSON.stringify(err));
     }
   }
 
-  /**
-   * 从首选项加载历史记录
-   */
   private loadHistoryFromDisk(): void {
     try {
       const context = AppUtil.getContext();
       const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
-      // 读取字符串数组，如果不存在则返回空数组
       const history = pref.getSync(KEY_SEARCH_HISTORY, []) as string[];
-      // 注意：Preferences 取出的数组可能是 Proxy 对象或者不可变对象，建议浅拷贝一份
       this.searchHistory = [...history];
       this.updateHistoryState();
-      LogUtil.info(TAG, `Search history loaded. Count: ${this.searchHistory.length}`);
     } catch (err) {
       LogUtil.error(TAG, 'Failed to load search history', JSON.stringify(err));
       this.searchHistory = [];
@@ -243,10 +218,11 @@ export class SearchPageVM extends BaseVM {
     }
     this.searchStatus = SearchStatus.RESULT;
     this.isLoading = true;
-    // 退出删除模式
     this.exitDeleteMode();
 
     if (refresh) {
+      // 刷新时重置状态为 LOADING
+      this.resultUiState = UiState.LOADING;
       this.page = 1;
       this.hasMore = true;
       if (this.currentSearchIndex === 0) {
@@ -258,9 +234,15 @@ export class SearchPageVM extends BaseVM {
 
     try {
       if (this.currentSearchIndex === 0) {
+        // --- 搜帖子 ---
         const result = await SearchApi.searchThreads(this.keyword, this.page);
         if (refresh) {
-          this.threadListDataSource.setData(result.rows);
+          if (result.rows.length === 0) {
+            this.resultUiState = UiState.EMPTY;
+          } else {
+            this.resultUiState = UiState.SUCCESS;
+            this.threadListDataSource.setData(result.rows);
+          }
         } else {
           result.rows.forEach(item => {
             this.threadListDataSource.pushData(item)
@@ -268,9 +250,15 @@ export class SearchPageVM extends BaseVM {
         }
         this.hasMore = result.rows.length >= result.page_size;
       } else {
+        // --- 搜用户 ---
         const result = await SearchApi.searchUsers(this.keyword, this.page);
         if (refresh) {
-          this.userListDataSource.setData(result.rows);
+          if (result.rows.length === 0) {
+            this.resultUiState = UiState.EMPTY;
+          } else {
+            this.resultUiState = UiState.SUCCESS;
+            this.userListDataSource.setData(result.rows);
+          }
         } else {
           result.rows.forEach(item => {
             this.userListDataSource.pushData(item)
@@ -278,20 +266,63 @@ export class SearchPageVM extends BaseVM {
         }
         this.hasMore = result.rows.length >= result.page_size;
       }
+
       if (this.hasMore) {
         this.page++;
       }
     } catch (e) {
       LogUtil.error(TAG, `Search failed: ${JSON.stringify(e)}`);
-      ToastUtil.showError('搜索失败: ' + (e.message || '网络错误'));
+      // 只有刷新失败才显示错误页，加载更多失败只弹吐司
+      if (refresh) {
+        this.resultUiState = UiState.ERROR;
+      } else {
+        ToastUtil.showError('加载更多失败: ' + (e.message || '网络错误'));
+      }
     } finally {
       this.isLoading = false;
     }
   }
 
   loadMore() {
-    if (!this.isLoading && this.hasMore) {
+    if (!this.isLoading && this.hasMore && this.resultUiState === UiState.SUCCESS) {
       this.doSearch(false);
     }
+  }
+
+  // ================= 详情页跳转与动画逻辑 =================
+
+  /**
+   * 进入帖子详情页，带一镜到底动画
+   */
+  enterDetailPage(tid: string, context: UIContext, tieSummary: ForumTieSummary) {
+    let options: LongTakeTransitionOptions = {
+      onEnterTransitionStart: () => {
+        // 进场时缩放页面
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 0.95;
+        })
+      },
+      onBackTransitionStart: () => {
+        // 返回时恢复页面
+        context.animateTo({ curve: curves.springMotion(0.35, 0.75) }, () => {
+          this.pageScale = 1.0;
+        })
+      }
+    };
+
+    let longTakeTransitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context,
+        tid, CommonConstant.RadiusLarge, options);
+
+    const params: Record<string, Object> = {};
+
+    if (longTakeTransitionParam) {
+      let transitionParam: LongTakeTransitionParam = longTakeTransitionParam;
+      params["transition"] = transitionParam;
+    }
+
+    params["tieSummary"] = tieSummary;
+
+    RouterUtil.pushPathByName(RouterMap.TIE_CONTENT_PAGE, params);
   }
 }
