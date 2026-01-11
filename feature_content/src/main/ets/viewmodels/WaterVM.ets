@@ -9,7 +9,8 @@ export class WaterVM extends BaseVM {
   @Trace tabItems: CustomTabItem[] = [
     { label: $r('app.string.WaterPage_get_water'), icon: $r('sys.symbol.light') },
     { label: $r('app.string.WaterPage_store'), icon: $r('sys.symbol.store') },
-    { label: $r('app.string.WaterPage_backpack'), icon: $r('sys.symbol.card_package') }
+    { label: $r('app.string.WaterPage_backpack'), icon: $r('sys.symbol.card_package') },
+    { label: $r('app.string.WaterPage_transfer'), icon: $r('sys.symbol.wallet') }
   ];
 
   async loadData() {

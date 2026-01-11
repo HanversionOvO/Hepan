@@ -263,6 +263,10 @@
     {
       "name": "WaterPage_backpack",
       "value": "背包"
+    },
+    {
+      "name": "WaterPage_transfer",
+      "value": "水滴转账"
     }
   ]
 }
