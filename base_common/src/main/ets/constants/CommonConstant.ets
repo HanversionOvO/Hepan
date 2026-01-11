@@ -1,6 +1,8 @@
 import { curves } from '@kit.ArkUI';
 
 export class CommonConstant {
+  // 网络相关
+  static readonly BASE_URL: string = "https://bbs.uestc.edu.cn";
   // 尺寸相关
   // 控件尺寸
   static readonly FullPercent: string = "100%"; // 全尺寸

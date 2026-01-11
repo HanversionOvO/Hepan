@@ -14,6 +14,11 @@ export class AuthPreferenceKeys {
   public static readonly accessSecret: string = 'access_secret';
 }
 
+export class AppPreferenceKeys {
+  public static readonly prefName: string = 'app_pref';
+  public static readonly baseUrl: string = 'base_url';
+}
+
 export class PreferenceUtil {
   public static read<T>(name: string, action: (pref: preferences.Preferences) => T, fallback: T): T {
     try {

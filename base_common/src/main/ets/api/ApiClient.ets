@@ -1,7 +1,9 @@
 import http from '@ohos.net.http';
 import { Document, parseDocument } from '@ohos/htmlparser2';
 import { LogUtil } from '@pura/harmony-utils';
+import { CommonConstant } from '../constants/CommonConstant';
 import { LegacyUtil } from '../utils/LegacyUtil';
+import { AppPreferenceKeys, PreferenceUtil } from '../utils/PreferenceUtil';
 import { RouterMap, RouterUtil } from '../utils/RouterUtil';
 import { StorageManager } from '../utils/StorageManager';
 import { ToastUtil } from '../utils/ToastUtil';
@@ -34,8 +36,8 @@ export interface ApiResponse<T = Object> {
  */
 export class ApiClient {
   private static instance: ApiClient | null = null;
-  public readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
-  private readonly legacyBaseUrl: string = 'https://bbs.uestc.edu.cn/mobcent/app/web/index.php';
+  private baseUrlValue: string = CommonConstant.BASE_URL;
+  private readonly legacyBasePath: string = '/mobcent/app/web/index.php';
   private readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
   private readonly cookieJar: Map<string, string> = new Map();
@@ -44,6 +46,7 @@ export class ApiClient {
   private reLoginHandler: ReLoginHandler | null = null;
 
   private constructor() {
+    this.initBaseUrl();
   }
 
   public static getInstance(): ApiClient {
@@ -59,6 +62,15 @@ export class ApiClient {
 
   public setAuthorization(token: string): void {
     this.authorization = token || '';
+  }
+
+  public setBaseUrl(url: string): void {
+    const normalized = this.normalizeBaseUrl(url);
+    const finalUrl = normalized ? normalized : CommonConstant.BASE_URL;
+    this.baseUrlValue = finalUrl;
+    PreferenceUtil.write(AppPreferenceKeys.prefName, (pref) => {
+      pref.putSync(AppPreferenceKeys.baseUrl, finalUrl);
+    });
   }
 
   public setCookieString(cookieStr: string): void {
@@ -78,6 +90,31 @@ export class ApiClient {
         this.cookieJar.set(key, value);
       }
     }
+  }
+
+  private initBaseUrl(): void {
+    const stored = PreferenceUtil.read<string>(AppPreferenceKeys.prefName, (pref) => {
+      return pref.getSync(AppPreferenceKeys.baseUrl, '') as string;
+    }, '');
+    if (stored) {
+      this.baseUrlValue = this.normalizeBaseUrl(stored);
+      return;
+    }
+
+    const saved = PreferenceUtil.write(AppPreferenceKeys.prefName, (pref) => {
+      pref.putSync(AppPreferenceKeys.baseUrl, CommonConstant.BASE_URL);
+    });
+    if (saved) {
+      this.baseUrlValue = CommonConstant.BASE_URL;
+    }
+  }
+
+  private normalizeBaseUrl(url: string): string {
+    const trimmed = url.trim();
+    if (trimmed.endsWith('/')) {
+      return trimmed.slice(0, -1);
+    }
+    return trimmed;
   }
 
   public clearAuthorization(): void {
@@ -306,7 +343,7 @@ export class ApiClient {
     params: Record<string, Object> = {}
   ): Promise<ApiResponse<T>> {
     const rParam = `${module}/${action}`;
-    const requestUrl = `${this.legacyBaseUrl}?r=${rParam}`;
+    const requestUrl = `${this.baseUrlValue}${this.legacyBasePath}?r=${rParam}`;
 
     const apphash = await LegacyUtil.getAppHashValue();
     const authModel = StorageManager.authModel;
@@ -431,9 +468,7 @@ export class ApiClient {
       // 2. 构造 Header
       const headers = {
         'Cookie': this.getCookieHeader(),
-        'User-Agent': this.USER_AGENT,
-        'Referer': 'https://bbs.uestc.edu.cn/',
-        'Host': 'bbs.uestc.edu.cn'
+        'User-Agent': this.USER_AGENT
       } as Record<string, Object>;
 
       let requestUrl = `${this.baseUrl}/${phpFile}`;
@@ -495,5 +530,9 @@ export class ApiClient {
     } finally {
       httpRequest.destroy();
     }
+  }
+
+  public get baseUrl(): string {
+    return this.baseUrlValue;
   }
 }
