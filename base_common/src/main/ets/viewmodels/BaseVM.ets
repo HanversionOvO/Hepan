@@ -14,7 +14,6 @@ export abstract class BaseVM {
   @Trace window: WindowModel = StorageManager.windowModel; // 窗口信息
   @Trace breakPoint: BreakPointModel = StorageManager.breakPointModel; // 断点信息
   @Trace uiState: UiState = UiState.SUCCESS;
-  @Trace isLoading: boolean = false;
 
   @Computed
   get isTabletView(): boolean {
@@ -22,23 +21,31 @@ export abstract class BaseVM {
       this.breakPoint.currentBreakPoint === BreakpointNameEnum.XL;
   }
 
-  loadData() {
-
+  protected setUiState(state: UiState): void {
+    this.uiState = state;
   }
 
-  showLoading() {
-    this.uiState = UiState.LOADING;
-  }
-
-  showSuccess() {
+  protected setUiStateByList<T>(list: Array<T> | null | undefined): void {
+    if (!list || list.length === 0) {
+      this.uiState = UiState.EMPTY;
+      return;
+    }
     this.uiState = UiState.SUCCESS;
   }
 
+  showLoading() {
+    this.setUiState(UiState.LOADING);
+  }
+
+  showSuccess() {
+    this.setUiState(UiState.SUCCESS);
+  }
+
   showError() {
-    this.uiState = UiState.ERROR;
+    this.setUiState(UiState.ERROR);
   }
 
   showEmpty() {
-    this.uiState = UiState.EMPTY;
+    this.setUiState(UiState.EMPTY);
   }
 }
