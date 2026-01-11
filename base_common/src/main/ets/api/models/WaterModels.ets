@@ -41,3 +41,10 @@ export class WaterShopItem {
   @Trace can_buy: boolean = true; // 是否可购买
   @Trace shop_price: number = 0; // 道具价格
 }
+
+@ObservedV2
+export class WaterBackpackItem {
+  @Trace backpack_icon: string = ""; // 道具图标
+  @Trace backpack_name: string = ""; // 道具名称
+  @Trace backpack_nums: number = 0; // 道具数量
+}

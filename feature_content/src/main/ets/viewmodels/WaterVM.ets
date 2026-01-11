@@ -19,6 +19,7 @@ export class WaterVM extends BaseVM {
   @Trace isLoadingMore: boolean = false;
   @Trace isRefreshMission: boolean = false;
   @Trace isRefreshShop: boolean = false;
+  @Trace isRefreshBackpack: boolean = false;
   @Trace currentPage: number = 1;
   @Trace columns: number = 2;
   @Trace shopColumns: number = 2;
