@@ -32,3 +32,12 @@ export class WaterMission {
   @Trace mission_reward_value: string = "" // 奖励值
   @Trace mission_progress?: number; // 任务进度 (只有进行中的任务有)
 }
+
+@ObservedV2
+export class WaterShopItem {
+  @Trace shop_mid: string = ""; // 道具ID
+  @Trace shop_icon: string = ""; // 道具图标
+  @Trace shop_name: string = ""; // 道具名称
+  @Trace can_buy: boolean = true; // 是否可购买
+  @Trace shop_price: number = 0; // 道具价格
+}
