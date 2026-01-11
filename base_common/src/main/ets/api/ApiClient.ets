@@ -97,8 +97,11 @@ export class ApiClient {
       return pref.getSync(AppPreferenceKeys.baseUrl, '') as string;
     }, '');
     if (stored) {
-      this.baseUrlValue = this.normalizeBaseUrl(stored);
-      return;
+      const normalizedStored = this.normalizeBaseUrl(stored);
+      if (normalizedStored) {
+        this.baseUrlValue = normalizedStored;
+        return;
+      }
     }
 
     const saved = PreferenceUtil.write(AppPreferenceKeys.prefName, (pref) => {
@@ -208,18 +211,7 @@ export class ApiClient {
       }
       const parsedResult = this.parseResult<T>(response.result, expectJson);
 
-      let responseHeaders: Record<string, string | string[]> = {};
-      if (response.header) {
-        let headerObj = response.header as Record<string, string | string[]>;
-        let keys = Object.keys(headerObj);
-        for (let i = 0; i < keys.length; i++) {
-          let key = keys[i];
-          let value = headerObj[key];
-          if (value !== undefined) {
-            responseHeaders[key] = value;
-          }
-        }
-      }
+      const responseHeaders = this.extractResponseHeaders(response);
 
       return {
         status: response.responseCode,
@@ -230,7 +222,10 @@ export class ApiClient {
       };
     } catch (error) {
       LogUtil.error(TAG, `Request failed for ${requestUrl}`, JSON.stringify(error));
-      throw new Error(error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(String(error));
     } finally {
       httpRequest.destroy();
     }
@@ -273,19 +268,18 @@ export class ApiClient {
     }
 
     if (options.requireNewApiHeader) {
-      if (!headers['X-Uestc-Bbs']) {
+      if (!this.hasHeader(headers, 'X-Uestc-Bbs')) {
         headers['X-Uestc-Bbs'] = '1';
       }
     }
 
     if (options.includeAuthorization !== false && this.authorization) {
-      if (!headers['Authorization']) {
+      if (!this.hasHeader(headers, 'Authorization')) {
         headers['Authorization'] = this.authorization;
       }
     }
 
-    const hasCookieHeader = headers['Cookie'] || headers['cookie'];
-    if (options.includeCookie !== false && !hasCookieHeader) {
+    if (options.includeCookie !== false && !this.hasHeader(headers, 'Cookie')) {
       const cookieHeader = this.getCookieHeader();
       if (cookieHeader) {
         headers['Cookie'] = cookieHeader;
@@ -293,6 +287,45 @@ export class ApiClient {
     }
 
     return headers;
+  }
+
+  private hasHeader(headers: Record<string, string>, key: string): boolean {
+    const target = key.toLowerCase();
+    const keys = Object.keys(headers);
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].toLowerCase() === target) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private extractResponseHeaders(response: http.HttpResponse): Record<string, string | string[]> {
+    let responseHeaders: Record<string, string | string[]> = {};
+    if (!response.header) {
+      return responseHeaders;
+    }
+    let headerObj = response.header as Record<string, string | string[]>;
+    let keys = Object.keys(headerObj);
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      let value = headerObj[key];
+      if (value !== undefined) {
+        responseHeaders[key] = value;
+      }
+    }
+    return responseHeaders;
+  }
+
+  private buildUrlEncodedParams(params: Record<string, Object>): string {
+    const paramKeys = Object.keys(params);
+    let urlParamsArr: string[] = [];
+    for (let i = 0; i < paramKeys.length; i++) {
+      let key = paramKeys[i];
+      let val = params[key];
+      urlParamsArr.push(`${key}=${encodeURIComponent(String(val))}`);
+    }
+    return urlParamsArr.join('&');
   }
 
   private mergeCookies(setCookies: string[]): void {
@@ -336,7 +369,8 @@ export class ApiClient {
     params: Record<string, Object> = {}
   ): Promise<ApiResponse<T>> {
     const rParam = `${module}/${action}`;
-    const requestUrl = `${this.baseUrlValue}${this.legacyBasePath}?r=${rParam}`;
+    const legacyBaseUrl = UrlUtil.buildUrl(this.baseUrlValue, this.legacyBasePath);
+    const requestUrl = `${legacyBaseUrl}?r=${rParam}`;
 
     const apphash = await LegacyUtil.getAppHashValue();
     const authModel = StorageManager.authModel;
@@ -358,22 +392,13 @@ export class ApiClient {
     }
 
     // 注入旧版认证参数 (如果存在)
-    LogUtil.debug(TAG, authModel.accessToken, " | ", authModel.accessSecret)
     if (authModel.accessToken && authModel.accessSecret) {
       bodyParams['accessToken'] = authModel.accessToken;
       bodyParams['accessSecret'] = authModel.accessSecret;
     }
 
     // 将 Body 参数序列化为 URL 编码格式 (key=val&key2=val2)
-    const paramKeys = Object.keys(bodyParams);
-    let urlParamsArr: string[] = [];
-    for (let i = 0; i < paramKeys.length; i++) {
-      let key = paramKeys[i];
-      let val = bodyParams[key];
-      // 务必进行 encodeURIComponent，防止特殊字符破坏格式
-      urlParamsArr.push(`${key}=${encodeURIComponent(String(val))}`);
-    }
-    const urlParams = urlParamsArr.join('&');
+    const urlParams = this.buildUrlEncodedParams(bodyParams);
 
     const httpRequest = http.createHttp();
 
@@ -405,18 +430,7 @@ export class ApiClient {
       const parsedResult = this.parseResult<T>(response.result, true);
 
       // 提取响应头
-      let responseHeaders: Record<string, string | string[]> = {};
-      if (response.header) {
-        let headerObj = response.header as Record<string, string | string[]>;
-        let hKeys = Object.keys(headerObj);
-        for (let i = 0; i < hKeys.length; i++) {
-          let key = hKeys[i];
-          let value = headerObj[key];
-          if (value !== undefined) {
-            responseHeaders[key] = value;
-          }
-        }
-      }
+      const responseHeaders = this.extractResponseHeaders(response);
 
       return {
         status: response.responseCode,
@@ -428,6 +442,9 @@ export class ApiClient {
 
     } catch (error) {
       LogUtil.error(TAG, `Legacy Request failed: ${rParam}`, JSON.stringify(error));
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error(String(error));
     } finally {
       httpRequest.destroy();
@@ -470,25 +487,11 @@ export class ApiClient {
       // 3. 根据 Method 处理参数位置
       if (method === http.RequestMethod.POST) {
         // POST: 参数放入 Body (x-www-form-urlencoded)
-        let bodyParts: string[] = [];
-        const finalKeys = Object.keys(finalParams);
-        for (let i = 0; i < finalKeys.length; i++) {
-          let key = finalKeys[i];
-          let val = finalParams[key];
-          bodyParts.push(`${key}=${encodeURIComponent(String(val))}`);
-        }
-        extraData = bodyParts.join('&');
+        extraData = this.buildUrlEncodedParams(finalParams as Record<string, Object>);
         headers['Content-Type'] = 'application/x-www-form-urlencoded';
       } else {
         // GET: 参数拼接到 URL Query
-        let queryParts: string[] = [];
-        const finalKeys = Object.keys(finalParams);
-        for (let i = 0; i < finalKeys.length; i++) {
-          let key = finalKeys[i];
-          let val = finalParams[key];
-          queryParts.push(`${key}=${encodeURIComponent(String(val))}`);
-        }
-        const queryString = queryParts.join('&');
+        const queryString = this.buildUrlEncodedParams(finalParams as Record<string, Object>);
         if (queryString) {
           requestUrl = `${requestUrl}?${queryString}`;
         }
@@ -519,6 +522,9 @@ export class ApiClient {
 
     } catch (error) {
       LogUtil.error(TAG, `RequestHtml failed: ${phpFile}`, JSON.stringify(error));
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error(String(error));
     } finally {
       httpRequest.destroy();
