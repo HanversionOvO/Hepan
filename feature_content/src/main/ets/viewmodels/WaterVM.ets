@@ -16,6 +16,7 @@ export class WaterVM extends BaseVM {
   @Trace currentIndex: number = 0;
   @Trace isShowWaterDetailSheet: boolean = false;
   @Trace isLoadingMore: boolean = false;
+  @Trace isRefreshMission: boolean = false;
   @Trace currentPage: number = 1;
   @Trace columns: number = 2;
   @Trace tabItems: CustomTabItem[] = [
@@ -71,6 +72,8 @@ export class WaterVM extends BaseVM {
     const doingMissions: WaterMission[] = await WaterApi.getWaterMission(WaterMissionState.DOING);
     const finishMissions: WaterMission[] = await WaterApi.getWaterMission(WaterMissionState.FINISH);
     const failMissions: WaterMission[] = await WaterApi.getWaterMission(WaterMissionState.FAIL);
+
+    this.isRefreshMission = false;
 
     return [...newMissions, ...doingMissions, ...finishMissions, ...failMissions];
   }

@@ -125,22 +125,27 @@ export struct WaterEarnWater {
     StateLayout({
       uiState: this.isLoadingMission
     }) {
-      WaterFlow() {
-        ForEach(this.missions, (mission: WaterMission, index: number) => {
-          FlowItem() {
-            this.MissionCard(mission)
-          }
-          .width(CommonConstant.FullPercent)
-        }, (mission: WaterMission, index: number) => index.toString())
+      Refresh({ refreshing: $$this.vm.isRefreshMission }) {
+        WaterFlow() {
+          ForEach(this.missions, (mission: WaterMission, index: number) => {
+            FlowItem() {
+              this.MissionCard(mission)
+            }
+            .width(CommonConstant.FullPercent)
+          }, (mission: WaterMission, index: number) => index.toString())
+        }
+        .width(CommonConstant.FullPercent)
+        .layoutWeight(1)
+        .columnsTemplate('1fr '.repeat(this.vm.columns)
+          .trim())
+        .columnsGap(CommonConstant.NormalContainerInnerPadding)
+        .rowsGap(CommonConstant.NormalContainerInnerPadding)
+        .scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring)
       }
-      .width(CommonConstant.FullPercent)
-      .layoutWeight(1)
-      .columnsTemplate('1fr '.repeat(this.vm.columns)
-        .trim())
-      .columnsGap(CommonConstant.NormalContainerInnerPadding)
-      .rowsGap(CommonConstant.NormalContainerInnerPadding)
-      .scrollBar(BarState.Off)
-      .edgeEffect(EdgeEffect.Spring)
+      .onRefreshing(async () => {
+        this.missions = await this.vm.getMissions();
+      })
     }
   }
 }
