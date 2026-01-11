@@ -9,8 +9,6 @@ import { LoneTakeAnimationsTransition, LongTakeTransitionParam } from 'base_ui';
 export class ApplicationVM extends BaseVM {
   @Trace applications: ApplicationCardItem[] = [];
   @Trace columns: number = 2;
-  @Trace minColumns: number = 1;
-  @Trace maxColumns: number = 3;
   @Trace pageScale: number = 1;
 
   @Monitor("breakPoint.currentBreakPoint")

@@ -34,7 +34,7 @@ export interface ApiResponse<T = Object> {
  */
 export class ApiClient {
   private static instance: ApiClient | null = null;
-  private readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
+  public readonly baseUrl: string = 'https://bbs.uestc.edu.cn';
   private readonly legacyBaseUrl: string = 'https://bbs.uestc.edu.cn/mobcent/app/web/index.php';
   private readonly USER_AGENT =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';

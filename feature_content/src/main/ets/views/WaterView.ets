@@ -3,6 +3,7 @@ import { CustomTabBar, FloatButton } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
+import { WaterEarnWater } from '../components/WaterEarnWater';
 
 @ComponentV2
 export struct WaterView {
@@ -192,7 +193,7 @@ export struct WaterView {
     Column() {
       Tabs({ index: this.vm.currentIndex }) {
         TabContent() {
-          this.EarnWater()
+          WaterEarnWater({ vm: this.vm })
         }
 
         TabContent() {
@@ -217,11 +218,6 @@ export struct WaterView {
     .width(CommonConstant.FullPercent)
     .border({ width: CommonConstant.BorderSizeLarge, color: $r('app.color.glass_border') })
     .layoutWeight(1)
-  }
-
-  @Builder
-  EarnWater() {
-
   }
 
   build() {

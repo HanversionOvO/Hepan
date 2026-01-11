@@ -1,6 +1,6 @@
 import { Document, DomUtils } from '@ohos/htmlparser2';
 import { ApiClient } from './ApiClient';
-import { WaterModels, WaterRecord } from './models/WaterModels';
+import { WaterMission, WaterMissionState, WaterModels, WaterRecord } from './models/WaterModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
 
@@ -116,5 +116,146 @@ export class WaterApi {
     }
 
     return waterModel;
+  }
+
+  /**
+   * 获取水滴任务列表
+   * @param state 任务状态 (new | doing | done | failed)
+   */
+  public static async getWaterMission(state: WaterMissionState): Promise<WaterMission[]> {
+    const missions: WaterMission[] = [];
+    const baseUrl = ApiClient.getInstance().baseUrl; // 可以从 ApiClient 获取，这里也可以直接硬编码或提取
+
+    try {
+      // 1. 构造请求参数
+      // 链接: home.php?mod=task&item={state}
+      const params: Record<string, string> = {
+        'mod': 'task',
+        'item': state
+      };
+
+      // 2. 请求 HTML
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params);
+
+      // 3. 解析 DOM
+      // 查找包含任务列表的 div (class="ptm")
+      const ptmDiv = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('ptm'));
+      }, doc.children, true);
+
+      if (!ptmDiv) {
+        // 如果找不到 ptm div，可能是没有任务或者结构变化
+        return missions;
+      }
+
+      // 查找表格
+      const table = DomUtils.findOne((elem) => elem.tagName === 'table', ptmDiv.children);
+      if (!table) {
+        return missions;
+      }
+
+      // 获取所有行
+      const trs = DomUtils.findAll((elem) => elem.tagName === 'tr', table.children);
+
+      trs.forEach((tr) => {
+        const tds = DomUtils.findAll((elem) => elem.tagName === 'td', tr.children);
+        // 通常一行有 4 列：图片 | 描述 | 奖励 | 操作
+        if (tds.length >= 4) {
+          const mission = new WaterMission();
+          mission.mission_state = state;
+
+          // --- 1. 图标 (td[0]) ---
+          const img = DomUtils.findOne((elem) => elem.tagName === 'img', tds[0].children);
+          if (img && img.attribs && img.attribs['src']) {
+            let src = img.attribs['src'];
+            if (!src.startsWith('http')) {
+              src = baseUrl + '/' + src;
+            }
+            mission.mission_icon = src;
+          }
+
+          // --- 2. 任务信息 (td[1]) ---
+          // 名称和人气在 h3 中
+          const h3 = DomUtils.findOne((elem) => elem.tagName === 'h3', tds[1].children);
+          if (h3) {
+            // 名称
+            const nameA = DomUtils.findOne((elem) => elem.tagName === 'a', h3.children);
+            if (nameA) {
+              mission.mission_name = DomUtils.textContent(nameA).trim();
+            }
+            // 人气
+            const hotText = DomUtils.textContent(h3); // 例如 "(人气: 25283)"
+            const hotMatch = hotText.match(/人气:\s*(\d+)/);
+            if (hotMatch) {
+              mission.mission_hot = parseInt(hotMatch[1]);
+            } else {
+              // 备用：尝试从 span 或 a 标签中获取
+              const hotA = DomUtils.findOne((elem) => elem.tagName === 'a' &&
+                (!elem.attribs['href'] || elem.attribs['href'].includes('#parter')), h3.children);
+              if (hotA) {
+                const hotNum = parseInt(DomUtils.textContent(hotA).trim());
+                if (!isNaN(hotNum)) {
+                  mission.mission_hot = hotNum;
+                }
+              }
+            }
+          }
+
+          // 描述
+          const pDesc = DomUtils.findOne((elem) => elem.tagName === 'p' &&
+            !!(elem.attribs['class'] && elem.attribs['class'].includes('xg2')), tds[1].children);
+          if (pDesc) {
+            mission.mission_desc = DomUtils.textContent(pDesc).trim();
+          }
+
+          // 进度 (仅进行中任务)
+          if (state === WaterMissionState.DOING) {
+            // <div class="pbg ..."> ... <div class="xs0"> 已完成 ... % </div> </div>
+            const pbgDiv = DomUtils.findOne((elem) => !!(elem.attribs && elem.attribs['class'] &&
+            elem.attribs['class'].includes('pbg')), tds[1].children);
+            if (pbgDiv) {
+              const xs0Div = DomUtils.findOne((elem) => !!(elem.attribs && elem.attribs['class'] &&
+              elem.attribs['class'].includes('xs0')), pbgDiv.children);
+              if (xs0Div) {
+                const progressText = DomUtils.textContent(xs0Div).trim(); // "已完成 0 %"
+                const progressMatch = progressText.match(/(\d+)/);
+                if (progressMatch) {
+                  mission.mission_progress = parseInt(progressMatch[1]);
+                }
+              }
+            }
+          }
+
+          // --- 3. 奖励 (td[2]) ---
+          // 例如 "积分 水滴 30 滴"
+          const rewardText = DomUtils.textContent(tds[2]).trim();
+          const splitIndex = rewardText.indexOf(' ');
+          if (splitIndex > 0) {
+            mission.mission_reward = rewardText.substring(0, splitIndex).trim();
+            mission.mission_reward_value = rewardText.substring(splitIndex).trim();
+          } else {
+            mission.mission_reward = rewardText; // Fallback
+          }
+
+          // --- 4. 操作链接 (td[3]) ---
+          const actionA = DomUtils.findOne((elem) => elem.tagName === 'a', tds[3].children);
+          if (actionA && actionA.attribs && actionA.attribs['href']) {
+            let href = actionA.attribs['href'];
+            // 处理相对链接
+            if (!href.startsWith('http')) {
+              href = baseUrl + '/' + href;
+            }
+            mission.mission_href = href;
+          }
+
+          missions.push(mission);
+        }
+      });
+
+    } catch (e) {
+      LogUtil.error(TAG, 'getWaterMission failed', JSON.stringify(e));
+    }
+
+    return missions;
   }
 }

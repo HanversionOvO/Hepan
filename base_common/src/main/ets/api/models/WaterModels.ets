@@ -30,5 +30,5 @@ export class WaterMission {
   @Trace mission_desc?: string; // 任务描述
   @Trace mission_reward: string = "" // 任务奖励类型
   @Trace mission_reward_value: string = "" // 奖励值
-  @Trace mission_progress: number = 0; // 任务进度 (只有进行中的任务有)
+  @Trace mission_progress?: number; // 任务进度 (只有进行中的任务有)
 }

@@ -267,6 +267,26 @@
     {
       "name": "WaterPage_transfer",
       "value": "水滴转账"
+    },
+    {
+      "name": "WaterPage_mission_new",
+      "value": "新任务"
+    },
+    {
+      "name": "WaterPage_mission_doing",
+      "value": "进行中"
+    },
+    {
+      "name": "WaterPage_mission_finish",
+      "value": "已完成"
+    },
+    {
+      "name": "WaterPage_mission_fail",
+      "value": "已失败"
+    },
+    {
+      "name": "WaterPage_mission_hot",
+      "value": "热度"
     }
   ]
 }
