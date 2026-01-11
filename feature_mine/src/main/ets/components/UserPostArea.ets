@@ -2,7 +2,8 @@
 import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant, ForumTieSummary } from 'base_common';
 import { CustomTabBar, StateLayout } from 'base_ui';
-import { MinePageVM, MineTabVM } from '../viewmodels/MinePageVM';
+import { MinePageVM } from '../viewmodels/MinePageVM';
+import { MineTabVM } from '../viewmodels/MineTabVM';
 import { TieCard } from './TieCard';
 
 interface TieWithForumName {
@@ -28,6 +29,10 @@ struct UserPostList {
 
   @Event onLoadMore: () => void = () => {
   };
+
+  aboutToAppear(): void {
+    this.vm.ensureLoaded();
+  }
 
   @Builder
   renderList() {
@@ -118,7 +123,7 @@ struct UserPostList {
 
   build() {
     StateLayout({
-      uiState: this.vm.state,
+      uiState: this.vm.uiState,
       onRetry: async (): Promise<void> => this.vm.loadMineData(true),
       emptyStr: !this.isMe && this.vm.list.length === 0 ? $r('app.string.StateLayout_empty') : undefined,
       content: () => {
