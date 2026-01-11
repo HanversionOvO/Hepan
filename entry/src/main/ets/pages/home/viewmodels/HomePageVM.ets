@@ -1,4 +1,11 @@
-import { BaseVM, InputOverlayStore, InputOverlayVisibilityEvent, RouterUtil, StorageManager } from 'base_common';
+import {
+  BaseVM,
+  InputOverlayStore,
+  InputOverlayVisibilityEvent,
+  ListenerManager,
+  RouterUtil,
+  StorageManager
+} from 'base_common';
 import { HomeNavBarItem } from '../components/HomeNavBar';
 
 @ObservedV2
@@ -12,8 +19,8 @@ export class HomePageVM extends BaseVM {
   @Trace currentIndex: number = StorageManager.tabIndexModel.homeTabIndex;
   @Trace controller: TabsController = new TabsController();
   @Trace isInputOverlayOpen: boolean = false;
-  private inputOverlayListenerRegistered: boolean = false;
   private navHideTimerId: number = -1;
+  private readonly listenerManager: ListenerManager = new ListenerManager();
   private readonly inputOverlayListener = (visible: boolean): void => {
     this.isInputOverlayOpen = visible;
   };
@@ -46,7 +53,8 @@ export class HomePageVM extends BaseVM {
   }
   
   aboutToDisappear() {
-    this.unregisterListeners();
+    this.listenerManager.clear();
+    this.isInputOverlayOpen = false;
     this.clearHideNavigationTimer();
   }
 
@@ -62,20 +70,11 @@ export class HomePageVM extends BaseVM {
   }
 
   private registerListeners(): void {
-    if (this.inputOverlayListenerRegistered) {
-      return;
-    }
-    InputOverlayStore.on(InputOverlayVisibilityEvent, this.inputOverlayListener);
-    this.inputOverlayListenerRegistered = true;
-  }
-
-  private unregisterListeners(): void {
-    if (!this.inputOverlayListenerRegistered) {
-      return;
-    }
-    InputOverlayStore.off(InputOverlayVisibilityEvent, this.inputOverlayListener);
-    this.inputOverlayListenerRegistered = false;
-    this.isInputOverlayOpen = false;
+    this.listenerManager.register('inputOverlay', () => {
+      InputOverlayStore.on(InputOverlayVisibilityEvent, this.inputOverlayListener);
+    }, () => {
+      InputOverlayStore.off(InputOverlayVisibilityEvent, this.inputOverlayListener);
+    });
   }
 
   private scheduleHideNavigation(): void {

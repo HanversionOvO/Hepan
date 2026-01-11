@@ -14,6 +14,8 @@ export { AppPreferenceKeys, AuthPreferenceKeys, PreferenceUtil } from './src/mai
 
 export { UrlUtil } from './src/main/ets/utils/UrlUtil';
 
+export { ListenerManager } from './src/main/ets/utils/ListenerManager';
+
 export { RouterUtil, RouterMap, StackEnum } from './src/main/ets/utils/RouterUtil';
 
 export { ColorUtil, ColorVariants } from './src/main/ets/utils/ColorUtil';
