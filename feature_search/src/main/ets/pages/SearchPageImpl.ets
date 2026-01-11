@@ -13,6 +13,9 @@ export struct SearchPageImpl {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
             Row({ space: CommonConstant.NormalContainerInnerPadding }) {
               FloatButton({ isFloating: true })
+                .onClick(() => {
+                  this.vm.back();
+                })
 
               CustomSearch()
                 .layoutWeight(1)
