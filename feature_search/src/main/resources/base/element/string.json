@@ -15,6 +15,18 @@
     {
       "name": "SearchPage_query_tie_result",
       "value": "相关帖子"
+    },
+    {
+      "name": "SearchPage_query_history",
+      "value": "搜索历史"
+    },
+    {
+      "name": "SearchPage_query_tips",
+      "value": "提示"
+    },
+    {
+      "name": "SearchPage_query_clear_history",
+      "value": "是否清空搜索历史"
     }
   ]
 }

@@ -31,7 +31,7 @@ export struct QueryView {
     Scroll() {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         Row() {
-          Text('搜索历史')
+          Text($r('app.string.SearchPage_query_history'))
             .fontSize(CommonConstant.TextSizeNormal)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('sys.color.font_secondary'))
@@ -41,11 +41,12 @@ export struct QueryView {
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor([$r('sys.color.font_tertiary')])
             .onClick(() => {
-              ToastUtil.showWarn("是否清空搜索历史", true, "提示", () => {
-                AppUtil.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal }, () => {
-                  this.vm.clearHistory();
+              ToastUtil.showWarn($r('app.string.SearchPage_query_clear_history'), true,
+                $r('app.string.SearchPage_query_tips'), () => {
+                  AppUtil.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal }, () => {
+                    this.vm.clearHistory();
+                  });
                 });
-              });
             })
         }
         .width(CommonConstant.FullPercent)
