@@ -1,8 +1,7 @@
-import { CommonConstant, RouterUtil, TransitionMap } from 'base_common';
-import { FloatButton } from 'base_ui';
-import { FansTitleBar } from '../components/FansTitleBar';
-import { FansUserSection } from '../components/FansUserSection';
+import { CommonConstant } from 'base_common';
 import { FansPageVM } from '../viewmodels/FansPageVM';
+import { FansPageContentView } from '../views/FansPageContentView';
+import { FansPageActionsView } from '../views/FansPageActionsView';
 
 @ComponentV2
 export struct FansPage {
@@ -11,52 +10,8 @@ export struct FansPage {
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Top }) {
-        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          FansTitleBar({ vm: this.vm })
-
-          Tabs({ controller: this.vm.fansPageTabController, index: this.vm.currentFansTabIndex }) {
-            TabContent() {
-              FansUserSection({ vm: this.vm, isFollowList: true })
-            }
-
-            TabContent() {
-              FansUserSection({ vm: this.vm, isFollowList: false })
-            }
-          }
-          .padding({
-            left: CommonConstant.PageLRPadding,
-            right: CommonConstant.PageLRPadding,
-          })
-          .width(CommonConstant.FullPercent)
-          .layoutWeight(1)
-          .barHeight(0)
-          .scrollable(false)
-        }
-        .width(CommonConstant.FullPercent)
-        .height(CommonConstant.FullPercent)
-
-        if (this.vm.isHideTitleBar) {
-          FloatButton({ isFloating: this.vm.isHideTitleBar, floatIcon: $r('sys.symbol.magnifyingglass') })
-            .geometryTransition(TransitionMap.FeatureMineFansSearch)
-            .position({
-              top: this.vm.window.windowTopPadding + (CommonConstant.TopBarHeight - CommonConstant.IconSizeLarge) / 2,
-              right: CommonConstant.PageLRPadding
-            })
-            .onClick(() => {
-              RouterUtil.pop()
-            })
-            .zIndex(2)
-        }
-
-        FloatButton({ isFloating: this.vm.isHideTitleBar })
-          .position({
-            top: this.vm.window.windowTopPadding + (CommonConstant.TopBarHeight - CommonConstant.IconSizeLarge) / 2,
-            left: CommonConstant.PageLRPadding
-          })
-          .onClick(() => {
-            RouterUtil.pop()
-          })
-          .zIndex(2)
+        FansPageContentView({ vm: this.vm })
+        FansPageActionsView({ vm: this.vm })
       }
       .width(CommonConstant.FullPercent)
       .height(CommonConstant.FullPercent)

@@ -1,5 +1,5 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
-import { UserProfileView } from '../components/UserProfileView';
+import { MinePageView } from '../views/MinePageView';
 
 @ComponentV2
 export struct MinePageImpl {
@@ -11,11 +11,6 @@ export struct MinePageImpl {
   }
 
   build() {
-    Navigation() {
-      UserProfileView({ vm: this.vm })
-    }
-    .hideTitleBar(true)
-    .mode(NavigationMode.Stack)
-    .backgroundColor($r('app.color.start_window_background'))
+    MinePageView({ vm: this.vm })
   }
 }
