@@ -1,9 +1,11 @@
-import { ApiClient } from './ApiClient';
+import { ApiClient, ApiResponse, LegacyResponse } from './ApiClient';
 import {
   BaseResponse,
   FriendUser,
   InterestingUser,
+  InterestedUserPoi,
   Medal,
+  MedalListResponse,
   PaginationData,
   RecentVisitor,
   ThreadAuthorInfo,
@@ -17,12 +19,62 @@ import {
 import http from '@ohos.net.http';
 import { LogUtil } from '@pura/harmony-utils';
 import { UserAvatarUtil } from '../utils/UserAvatarUtil';
-import { LegacyResponse } from './ApiClient';
 import { ForumApi } from './ForumApi';
 
 const TAG = '[UserApi]: ';
 
 export class UserApi {
+  private static readonly threadAuthorCache: Map<number, ThreadAuthorInfo> = new Map();
+
+  private static extractData<T>(response: ApiResponse<BaseResponse<T>>, fallbackMessage: string): T {
+    if (response.status === 200 && response.data.code === 0 &&
+      response.data.data !== undefined && response.data.data !== null) {
+      return response.data.data;
+    }
+    const errorMsg = response.data?.message || `${fallbackMessage}, status: ${response.status}`;
+    LogUtil.warn(TAG, errorMsg);
+    throw new Error(errorMsg);
+  }
+
+  private static normalizeUserSummary(summary: UserSummary): UserSummary {
+    if (!summary.ext_credits) {
+      summary.ext_credits = {};
+    }
+    if (!summary.medals) {
+      summary.medals = [];
+    }
+    return summary;
+  }
+
+  private static normalizeUserProfile(profile: UserProfileData): UserProfileData {
+    if (profile.online_time === undefined) {
+      profile.online_time = 0;
+    }
+    if (profile.last_visit === undefined) {
+      profile.last_visit = 0;
+    }
+    if (profile.user_summary) {
+      profile.user_summary = UserApi.normalizeUserSummary(profile.user_summary);
+    }
+    if (!profile.recent_visitors) {
+      profile.recent_visitors = [];
+    }
+    return profile;
+  }
+
+  private static buildUserFriends(friend: FriendUser, profile?: UserProfileData): UserFriends {
+    const signature = profile?.signature || '';
+    const resolvedSignature = signature === '' ? $r('app.string.UserApi_no_signature') : signature;
+    return {
+      uid: friend.uid,
+      username: friend.username,
+      signature: resolvedSignature,
+      avatar: UserAvatarUtil.getAvatarUrl(friend.uid),
+      level: profile?.user_summary?.group_title || friend.group_title || '',
+      last_visit: profile?.last_visit ?? friend.last_visit ?? 0
+    };
+  }
+
   /**
    * 获取用户资料 (基础版)
    * @param uid 用户ID
@@ -39,16 +91,8 @@ export class UserApi {
       includeAuthorization: true,
       includeCookie: true
     });
-
-    // 检查 HTTP 状态码 和 业务 ErrorCode
-    if (response.status === 200 && response.data.code === 0) {
-      return response.data.data;
-    } else {
-      // 抛出具体错误供 VM 处理
-      const errorMsg = response.data?.message || `Fetch profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    const summary = UserApi.extractData(response, 'Fetch profile failed');
+    return UserApi.normalizeUserSummary(summary);
   }
 
   /**
@@ -69,14 +113,8 @@ export class UserApi {
       includeAuthorization: true,
       includeCookie: true
     });
-
-    if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      return response.data.data;
-    } else {
-      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    const profile = UserApi.extractData(response, 'Fetch full profile failed');
+    return UserApi.normalizeUserProfile(profile);
   }
 
   /**
@@ -97,31 +135,20 @@ export class UserApi {
       includeAuthorization: true,
       includeCookie: true
     });
+    const data = UserApi.extractData(response, 'Fetch friends failed');
+    const rows = data.rows;
 
-    if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      const tasks = response.data.data.rows.map(async (friend: FriendUser) => {
-        // 在这里进行详情获取
-        let friendProfile: UserProfileData = await UserApi.getFullUserProfile(friend.uid, true);
+    const profileTasks = rows.map((friend) => UserApi.getFullUserProfile(friend.uid, true));
+    const profiles = await Promise.allSettled(profileTasks);
 
-        // 组装数据并返回
-        let friendData: UserFriends = {
-          uid: friend.uid,
-          username: friend.username,
-          signature: friendProfile.signature === "" ? $r('app.string.UserApi_no_signature') : friendProfile.signature!,
-          avatar: UserAvatarUtil.getAvatarUrl(friend.uid),
-          level: friendProfile.user_summary?.group_title!,
-          last_visit: friendProfile.last_visit
-        };
-        return friendData;
-      });
-
-      const userFriends = await Promise.all(tasks);
-      return userFriends;
-    } else {
-      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    return rows.map((friend, index) => {
+      const profileResult = profiles[index];
+      if (profileResult.status === 'fulfilled') {
+        return UserApi.buildUserFriends(friend, profileResult.value);
+      }
+      LogUtil.warn(TAG, `Failed to load profile for uid: ${friend.uid}`);
+      return UserApi.buildUserFriends(friend);
+    });
   }
 
   /**
@@ -133,34 +160,23 @@ export class UserApi {
     // 修改点：支持动态构造 URL
     const idStr = uid === 'me' ? 'me' : uid.toString();
     const path = `/_/user/${idStr}/profile?visitors=1`;
-    const recentVisitors: RecentVisitor[] = [];
-
     const response = await ApiClient.getInstance().request<BaseResponse<UserProfileData>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
       includeCookie: true
     });
-
-    if (response.status === 200 && response.data.code === 0 && response.data.data &&
-    response.data.data.recent_visitors) {
-      response.data.data.recent_visitors.forEach((visitor: RecentVisitor) => {
-        let visitor_map: RecentVisitor = {
-          uid: visitor.uid,
-          username: visitor.username,
-          avatar: UserAvatarUtil.getAvatarUrl(visitor.uid),
-          dateline: visitor.dateline
-        }
-
-        recentVisitors.push(visitor_map);
-      })
-
-      return recentVisitors;
-    } else {
-      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    const data = UserApi.extractData(response, 'Fetch visitors failed');
+    const visitors = data.recent_visitors || [];
+    return visitors.map((visitor): RecentVisitor => {
+      const mapped: RecentVisitor = {
+        uid: visitor.uid,
+        username: visitor.username,
+        avatar: UserAvatarUtil.getAvatarUrl(visitor.uid),
+        dateline: visitor.dateline
+      };
+      return mapped;
+    });
   }
 
   /**
@@ -197,21 +213,30 @@ export class UserApi {
       });
 
     if (result.data.rs === 1) {
-      result.data.pois?.forEach((poi: Record<string, Object>) => {
-        interestedUser.push({
-          uid: poi.uid as number,
-          username: poi.nickname as string,
-          avatar: poi.icon as string,
-          isFriend: poi.is_friend as number === 0 ? false : true
-        })
+      const pois = result.data.pois;
+      if (!pois || !Array.isArray(pois)) {
+        return interestedUser;
+      }
+      pois.forEach((poi) => {
+        const mappedPoi: InterestedUserPoi = {
+          uid: Number(poi['uid'] || 0),
+          nickname: poi['nickname'] || '',
+          icon: poi['icon'] || '',
+          is_friend: Number(poi['is_friend'] || 0)
+        };
+        const item: InterestingUser = {
+          uid: mappedPoi.uid,
+          username: mappedPoi.nickname,
+          avatar: mappedPoi.icon,
+          isFriend: mappedPoi.is_friend !== 0
+        };
+        interestedUser.push(item);
       });
-
       return interestedUser;
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
     }
+    const errorMsg = `Fetch interested user failed, status: ${result.data.errcode}`;
+    LogUtil.warn(TAG, errorMsg);
+    throw new Error(errorMsg);
   }
 
   // 删除好友
@@ -225,10 +250,10 @@ export class UserApi {
       includeCookie: true
     });
 
-    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+    if (response.status === 200 && response.data.code === 0) {
       return true;
     } else {
-      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
+      const errorMsg = response.data?.message || `Delete friend failed, status: ${response.status}`;
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
@@ -238,20 +263,14 @@ export class UserApi {
   public static async getMedals(): Promise<Medal[]> {
     const path = `/_/system/settings/medals`;
 
-    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Record<string, Object>>>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<MedalListResponse>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,
       includeCookie: true
     });
-
-    if (response.status === 200 && response.data.code === 0 && response.data.data) {
-      return response.data.data.medals.value as Medal[];
-    } else {
-      const errorMsg = response.data?.message || `Fetch full profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    const data = UserApi.extractData(response, 'Fetch medals failed');
+    return data.medals?.value || [];
   }
 
   /**
@@ -269,11 +288,7 @@ export class UserApi {
       includeCookie: true
     });
 
-    if (response.status === 200 && response.data.code === 0) {
-      return response.data.data;
-    } else {
-      throw new Error(response.data?.message || 'Fetch user threads failed');
-    }
+    return UserApi.extractData(response, 'Fetch user threads failed');
   }
 
   /**
@@ -290,61 +305,62 @@ export class UserApi {
       includeCookie: true
     });
 
-    if (response.status === 200 && response.data.code === 0) {
-      const data = response.data.data;
+    const data = UserApi.extractData(response, 'Fetch user replies failed');
 
-      try {
-        const threadIds = new Set<number>();
-        data.rows.forEach(reply => {
-          if (reply.thread_id) {
-            threadIds.add(reply.thread_id);
-          }
-        });
-
-        const fetchTasks = Array.from(threadIds).map(async (tid): Promise<ThreadAuthorInfo | null> => {
-          try {
-            const detail = await ForumApi.getForumDetail(tid, 1);
-            return {
-              author: detail.thread.author,
-              author_id: detail.thread.author_id
-            };
-          } catch (e) {
-            LogUtil.warn(TAG, `Failed to fetch thread info for tid:${tid}, error:${JSON.stringify(e)}`);
-            return null;
-          }
-        });
-
-        const threadInfos = await Promise.all(fetchTasks);
-
-        const threadIdsArray = Array.from(threadIds);
-
-        const threadInfoMap = new Map<number, ThreadAuthorInfo>();
-
-        threadInfos.forEach((info, index) => {
-          if (info) {
-            const tid = threadIdsArray[index];
-            threadInfoMap.set(tid, info);
-          }
-        });
-
-        data.rows.forEach(reply => {
-          const info = threadInfoMap.get(reply.thread_id);
-          if (info) {
-            reply.author = info.author;
-            reply.author_id = info.author_id;
-          } else {
-            reply.author = reply.author || '主题作者';
-            reply.author_id = reply.author_id || 0;
-          }
-        });
-
-      } catch (e) {
-        LogUtil.warn(TAG, 'Error enriching replies with thread info: ' + JSON.stringify(e));
-      }
+    if (!data.rows || data.rows.length === 0) {
       return data;
-    } else {
-      throw new Error(response.data?.message || 'Fetch user replies failed');
     }
+
+    try {
+      const threadIds = new Set<number>();
+      data.rows.forEach(reply => {
+        if (reply.thread_id) {
+          threadIds.add(reply.thread_id);
+        }
+      });
+
+      const missingIds: number[] = [];
+      threadIds.forEach((tid) => {
+        if (!UserApi.threadAuthorCache.has(tid)) {
+          missingIds.push(tid);
+        }
+      });
+
+      const fetchTasks = missingIds.map(async (tid): Promise<ThreadAuthorInfo | null> => {
+        try {
+          const detail = await ForumApi.getForumDetail(tid, 1);
+          return {
+            author: detail.thread.author,
+            author_id: detail.thread.author_id
+          };
+        } catch (e) {
+          LogUtil.warn(TAG, `Failed to fetch thread info for tid:${tid}, error:${JSON.stringify(e)}`);
+          return null;
+        }
+      });
+
+      const threadInfos = await Promise.all(fetchTasks);
+      threadInfos.forEach((info, index) => {
+        if (info) {
+          UserApi.threadAuthorCache.set(missingIds[index], info);
+        }
+      });
+
+      data.rows.forEach(reply => {
+        const info = UserApi.threadAuthorCache.get(reply.thread_id);
+        if (info) {
+          reply.author = info.author;
+          reply.author_id = info.author_id;
+        } else {
+          reply.author = reply.author || '主题作者';
+          reply.author_id = reply.author_id || 0;
+        }
+      });
+
+    } catch (e) {
+      LogUtil.warn(TAG, 'Error enriching replies with thread info: ' + JSON.stringify(e));
+    }
+    return data;
   }
 
   /**
@@ -360,10 +376,6 @@ export class UserApi {
       includeCookie: true
     });
 
-    if (response.status === 200 && response.data.code === 0) {
-      return response.data.data;
-    } else {
-      throw new Error(response.data?.message || 'Fetch user favorites failed');
-    }
+    return UserApi.extractData(response, 'Fetch user favorites failed');
   }
 }

@@ -1,7 +1,6 @@
 import { LottieView } from '@ohos/lottie-turbo';
 import { AppUtil, ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, ToastUtil } from 'base_common';
-import { Medal } from 'base_common/src/main/ets/api/models/UserModels';
+import { CommonConstant, createEmptyMedal, Medal, ToastUtil } from 'base_common';
 import { MinePageVM } from '../viewmodels/MinePageVM';
 
 @Builder
@@ -12,7 +11,7 @@ export function userMedalSheetBuilder(vm: MinePageVM) {
 @ComponentV2
 struct UserMedalSheet {
   @Param @Require vm: MinePageVM;
-  @Local selectedMedal: Medal = new Medal();
+  @Local selectedMedal: Medal = createEmptyMedal();
   // 新增：控制预览区是否为紧凑模式
   @Local isCompact: boolean = false;
   // 新增：列表滚动控制器

@@ -20,23 +20,24 @@ export class FansUserItems {
 @ComponentV2
 export struct FansUserItem {
   @Param user: FansUserItems = new FansUserItems();
-  @Param recommendUser: InterestingUser = new InterestingUser();
+  @Param recommendUser: InterestingUser | undefined = undefined;
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
   @Param isShowDeleteButton: boolean = false;
   @Param deleteFriends: () => void = () => {
   };
 
   build() {
-    if (this.type === FansUserItemType.CARD && this.recommendUser) {
+    Column() {
+      if (this.type === FansUserItemType.CARD && this.recommendUser) {
       // === 横向推荐卡片样式 ===
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        Image(this.recommendUser.avatar)
+        Image(this.recommendUser!.avatar)
           .height(CommonConstant.IconSizeLarge)
           .width(CommonConstant.IconSizeLarge)
           .borderRadius(CommonConstant.RadiusRound)
           .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
         Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-          Text(this.recommendUser.username)
+          Text(this.recommendUser!.username)
             .fontWeight(FontWeight.Medium)
             .fontColor($r('sys.color.font_primary'))
             .fontSize(CommonConstant.TextSizeNormal)
@@ -46,13 +47,14 @@ export struct FansUserItem {
         }
 
         Button() {
-          Text(this.recommendUser.isFriend ? $r('app.string.FansUserItem_is_friend') :
+          Text(this.recommendUser!.isFriend ? $r('app.string.FansUserItem_is_friend') :
             $r('app.string.FansUserItem_add_friend'))
-            .fontColor(this.recommendUser.isFriend ? $r('sys.color.font_tertiary') : $r('sys.color.font_on_primary'))
+            .fontColor(this.recommendUser!.isFriend ? $r('sys.color.font_tertiary') :
+              $r('sys.color.font_on_primary'))
             .fontWeight(FontWeight.Bold)
             .fontSize(CommonConstant.TextSizeSmall)
         }
-        .backgroundColor(this.recommendUser.isFriend ? $r('app.color.start_window_background') :
+        .backgroundColor(this.recommendUser!.isFriend ? $r('app.color.start_window_background') :
           CommonConstant.ThemeColor)
         .width(CommonConstant.IconSizeLarge * 3)
         .padding({
@@ -137,6 +139,7 @@ export struct FansUserItem {
       .backgroundColor($r('app.color.second_window_background'))
       .borderRadius(CommonConstant.RadiusLarge)
       .justifyContent(FlexAlign.SpaceBetween)
+    }
     }
   }
 }

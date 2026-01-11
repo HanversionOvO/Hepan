@@ -31,5 +31,6 @@ export struct FansPageActionsView {
         })
         .zIndex(2)
     }
+    .width(CommonConstant.FullPercent)
   }
 }

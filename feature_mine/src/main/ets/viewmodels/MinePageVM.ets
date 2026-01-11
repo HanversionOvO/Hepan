@@ -4,14 +4,16 @@ import {
   BaseVM,
   BreakpointType,
   CommonConstant,
+  createEmptyUserProfileData,
   DateUtil,
   ForumTieSummary,
+  Medal,
   RouterMap,
   RouterUtil,
   UiState,
-  UserApi
+  UserApi,
+  UserProfileData
 } from 'base_common';
-import { Medal, UserProfileData } from 'base_common/src/main/ets/api/models/UserModels';
 import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
 import { UserStatsModel } from '../components/UserStats';
@@ -42,7 +44,7 @@ export class MineTabVM extends BaseVM {
   private page: number = 1;
   private uid: number | 'me' = 'me';
   private tabType: 'thread' | 'reply' | 'fav';
-  private user: UserProfileData = new UserProfileData();
+  private user: UserProfileData = createEmptyUserProfileData();
 
   constructor(tabType: 'thread' | 'reply' | 'fav') {
     super();
@@ -184,7 +186,7 @@ export class MinePageVM extends BaseVM {
   @Trace allMedals: Medal[] = [];
   // 全局刷新状态
   @Trace isRefreshing: boolean = false;
-  @Trace user: UserProfileData = new UserProfileData();
+  @Trace user: UserProfileData = createEmptyUserProfileData();
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
   // === 子 ViewModel ===
