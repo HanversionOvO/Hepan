@@ -1,4 +1,5 @@
-import { BaseVM } from 'base_common';
+import { AppUtil } from '@pura/harmony-utils';
+import { BaseVM, CommonConstant, RouterMap, RouterUtil } from 'base_common';
 import { CustomTabItem, NavTitleButtonModel } from 'base_ui';
 
 @ObservedV2
@@ -6,6 +7,11 @@ export class ContentPageVM extends BaseVM {
   @Trace titleButtons: NavTitleButtonModel[] = [
     {
       icon: $r('sys.symbol.magnifyingglass'), onClick: () => {
+      AppUtil.getUIContext()
+        .animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal },
+          () => {
+            RouterUtil.pushPathByName(RouterMap.SEARCH_PAGE, null, undefined, false);
+          })
     }
     }
   ]
