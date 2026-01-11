@@ -295,6 +295,18 @@
     {
       "name": "WaterPage_shop_cant_buy",
       "value": "此道具不可兑换"
+    },
+    {
+      "name": "WaterPage_water_quiz",
+      "value": "水滴答题"
+    },
+    {
+      "name": "WaterPage_water_quiz_desc",
+      "value": "每日必不可少获得水滴的来源"
+    },
+    {
+      "name": "WaterPage_water_start_quiz",
+      "value": "开始答题"
     }
   ]
 }

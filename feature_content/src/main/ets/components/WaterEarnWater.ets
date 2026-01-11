@@ -1,6 +1,6 @@
 import { ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, UiState, WaterMission, WaterMissionState } from 'base_common';
-import { StateLayout } from 'base_ui';
+import { GlassButton, StateLayout } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 
 @ComponentV2
@@ -119,12 +119,44 @@ export struct WaterEarnWater {
     .opacity(mission.mission_state === WaterMissionState.FAIL ? 0.3 : 1)
   }
 
+  @Builder
+  QuizCard() {
+    Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+      Text($r('app.string.WaterPage_water_quiz'))
+        .fontColor($r('sys.color.font_on_primary'))
+        .fontSize(CommonConstant.TextSizeLarge)
+        .fontWeight(FontWeight.Bold)
+
+      Text($r('app.string.WaterPage_water_quiz_desc'))
+        .fontColor($r('sys.color.font_on_tertiary'))
+        .fontSize(CommonConstant.TextSizeSmall)
+
+      GlassButton({
+        text: $r('app.string.WaterPage_water_start_quiz'),
+        symbol: $r('sys.symbol.light_flashlight_on_fill'),
+        innerFontSize: CommonConstant.TextSizeSmall
+      })
+        .alignSelf(ItemAlign.End)
+    }
+    .alignItems(HorizontalAlign.Start)
+    .width(CommonConstant.FullPercent)
+    .padding(CommonConstant.NormalContainerInnerPadding)
+    .borderRadius(CommonConstant.RadiusNormal)
+    .backgroundColor($r('app.color.water_color'))
+  }
+
   build() {
     StateLayout({
       uiState: this.isLoadingMission
     }) {
       Refresh({ refreshing: $$this.vm.isRefreshMission }) {
         WaterFlow() {
+
+          FlowItem() {
+            this.QuizCard()
+          }
+          .width(CommonConstant.FullPercent)
+
           ForEach(this.missions, (mission: WaterMission, index: number) => {
             FlowItem() {
               this.MissionCard(mission)
