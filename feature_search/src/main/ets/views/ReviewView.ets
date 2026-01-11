@@ -1,4 +1,6 @@
-import { CommonConstant, DateUtil, ForumTieSummary, SearchUser, UserAvatarUtil } from 'base_common';
+import {
+  CommonConstant, DateUtil, ForumTieSummary, SearchUser, UserAvatarUtil
+} from 'base_common';
 import { SearchPageVM } from '../viewmodels/SearchPageVM';
 
 @ComponentV2
@@ -6,98 +8,95 @@ export struct ReviewView {
   @Param vm: SearchPageVM = new SearchPageVM();
 
   aboutToAppear(): void {
-    this.vm.updateGridConfig(this.vm.breakPoint.currentBreakPoint)
+    this.vm.updateGridConfig(this.vm.breakPoint.currentBreakPoint);
   }
 
   build() {
-    Scroll() {
-      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        if (this.vm.searchSummary) {
-          if (this.vm.searchSummary.tid_match) {
+    Grid() {
+      if (this.vm.searchSummary) {
+        // ---------------------------------------------------------
+        // 1. ID 精确匹配 (帖子)
+        // ---------------------------------------------------------
+        if (this.vm.searchSummary.tid_match) {
+          // 标题：跨越所有列
+          GridItem() {
             this.SectionTitle('ID 精确匹配 (帖子)')
-            Grid() {
-              GridItem() {
-                this.SimpleTieItem(this.vm.searchSummary.tid_match)
-              }
-              .width(CommonConstant.FullPercent)
-            }
-            .width(CommonConstant.FullPercent)
-            .columnsTemplate('1fr '.repeat(this.vm.columns)
-              .trim())
-            .columnsGap(CommonConstant.NormalContainerInnerPadding)
-            .rowsGap(CommonConstant.NormalContainerInnerPadding)
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
           }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
 
-          if (this.vm.searchSummary.uid_match) {
-            this.SectionTitle('ID 精确匹配 (用户)')
-
-            Grid() {
-              GridItem() {
-                this.SimpleUserItem(this.vm.searchSummary.uid_match)
-              }
-              .width(CommonConstant.FullPercent)
-            }
-            .width(CommonConstant.FullPercent)
-            .columnsTemplate('1fr '.repeat(this.vm.columns)
-              .trim())
-            .columnsGap(CommonConstant.NormalContainerInnerPadding)
-            .rowsGap(CommonConstant.NormalContainerInnerPadding)
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
+          // 内容：跨越所有列 (精确匹配通常值得突出显示)
+          GridItem() {
+            this.SimpleTieItem(this.vm.searchSummary.tid_match!)
           }
-
-          // 2. 帖子预览
-          if (this.vm.searchSummary.threads && this.vm.searchSummary.threads.length > 0) {
-            this.SectionTitle(`相关帖子 (${this.vm.searchSummary.thread_count}+)`)
-
-            Grid() {
-              ForEach(this.vm.searchSummary.threads, (thread: ForumTieSummary) => {
-                GridItem() {
-                  this.SimpleTieItem(thread)
-                }
-                .width(CommonConstant.FullPercent)
-              }, (thread: ForumTieSummary) => thread.thread_id.toString())
-            }
-            .width(CommonConstant.FullPercent)
-            .columnsTemplate('1fr '.repeat(this.vm.columns)
-              .trim())
-            .columnsGap(CommonConstant.NormalContainerInnerPadding)
-            .rowsGap(CommonConstant.NormalContainerInnerPadding)
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
-          }
-
-          // 3. 用户预览
-          if (this.vm.searchSummary.users && this.vm.searchSummary.users.length > 0) {
-            this.SectionTitle(`相关用户 (${this.vm.searchSummary.user_count}+)`)
-            Grid() {
-              ForEach(this.vm.searchSummary.users, (user: SearchUser) => {
-                GridItem() {
-                  this.SimpleUserItem(user)
-                }
-                .width(CommonConstant.FullPercent)
-              }, (user: SearchUser) => user.uid.toString())
-            }
-            .width(CommonConstant.FullPercent)
-            .columnsTemplate('1fr '.repeat(this.vm.columns)
-              .trim())
-            .columnsGap(CommonConstant.NormalContainerInnerPadding)
-            .rowsGap(CommonConstant.NormalContainerInnerPadding)
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
-          }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
         }
+
+        // ---------------------------------------------------------
+        // 2. ID 精确匹配 (用户)
+        // ---------------------------------------------------------
+        if (this.vm.searchSummary.uid_match) {
+          GridItem() {
+            this.SectionTitle('ID 精确匹配 (用户)')
+          }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
+
+          GridItem() {
+            this.SimpleUserItem(this.vm.searchSummary.uid_match!)
+          }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
+        }
+
+        // ---------------------------------------------------------
+        // 3. 相关帖子列表
+        // ---------------------------------------------------------
+        if (this.vm.searchSummary.threads && this.vm.searchSummary.threads.length > 0) {
+          GridItem() {
+            this.SectionTitle(`相关帖子 (${this.vm.searchSummary.thread_count}+)`)
+          }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
+
+          ForEach(this.vm.searchSummary.threads, (thread: ForumTieSummary) => {
+            GridItem() {
+              this.SimpleTieItem(thread)
+            }
+
+            // 普通项不设置跨列，自动跟随 columnsTemplate
+          }, (thread: ForumTieSummary) => thread.thread_id.toString())
+        }
+
+        // ---------------------------------------------------------
+        // 4. 相关用户列表
+        // ---------------------------------------------------------
+        if (this.vm.searchSummary.users && this.vm.searchSummary.users.length > 0) {
+          GridItem() {
+            this.SectionTitle(`相关用户 (${this.vm.searchSummary.user_count}+)`)
+          }
+          .columnStart(0)
+          .columnEnd(this.vm.columns - 1)
+
+          ForEach(this.vm.searchSummary.users, (user: SearchUser) => {
+            GridItem() {
+              this.SimpleUserItem(user)
+            }
+          }, (user: SearchUser) => user.uid.toString())
+        }
+
       }
-      .width(CommonConstant.FullPercent)
-      .alignItems(HorizontalAlign.Start)
-      .justifyContent(FlexAlign.Start)
     }
+    .columnsTemplate('1fr '.repeat(this.vm.columns).trim())
+    .columnsGap(CommonConstant.NormalContainerInnerPadding)
+    .rowsGap(CommonConstant.NormalContainerInnerPadding)
     .width(CommonConstant.FullPercent)
-    .layoutWeight(1)
+    .height(CommonConstant.FullPercent)
     .scrollBar(BarState.Off)
     .edgeEffect(EdgeEffect.Spring)
+    .padding(CommonConstant.NormalContainerInnerPadding)
+    .align(Alignment.TopStart)
   }
 
   @Builder
@@ -105,6 +104,7 @@ export struct ReviewView {
     Text(title)
       .fontSize(CommonConstant.TextSizeNormal)
       .fontWeight(FontWeight.Bold)
+      .fontColor($r('sys.color.font_secondary'))
       .width(CommonConstant.FullPercent)
   }
 
@@ -120,6 +120,7 @@ export struct ReviewView {
         Text(item.subject)
           .fontSize(CommonConstant.TextSizeSmall)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('sys.color.font_primary'))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -137,16 +138,11 @@ export struct ReviewView {
       .layoutWeight(1)
     }
     .width(CommonConstant.FullPercent)
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding
-    })
+    .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusNormal)
     .onClick(() => {
-      // RouterUtil.pushNamedRoute(TransitionMap.UserProfilePage, { uid: item.uid });
+      // RouterUtil.pushNamedRoute(TransitionMap.TieContentPage, { tid: item.thread_id });
     })
   }
 
@@ -162,6 +158,7 @@ export struct ReviewView {
         Text(item.username)
           .fontSize(CommonConstant.TextSizeSmall)
           .fontWeight(FontWeight.Bold)
+          .fontColor($r('sys.color.font_primary'))
 
         Text(item.group_title)
           .fontSize(CommonConstant.TextSizeTiny)
@@ -171,12 +168,7 @@ export struct ReviewView {
       .layoutWeight(1)
     }
     .width(CommonConstant.FullPercent)
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding
-    })
+    .padding(CommonConstant.NormalContainerInnerPadding)
     .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusNormal)
     .onClick(() => {
