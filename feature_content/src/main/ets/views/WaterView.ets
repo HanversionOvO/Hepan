@@ -1,4 +1,4 @@
-import { CommonConstant, WaterRecord } from 'base_common';
+import { CommonConstant, RouterUtil, WaterRecord } from 'base_common';
 import { CustomTabBar, FloatButton } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -226,6 +226,9 @@ export struct WaterView {
     Stack({ alignContent: Alignment.TopStart }) {
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
         FloatButton({ isFloating: true })
+          .onClick(() => {
+            RouterUtil.pop()
+          })
         Text($r('app.string.WaterPage_water'))
           .fontSize(CommonConstant.TextSizeUltraLarge)
           .fontColor($r('sys.color.font_on_primary'))
