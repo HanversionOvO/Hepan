@@ -1,8 +1,12 @@
 {
   "string": [
     {
-      "name": "page_show",
-      "value": "page from package"
+      "name": "SearchPage_query_user",
+      "value": "搜用户"
+    },
+    {
+      "name": "SearchPage_query_tie",
+      "value": "搜帖子"
     }
   ]
 }

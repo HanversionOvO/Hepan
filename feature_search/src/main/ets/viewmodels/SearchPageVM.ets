@@ -5,8 +5,8 @@ import { CustomTabItem } from 'base_ui';
 @ObservedV2
 export class SearchPageVM extends BaseVM {
   @Trace tabItems: CustomTabItem[] = [
-    { label: "搜帖子", icon: $r('sys.symbol.book') },
-    { label: "搜用户", icon: $r('sys.symbol.person') }
+    { label: $r('app.string.SearchPage_query_tie'), icon: $r('sys.symbol.book') },
+    { label: $r('app.string.SearchPage_query_user'), icon: $r('sys.symbol.person') }
   ]
 
   back() {
