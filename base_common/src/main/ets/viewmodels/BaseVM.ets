@@ -1,6 +1,6 @@
-import { WindowModel } from "../models/WindowModel";
-import { StorageManager } from "../utils/StorageManager";
-import { BreakPointModel, BreakpointNameEnum } from "../models/BreakPointModel";
+import { WindowModel } from '../models/WindowModel';
+import { StorageManager } from '../utils/StorageManager';
+import { BreakPointModel, BreakpointNameEnum } from '../models/BreakPointModel';
 
 export enum UiState {
   LOADING,
@@ -14,10 +14,8 @@ export abstract class BaseVM {
   @Trace window: WindowModel = StorageManager.windowModel; // 窗口信息
   @Trace breakPoint: BreakPointModel = StorageManager.breakPointModel; // 断点信息
   @Trace uiState: UiState = UiState.SUCCESS;
-  @Computed
-  get isLoading(): boolean {
-    return this.uiState === UiState.LOADING;
-  }
+  @Trace isLoading: boolean = false;
+
   @Computed
   get isTabletView(): boolean {
     return this.breakPoint.currentBreakPoint === BreakpointNameEnum.LG ||

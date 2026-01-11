@@ -7,11 +7,14 @@ export struct CustomSearch {
   @Param fontSize: number = CommonConstant.TextSizeSmall;
   @Param searchKey: string = "common_search_input";
   @Param geometryId: string = "default";
+  @Param text: string = "";
   @Event onSubmit: (value: string) => void = () => {
+  };
+  @Event onChange: (value: string) => void = () => {
   };
 
   build() {
-    Search({ placeholder: this.placeHolder })
+    Search({ value: this.text, placeholder: this.placeHolder })
       .id(this.searchKey)
       .textFont({ size: this.fontSize })
       .width(CommonConstant.FullPercent)
@@ -27,6 +30,9 @@ export struct CustomSearch {
         { fontSize: this.fontSize, fontColor: CommonConstant.ThemeColor })
       .onSubmit((value) => {
         this.onSubmit(value);
+      })
+      .onChange((value) => {
+        this.onChange(value);
       })
   }
 }

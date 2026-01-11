@@ -1,6 +1,9 @@
 import { CommonConstant } from 'base_common';
 import { CustomSearch, CustomTabBar, FloatButton } from 'base_ui';
-import { SearchPageVM } from '../viewmodels/SearchPageVM';
+import { SearchPageVM, SearchStatus } from '../viewmodels/SearchPageVM';
+import { QueryView } from '../views/QueryView';
+import { ResultView } from '../views/ResultView';
+import { ReviewView } from '../views/ReviewView';
 
 @ComponentV2
 export struct SearchPageImpl {
@@ -17,7 +20,15 @@ export struct SearchPageImpl {
                   this.vm.back();
                 })
 
-              CustomSearch()
+              CustomSearch({
+                text: this.vm.keyword,
+                onChange: (value: string) => {
+                  this.vm.onSearchInputChange(value);
+                },
+                onSubmit: (value: string) => {
+                  this.vm.onSearchSubmit(value);
+                }
+              })
                 .layoutWeight(1)
             }
             .width(CommonConstant.FullPercent)
@@ -46,7 +57,13 @@ export struct SearchPageImpl {
           })
 
           Column() {
-
+            if (this.vm.searchStatus === SearchStatus.QUERY) {
+              QueryView()
+            } else if (this.vm.searchStatus === SearchStatus.REVIEW) {
+              ReviewView({ vm: this.vm })
+            } else if (this.vm.searchStatus === SearchStatus.RESULT) {
+              ResultView()
+            }
           }
           .width(CommonConstant.FullPercent)
           .layoutWeight(1)
