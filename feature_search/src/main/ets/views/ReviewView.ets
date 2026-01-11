@@ -1,3 +1,4 @@
+import { ResUtil } from '@pura/harmony-utils';
 import {
   CommonConstant, DateUtil, ForumTieSummary, SearchUser, UserAvatarUtil
 } from 'base_common';
@@ -20,7 +21,7 @@ export struct ReviewView {
         if (this.vm.searchSummary.tid_match) {
           // 标题：跨越所有列
           GridItem() {
-            this.SectionTitle('ID 精确匹配 (帖子)')
+            this.SectionTitle($r('app.string.SearchPage_query_tie_result'))
           }
           .columnStart(0)
           .columnEnd(this.vm.columns - 1)
@@ -38,7 +39,7 @@ export struct ReviewView {
         // ---------------------------------------------------------
         if (this.vm.searchSummary.uid_match) {
           GridItem() {
-            this.SectionTitle('ID 精确匹配 (用户)')
+            this.SectionTitle($r('app.string.SearchPage_query_user_result'))
           }
           .columnStart(0)
           .columnEnd(this.vm.columns - 1)
@@ -55,7 +56,7 @@ export struct ReviewView {
         // ---------------------------------------------------------
         if (this.vm.searchSummary.threads && this.vm.searchSummary.threads.length > 0) {
           GridItem() {
-            this.SectionTitle(`相关帖子 (${this.vm.searchSummary.thread_count}+)`)
+            this.SectionTitle(`${ResUtil.getStringSync($r('app.string.SearchPage_query_tie_result'))} (${this.vm.searchSummary.thread_count}+)`)
           }
           .columnStart(0)
           .columnEnd(this.vm.columns - 1)
@@ -74,7 +75,7 @@ export struct ReviewView {
         // ---------------------------------------------------------
         if (this.vm.searchSummary.users && this.vm.searchSummary.users.length > 0) {
           GridItem() {
-            this.SectionTitle(`相关用户 (${this.vm.searchSummary.user_count}+)`)
+            this.SectionTitle(`${ResUtil.getStringSync($r('app.string.SearchPage_query_user_result'))} (${this.vm.searchSummary.thread_count}+)`)
           }
           .columnStart(0)
           .columnEnd(this.vm.columns - 1)
@@ -103,7 +104,7 @@ export struct ReviewView {
   }
 
   @Builder
-  SectionTitle(title: string) {
+  SectionTitle(title: ResourceStr) {
     Text(title)
       .fontSize(CommonConstant.TextSizeNormal)
       .fontWeight(FontWeight.Bold)

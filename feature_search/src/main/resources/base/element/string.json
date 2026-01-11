@@ -7,6 +7,14 @@
     {
       "name": "SearchPage_query_tie",
       "value": "搜帖子"
+    },
+    {
+      "name": "SearchPage_query_user_result",
+      "value": "相关用户"
+    },
+    {
+      "name": "SearchPage_query_tie_result",
+      "value": "相关帖子"
     }
   ]
 }
