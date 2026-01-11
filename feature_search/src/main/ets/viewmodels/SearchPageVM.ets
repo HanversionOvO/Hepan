@@ -1,4 +1,5 @@
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { preferences } from '@kit.ArkData';
 import {
   BaseVM,
   BasicDataSource,
@@ -10,6 +11,8 @@ import {
   SearchApi,
   SearchSummaryData,
   SearchUser,
+  ToastUtil,
+  UiState
 } from 'base_common';
 import { CustomTabItem } from 'base_ui';
 
@@ -21,6 +24,8 @@ export enum SearchStatus {
 }
 
 const TAG = '[SearchPageVM]';
+const PREF_NAME = 'search_pref';
+const KEY_SEARCH_HISTORY = 'search_history_list';
 
 @ObservedV2
 export class SearchPageVM extends BaseVM {
@@ -28,11 +33,16 @@ export class SearchPageVM extends BaseVM {
     { label: $r('app.string.SearchPage_query_tie'), icon: $r('sys.symbol.book') },
     { label: $r('app.string.SearchPage_query_user'), icon: $r('sys.symbol.person') }
   ]
-  @Trace currentSearchIndex: number = 0; // 0: 搜帖子, 1: 搜用户
+  @Trace currentSearchIndex: number = 0;
   @Trace columns: number = 2;
   // 搜索相关状态
   @Trace searchStatus: SearchStatus = SearchStatus.QUERY;
   @Trace keyword: string = '';
+  // 历史记录相关
+  @Trace searchHistory: string[] = []; // 搜索历史列表
+  @Trace historyUiState: UiState = UiState.EMPTY; // 历史记录区域的状态
+  @Trace isHistoryDeleteMode: boolean = false; // 是否处于删除模式
+
   // 预览数据
   @Trace searchSummary: SearchSummaryData | null = null;
   // 结果数据
@@ -44,6 +54,11 @@ export class SearchPageVM extends BaseVM {
   @Trace isLoading: boolean = false;
   // 防抖计时器
   private debounceTimer: number = -1;
+
+  constructor() {
+    super();
+    this.loadHistoryFromDisk();
+  }
 
   @Monitor("breakPoint.currentBreakPoint")
   onBreakpointChange() {
@@ -74,62 +89,145 @@ export class SearchPageVM extends BaseVM {
       return;
     }
     this.currentSearchIndex = index;
-
-    // 如果当前已经在结果页，切换 Tab 后需要重新搜索对应内容
     if (this.searchStatus === SearchStatus.RESULT && this.keyword.trim().length > 0) {
       this.doSearch(true);
     }
   }
 
-  /**
-   * 搜索框内容变化时触发
-   * @param value 输入的内容
-   */
   onSearchInputChange(value: string) {
     this.keyword = value;
-
     if (this.debounceTimer !== -1) {
       clearTimeout(this.debounceTimer);
     }
-
     if (value.trim().length === 0) {
       this.searchStatus = SearchStatus.QUERY;
       this.searchSummary = null;
       return;
     }
-
-    // 防抖 500ms 后请求预览
     this.debounceTimer = setTimeout(() => {
       this.fetchSearchSummary(value);
     }, 500);
   }
 
-  /**
-   * 提交搜索时触发
-   */
   onSearchSubmit(value: string) {
     this.keyword = value;
     if (value.trim().length === 0) {
       return;
     }
-
-    // 清除预览请求（如果还在pending）
     if (this.debounceTimer !== -1) {
       clearTimeout(this.debounceTimer);
     }
 
+    // 保存搜索历史
+    this.addHistory(value);
+
     this.doSearch(true);
   }
 
+  // ================= 历史记录逻辑 =================
+
   /**
-   * 获取搜索预览数据
+   * 添加历史记录
    */
+  addHistory(keyword: string) {
+    // 移除已存在的相同关键词，将其移到最前
+    const index = this.searchHistory.indexOf(keyword);
+    if (index !== -1) {
+      this.searchHistory.splice(index, 1);
+    }
+    this.searchHistory.unshift(keyword);
+
+    // 限制历史记录数量，例如 20 条
+    if (this.searchHistory.length > 20) {
+      this.searchHistory.pop();
+    }
+
+    this.updateHistoryState();
+    this.saveHistoryToDisk();
+  }
+
+  /**
+   * 删除单条历史
+   */
+  deleteHistoryItem(keyword: string) {
+    const index = this.searchHistory.indexOf(keyword);
+    if (index !== -1) {
+      this.searchHistory.splice(index, 1);
+      this.updateHistoryState();
+      this.saveHistoryToDisk();
+    }
+  }
+
+  /**
+   * 清空所有历史
+   */
+  clearHistory() {
+    this.searchHistory = [];
+    this.updateHistoryState();
+    this.isHistoryDeleteMode = false;
+    this.saveHistoryToDisk();
+  }
+
+  /**
+   * 更新历史记录页面的 UI 状态
+   */
+  private updateHistoryState() {
+    if (this.searchHistory.length > 0) {
+      this.historyUiState = UiState.SUCCESS;
+    } else {
+      this.historyUiState = UiState.EMPTY;
+    }
+  }
+
+  /**
+   * 退出删除模式
+   */
+  exitDeleteMode() {
+    this.isHistoryDeleteMode = false;
+  }
+
+  // ================= 持久化存储逻辑 =================
+
+  /**
+   * 保存历史记录到首选项
+   */
+  private saveHistoryToDisk(): void {
+    try {
+      const context = AppUtil.getContext();
+      const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
+      pref.putSync(KEY_SEARCH_HISTORY, this.searchHistory);
+      pref.flush(); // 强制刷盘
+    } catch (err) {
+      LogUtil.error(TAG, 'Failed to save search history', JSON.stringify(err));
+    }
+  }
+
+  /**
+   * 从首选项加载历史记录
+   */
+  private loadHistoryFromDisk(): void {
+    try {
+      const context = AppUtil.getContext();
+      const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
+      // 读取字符串数组，如果不存在则返回空数组
+      const history = pref.getSync(KEY_SEARCH_HISTORY, []) as string[];
+      // 注意：Preferences 取出的数组可能是 Proxy 对象或者不可变对象，建议浅拷贝一份
+      this.searchHistory = [...history];
+      this.updateHistoryState();
+      LogUtil.info(TAG, `Search history loaded. Count: ${this.searchHistory.length}`);
+    } catch (err) {
+      LogUtil.error(TAG, 'Failed to load search history', JSON.stringify(err));
+      this.searchHistory = [];
+      this.updateHistoryState();
+    }
+  }
+
+  // ================= 搜索逻辑 =================
+
   private async fetchSearchSummary(keyword: string) {
-    // 如果用户已经提交了搜索，不再更新预览
     if (this.searchStatus === SearchStatus.RESULT) {
       return;
     }
-
     try {
       const data = await SearchApi.getSearchSummary(keyword);
       this.searchSummary = data;
@@ -139,17 +237,14 @@ export class SearchPageVM extends BaseVM {
     }
   }
 
-  /**
-   * 执行正式搜索
-   * @param refresh 是否重置分页
-   */
   async doSearch(refresh: boolean = false) {
     if (this.keyword.trim().length === 0) {
       return;
     }
-
     this.searchStatus = SearchStatus.RESULT;
     this.isLoading = true;
+    // 退出删除模式
+    this.exitDeleteMode();
 
     if (refresh) {
       this.page = 1;
@@ -163,7 +258,6 @@ export class SearchPageVM extends BaseVM {
 
     try {
       if (this.currentSearchIndex === 0) {
-        // 搜索帖子
         const result = await SearchApi.searchThreads(this.keyword, this.page);
         if (refresh) {
           this.threadListDataSource.setData(result.rows);
@@ -172,9 +266,8 @@ export class SearchPageVM extends BaseVM {
             this.threadListDataSource.pushData(item)
           });
         }
-        this.hasMore = result.rows.length >= result.page_size; // 简单判断
+        this.hasMore = result.rows.length >= result.page_size;
       } else {
-        // 搜索用户
         const result = await SearchApi.searchUsers(this.keyword, this.page);
         if (refresh) {
           this.userListDataSource.setData(result.rows);
@@ -185,12 +278,12 @@ export class SearchPageVM extends BaseVM {
         }
         this.hasMore = result.rows.length >= result.page_size;
       }
-
       if (this.hasMore) {
         this.page++;
       }
     } catch (e) {
       LogUtil.error(TAG, `Search failed: ${JSON.stringify(e)}`);
+      ToastUtil.showError('搜索失败: ' + (e.message || '网络错误'));
     } finally {
       this.isLoading = false;
     }
