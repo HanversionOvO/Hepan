@@ -10,6 +10,8 @@ export { WindowManager } from './src/main/ets/utils/WindowManager';
 
 export { UserAvatarUtil } from './src/main/ets/utils/UserAvatarUtil';
 
+export { PreferenceUtil } from './src/main/ets/utils/PreferenceUtil';
+
 export { RouterUtil, RouterMap, StackEnum } from './src/main/ets/utils/RouterUtil';
 
 export { VMManager } from './src/main/ets/utils/VMManager';

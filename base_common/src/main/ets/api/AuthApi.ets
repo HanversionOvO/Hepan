@@ -39,7 +39,7 @@ export class AuthApi {
     this.client.clearAuthorization();
     this.client.clearCookies();
 
-    await this.requestLegacyLogin(username, password);
+    const legacyLogin = await this.loginToMobcent(username, password);
 
     const adoptResp = await this.client.request<AdoptLegacyAuthResponse>({
       path: '/_/auth/adoptLegacyAuth',
@@ -71,13 +71,6 @@ export class AuthApi {
       resultName = adoptResp.data.user.username;
     }
 
-    try {
-      await this.loginToMobcent(username, password);
-    } catch (e) {
-      // 旧版登录失败不应阻塞新版登录流程，但需要记录日志
-      LogUtil.error(TAG, '旧版 API 登录失败 (部分功能可能不可用)', JSON.stringify(e));
-    }
-
     const cookie = this.client.getCookieHeader();
 
     // [新增] 登录成功，更新并持久化 AuthModel (包含密码)
@@ -87,6 +80,8 @@ export class AuthApi {
     authModel.uid = adoptResp.data.user.uid;
     authModel.username = adoptResp.data.user.username;
     authModel.password = password; // 保存密码
+    authModel.accessToken = legacyLogin.token;
+    authModel.accessSecret = legacyLogin.secret;
     authModel.saveToDisk();
 
     return {
@@ -97,7 +92,7 @@ export class AuthApi {
     };
   }
 
-  private async loginToMobcent(username: string, password: string): Promise<void> {
+  private async loginToMobcent(username: string, password: string): Promise<LegacyLoginData> {
     // 调用 ApiClient 的 requestLegacy 方法
     // 此时 AuthModel 中还没有 Token，requestLegacy 会发送不带 Token 的请求，这对于 'user/login' 是正确的
 
@@ -115,11 +110,18 @@ export class AuthApi {
     const rs = response.data.rs;
 
     if (rs === 1 && body) {
-      LogUtil.info(TAG, `旧版登录成功, Token: ${response.data.token}`);
-      // 将获取到的 token 和 secret 存入 AuthModel
-      // 注意：API 返回的是 token/secret，请求时对应 accessToken/accessSecret
-      StorageManager.authModel.accessToken = response.data.token;
-      StorageManager.authModel.accessSecret = response.data.secret;
+      const token = response.data.token || body.token;
+      const secret = response.data.secret || body.secret;
+      if (!token || !secret) {
+        throw new Error('Legacy login returned empty token/secret');
+      }
+      LogUtil.info(TAG, `旧版登录成功, Token: ${token}`);
+      return {
+        token: token,
+        secret: secret,
+        uid: body.uid,
+        userName: body.userName
+      };
     } else {
       throw new Error(`旧版登录返回错误: ${response.data.errcode}`);
     }
@@ -150,51 +152,4 @@ export class AuthApi {
     }
   }
 
-  private async requestLegacyLogin(username: string, password: string): Promise<void> {
-    const formBody =
-      `loginfield=username&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-
-    const response = await this.client.request<string>({
-      path: '/member.php?mod=logging&action=login&loginsubmit=yes&inajax=1',
-      method: http.RequestMethod.POST,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: formBody,
-      includeCookie: false,
-      includeAuthorization: false,
-      expectJson: false
-    });
-
-    if (!this.isLegacyLoginSuccess(response.data)) {
-      LogUtil.error(TAG, 'Legacy login failed', JSON.stringify(response.data));
-      const errorMessage = this.parseLoginErrorMessage(response.data);
-      throw new Error(errorMessage);
-    }
-  }
-
-  private isLegacyLoginSuccess(payload: Object | string): boolean {
-    if (typeof payload !== 'string') {
-      return false;
-    }
-    return payload.includes('succeedmessage') || payload.includes('欢迎您回来');
-  }
-
-  private parseLoginErrorMessage(content: string): string {
-    try {
-      const cdataRegex = /<!\[CDATA\[([\s\S]*?)\]\]>/;
-      const match = content.match(cdataRegex);
-
-      if (match && match[1]) {
-        let rawMessage = match[1];
-        const messageParts = rawMessage.split('<script');
-        if (messageParts.length > 0) {
-          return messageParts[0].trim();
-        }
-      }
-    } catch (e) {
-      LogUtil.error(TAG, 'Failed to parse error message', JSON.stringify(e));
-    }
-    return '账号或密码错误，或触发了登录限制';
-  }
 }

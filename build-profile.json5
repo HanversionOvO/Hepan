@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.cer",
+          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B909E13AFAE7B4CC57732499BCB30794F4F2C38C62AEE87089FB4D683275E545866DF460CE8625B",
-          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p7b",
+          "keyPassword": "0000001B34031E6C46613972119A85FDEF6F0C695E59A6D7CD4B8360CCD32B1432ED3D996495784A38B00A",
+          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_Q3b0t5vd6qQ5L_qg8zh_SRAnwMaoas6M27bzTpJYC_8=.p12",
-          "storePassword": "0000001BCD54B2224F58C5D78F6AF28DFF6683132E334C3991687C0F65BEEFDDAE68A8B5866DF6D4C4E328"
+          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p12",
+          "storePassword": "0000001BE2A5A9C51394027107AA8732FAD8743D165A30ED1BDF5A250C3A0BA96B51D781E83114061A89A4"
         }
       },
       {
@@ -20,11 +20,11 @@
         "material": {
           "certpath": "D:/Environments/HUAWEI/Key/Hepan.cer",
           "keyAlias": "mikannqaq",
-          "keyPassword": "000000182A50E615822A3AF273777E204E675D4FC4561934B4E1D68225308A0A333F171E3A1D1113",
+          "keyPassword": "00000018E8F8E06DFB9A69CF31CAF9A8B3C7CCD92F57FE53D8CE2B1F29A687F58F0F4ADC9E03B799",
           "profile": "D:/Environments/HUAWEI/Key/HepanRelease.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "D:/Environments/HUAWEI/Key/p12.p12",
-          "storePassword": "000000183A3B2C6375B2E4613811E3F18AC98CDF8C467C197CB93D6A27746F183ECAC9EEE1C2CE6C"
+          "storePassword": "000000188E74C656935397416409C6436720EAEB62B95F79F74BE296D1A5BFAD41644C7E192C9DE8"
         }
       }
     ],

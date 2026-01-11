@@ -1,6 +1,6 @@
-import { preferences } from '@kit.ArkData';
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { LogUtil } from '@pura/harmony-utils';
 import { ApiClient } from '../api/ApiClient';
+import { PreferenceUtil } from '../utils/PreferenceUtil';
 
 const TAG = '[AuthModel]';
 const PREF_NAME = 'auth_data_pref';
@@ -50,9 +50,7 @@ export class AuthModel {
    * 保存数据到首选项
    */
   public saveToDisk(): void {
-    try {
-      const context = AppUtil.getContext();
-      const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
+    const saved = PreferenceUtil.write(PREF_NAME, (pref) => {
       pref.putSync(KEY_AUTH, this.authorization);
       pref.putSync(KEY_COOKIE, this.cookie);
       pref.putSync(KEY_UID, this.uid);
@@ -60,10 +58,9 @@ export class AuthModel {
       pref.putSync(KEY_PASSWORD, this.password);
       pref.putSync(KEY_ACCESS_TOKEN, this.accessToken);
       pref.putSync(KEY_ACCESS_SECRET, this.accessSecret);
-      pref.flush(); // 强制刷盘
+    });
+    if (saved) {
       LogUtil.info(TAG, 'Auth data saved to disk.');
-    } catch (err) {
-      LogUtil.error(TAG, 'Failed to save auth data', JSON.stringify(err));
     }
   }
 
@@ -71,10 +68,7 @@ export class AuthModel {
    * 从首选项加载数据
    */
   private loadFromDisk(): void {
-    try {
-      const context = AppUtil.getContext();
-      const pref = preferences.getPreferencesSync(context, { name: PREF_NAME });
-
+    const loaded = PreferenceUtil.read(PREF_NAME, (pref) => {
       this.authorization = pref.getSync(KEY_AUTH, '') as string;
       this.cookie = pref.getSync(KEY_COOKIE, '') as string;
       this.uid = pref.getSync(KEY_UID, 0) as number;
@@ -82,20 +76,23 @@ export class AuthModel {
       this.password = pref.getSync(KEY_PASSWORD, '') as string;
       this.accessToken = pref.getSync(KEY_ACCESS_TOKEN, '') as string;
       this.accessSecret = pref.getSync(KEY_ACCESS_SECRET, '') as string;
+      return true;
+    }, false);
 
-      const client = ApiClient.getInstance();
-
-      if (this.authorization) {
-        client.setAuthorization(this.authorization);
-      }
-
-      if (this.cookie) {
-        client.setCookieString(this.cookie);
-      }
-
-      LogUtil.info(TAG, `Auth data loaded and synced. UID: ${this.uid}`);
-    } catch (err) {
-      LogUtil.error(TAG, 'Failed to load auth data', JSON.stringify(err));
+    if (!loaded) {
+      return;
     }
+
+    const client = ApiClient.getInstance();
+
+    if (this.authorization) {
+      client.setAuthorization(this.authorization);
+    }
+
+    if (this.cookie) {
+      client.setCookieString(this.cookie);
+    }
+
+    LogUtil.info(TAG, `Auth data loaded and synced. UID: ${this.uid}`);
   }
 }
