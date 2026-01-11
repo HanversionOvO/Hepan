@@ -1,0 +1,1 @@
+export { SearchPageImpl } from './src/main/ets/pages/SearchPageImpl';

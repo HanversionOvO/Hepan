@@ -59,6 +59,12 @@
       <excludeFolder url="file://$MODULE_DIR$/../../feature_content/build" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_content/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/../../feature_content/oh_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/.cxx" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/.preview" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/.test" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/../../feature_search/oh_modules" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="" scope="PROVIDED">

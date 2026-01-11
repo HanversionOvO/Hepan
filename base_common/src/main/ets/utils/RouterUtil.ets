@@ -18,6 +18,7 @@ export enum RouterMap {
   IMAGE_LONG_TAKE_PREVIEW = 'ImageLongTakePreviewPage',
   COLLECTION_CONTENT_PAGE = 'CollectionContentPage',
   WATER_PAGE = 'WaterPage',
+  SEARCH_PAGE = 'SearchPage',
 }
 
 @ObservedV2

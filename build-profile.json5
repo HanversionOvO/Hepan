@@ -137,6 +137,10 @@
           ]
         }
       ]
+    },
+    {
+      "name": "feature_search",
+      "srcPath": "./feature_search",
     }
   ]
 }

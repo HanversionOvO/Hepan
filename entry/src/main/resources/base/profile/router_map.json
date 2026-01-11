@@ -54,6 +54,11 @@
       "name": "ImageLongTakePreviewPage",
       "pageSourceFile": "src/main/ets/pages/preview/pages/ImageLongTakePreviewPage.ets",
       "buildFunction": "ImageLongTakePreviewPageBuilder"
+    },
+    {
+      "name": "SearchPage",
+      "pageSourceFile": "src/main/ets/pages/search/pages/SearchPage.ets",
+      "buildFunction": "SearchPageBuilder"
     }
   ]
 }

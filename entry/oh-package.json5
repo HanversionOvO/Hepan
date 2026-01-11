@@ -11,6 +11,7 @@
     "feature_mine": "file:../feature_mine",
     "feature_message": "file:../feature_message",
     "feature_post": "file:../feature_post",
-    "feature_content": "file:../feature_content"
+    "feature_content": "file:../feature_content",
+    "feature_search": "file:../feature_search"
   }
 }
