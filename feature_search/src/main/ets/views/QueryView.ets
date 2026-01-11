@@ -2,6 +2,7 @@ import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant, ToastUtil } from 'base_common';
 import { StateLayout } from 'base_ui';
 import { SearchPageVM } from '../viewmodels/SearchPageVM';
+import { LengthMetrics } from '@kit.ArkUI';
 
 @ComponentV2
 export struct QueryView {
@@ -49,7 +50,12 @@ export struct QueryView {
         }
         .width(CommonConstant.FullPercent)
 
-        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+        Flex({
+          wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start, space: {
+            main: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding),
+            cross: LengthMetrics.vp(CommonConstant.NormalContainerInnerPadding)
+          }
+        }) {
           ForEach(this.vm.searchHistory, (keyword: string) => {
             this.HistoryItem(keyword)
           }, (item: string) => item)
@@ -58,7 +64,10 @@ export struct QueryView {
         .animation({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.EaseInOut })
       }
       .width(CommonConstant.FullPercent)
-      .padding(CommonConstant.NormalContainerInnerPadding)
+      .padding({
+        left: CommonConstant.PageLRPadding,
+        right: CommonConstant.PageLRPadding,
+      })
       .alignItems(HorizontalAlign.Start)
     }
     .scrollBar(BarState.Off)
@@ -70,7 +79,7 @@ export struct QueryView {
 
   @Builder
   HistoryItem(keyword: string) {
-    Row() {
+    Row({ space: CommonConstant.SmallContainerInnerPadding }) {
       Text(keyword)
         .fontSize(CommonConstant.TextSizeSmall)
         .fontColor(this.vm.isHistoryDeleteMode ? $r('sys.color.font_on_primary') : $r('sys.color.font_primary'))
@@ -94,6 +103,12 @@ export struct QueryView {
     }
     .backgroundColor(this.vm.isHistoryDeleteMode ? CommonConstant.ErrorColor : $r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusNormal)
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding,
+      right: CommonConstant.SmallContainerLRPadding,
+      top: CommonConstant.SmallContainerTBPadding,
+      bottom: CommonConstant.SmallContainerTBPadding
+    })
     .animation({ duration: CommonConstant.AnimationDurationNormal })
     .onClick(() => {
       if (!this.vm.isHistoryDeleteMode) {
