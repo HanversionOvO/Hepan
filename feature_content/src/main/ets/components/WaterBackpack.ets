@@ -1,74 +1,64 @@
-import { CommonConstant, UiState } from 'base_common';
+import { CommonConstant, UiState, WaterBackpackItem } from 'base_common';
 import { StateLayout } from 'base_ui';
 import { WaterVM } from '../viewmodels/WaterVM';
 
 @ComponentV2
 export struct WaterBackPack {
   @Param @Require vm: WaterVM;
+  @Local backpackItems: WaterBackpackItem[] = [];
   @Local isLoadingShop: UiState = UiState.LOADING;
 
   async aboutToAppear() {
+    this.backpackItems = await this.vm.getBackpack();
 
+    if (this.backpackItems.length > 0) {
+      this.isLoadingShop = UiState.SUCCESS;
+    } else {
+      this.isLoadingShop = UiState.EMPTY;
+    }
   }
 
-  // @Builder
-  // ShopItemCard(item: WaterShopItem) {
-  //   Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-  //     Row() {
-  //       Image(item.shop_icon)
-  //         .width(CommonConstant.IconSizeLarge)
-  //         .height(CommonConstant.IconSizeLarge)
-  //     }
-  //     .backgroundColor($r('app.color.second_window_background'))
-  //     .width(CommonConstant.FullPercent)
-  //     .borderRadius(CommonConstant.RadiusNormal)
-  //     .padding(CommonConstant.NormalContainerTBPadding)
-  //     .alignItems(VerticalAlign.Center)
-  //     .justifyContent(FlexAlign.Center)
-  //
-  //     Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-  //       Text(item.shop_name)
-  //         .fontSize(CommonConstant.TextSizeNormal)
-  //         .fontWeight(FontWeight.Medium)
-  //
-  //       Row() {
-  //         if (item.can_buy) {
-  //           Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-  //             SymbolGlyph($r('sys.symbol.drop_fill'))
-  //               .fontSize(CommonConstant.TextSizeSmall)
-  //               .fontColor([$r('app.color.water_color')])
-  //
-  //             Text(item.shop_price.toString())
-  //               .fontSize(CommonConstant.TextSizeSmall)
-  //               .fontColor($r('app.color.water_color'))
-  //               .fontWeight(FontWeight.Bold)
-  //           }
-  //
-  //           GlassButton({
-  //             text: $r('app.string.WaterPage_shop_buy'),
-  //             innerFontSize: CommonConstant.TextSizeTiny
-  //           })
-  //         } else {
-  //           Row() {
-  //             GlassButton({
-  //               text: $r('app.string.WaterPage_shop_cant_buy'),
-  //               innerFontSize: CommonConstant.TextSizeTiny
-  //             })
-  //           }
-  //           .width(CommonConstant.FullPercent)
-  //           .justifyContent(FlexAlign.Center)
-  //         }
-  //       }
-  //       .width(CommonConstant.FullPercent)
-  //       .justifyContent(FlexAlign.SpaceBetween)
-  //     }
-  //     .width(CommonConstant.FullPercent)
-  //   }
-  //   .borderRadius(CommonConstant.RadiusNormal)
-  //   .backgroundColor($r('app.color.start_window_background'))
-  //   .padding(CommonConstant.NormalContainerInnerPadding)
-  //   .width(CommonConstant.FullPercent)
-  // }
+  @Builder
+  backpackItemCard(item: WaterBackpackItem) {
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Stack() {
+        Column() {
+          Image(item.backpack_icon)
+            .width(CommonConstant.IconSizeLarge)
+            .height(CommonConstant.IconSizeLarge)
+        }
+        .padding(CommonConstant.NormalContainerTBPadding)
+
+        Text(`x${item.backpack_nums}`)
+          .padding(CommonConstant.SmallContainerInnerPadding)
+          .position({ right: 0, top: 0 })
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('sys.color.font_on_primary'))
+          .backgroundColor($r('app.color.water_color'))
+          .borderRadius({
+            topLeft: 0,
+            topRight: CommonConstant.RadiusNormal,
+            bottomLeft: CommonConstant.RadiusNormal,
+            bottomRight: 0
+          })
+      }
+      .backgroundColor($r('app.color.second_window_background'))
+      .width(CommonConstant.FullPercent)
+      .borderRadius(CommonConstant.RadiusNormal)
+
+      Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Text(item.backpack_name)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontWeight(FontWeight.Medium)
+      }
+      .width(CommonConstant.FullPercent)
+    }
+    .borderRadius(CommonConstant.RadiusNormal)
+    .backgroundColor($r('app.color.start_window_background'))
+    .padding(CommonConstant.NormalContainerInnerPadding)
+    .width(CommonConstant.FullPercent)
+  }
 
   build() {
     StateLayout({
@@ -76,12 +66,12 @@ export struct WaterBackPack {
     }) {
       Refresh({ refreshing: $$this.vm.isRefreshBackpack }) {
         Grid() {
-          // ForEach(this.shopItems, (item: WaterShopItem, index: number) => {
-          //   GridItem() {
-          //     this.ShopItemCard(item)
-          //   }
-          //   .width(CommonConstant.FullPercent)
-          // }, (mission: WaterShopItem, index: number) => index.toString())
+          ForEach(this.backpackItems, (item: WaterBackpackItem, index: number) => {
+            GridItem() {
+              this.backpackItemCard(item)
+            }
+            .width(CommonConstant.FullPercent)
+          }, (mission: WaterBackpackItem, index: number) => index.toString())
         }
         .width(CommonConstant.FullPercent)
         .layoutWeight(1)

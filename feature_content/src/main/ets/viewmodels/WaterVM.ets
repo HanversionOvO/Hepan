@@ -3,6 +3,7 @@ import {
   BreakpointNameEnum,
   BreakpointType,
   WaterApi,
+  WaterBackpackItem,
   WaterMission,
   WaterMissionState,
   WaterModels,
@@ -91,6 +92,10 @@ export class WaterVM extends BaseVM {
 
   async getShop(): Promise<WaterShopItem[]> {
     return await WaterApi.getWaterShop();
+  }
+
+  async getBackpack(): Promise<WaterBackpackItem[]> {
+    return await WaterApi.getWaterBackpack();
   }
 
   changeTab(index: number) {

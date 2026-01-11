@@ -1,6 +1,13 @@
 import { Document, DomUtils } from '@ohos/htmlparser2';
 import { ApiClient } from './ApiClient';
-import { WaterMission, WaterMissionState, WaterModels, WaterRecord, WaterShopItem } from './models/WaterModels';
+import {
+  WaterBackpackItem,
+  WaterMission,
+  WaterMissionState,
+  WaterModels,
+  WaterRecord,
+  WaterShopItem
+} from './models/WaterModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
 
@@ -360,5 +367,105 @@ export class WaterApi {
     }
 
     return shopItems;
+  }
+
+  /**
+   * 获取我的道具背包
+   */
+  public static async getWaterBackpack(): Promise<WaterBackpackItem[]> {
+    const items: WaterBackpackItem[] = [];
+    const baseUrl = ApiClient.getInstance().baseUrl;
+
+    try {
+      // 1. 构造请求
+      const params: Record<string, string> = {
+        'mod': 'magic',
+        'action': 'mybox'
+      };
+
+      // 2. 获取 HTML
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params);
+
+      // 3. 解析
+      // 查找列表容器: <ul class="mtm mgcl cl">，结构与商店类似
+      const listUl = DomUtils.findOne((elem) => {
+        return elem.tagName === 'ul' &&
+          !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('mgcl'));
+      }, doc.children, true);
+
+      if (!listUl) {
+        return items;
+      }
+
+      // 查找所有 li
+      const lis = DomUtils.findAll((elem) => elem.tagName === 'li', listUl.children);
+
+      lis.forEach((li) => {
+        const item = new WaterBackpackItem();
+
+        // --- 1. 图标 (div.mg_img > img) ---
+        const imgDiv = DomUtils.findOne((elem) => {
+          return elem.tagName === 'div' &&
+            !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('mg_img'));
+        }, li.children);
+
+        if (imgDiv) {
+          const img = DomUtils.findOne((elem) => elem.tagName === 'img', imgDiv.children);
+          if (img && img.attribs && img.attribs['src']) {
+            let src = img.attribs['src'];
+            if (!src.startsWith('http')) {
+              src = baseUrl + '/' + src;
+            }
+            item.backpack_icon = src;
+          }
+        }
+
+        // --- 2. 名称 (第一个 p > strong) ---
+        const pTags = DomUtils.findAll((elem) => elem.tagName === 'p', li.children);
+        if (pTags.length > 0) {
+          const strong = DomUtils.findOne((elem) => elem.tagName === 'strong', pTags[0].children);
+          if (strong) {
+            item.backpack_name = DomUtils.textContent(strong).trim();
+          }
+        }
+
+        // --- 3. 数量 ---
+        // 查找包含 数量: <font class="xi1 xw1">1</font> 的结构
+        // 遍历所有 p 标签查找
+        for (const p of pTags) {
+          // 尝试查找 class="xi1" 的 font 标签 (通常用于高亮数字)
+          const font = DomUtils.findOne((elem) => {
+            return elem.tagName === 'font' &&
+              !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('xi1'));
+          }, p.children);
+
+          if (font) {
+            const numStr = DomUtils.textContent(font).trim();
+            const num = parseInt(numStr);
+            if (!isNaN(num)) {
+              item.backpack_nums = num;
+              break; // 找到后跳出循环
+            }
+          } else {
+            // 备用方案：如果不是 font 标签，尝试解析文本 "数量: 1"
+            const text = DomUtils.textContent(p);
+            if (text.includes('数量')) {
+              const match = text.match(/数量\D*(\d+)/);
+              if (match) {
+                item.backpack_nums = parseInt(match[1]);
+                break;
+              }
+            }
+          }
+        }
+
+        items.push(item);
+      });
+
+    } catch (e) {
+      LogUtil.error(TAG, 'getWaterBackpack failed', JSON.stringify(e));
+    }
+
+    return items;
   }
 }
