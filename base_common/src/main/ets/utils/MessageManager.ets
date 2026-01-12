@@ -1,15 +1,23 @@
 ﻿import { LogUtil, NotificationBasicOptions, NotificationUtil } from '@pura/harmony-utils';
 import { MessageApi } from '../api/MessageApi';
 import {
+  AnPNotification,
   MessageSummary,
   NewChat,
   NewMessagesSummary,
+  PostSummary,
   RecentMessage,
+  SystemNotification,
   SystemSummary
 } from '../api/models/MessageModels';
 import { StorageManager } from './StorageManager';
 
 const TAG = '[MessageManager]: ';
+
+interface NotificationContent {
+  title: string;
+  text: string;
+}
 
 class NotificationCounts {
   at: number = 0;
@@ -36,6 +44,7 @@ export class MessageManager {
   private lastBadgeCount: number = 0;
   private readonly notifyIds: NotificationIds = new NotificationIds();
   private lastChatSignature: string = '';
+  private isInForeground: boolean = true;
   private messageList: RecentMessage[] = [];
   private currentPage: number = 1;
   private readonly pageSize: number = 15;
@@ -72,6 +81,10 @@ export class MessageManager {
       LogUtil.info(TAG, 'Message polling service stopped');
     }
     this.resetNotificationState();
+  }
+
+  public setForegroundState(isForeground: boolean): void {
+    this.isInForeground = isForeground;
   }
 
   public async refreshMessageList(): Promise<void> {
@@ -268,34 +281,19 @@ export class MessageManager {
     const tasks: Promise<void>[] = [];
 
     if (counts.at > this.lastNotifyCounts.at) {
-      const diff = counts.at - this.lastNotifyCounts.at;
-      tasks.push(this.publishBasicNotification(
-        this.notifyIds.at,
-        '@Me',
-        `New @Me: ${diff} (total ${counts.at})`
-      ));
+      tasks.push(this.publishAtNotification());
     } else if (counts.at === 0 && this.lastNotifyCounts.at > 0) {
       this.cancelNotification(this.notifyIds.at);
     }
 
     if (counts.reply > this.lastNotifyCounts.reply) {
-      const diff = counts.reply - this.lastNotifyCounts.reply;
-      tasks.push(this.publishBasicNotification(
-        this.notifyIds.reply,
-        'Reply',
-        `New replies: ${diff} (total ${counts.reply})`
-      ));
+      tasks.push(this.publishReplyNotification());
     } else if (counts.reply === 0 && this.lastNotifyCounts.reply > 0) {
       this.cancelNotification(this.notifyIds.reply);
     }
 
     if (counts.notice > this.lastNotifyCounts.notice) {
-      const diff = counts.notice - this.lastNotifyCounts.notice;
-      tasks.push(this.publishBasicNotification(
-        this.notifyIds.notice,
-        'Notification',
-        `New notifications: ${diff} (total ${counts.notice})`
-      ));
+      tasks.push(this.publishSystemNotification());
     } else if (counts.notice === 0 && this.lastNotifyCounts.notice > 0) {
       this.cancelNotification(this.notifyIds.notice);
     }
@@ -304,11 +302,7 @@ export class MessageManager {
       const latestChat = this.getLatestChat(newChats);
       const chatSignature = latestChat ? `${latestChat.conversation_id}_${latestChat.last_dateline}` : '';
       if (!chatSignature || chatSignature !== this.lastChatSignature) {
-        tasks.push(this.publishBasicNotification(
-          this.notifyIds.chat,
-          latestChat ? latestChat.last_author : 'Chat',
-          this.buildChatPreview(latestChat)
-        ));
+        tasks.push(this.publishChatNotification(latestChat));
         this.lastChatSignature = chatSignature;
       }
     } else if (counts.chat === 0 && this.lastNotifyCounts.chat > 0) {
@@ -325,19 +319,31 @@ export class MessageManager {
 
   private buildNotificationCounts(summary: NewMessagesSummary): NotificationCounts {
     const counts = new NotificationCounts();
-    counts.at = Math.max(0, summary.posts.at);
-    counts.reply = Math.max(0, summary.posts.reply);
-    counts.notice = Math.max(0, this.sumSystemCounts(summary.system));
-    counts.chat = Math.max(0, summary.chat);
+    const posts: PostSummary = summary.posts ?? new PostSummary();
+    const system: SystemSummary = summary.system ?? new SystemSummary();
+    counts.at = this.toSafeNumber(posts.at);
+    counts.reply = this.toSafeNumber(posts.reply);
+    counts.notice = this.toSafeNumber(posts.rate) + this.toSafeNumber(posts.other) + this.sumSystemCounts(system);
+    counts.chat = this.toSafeNumber(summary.chat);
     return counts;
   }
 
   private sumSystemCounts(system: SystemSummary): number {
-    return system.friend + system.space + system.task + system.report + system.system + system.admin + system.app;
+    return this.toSafeNumber(system.friend)
+      + this.toSafeNumber(system.space)
+      + this.toSafeNumber(system.task)
+      + this.toSafeNumber(system.report)
+      + this.toSafeNumber(system.system)
+      + this.toSafeNumber(system.admin)
+      + this.toSafeNumber(system.app);
   }
 
   private updateBadge(counts: NotificationCounts): void {
     const total = counts.at + counts.reply + counts.notice + counts.chat;
+    if (!Number.isFinite(total)) {
+      LogUtil.warn(TAG, 'Skip badge update due to invalid count');
+      return;
+    }
     if (total === this.lastBadgeCount) {
       return;
     }
@@ -375,15 +381,6 @@ export class MessageManager {
     return latest;
   }
 
-  private buildChatPreview(chat: NewChat | null): string {
-    if (!chat) {
-      return 'New chat message';
-    }
-    const author = chat.last_author || 'Someone';
-    const summary = chat.last_summary || 'sent a new message';
-    return `${author}: ${summary}`;
-  }
-
   private async publishBasicNotification(id: number, title: string, text: string): Promise<void> {
     try {
       const wantAgent = await NotificationUtil.getDefaultWantAgent();
@@ -396,6 +393,96 @@ export class MessageManager {
       await NotificationUtil.publishBasic(options);
     } catch (error) {
       LogUtil.warn(TAG, `Publish notification failed: ${this.stringifyError(error)}`);
+    }
+  }
+
+  private async publishAtNotification(): Promise<void> {
+    const content = await this.getLatestAtContent();
+    if (!content) {
+      await this.publishBasicNotification(this.notifyIds.at, '有人 @你了', '你有新的@我');
+      return;
+    }
+    await this.publishBasicNotification(this.notifyIds.at, content.title, content.text);
+  }
+
+  private async publishReplyNotification(): Promise<void> {
+    const content = await this.getLatestReplyContent();
+    if (!content) {
+      await this.publishBasicNotification(this.notifyIds.reply, '有人 回复了你', '你有新的回复');
+      return;
+    }
+    await this.publishBasicNotification(this.notifyIds.reply, content.title, content.text);
+  }
+
+  private async publishSystemNotification(): Promise<void> {
+    const content = await this.getLatestSystemContent();
+    if (!content) {
+      await this.publishBasicNotification(this.notifyIds.notice, '你有一条新通知', '请查看通知详情');
+      return;
+    }
+    await this.publishBasicNotification(this.notifyIds.notice, content.title, content.text);
+  }
+
+  private async publishChatNotification(chat: NewChat | null): Promise<void> {
+    const title = chat && chat.last_author ? chat.last_author : '私信';
+    const text = chat ? this.formatReplyContent(chat.last_summary) : '你有新的私信';
+    await this.publishBasicNotification(this.notifyIds.chat, title, text);
+  }
+
+  private async getLatestAtContent(): Promise<NotificationContent | null> {
+    try {
+      const list: AnPNotification[] = await MessageApi.getNotificationList('at', 1, 1);
+      if (!list || list.length === 0) {
+        return null;
+      }
+      const item = list[0];
+      const author = item.reply_nick_name || '有人';
+      const text = this.formatReplyContent(item.reply_content);
+      return {
+        title: `${author} @你了`,
+        text: text || '你有新的@我'
+      };
+    } catch (error) {
+      LogUtil.warn(TAG, `Fetch latest @ notification failed: ${this.stringifyError(error)}`);
+      return null;
+    }
+  }
+
+  private async getLatestReplyContent(): Promise<NotificationContent | null> {
+    try {
+      const list: AnPNotification[] = await MessageApi.getNotificationList('post', 1, 1);
+      if (!list || list.length === 0) {
+        return null;
+      }
+      const item = list[0];
+      const author = item.reply_nick_name || '有人';
+      const text = this.formatReplyContent(item.reply_content);
+      return {
+        title: `${author} 回复了你`,
+        text: text || '你有新的回复'
+      };
+    } catch (error) {
+      LogUtil.warn(TAG, `Fetch latest reply notification failed: ${this.stringifyError(error)}`);
+      return null;
+    }
+  }
+
+  private async getLatestSystemContent(): Promise<NotificationContent | null> {
+    try {
+      const list: SystemNotification[] = await MessageApi.getSystemNotification(1);
+      if (!list || list.length === 0) {
+        return null;
+      }
+      const item = list[0];
+      const author = item.author && item.author.trim().length > 0 ? item.author : '系统';
+      const text = this.formatReplyContent(item.message || item.html_message || '');
+      return {
+        title: `你有一条来自 ${author} 的通知`,
+        text: text || '请查看通知详情'
+      };
+    } catch (error) {
+      LogUtil.warn(TAG, `Fetch latest system notification failed: ${this.stringifyError(error)}`);
+      return null;
     }
   }
 
@@ -424,5 +511,25 @@ export class MessageManager {
     } catch {
       return String(error);
     }
+  }
+
+  private toSafeNumber(value: number | string | undefined | null): number {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : 0;
+    }
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
+  }
+
+  private formatReplyContent(content: string): string {
+    if (!content) {
+      return '';
+    }
+    const lines = content.split(/\r?\n/);
+    const filteredLines = lines.filter(line => !line.trim().startsWith('>'));
+    return filteredLines.join('\n').trim();
   }
 }

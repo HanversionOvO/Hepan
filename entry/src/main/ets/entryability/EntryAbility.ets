@@ -26,6 +26,16 @@ export default class EntryAbility extends UIAbility {
     MessageManager.getInstance().stop();
   }
 
+  onForeground(): void {
+    LogUtil.info(TAG, '%{public}s', 'Ability onForeground');
+    MessageManager.getInstance().setForegroundState(true);
+  }
+
+  onBackground(): void {
+    LogUtil.info(TAG, '%{public}s', 'Ability onBackground');
+    MessageManager.getInstance().setForegroundState(false);
+  }
+
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     LogUtil.info(TAG, '%{public}s', 'Ability onWindowStageCreate');
