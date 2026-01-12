@@ -10,17 +10,20 @@ interface InlineSpan {
   isBold?: boolean;
   isItalic?: boolean;
   isStrikethrough?: boolean;
+  isUnderline?: boolean;
   fontColor?: string;
   url?: string;
 }
 
 interface BBSegment {
-  type: 'text' | 'image' | 'quote' | 'heading' | 'divider' | 'code' | 'task';
+  type: 'text' | 'image' | 'quote' | 'heading' | 'divider' | 'code' | 'task' | 'list';
   content: string;
   quoteTitle?: string;
   spans?: InlineSpan[];
   headingLevel?: number;
   taskChecked?: boolean;
+  listOrdered?: boolean;
+  listIndex?: number;
 }
 
 interface FaceItem {
@@ -36,6 +39,12 @@ interface FaceCollection {
 
 interface TaskLine {
   checked: boolean;
+  text: string;
+}
+
+interface ListLine {
+  ordered: boolean;
+  index: number;
   text: string;
 }
 
@@ -212,6 +221,7 @@ export struct CustomMarkdown {
       const trimmedStart = line.trimStart();
       const headingLevel = this.getHeadingLevel(trimmedStart);
       const taskItem = this.parseTaskLine(line);
+      const listItem = taskItem ? null : this.parseListLine(line);
       const isDivider = this.isDividerLine(trimmed);
 
       if (headingLevel > 0) {
@@ -238,7 +248,21 @@ export struct CustomMarkdown {
         results.push({
           type: 'task',
           content: taskItem.text,
-          taskChecked: taskItem.checked
+          taskChecked: taskItem.checked,
+          spans: this.parseInlineSpans(taskItem.text)
+        });
+        continue;
+      }
+
+      if (listItem) {
+        this.flushTextBlock(buffer, results);
+        buffer = '';
+        results.push({
+          type: 'list',
+          content: listItem.text,
+          listOrdered: listItem.ordered,
+          listIndex: listItem.index,
+          spans: this.parseInlineSpans(listItem.text)
         });
         continue;
       }
@@ -307,6 +331,29 @@ export struct CustomMarkdown {
       checked: match[1].toLowerCase() === 'x',
       text: match[2].trim()
     };
+  }
+
+  private parseListLine(line: string): ListLine | null {
+    if (!this.useMarkDown) {
+      return null;
+    }
+    const orderedMatch = /^\s*(\d+)\.\s+(.*)$/.exec(line);
+    if (orderedMatch) {
+      return {
+        ordered: true,
+        index: Number(orderedMatch[1]),
+        text: orderedMatch[2].trim()
+      };
+    }
+    const unorderedMatch = /^\s*(?:-|\*|\+)\s+(.*)$/.exec(line);
+    if (unorderedMatch) {
+      return {
+        ordered: false,
+        index: 0,
+        text: unorderedMatch[1].trim()
+      };
+    }
+    return null;
   }
 
   private parseImagesAndText(text: string, results: BBSegment[]) {
@@ -423,11 +470,12 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    const tagRegex = /(\[(?:\/)?(?:b|i|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\]|\[[a-zA-Z0-9_]+:\d+\])/i;
+    const tagRegex = /(\[(?:\/)?(?:b|i|u|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\]|\[[a-zA-Z0-9_]+:\d+\])/i;
     const parts = text.split(tagRegex);
 
     let boldCount = 0;
     let italicCount = 0;
+    let underlineCount = 0;
     const colorStack: string[] = [];
     const urlStack: string[] = [];
 
@@ -464,6 +512,10 @@ export struct CustomMarkdown {
           italicCount++;
         } else if (lowerPart === '[/i]') {
           italicCount = Math.max(0, italicCount - 1);
+        } else if (lowerPart === '[u]') {
+          underlineCount++;
+        } else if (lowerPart === '[/u]') {
+          underlineCount = Math.max(0, underlineCount - 1);
         } else if (lowerPart.startsWith('[color=')) {
           colorStack.push(part.substring(7, part.length - 1));
         } else if (lowerPart === '[/color]') {
@@ -487,6 +539,7 @@ export struct CustomMarkdown {
           text: part,
           isBold: boldCount > 0,
           isItalic: italicCount > 0,
+          isUnderline: underlineCount > 0,
           fontColor: colorStack.length > 0 ? colorStack[colorStack.length - 1] : undefined,
           url: finalUrl
         });
@@ -501,8 +554,8 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    const tokenRegex = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
-    const tokenCheck = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/;
+    const tokenRegex = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|<u>[^<]+<\/u>|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
+    const tokenCheck = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|<u>[^<]+<\/u>|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/;
     const parts = text.split(tokenRegex);
 
     for (const part of parts) {
@@ -550,6 +603,11 @@ export struct CustomMarkdown {
 
         if (part.startsWith('~~') && part.endsWith('~~')) {
           spans.push({ type: 'text', text: part.substring(2, part.length - 2), isStrikethrough: true });
+          continue;
+        }
+
+        if (part.startsWith('<u>') && part.endsWith('</u>')) {
+          spans.push({ type: 'text', text: part.substring(3, part.length - 4), isUnderline: true });
           continue;
         }
       }
@@ -646,9 +704,83 @@ export struct CustomMarkdown {
                 .fontSize(this.textSize)
                 .fontColor(this.textColor)
 
-              Text(item.content)
+              Text() {
+                ForEach(item.spans || [], (span: InlineSpan) => {
+                  if (span.type === 'image' && span.imageSrc) {
+                    ImageSpan(span.imageSrc)
+                      .width(this.textSize * 1.5)
+                      .height(this.textSize * 1.5)
+                      .objectFit(ImageFit.Contain)
+                      .verticalAlign(ImageSpanAlignment.CENTER)
+                  } else {
+                    Span(span.text)
+                      .fontSize(this.textSize)
+                      .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
+                      .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
+                      .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
+                      .decoration({
+                        type: span.url
+                          ? TextDecorationType.Underline
+                          : (span.isStrikethrough
+                            ? TextDecorationType.LineThrough
+                            : (span.isUnderline ? TextDecorationType.Underline : TextDecorationType.None)),
+                        color: span.url ? this.hyperlinkTextColor : undefined,
+                        style: span.url ? TextDecorationStyle.DASHED : undefined
+                      })
+                      .onClick(() => {
+                        if (span.url) {
+                          console.info('Link clicked:', span.url);
+                        }
+                      })
+                  }
+                })
+              }
+              .width(CommonConstant.FullPercent)
+              .wordBreak(WordBreak.BREAK_ALL)
+            }
+            .width(CommonConstant.FullPercent)
+
+          } else if (item.type === 'list') {
+            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+              Text(item.listOrdered ? `${item.listIndex || 1}.` : '•')
                 .fontSize(this.textSize)
                 .fontColor(this.textColor)
+                .width(this.textSize * 2)
+                .textAlign(TextAlign.End)
+
+              Text() {
+                ForEach(item.spans || [], (span: InlineSpan) => {
+                  if (span.type === 'image' && span.imageSrc) {
+                    ImageSpan(span.imageSrc)
+                      .width(this.textSize * 1.5)
+                      .height(this.textSize * 1.5)
+                      .objectFit(ImageFit.Contain)
+                      .verticalAlign(ImageSpanAlignment.CENTER)
+                  } else {
+                    Span(span.text)
+                      .fontSize(this.textSize)
+                      .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
+                      .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
+                      .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
+                      .decoration({
+                        type: span.url
+                          ? TextDecorationType.Underline
+                          : (span.isStrikethrough
+                            ? TextDecorationType.LineThrough
+                            : (span.isUnderline ? TextDecorationType.Underline : TextDecorationType.None)),
+                        color: span.url ? this.hyperlinkTextColor : undefined,
+                        style: span.url ? TextDecorationStyle.DASHED : undefined
+                      })
+                      .onClick(() => {
+                        if (span.url) {
+                          console.info('Link clicked:', span.url);
+                        }
+                      })
+                  }
+                })
+              }
+              .width(CommonConstant.FullPercent)
+              .wordBreak(WordBreak.BREAK_ALL)
             }
             .width(CommonConstant.FullPercent)
 
@@ -670,7 +802,9 @@ export struct CustomMarkdown {
                     .decoration({
                       type: span.url
                         ? TextDecorationType.Underline
-                        : (span.isStrikethrough ? TextDecorationType.LineThrough : TextDecorationType.None),
+                        : (span.isStrikethrough
+                          ? TextDecorationType.LineThrough
+                          : (span.isUnderline ? TextDecorationType.Underline : TextDecorationType.None)),
                       color: span.url ? this.hyperlinkTextColor : undefined,
                       style: span.url ? TextDecorationStyle.DASHED : undefined
                     })
