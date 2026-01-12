@@ -58,6 +58,7 @@ export class MessagePageVM extends BaseVM {
     ),
   ];
   @Trace messages: RecentMessage[] = [];
+  private isListening: boolean = false;
   private messageListListener = (list: RecentMessage[]) => {
     this.messages = [...list];
   };
@@ -74,9 +75,24 @@ export class MessagePageVM extends BaseVM {
 
   constructor() {
     super();
-    // 注册监听器
+  }
+
+  private registerListeners(): void {
+    if (this.isListening) {
+      return;
+    }
     MessageManager.getInstance().registerListener(this.messageCountListener);
     MessageManager.getInstance().registerMessageListListener(this.messageListListener);
+    this.isListening = true;
+  }
+
+  private unregisterListeners(): void {
+    if (!this.isListening) {
+      return;
+    }
+    MessageManager.getInstance().unregisterListener(this.messageCountListener);
+    MessageManager.getInstance().unregisterMessageListListener(this.messageListListener);
+    this.isListening = false;
   }
 
   private clearAndPush(name: RouterMap, param: Object) {
@@ -92,8 +108,12 @@ export class MessagePageVM extends BaseVM {
   }
 
   async startMessage() {
-    MessageManager.getInstance().start();
+    this.registerListeners();
     await this.refreshMessages();
+  }
+
+  stopMessage() {
+    this.unregisterListeners();
   }
 
   async refreshMessages() {

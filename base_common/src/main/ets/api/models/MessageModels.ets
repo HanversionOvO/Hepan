@@ -43,6 +43,22 @@ export class PostSummary {
   @Trace other: number = 0;
 }
 
+export interface MessageListBody {
+  list: RecentMessage[];
+}
+
+export interface PmListItem {
+  msgList: Chat[];
+}
+
+export interface PmListBody {
+  pmList: PmListItem[];
+}
+
+export interface SystemNotificationBody {
+  data: SystemNotification[];
+}
+
 @ObservedV2
 export class SystemSummary {
   @Trace friend: number = 0;

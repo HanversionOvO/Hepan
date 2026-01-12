@@ -2,7 +2,7 @@ import { DialogHub } from '@hadss/dialoghub';
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { MessageManager, StorageManager, WindowManager } from 'base_common';
+import { MessageManager, WindowManager } from 'base_common';
 import { LoneTakeAnimationsTransition } from 'base_ui';
 
 const TAG = '[EntryAbility]: ';
@@ -31,13 +31,6 @@ export default class EntryAbility extends UIAbility {
     LogUtil.info(TAG, '%{public}s', 'Ability onWindowStageCreate');
     WindowManager.setWinConfig();
     LoneTakeAnimationsTransition.init(windowStage);
-
-    if (StorageManager.authModel.isLoggedIn) {
-      LogUtil.info(TAG, 'User is logged in, starting MessageManager.');
-      MessageManager.getInstance().start();
-    } else {
-      LogUtil.info(TAG, 'User is NOT logged in, MessageManager skipped.');
-    }
 
     windowStage.loadContent('pages/splash/pages/SplashPage', (err) => {
       if (err.code) {

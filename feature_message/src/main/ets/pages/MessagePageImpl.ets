@@ -14,6 +14,10 @@ export struct MessagePageImpl {
     await this.vm.startMessage();
   }
 
+  aboutToDisappear() {
+    this.vm.stopMessage();
+  }
+
   @Computed
   get defaultNavBarWidth(): number {
     return (this.vm.window.windowWidth - CommonConstant.BottomBarHeight) / 2;
@@ -76,9 +80,7 @@ export struct MessagePageImpl {
                         this.vm.pushToChatPage(index);
                       })
                   }
-                }, (item: RecentMessage) => {
-                  return `${item.plid}_${item.lastDateline}_${item.isNew}_${Date.now().toString()}`;
-                })
+                }, (item: RecentMessage) => `${item.plid}_${item.lastDateline}_${item.isNew}`)
 
                 GridItem()
                   .height(this.vm.isTabletView ?

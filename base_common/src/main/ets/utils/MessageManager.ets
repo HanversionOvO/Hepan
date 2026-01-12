@@ -1,7 +1,10 @@
-import { LogUtil } from '@pura/harmony-utils';
+﻿import { LogUtil } from '@pura/harmony-utils';
 import { MessageApi } from '../api/MessageApi';
 import {
-  MessageSummary, NewChat, NewMessagesSummary, RecentMessage,
+  MessageSummary,
+  NewChat,
+  NewMessagesSummary,
+  RecentMessage
 } from '../api/models/MessageModels';
 
 const TAG = '[MessageManager]: ';
@@ -9,11 +12,15 @@ const TAG = '[MessageManager]: ';
 export class MessageManager {
   private static instance: MessageManager;
   private timer: number = -1;
-  private listeners: ((summary: NewMessagesSummary) => void)[] = [];
-  private messageListListeners: ((list: RecentMessage[]) => void)[] = [];
+  private listeners: Array<(summary: NewMessagesSummary) => void> = [];
+  private messageListListeners: Array<(list: RecentMessage[]) => void> = [];
   private lastSummary: NewMessagesSummary = new NewMessagesSummary();
   private messageList: RecentMessage[] = [];
   private currentPage: number = 1;
+  private readonly pageSize: number = 15;
+  private hasMore: boolean = true;
+  private isFetching: boolean = false;
+  private isLoadingList: boolean = false;
 
   public static getInstance(): MessageManager {
     if (!MessageManager.instance) {
@@ -22,7 +29,7 @@ export class MessageManager {
     return MessageManager.instance;
   }
 
-  public start() {
+  public start(): void {
     if (this.timer !== -1) {
       return;
     }
@@ -33,60 +40,87 @@ export class MessageManager {
     }, 10000);
   }
 
-  public stop() {
+  public stop(): void {
     if (this.timer !== -1) {
       clearInterval(this.timer);
       this.timer = -1;
+      LogUtil.info(TAG, 'Message polling service stopped');
     }
   }
 
-  // 刷新全量列表
-  public async refreshMessageList() {
+  private ensureRunning(): void {
+    if (this.timer === -1) {
+      this.start();
+    }
+  }
+
+  private maybeStop(): void {
+    if (this.listeners.length === 0 && this.messageListListeners.length === 0) {
+      this.stop();
+    }
+  }
+
+  public async refreshMessageList(): Promise<void> {
+    if (this.isLoadingList) {
+      return;
+    }
+    this.isLoadingList = true;
     try {
-      this.currentPage = 1; // 重置页码
-      // 显式传递第一页
-      const rawList = await MessageApi.getMessageList(1);
-      // 转换为类实例
+      this.currentPage = 1;
+      this.hasMore = true;
+      const rawList = await MessageApi.getMessageList(1, this.pageSize);
       this.messageList = rawList.map(item => new RecentMessage(item));
       this.notifyMessageListListeners(this.messageList);
+      if (rawList.length < this.pageSize) {
+        this.hasMore = false;
+      }
     } catch (error) {
       LogUtil.error(TAG, `Refresh message list failed: ${JSON.stringify(error)}`);
-      // 这里不抛出异常，以免打断轮询逻辑
+    } finally {
+      this.isLoadingList = false;
     }
   }
 
-  public async loadNextPage() {
+  public async loadNextPage(): Promise<void> {
+    if (this.isLoadingList || !this.hasMore) {
+      return;
+    }
+    this.isLoadingList = true;
     try {
       const nextPage = this.currentPage + 1;
-      const rawList = await MessageApi.getMessageList(nextPage);
+      const rawList = await MessageApi.getMessageList(nextPage, this.pageSize);
 
       if (rawList && rawList.length > 0) {
-        // 转换为类实例
         const newItems = rawList.map(item => new RecentMessage(item));
-        // 追加到现有列表
         this.messageList = [...this.messageList, ...newItems];
-        // 更新当前页码
         this.currentPage = nextPage;
-        // 通知监听器更新 UI
         this.notifyMessageListListeners(this.messageList);
+        if (rawList.length < this.pageSize) {
+          this.hasMore = false;
+        }
       } else {
+        this.hasMore = false;
         LogUtil.info(TAG, 'No more messages to load');
       }
     } catch (error) {
       LogUtil.error(TAG, `Load next page failed: ${JSON.stringify(error)}`);
+    } finally {
+      this.isLoadingList = false;
     }
   }
 
-  private async fetchData() {
+  private async fetchData(): Promise<void> {
+    if (this.isFetching) {
+      return;
+    }
+    this.isFetching = true;
     try {
       const summary: MessageSummary = await MessageApi.getMessageSummary();
 
-      // 1. 更新消息计数通知
       const newSummary: NewMessagesSummary = summary.new_messages;
       this.lastSummary = newSummary;
       this.notifyListeners(newSummary);
 
-      // 2. 如果有新到达的消息（增量更新），合并到列表
       if (summary.new_chats && summary.new_chats.length > 0) {
         this.mergeNewChats(summary.new_chats);
       }
@@ -96,16 +130,18 @@ export class MessageManager {
 
       if (serverUnreadCount < localUnreadCount) {
         LogUtil.info(TAG,
-          `Sync mismatch detected (Server: ${serverUnreadCount}, Local: ${localUnreadCount}). Refreshing list to sync read status.`);
+          `Sync mismatch detected (Server: ${serverUnreadCount}, Local: ${localUnreadCount}). Refreshing list to sync.`);
         await this.refreshMessageList();
       }
 
     } catch (error) {
       LogUtil.error(TAG, `Fetch message summary failed: ${JSON.stringify(error)}`);
+    } finally {
+      this.isFetching = false;
     }
   }
 
-  private mergeNewChats(newChats: NewChat[]) {
+  private mergeNewChats(newChats: NewChat[]): void {
     const updatedList = [...this.messageList];
     let isListChanged = false;
 
@@ -145,33 +181,37 @@ export class MessageManager {
     return recentMessage;
   }
 
-  public registerListener(listener: (summary: NewMessagesSummary) => void) {
-    this.listeners.push(listener);
-    if (this.lastSummary) {
-      listener(this.lastSummary);
+  public registerListener(listener: (summary: NewMessagesSummary) => void): void {
+    if (!this.listeners.includes(listener)) {
+      this.listeners = [...this.listeners, listener];
     }
+    this.ensureRunning();
+    listener(this.lastSummary);
   }
 
-  public unregisterListener(listener: (summary: NewMessagesSummary) => void) {
+  public unregisterListener(listener: (summary: NewMessagesSummary) => void): void {
     this.listeners = this.listeners.filter(l => l !== listener);
+    this.maybeStop();
   }
 
-  public registerMessageListListener(listener: (list: RecentMessage[]) => void) {
-    this.messageListListeners.push(listener);
-    if (this.messageList.length > 0) {
-      listener(this.messageList);
+  public registerMessageListListener(listener: (list: RecentMessage[]) => void): void {
+    if (!this.messageListListeners.includes(listener)) {
+      this.messageListListeners = [...this.messageListListeners, listener];
     }
+    this.ensureRunning();
+    listener(this.messageList);
   }
 
-  public unregisterMessageListListener(listener: (list: RecentMessage[]) => void) {
+  public unregisterMessageListListener(listener: (list: RecentMessage[]) => void): void {
     this.messageListListeners = this.messageListListeners.filter(l => l !== listener);
+    this.maybeStop();
   }
 
-  private notifyListeners(summary: NewMessagesSummary) {
+  private notifyListeners(summary: NewMessagesSummary): void {
     this.listeners.forEach(listener => listener(summary));
   }
 
-  private notifyMessageListListeners(list: RecentMessage[]) {
+  private notifyMessageListListeners(list: RecentMessage[]): void {
     this.messageListListeners.forEach(listener => listener(list));
   }
 }

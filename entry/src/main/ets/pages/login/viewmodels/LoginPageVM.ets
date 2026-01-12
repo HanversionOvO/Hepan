@@ -1,4 +1,4 @@
-import { AuthApi, BaseVM, MessageManager, RouterMap, RouterUtil, ToastUtil } from 'base_common';
+import { AuthApi, BaseVM, RouterMap, RouterUtil, ToastUtil } from 'base_common';
 
 const TAG = '[LoginPageVM]: ';
 
@@ -22,8 +22,6 @@ export class LoginPageVM extends BaseVM {
 
     try {
       await this.authApi.login(this.username.trim(), this.password);
-
-      MessageManager.getInstance().start();
 
       // 3. 登录成功处理
       this.showSuccess();

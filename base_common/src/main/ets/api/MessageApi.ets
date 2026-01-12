@@ -1,4 +1,4 @@
-import { ApiClient, LegacyResponse } from './ApiClient';
+﻿import { ApiClient, ApiResponse, LegacyResponse } from './ApiClient';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
@@ -6,16 +6,39 @@ import {
   AnPNotification,
   Chat,
   ChatSendContent,
+  MessageListBody,
   MessageSummary,
   NotificationResponse,
+  PmListBody,
   RecentMessage,
-  SystemNotification
+  SystemNotification,
+  SystemNotificationBody
 } from './models/MessageModels';
 import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[MessageApi]: ';
 
 export class MessageApi {
+  private static extractBaseData<T>(response: ApiResponse<BaseResponse<T>>, fallbackMessage: string): T {
+    if (response.status === 200 && response.data.code === 0 &&
+      response.data.data !== undefined && response.data.data !== null) {
+      return response.data.data;
+    }
+    const errorMsg = response.data?.message || `${fallbackMessage}, status: ${response.status}`;
+    LogUtil.warn(TAG, errorMsg);
+    throw new Error(errorMsg);
+  }
+
+  private static ensureLegacySuccess<T>(response: ApiResponse<LegacyResponse<T>>, fallbackMessage: string): void {
+    if (response.data && response.data.rs === 1) {
+      return;
+    }
+    const errCode = response.data?.errcode || 'unknown';
+    const errorMsg = `${fallbackMessage}, errcode: ${errCode}`;
+    LogUtil.warn(TAG, errorMsg);
+    throw new Error(errorMsg);
+  }
+
   public static async getMessageSummary(): Promise<MessageSummary> {
     const path = `/_/messages/summary`;
 
@@ -26,35 +49,27 @@ export class MessageApi {
       includeCookie: true
     });
 
-    if (response.status === 200 && response.data.code === 0) {
-      return response.data.data;
-    } else {
-      // 抛出具体错误供 VM 处理
-      const errorMsg = response.data?.message || `Fetch profile failed, status: ${response.status}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    return MessageApi.extractBaseData(response, 'Fetch message summary failed');
   }
 
   public static async getMessageList(page = 1, pagesize = 15): Promise<RecentMessage[]> {
     const json: Record<string, number> = {
       'page': page,
       'pagesize': pagesize
-    }
+    };
 
     const result =
       await ApiClient.getInstance()
-        .requestLegacy<LegacyResponse<Record<string, RecentMessage[]>>>('message', 'pmsessionlist', {
-          "json": json
+        .requestLegacy<LegacyResponse<MessageListBody>>('message', 'pmsessionlist', {
+          'json': json
         });
 
-    if (result.data.rs === 1 && result.data.body) {
-      return result.data.body["list"];
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
+    MessageApi.ensureLegacySuccess(result, 'Fetch message list failed');
+    const list = result.data.body?.list;
+    if (!list || !Array.isArray(list)) {
+      return [];
     }
+    return list;
   }
 
   public static async getNotificationList(type: 'at' | 'post', page = 1,
@@ -67,38 +82,29 @@ export class MessageApi {
           'pagesize': pagesize
         });
 
-    if (result.data.rs === 1 && result.data.list) {
-      return result.data.list;
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    MessageApi.ensureLegacySuccess(result, 'Fetch notification list failed');
+    return Array.isArray(result.data.list) ? result.data.list : [];
   }
 
   public static async getSystemNotification(page = 1, pagesize = 15): Promise<SystemNotification[]> {
     const result =
       await ApiClient.getInstance()
-        .requestLegacy<LegacyResponse<Record<string, Object>>>('message', 'notifylistex', {
+        .requestLegacy<LegacyResponse<SystemNotificationBody>>('message', 'notifylistex', {
           'type': 'system',
           'page': page,
           'pagesize': pagesize
         });
 
-    if (result.data.rs === 1 && result.data.body) {
-      return result.data.body['data'] as SystemNotification[];
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
-    }
+    MessageApi.ensureLegacySuccess(result, 'Fetch system notification failed');
+    const data = result.data.body?.data;
+    return Array.isArray(data) ? data : [];
   }
 
   public static async getChat(uid: number, start_time: number = 0, stop_time: number = 0,
     pageSize: number = 15, cacheCount?: number): Promise<Chat[]> {
     const actualCacheCount = cacheCount !== undefined ? cacheCount : pageSize;
 
-    const pmlist: Record<string, Record<string, Record<string, Object> | Array<Record<string, Object>>>> = {
+    const pmlist: Record<string, Record<string, Array<Record<string, Object>>>> = {
       'body': {
         'pmInfos': [
           {
@@ -110,23 +116,21 @@ export class MessageApi {
           }
         ]
       }
-    }
+    };
 
     const result =
       await ApiClient.getInstance()
-        .requestLegacy<LegacyResponse<Record<string, Object>>>('message', 'pmlist', {
+        .requestLegacy<LegacyResponse<PmListBody>>('message', 'pmlist', {
           'pmlist': JSON.stringify(pmlist)
         });
 
-    if (result.data.rs === 1 && result.data.body) {
-      const msg: Record<string, Array<Record<string, Object>>> =
-        result.data.body["pmList"] as Record<string, Array<Record<string, Object>>>;
-      return msg[0]["msgList"] as Chat[];
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      throw new Error(errorMsg);
+    MessageApi.ensureLegacySuccess(result, 'Fetch chat messages failed');
+    const pmList = result.data.body?.pmList;
+    if (!pmList || !Array.isArray(pmList) || pmList.length === 0) {
+      return [];
     }
+    const msgList = pmList[0]?.msgList;
+    return Array.isArray(msgList) ? msgList : [];
   }
 
   public static async queryOnline(uid: number): Promise<boolean> {
@@ -136,17 +140,21 @@ export class MessageApi {
           'userId': uid
         });
 
+    if (result.data.rs !== 1) {
+      LogUtil.warn(TAG, `Query user online failed, errcode: ${result.data.errcode}`);
+      return false;
+    }
     return result.data.status === 2;
   }
 
   public static async sendMessage(uid: number, msg: ChatSendContent, plid: number, pmid: number): Promise<void> {
     const json: Record<string, Object> = {
-      "action": "send",
-      "toUid": uid,
-      "msg": msg,
-      "plid": plid,
-      "pmid": pmid
-    }
+      'action': 'send',
+      'toUid': uid,
+      'msg': msg,
+      'plid': plid,
+      'pmid': pmid
+    };
 
     const result =
       await ApiClient.getInstance()
@@ -156,11 +164,10 @@ export class MessageApi {
 
     if (result.data.rs === 1) {
       return;
-    } else {
-      const errorMsg = `Fetch full profile failed, status: ${result.data.errcode}`;
-      LogUtil.warn(TAG, errorMsg);
-      ToastUtil.showError(result.data.errcode);
-      throw new Error(errorMsg);
     }
+    const errorMsg = `Send message failed, errcode: ${result.data.errcode}`;
+    LogUtil.warn(TAG, errorMsg);
+    ToastUtil.showError(result.data.errcode);
+    throw new Error(errorMsg);
   }
 }
