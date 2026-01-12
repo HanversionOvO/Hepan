@@ -115,7 +115,7 @@ export struct TieContentRender {
 
   private processMarkdownMessage(message: string, attachmentMap: Map<number, SummaryAttachments>,
     attachmentItems: SummaryAttachments[], attachmentSet: Set<number>): string {
-    return message.replace(/\(a:(\d+)\)/g, (match: string, id: string) => {
+    return message.replace(/\((a|i):(\d+)\)/g, (match: string, type: string, id: string) => {
       const attachmentId = Number(id);
       const attachment = attachmentMap.get(attachmentId);
       if (!attachment) {
@@ -125,9 +125,12 @@ export struct TieContentRender {
         const imageUrl = this.buildAttachmentImageUrl(attachment);
         return imageUrl ? `(${imageUrl})` : match;
       }
-      this.appendAttachment(attachment, attachmentItems, attachmentSet);
-      const downloadUrl = this.buildAttachmentDownloadUrl(attachment);
-      return downloadUrl ? `(${downloadUrl})` : match;
+      if (type === 'a') {
+        this.appendAttachment(attachment, attachmentItems, attachmentSet);
+        const downloadUrl = this.buildAttachmentDownloadUrl(attachment);
+        return downloadUrl ? `(${downloadUrl})` : match;
+      }
+      return match;
     });
   }
 
@@ -150,10 +153,7 @@ export struct TieContentRender {
 
   private replaceEmojiTokens(message: string): string {
     if (this.isMarkdown) {
-      return message.replace(/!\[(\d+)\]\(([a-zA-Z0-9_]+)\)/g, (match: string, index: string, iconType: string) => {
-        const faceUrl = this.resolveFaceUrl(iconType, index);
-        return faceUrl ? `![${index}](${faceUrl})` : match;
-      });
+      return message;
     }
     return message.replace(/\[([a-zA-Z0-9_]+):(\d+)\]/g, (match: string, iconType: string, index: string) => {
       const faceUrl = this.resolveFaceUrl(iconType, index);
@@ -167,7 +167,14 @@ export struct TieContentRender {
       return '';
     }
     const key = `${iconType}:${indexValue}`;
-    return this.faceUrlMap.get(key) || '';
+    const direct = this.faceUrlMap.get(key);
+    if (direct) {
+      return direct;
+    }
+    if (iconType !== 'a') {
+      return this.faceUrlMap.get(`a:${indexValue}`) || '';
+    }
+    return '';
   }
 
   private appendAttachment(attachment: SummaryAttachments, list: SummaryAttachments[], tracker: Set<number>) {

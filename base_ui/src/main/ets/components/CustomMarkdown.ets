@@ -9,15 +9,18 @@ interface InlineSpan {
   imageSrc?: string;
   isBold?: boolean;
   isItalic?: boolean;
+  isStrikethrough?: boolean;
   fontColor?: string;
   url?: string;
 }
 
 interface BBSegment {
-  type: 'text' | 'image' | 'quote';
+  type: 'text' | 'image' | 'quote' | 'heading' | 'divider' | 'code' | 'task';
   content: string;
   quoteTitle?: string;
   spans?: InlineSpan[];
+  headingLevel?: number;
+  taskChecked?: boolean;
 }
 
 interface FaceItem {
@@ -29,6 +32,11 @@ interface FaceItem {
 interface FaceCollection {
   base_url: string;
   collections: FaceItem[];
+}
+
+interface TaskLine {
+  checked: boolean;
+  text: string;
 }
 
 @ComponentV2
@@ -107,25 +115,24 @@ export struct CustomMarkdown {
     }
 
     const tempSegments: BBSegment[] = [];
-    const combinedRegex = /\[quote\]([\s\S]*?)\[\/quote\]|((?:^|\n)(?:>[^\n]*(?:\n|$))+)/g;
-
+    const codeRegex = /```([^\n]*)\n([\s\S]*?)```/g;
     let lastIndex = 0;
-    let match: RegExpExecArray | null;
+    let codeMatch: RegExpExecArray | null;
 
-    while ((match = combinedRegex.exec(this.content)) !== null) {
-      if (match.index > lastIndex) {
-        this.parseImagesAndText(this.content.substring(lastIndex, match.index), tempSegments);
+    while ((codeMatch = codeRegex.exec(this.content)) !== null) {
+      if (codeMatch.index > lastIndex) {
+        this.parseNonCodeContent(this.content.substring(lastIndex, codeMatch.index), tempSegments);
       }
-      if (match[1]) {
-        tempSegments.push(this.parseBBCodeQuote(match[1]));
-      } else if (match[2]) {
-        tempSegments.push(this.parseMarkdownQuote(match[2]));
-      }
-      lastIndex = combinedRegex.lastIndex;
+      const codeContent = codeMatch[2] || '';
+      tempSegments.push({
+        type: 'code',
+        content: codeContent.replace(/\s+$/, '')
+      });
+      lastIndex = codeRegex.lastIndex;
     }
 
     if (lastIndex < this.content.length) {
-      this.parseImagesAndText(this.content.substring(lastIndex), tempSegments);
+      this.parseNonCodeContent(this.content.substring(lastIndex), tempSegments);
     }
 
     this.segments = tempSegments;
@@ -162,6 +169,144 @@ export struct CustomMarkdown {
       body = lines[0].trim();
     }
     return { type: 'quote', content: body, quoteTitle: title };
+  }
+
+  private parseNonCodeContent(text: string, results: BBSegment[]) {
+    if (!text) {
+      return;
+    }
+
+    const combinedRegex = /\[quote\]([\s\S]*?)\[\/quote\]|((?:^|\n)(?:>[^\n]*(?:\n|$))+)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = combinedRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        this.parseTextLines(text.substring(lastIndex, match.index), results);
+      }
+      if (match[1]) {
+        results.push(this.parseBBCodeQuote(match[1]));
+      } else if (match[2]) {
+        results.push(this.parseMarkdownQuote(match[2]));
+      }
+      lastIndex = combinedRegex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      this.parseTextLines(text.substring(lastIndex), results);
+    }
+  }
+
+  private parseTextLines(text: string, results: BBSegment[]) {
+    if (!this.useMarkDown) {
+      this.parseImagesAndText(text, results);
+      return;
+    }
+
+    const lines = text.split('\n');
+    let buffer = '';
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+      const trimmedStart = line.trimStart();
+      const headingLevel = this.getHeadingLevel(trimmedStart);
+      const taskItem = this.parseTaskLine(line);
+      const isDivider = this.isDividerLine(trimmed);
+
+      if (headingLevel > 0) {
+        this.flushTextBlock(buffer, results);
+        buffer = '';
+        results.push({
+          type: 'heading',
+          content: trimmedStart.substring(headingLevel).trim(),
+          headingLevel: headingLevel
+        });
+        continue;
+      }
+
+      if (isDivider) {
+        this.flushTextBlock(buffer, results);
+        buffer = '';
+        results.push({ type: 'divider', content: '' });
+        continue;
+      }
+
+      if (taskItem) {
+        this.flushTextBlock(buffer, results);
+        buffer = '';
+        results.push({
+          type: 'task',
+          content: taskItem.text,
+          taskChecked: taskItem.checked
+        });
+        continue;
+      }
+
+      buffer += line;
+      if (i < lines.length - 1) {
+        buffer += '\n';
+      }
+    }
+
+    this.flushTextBlock(buffer, results);
+  }
+
+  private flushTextBlock(text: string, results: BBSegment[]) {
+    if (!text) {
+      return;
+    }
+    this.parseImagesAndText(text, results);
+  }
+
+  private getHeadingLevel(line: string): number {
+    if (!this.useMarkDown) {
+      return 0;
+    }
+    let level = 0;
+    while (level < line.length && line[level] === '#') {
+      level++;
+      if (level >= 6) {
+        break;
+      }
+    }
+    if (level === 0) {
+      return 0;
+    }
+    if (line.length === level) {
+      return level;
+    }
+    if (line.length > level && line[level] === ' ') {
+      return level;
+    }
+    if (line[level] === '#') {
+      return 0;
+    }
+    return level;
+  }
+
+  private isDividerLine(trimmed: string): boolean {
+    if (!this.useMarkDown) {
+      return false;
+    }
+    if (trimmed.length < 3) {
+      return false;
+    }
+    return /^(-{3,}|\*{3,}|_{3,})$/.test(trimmed);
+  }
+
+  private parseTaskLine(line: string): TaskLine | null {
+    if (!this.useMarkDown) {
+      return null;
+    }
+    const match = /^\s*(?:-|\*)\s+\[( |x|X)\]\s+(.*)$/.exec(line);
+    if (!match) {
+      return null;
+    }
+    return {
+      checked: match[1].toLowerCase() === 'x',
+      text: match[2].trim()
+    };
   }
 
   private parseImagesAndText(text: string, results: BBSegment[]) {
@@ -256,10 +401,16 @@ export struct CustomMarkdown {
     }
     const key = `${iconType}:${indexValue}`;
     const relative = this.faceRelativeMap.get(key);
-    if (!relative) {
-      return '';
+    if (relative) {
+      return UrlUtil.buildUrl(this.baseUrl, relative);
     }
-    return UrlUtil.buildUrl(this.baseUrl, relative);
+    if (iconType !== 'a') {
+      const fallback = this.faceRelativeMap.get(`a:${indexValue}`);
+      if (fallback) {
+        return UrlUtil.buildUrl(this.baseUrl, fallback);
+      }
+    }
+    return '';
   }
 
   private parseInlineSpans(text: string): InlineSpan[] {
@@ -350,8 +501,8 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    const tokenRegex = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
-    const tokenCheck = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/;
+    const tokenRegex = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
+    const tokenCheck = /(\[mobcent_phiz=[^\]]+\]|\[[a-zA-Z0-9_]+:\d+\]|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/;
     const parts = text.split(tokenRegex);
 
     for (const part of parts) {
@@ -396,6 +547,11 @@ export struct CustomMarkdown {
           spans.push({ type: 'text', text: part.substring(1, part.length - 1), isItalic: true });
           continue;
         }
+
+        if (part.startsWith('~~') && part.endsWith('~~')) {
+          spans.push({ type: 'text', text: part.substring(2, part.length - 2), isStrikethrough: true });
+          continue;
+        }
       }
 
       spans.push({ type: 'text', text: part });
@@ -414,6 +570,19 @@ export struct CustomMarkdown {
 
   private buildAttachmentUrl(aid: string): string {
     return UrlUtil.buildUrl(this.baseUrl, `/forum.php?mod=attachment&aid=${aid}`);
+  }
+
+  private getHeadingFontSize(level: number): number {
+    if (level <= 1) {
+      return this.textSize * 1.6;
+    }
+    if (level === 2) {
+      return this.textSize * 1.4;
+    }
+    if (level === 3) {
+      return this.textSize * 1.2;
+    }
+    return this.textSize * 1.1;
   }
 
   build() {
@@ -447,6 +616,42 @@ export struct CustomMarkdown {
               .constraintSize({ maxHeight: 300 })
               .backgroundColor($r('app.color.tetertiary_window_background'))
 
+          } else if (item.type === 'divider') {
+            Divider()
+              .strokeWidth(CommonConstant.BorderSizeLarge)
+              .color($r('sys.color.font_tertiary'))
+              .opacity(0.4)
+
+          } else if (item.type === 'heading') {
+            Text(item.content)
+              .fontSize(this.getHeadingFontSize(item.headingLevel || 1))
+              .fontWeight(FontWeight.Bold)
+              .fontColor(this.textColor)
+              .width(CommonConstant.FullPercent)
+
+          } else if (item.type === 'code') {
+            Text(item.content)
+              .fontSize(this.textSize * 0.95)
+              .fontFamily('monospace')
+              .fontColor(this.textColor)
+              .width(CommonConstant.FullPercent)
+              .backgroundColor($r('app.color.second_window_background'))
+              .padding(CommonConstant.NormalContainerInnerPadding)
+              .borderRadius(CommonConstant.RadiusSmall)
+              .wordBreak(WordBreak.BREAK_ALL)
+
+          } else if (item.type === 'task') {
+            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+              Text(item.taskChecked ? '[x]' : '[ ]')
+                .fontSize(this.textSize)
+                .fontColor(this.textColor)
+
+              Text(item.content)
+                .fontSize(this.textSize)
+                .fontColor(this.textColor)
+            }
+            .width(CommonConstant.FullPercent)
+
           } else if (item.type === 'text') {
             Text() {
               ForEach(item.spans || [], (span: InlineSpan) => {
@@ -463,7 +668,9 @@ export struct CustomMarkdown {
                     .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
                     .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
                     .decoration({
-                      type: span.url ? TextDecorationType.Underline : TextDecorationType.None,
+                      type: span.url
+                        ? TextDecorationType.Underline
+                        : (span.isStrikethrough ? TextDecorationType.LineThrough : TextDecorationType.None),
                       color: span.url ? this.hyperlinkTextColor : undefined,
                       style: span.url ? TextDecorationStyle.DASHED : undefined
                     })
@@ -485,10 +692,6 @@ export struct CustomMarkdown {
       .width(CommonConstant.FullPercent)
       .alignItems(HorizontalAlign.Start)
     }
-    .padding({
-      left: this.useMarkDown ? CommonConstant.NormalContainerInnerPadding : 0,
-      right: this.useMarkDown ? CommonConstant.NormalContainerInnerPadding : 0
-    })
     .width(CommonConstant.FullPercent)
     .alignItems(HorizontalAlign.Start)
   }
