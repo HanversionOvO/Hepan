@@ -1,5 +1,5 @@
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
-import { AuthApi, BaseVM, BreakPointUtil, RouterMap, RouterUtil, StorageManager } from 'base_common';
+﻿import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { AuthApi, BaseVM, BreakPointUtil, MessageManager, RouterMap, RouterUtil, StorageManager } from 'base_common';
 
 const TAG = '[SplashPageVM]: ';
 
@@ -76,12 +76,15 @@ export class SplashPageVM extends BaseVM {
           await AuthApi.getInstance().login(authModel.username, authModel.password);
           // 登录成功，跳转首页
           this.pendingRoute = RouterMap.HOME;
+          MessageManager.getInstance().start();
         } catch (e) {
           LogUtil.warn(TAG, '启动页自动登录失败，跳转登录页');
+          MessageManager.getInstance().stop();
           this.pendingRoute = RouterMap.LOGIN;
         }
       } else {
         // 未登录/无密码记录 -> 跳转登录页
+        MessageManager.getInstance().stop();
         this.pendingRoute = RouterMap.LOGIN;
       }
     } finally {
