@@ -22,6 +22,15 @@ export struct NoticeCard {
     return null;
   }
 
+  @Computed
+  get systemAuthor(): string {
+    if (!this.systemMsg) {
+      return '';
+    }
+    const author = this.systemMsg.author.trim();
+    return author.length > 0 ? author : '系统';
+  }
+
   private formatReplyContent(content: string): string {
     if (!content) {
       return '';
@@ -59,7 +68,7 @@ export struct NoticeCard {
         // 头部：昵称/标题 + 时间
         Row() {
           if (this.systemMsg) {
-            Text(this.systemMsg.author)
+            Text(this.systemAuthor)
               .fontSize(CommonConstant.TextSizeNormal)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('sys.color.font_primary'))

@@ -53,16 +53,41 @@ export class MessageApi {
     if (!html) {
       return '';
     }
+    const namedEntities: Record<string, string> = {
+      'nbsp': ' ',
+      'amp': '&',
+      'lt': '<',
+      'gt': '>',
+      'quot': '"',
+      'apos': '\'',
+      '#39': '\'',
+      'rsaquo': '\u203A',
+      'lsaquo': '\u2039',
+      'raquo': '\u00BB',
+      'laquo': '\u00AB',
+      'hellip': '\u2026',
+      'ndash': '\u2013',
+      'mdash': '\u2014',
+      'ldquo': '\u201C',
+      'rdquo': '\u201D',
+      'lsquo': '\u2018',
+      'rsquo': '\u2019'
+    };
     let text = html;
     text = text.replace(/<br\s*\/?>/gi, '\n');
     text = text.replace(/<\/p>/gi, '\n');
     text = text.replace(/<[^>]+>/g, '');
-    text = text.replace(/&nbsp;/gi, ' ');
-    text = text.replace(/&amp;/gi, '&');
-    text = text.replace(/&lt;/gi, '<');
-    text = text.replace(/&gt;/gi, '>');
-    text = text.replace(/&quot;/gi, '"');
-    text = text.replace(/&#39;/gi, '\'');
+    text = text.replace(/&#x([0-9a-fA-F]+);/g, (match: string, code: string): string => {
+      const codePoint = parseInt(code, 16);
+      return Number.isNaN(codePoint) ? '' : String.fromCodePoint(codePoint);
+    });
+    text = text.replace(/&#(\d+);/g, (match: string, code: string): string => {
+      const codePoint = parseInt(code, 10);
+      return Number.isNaN(codePoint) ? '' : String.fromCodePoint(codePoint);
+    });
+    text = text.replace(/&([a-zA-Z#0-9]+);/g, (match: string, name: string): string => {
+      return namedEntities[name] ?? namedEntities[name.toLowerCase()] ?? match;
+    });
     text = text.replace(/[ \t]+/g, ' ');
     text = text.replace(/\n\s+/g, '\n');
     return text.trim();
