@@ -211,16 +211,16 @@ export struct CustomMarkdown {
   }
 
   private parseTextLines(text: string, results: BBSegment[]) {
-    if (!this.useMarkDown) {
-      this.parseImagesAndText(text, results);
-      return;
-    }
-
     let normalizedText = text;
     const lastSegment = results.length > 0 ? results[results.length - 1] : undefined;
     if (lastSegment && lastSegment.type === 'quote') {
-      normalizedText = normalizedText.replace(/^\s*\n+/, '');
+      normalizedText = normalizedText.replace(/^(?:\s*\r?\n)+/, '');
     }
+    if (!this.useMarkDown) {
+      this.parseImagesAndText(normalizedText, results);
+      return;
+    }
+
     const lines = normalizedText.split('\n');
     let buffer = '';
 
