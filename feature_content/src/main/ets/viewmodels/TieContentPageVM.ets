@@ -1,4 +1,4 @@
-import { LogUtil } from '@pura/harmony-utils';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   BasicDataSource,
@@ -9,7 +9,8 @@ import {
   TieDetail,
   TieRow,
   TieThread,
-  UiState
+  UiState,
+  getComponentsInfo
 } from 'base_common';
 import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
 
@@ -20,6 +21,8 @@ export class CommentDataSource extends BasicDataSource<TieRow> {
 
 @ObservedV2
 export class TieContentPageVM extends BaseVM {
+  public static readonly OUTER_SCROLL_ID: string = 'tie_content_outer_scroll';
+  public static readonly COMMENT_SCROLL_ID: string = 'tie_content_comment_scroll';
   @Trace longTakeSession: LongTakeAnimationProperties = new LongTakeAnimationProperties();
   @Trace tieSummary: ForumTieSummary = new ForumTieSummary();
   @Trace tieDetail: TieDetail = new TieDetail();
@@ -35,6 +38,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace currentSort: number = 0;
   @Trace currentPage: number = 1;
   @Trace targetPid: string = '';
+  @Trace targetFloor: number = 0;
   @Trace commentLoadingState: UiState = UiState.LOADING;
   @Trace isLoadingMore: boolean = false;
   @Trace sortMethods: CustomTabItem[] = [
@@ -54,6 +58,10 @@ export class TieContentPageVM extends BaseVM {
   @Trace detailScroller: Scroller = new Scroller();
   @Trace commentScroller: Scroller = new Scroller();
   commentDataSource: CommentDataSource = new CommentDataSource();
+  private hasScrolledToTarget: boolean = false;
+  private targetPageRequested: boolean = false;
+  private targetLoadAttempts: number = 0;
+  private readonly maxTargetLoadAttempts: number = 3;
 
   async changeSort(index: number) {
     if (this.currentSort === index) {
@@ -67,6 +75,135 @@ export class TieContentPageVM extends BaseVM {
     this.hasNext = true;
     this.isReachEnd = false;
     await this.loadData(false);
+  }
+
+  getCommentComponentId(postId: number): string {
+    return `tie_comment_${postId}`;
+  }
+
+  private getScrollContainerId(): string {
+    return this.isTabletView ? TieContentPageVM.COMMENT_SCROLL_ID : TieContentPageVM.OUTER_SCROLL_ID;
+  }
+
+  private getTargetScroller(): Scroller {
+    return this.isTabletView ? this.commentScroller : this.outerPageScroller;
+  }
+
+  private scrollToTop(): void {
+    const scroller = this.isTabletView ? this.detailScroller : this.outerPageScroller;
+    scroller.scrollTo({
+      xOffset: 0,
+      yOffset: 0,
+      animation: {
+        duration: CommonConstant.AnimationDurationNormal,
+        curve: CommonConstant.AnimationCurveSpring
+      }
+    });
+  }
+
+  private getTargetPidValue(): number {
+    const pidValue = Number(this.targetPid);
+    if (!Number.isFinite(pidValue)) {
+      return 0;
+    }
+    return pidValue;
+  }
+
+  private findTargetRow(): TieRow | undefined {
+    if (this.targetFloor > 1) {
+      const byFloor = this.tieComments.find((row) => row.position === this.targetFloor);
+      if (byFloor) {
+        return byFloor;
+      }
+    }
+
+    const pidValue = this.getTargetPidValue();
+    if (pidValue > 0) {
+      if (this.tieTopic && this.tieTopic.post_id === pidValue) {
+        return this.tieTopic;
+      }
+      return this.tieComments.find((row) => row.post_id === pidValue);
+    }
+
+    return undefined;
+  }
+
+  private getTargetPage(pageSize: number): number {
+    if (pageSize <= 0 || this.targetFloor <= 1) {
+      return 1;
+    }
+    return Math.max(1, Math.ceil(this.targetFloor / pageSize));
+  }
+
+  private scrollToComment(postId: number): void {
+    const targetId = this.getCommentComponentId(postId);
+    const scroller = this.getTargetScroller();
+    const containerId = this.getScrollContainerId();
+
+    setTimeout(() => {
+      try {
+        const context = AppUtil.getUIContext();
+        const targetInfo = getComponentsInfo(context, targetId);
+        const containerInfo = getComponentsInfo(context, containerId);
+        const currentOffset = scroller.currentOffset().yOffset;
+        const delta = targetInfo.windowTop - containerInfo.windowTop;
+        const nextOffset = Math.max(0, currentOffset + delta - CommonConstant.NormalContainerInnerPadding);
+        scroller.scrollTo({
+          xOffset: 0,
+          yOffset: nextOffset,
+          animation: {
+            duration: CommonConstant.AnimationDurationNormal,
+            curve: CommonConstant.AnimationCurveSpring
+          }
+        });
+      } catch (error) {
+        LogUtil.warn(TAG, `Scroll to target failed: ${JSON.stringify(error)}`);
+      }
+    }, 50);
+  }
+
+  private async handleTargetScroll(detail: TieDetail, isLoadMore: boolean): Promise<void> {
+    if (this.hasScrolledToTarget) {
+      return;
+    }
+    if (!this.targetPid && this.targetFloor <= 0) {
+      return;
+    }
+
+    if (this.targetFloor > 0 && this.targetFloor <= 1) {
+      this.scrollToTop();
+      this.hasScrolledToTarget = true;
+      return;
+    }
+
+    const targetRow = this.findTargetRow();
+    if (targetRow) {
+      if (targetRow === this.tieTopic || targetRow.position <= 1) {
+        this.scrollToTop();
+      } else {
+        this.scrollToComment(targetRow.post_id);
+      }
+      this.hasScrolledToTarget = true;
+      this.targetPid = '';
+      this.targetFloor = 0;
+      return;
+    }
+
+    if (!this.targetPageRequested && this.targetFloor > 1) {
+      const targetPage = this.getTargetPage(detail.page_size || 0);
+      if (targetPage > this.currentPage && this.hasNext) {
+        this.targetPageRequested = true;
+        this.currentPage = targetPage;
+        await this.loadData(true);
+        return;
+      }
+    }
+
+    if (!this.targetPageRequested && this.targetPid && this.hasNext && !this.isLoadingMore &&
+      this.targetLoadAttempts < this.maxTargetLoadAttempts && !isLoadMore) {
+      this.targetLoadAttempts += 1;
+      await this.loadMore();
+    }
   }
 
   private applySortAndFilter(comments: TieRow[]): TieRow[] {
@@ -153,6 +290,7 @@ export class TieContentPageVM extends BaseVM {
       this.commentDataSource.setData(this.tieComments);
       this.updatePaging(detail);
       this.isReachEnd = !this.hasNext;
+      await this.handleTargetScroll(detail, isLoadMore);
 
       if (!isLoadMore) {
         this.commentLoadingState = this.tieComments.length === 0 ? UiState.EMPTY : UiState.SUCCESS;

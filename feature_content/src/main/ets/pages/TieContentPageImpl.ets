@@ -49,6 +49,12 @@ export struct TieContentPageImpl {
         if (params["targetPid"]) {
           this.vm.targetPid = params["targetPid"] as string;
         }
+        if (params["targetFloor"]) {
+          const targetFloor = Number(params["targetFloor"]);
+          if (!Number.isNaN(targetFloor)) {
+            this.vm.targetFloor = targetFloor;
+          }
+        }
         await this.vm.loadData();
       }
     })

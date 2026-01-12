@@ -172,6 +172,7 @@ export struct TieContentView {
                 authorID: this.vm.tieThread.author_id,
                 threadId: this.vm.tieThread.thread_id
               })
+                .id(this.vm.getCommentComponentId(comment.post_id))
             }, (comment: TieRow) => comment.post_id.toString())
 
             Text("- THE END -")
@@ -270,6 +271,7 @@ export struct TieContentView {
               .layoutWeight(1)
               .align(Alignment.TopStart)
               .scrollBar(BarState.Off)
+              .id(TieContentPageVM.COMMENT_SCROLL_ID)
               .nestedScroll({
                 scrollForward: NestedScrollMode.SELF_FIRST,
                 scrollBackward: NestedScrollMode.SELF_FIRST,
@@ -290,6 +292,7 @@ export struct TieContentView {
         .height(CommonConstant.FullPercent)
         .scrollable(this.vm.isTabletView ? ScrollDirection.None : ScrollDirection.Vertical)
         .scrollBar(BarState.Off)
+        .id(TieContentPageVM.OUTER_SCROLL_ID)
         .onDidScroll(() => {
           if (!this.vm.isTabletView) {
             this.vm.handleScroll(this.swiperHeight);

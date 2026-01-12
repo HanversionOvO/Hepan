@@ -126,6 +126,29 @@ export class NoticePageVM extends BaseVM {
         })
   }
 
+  private extractPidFromUrl(url: string): string {
+    if (!url) {
+      return '';
+    }
+    const pidMatch = /[?&]pid=(\d+)/.exec(url);
+    if (pidMatch) {
+      return pidMatch[1];
+    }
+    const hashMatch = /#pid(\d+)/.exec(url);
+    return hashMatch ? hashMatch[1] : '';
+  }
+
+  private extractFloorFromUrl(url: string): number {
+    if (!url) {
+      return 0;
+    }
+    const floorMatch = /[?&](?:floor|position|postno)=(\d+)/.exec(url);
+    if (floorMatch) {
+      return Number(floorMatch[1]);
+    }
+    return 0;
+  }
+
   enterDetailPage(item: AnPNotification, context: UIContext) {
     if (!item.topic_id) {
       return;
@@ -164,8 +187,16 @@ export class NoticePageVM extends BaseVM {
     params["tieSummary"] = tieSummary;
 
     // 3. 传入需要滚动的目标楼层PID (reply_remind_id 通常对应 pid)
-    if (item.reply_remind_id) {
+    const targetFloor = this.extractFloorFromUrl(item.reply_url || '');
+    if (targetFloor > 0) {
+      params["targetFloor"] = targetFloor;
+    } else if (item.reply_remind_id) {
       params["targetPid"] = item.reply_remind_id.toString();
+    } else {
+      const pidFromUrl = this.extractPidFromUrl(item.reply_url || '');
+      if (pidFromUrl) {
+        params["targetPid"] = pidFromUrl;
+      }
     }
 
     // 4. 路由跳转
