@@ -1,26 +1,36 @@
-import { BaseVM, BreakpointType, CommonConstant } from 'base_common';
+import { AppPreferenceKeys, BaseVM, BreakpointType, CommonConstant, PreferenceUtil, UrlUtil } from 'base_common';
 import { CustomTabBar, CustomTabItem } from './CustomTabBar';
 import { util } from '@kit.ArkTS';
 import { AppUtil } from '@pura/harmony-utils';
 
 // 定义 JSON 数据的接口结构
+interface FaceIconData {
+  icon_url: string;
+  icon_type: string;
+  icon_index: number;
+}
+
 interface FaceCollectionData {
   collection_name: string;
   collection_icon: string;
   base_url: string;
-  collections: string[];
+  collections: FaceIconData[];
 }
 
 @ComponentV2
 export struct CustomFacePanel {
   @Param @Require vm: BaseVM;
+  @Param isMarkdown: boolean = true;
   // 用于存储从 JSON 解析出的原始数据
   @Local faceCollections: FaceCollectionData[] = [];
   // 用于传递给 CustomTabBar 的数据
   @Local tabItems: CustomTabItem[] = [];
   // 当前选中的 Tab 索引
   @Local currentIndex: number = 0;
-  @Event onFaceClick: (url: string) => void;
+  @Event onFaceClick: (faceText: string) => void;
+  @Event onFaceImageClick: (url: string) => void = () => {
+  };
+  @Local baseUrl: string = CommonConstant.BASE_URL;
   @Local lanesOptions: BreakpointType<number> = new BreakpointType<number>({
     sm: 6,
     md: 8,
@@ -45,9 +55,14 @@ export struct CustomFacePanel {
       // 获取 ResourceManager
       const context = AppUtil.getContext();
       const resourceManager = context.resourceManager;
+      const storedBaseUrl = PreferenceUtil.read<string>(AppPreferenceKeys.prefName, (pref) => {
+        return pref.getSync(AppPreferenceKeys.baseUrl, CommonConstant.BASE_URL) as string;
+      }, CommonConstant.BASE_URL);
+      this.baseUrl = storedBaseUrl ? storedBaseUrl : CommonConstant.BASE_URL;
 
       // 读取 rawfile 中的 data.json
-      const content = await resourceManager.getRawFileContent('faces.json');
+      let content: Uint8Array;
+        content = await resourceManager.getRawFileContent('faces.json');
 
       // 解码二进制数据
       const textDecoder = util.TextDecoder.create('utf-8', { ignoreBOM: true });
@@ -90,17 +105,21 @@ export struct CustomFacePanel {
             TabContent() {
               // 表情列表区域
               Grid() {
-                ForEach(collection.collections, (imgName: string) => {
+                ForEach(collection.collections, (face: FaceIconData) => {
                   GridItem() {
-                    Image(collection.base_url + imgName)
+                    Image(UrlUtil.buildUrl(UrlUtil.buildUrl(this.baseUrl, collection.base_url), face.icon_url))
                       .width(CommonConstant.IconSizeLarge)
                       .height(CommonConstant.IconSizeLarge)
                       .objectFit(ImageFit.Contain)
                   }
                   .onClick(() => {
                     // 拼接完整URL并传出
-                    const fullUrl = collection.base_url + imgName;
-                    this.onFaceClick(fullUrl);
+                    const faceText = this.isMarkdown ? `![${face.icon_index}](s)` :
+                      `[${face.icon_type}:${face.icon_index}]`;
+                    const fullUrl = UrlUtil.buildUrl(UrlUtil.buildUrl(this.baseUrl, collection.base_url),
+                      face.icon_url);
+                    this.onFaceImageClick(fullUrl);
+                    this.onFaceClick(faceText);
                   })
                 })
               }

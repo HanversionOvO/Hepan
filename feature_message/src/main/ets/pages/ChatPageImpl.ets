@@ -153,7 +153,10 @@ export struct ChatPageImpl {
         if (this.vm.isShowFacePanel) {
           CustomFacePanel({
             vm: this.vm,
-            onFaceClick: (url: string) => {
+            isMarkdown: false,
+            onFaceClick: (_faceText: string) => {
+            },
+            onFaceImageClick: (url: string) => {
               this.vm.richEditorController.addImageSpan(url, {
                 imageStyle: {
                   size: [CommonConstant.IconSizeLarge, CommonConstant.IconSizeLarge],

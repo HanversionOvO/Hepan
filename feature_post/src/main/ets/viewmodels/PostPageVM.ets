@@ -343,7 +343,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
       ToastUtil.showError($r('app.string.PostPage_photo_upload_failed_insert'));
       return;
     }
-    this.insertFace(img.remoteUrl);
+    this.insertImage(img.remoteUrl);
     this.isInsertImageMode = false;
   }
 
@@ -372,8 +372,12 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     this.updateContentSelection(newCursor, newCursor);
   }
 
-  insertFace(url: string) {
-    const faceText = `![image](${url})`;
+  insertImage(url: string) {
+    const imageText = `![image](${url})`;
+    this.insertTextAtCursor(imageText);
+  }
+
+  insertFace(faceText: string) {
     this.insertTextAtCursor(faceText);
   }
 

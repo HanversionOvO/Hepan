@@ -181,8 +181,8 @@ export struct PostPageImpl {
               if (this.vm.isShowFace) {
                 CustomFacePanel({
                   vm: this.vm,
-                  onFaceClick: (face: string) => {
-                    this.vm.insertFace(face);
+                  onFaceClick: (faceText: string) => {
+                    this.vm.insertFace(faceText);
                   }
                 })
                   .transition(TransitionEffect.move(TransitionEdge.BOTTOM)

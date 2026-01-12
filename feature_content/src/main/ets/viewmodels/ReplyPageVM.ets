@@ -98,7 +98,7 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
       ToastUtil.showError('图片上传失败，无法插入');
       return;
     }
-    this.insertFace(img.remoteUrl);
+    this.insertImage(img.remoteUrl);
     this.isInsertImageMode = false;
   }
 
@@ -123,9 +123,13 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
     }, 50);
   }
 
-  insertFace(url: string) {
+  insertImage(url: string) {
     const text = `![image](${url})`;
     this.insertText(text);
+  }
+
+  insertFace(faceText: string) {
+    this.insertText(faceText);
   }
 
   insertAtUser(user: AtUser) {

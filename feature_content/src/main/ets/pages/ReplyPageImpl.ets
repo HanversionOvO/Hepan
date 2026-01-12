@@ -205,7 +205,7 @@ export struct ReplyPageImpl {
           if (this.vm.isShowFace) {
             CustomFacePanel({
               vm: this.vm,
-              onFaceClick: (url): void => this.vm.insertFace(url)
+              onFaceClick: (faceText): void => this.vm.insertFace(faceText)
             })
               .transition(TransitionEffect.move(TransitionEdge.BOTTOM)
                 .animation({ duration: CommonConstant.AnimationDurationNormal }))

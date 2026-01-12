@@ -2,649 +2,3049 @@
     {
         "collection_name": "阿鲁",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/alu/",
+        "base_url": "static/image/smiley/alu/",
         "collections": [
-            "22.gif",
-            "23.gif",
-            "24.gif",
-            "25.gif",
-            "26.gif",
-            "27.gif",
-            "28.gif",
-            "29.gif",
-            "30.gif",
-            "31.gif",
-            "32.gif",
-            "33.gif",
-            "34.gif",
-            "35.gif",
-            "36.gif",
-            "37.gif",
-            "38.gif",
-            "39.gif",
-            "40.gif",
-            "41.gif",
-            "42.gif",
-            "43.gif",
-            "44.gif",
-            "45.gif",
-            "46.gif",
-            "47.gif",
-            "48.gif",
-            "49.gif",
-            "50.gif",
-            "51.gif",
-            "52.gif",
-            "53.gif",
-            "54.gif",
-            "55.gif",
-            "56.gif",
-            "57.gif",
-            "58.gif",
-            "59.gif",
-            "60.gif",
-            "61.gif",
-            "62.gif",
-            "63.gif",
-            "64.gif",
-            "65.gif",
-            "66.gif",
-            "67.gif",
-            "68.gif",
-            "69.gif",
-            "70.gif",
-            "71.gif",
-            "72.gif",
-            "73.gif",
-            "74.gif",
-            "75.gif",
-            "76.gif",
-            "77.gif",
-            "78.gif",
-            "79.gif",
-            "80.gif",
-            "81.gif",
-            "82.gif",
-            "83.gif"
-        ]
-    },
-    {
-        "collection_name": "小黄脸",
-        "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/yellowface/",
-        "collections": [
-            "1.gif",
-            "(6).gif",
-            "(7).gif",
-            "(8).gif",
-            "(9).gif",
-            "(10).gif",
-            "(11).gif",
-            "(12).gif",
-            "(13).gif",
-            "(14).gif",
-            "(15).gif",
-            "(16).gif",
-            "(17).gif",
-            "(18).gif",
-            "(19).gif",
-            "(20).gif",
-            "(21).gif",
-            "(22).gif",
-            "(23).gif",
-            "(24).gif",
-            "(25).gif",
-            "(26).gif",
-            "(27).gif",
-            "(28).gif",
-            "(29).gif",
-            "(30).gif",
-            "(31).gif",
-            "(32).gif",
-            "(33).gif",
-            "(34).gif",
-            "(35).gif",
-            "(36).gif",
-            "(37).gif",
-            "(38).gif"
-        ]
-    },
-    {
-        "collection_name": "洋葱头",
-        "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/yang/",
-        "collections": [
-            "2.gif",
-            "3.gif",
-            "4.gif",
-            "5.gif",
-            "6.gif",
-            "7.gif",
-            "8.gif",
-            "9.gif",
-            "10.gif",
-            "11.gif",
-            "12.gif",
-            "13.gif",
-            "14.gif",
-            "15.gif",
-            "16.gif",
-            "17.gif",
-            "18.gif",
-            "19.gif",
-            "20.gif",
-            "21.gif",
-            "22.gif",
-            "23.gif",
-            "24.gif",
-            "25.gif",
-            "26.gif",
-            "27.gif",
-            "28.gif",
-            "29.gif",
-            "30.gif",
-            "31.gif",
-            "32.gif",
-            "33.gif",
-            "34.gif",
-            "35.gif",
-            "36.gif",
-            "37.gif",
-            "38.gif",
-            "39.gif",
-            "40.gif",
-            "41.gif",
-            "42.gif",
-            "43.gif",
-            "44.gif",
-            "45.gif",
-            "46.gif",
-            "47.gif",
-            "48.gif",
-            "49.gif",
-            "50.gif",
-            "51.gif",
-            "52.gif",
-            "53.gif",
-            "55.gif",
-            "56.gif",
-            "57.gif",
-            "58.gif",
-            "59.gif",
-            "60.gif",
-            "61.gif",
-            "62.gif",
-            "63.gif",
-            "64.gif",
-            "65.gif",
-            "66.gif",
-            "67.gif",
-            "68.gif",
-            "69.gif",
-            "70.gif",
-            "201.gif",
-            "202.gif",
-            "203.gif"
+            {
+                "icon_url": "83.gif",
+                "icon_type": "a",
+                "icon_index": 1196
+            },
+            {
+                "icon_url": "66.gif",
+                "icon_type": "a",
+                "icon_index": 1179
+            },
+            {
+                "icon_url": "65.gif",
+                "icon_type": "a",
+                "icon_index": 1178
+            },
+            {
+                "icon_url": "64.gif",
+                "icon_type": "a",
+                "icon_index": 1177
+            },
+            {
+                "icon_url": "63.gif",
+                "icon_type": "a",
+                "icon_index": 1176
+            },
+            {
+                "icon_url": "62.gif",
+                "icon_type": "a",
+                "icon_index": 1175
+            },
+            {
+                "icon_url": "61.gif",
+                "icon_type": "a",
+                "icon_index": 1174
+            },
+            {
+                "icon_url": "60.gif",
+                "icon_type": "a",
+                "icon_index": 1173
+            },
+            {
+                "icon_url": "59.gif",
+                "icon_type": "a",
+                "icon_index": 1172
+            },
+            {
+                "icon_url": "58.gif",
+                "icon_type": "a",
+                "icon_index": 1171
+            },
+            {
+                "icon_url": "57.gif",
+                "icon_type": "a",
+                "icon_index": 1170
+            },
+            {
+                "icon_url": "56.gif",
+                "icon_type": "a",
+                "icon_index": 1169
+            },
+            {
+                "icon_url": "55.gif",
+                "icon_type": "a",
+                "icon_index": 1168
+            },
+            {
+                "icon_url": "54.gif",
+                "icon_type": "a",
+                "icon_index": 1167
+            },
+            {
+                "icon_url": "67.gif",
+                "icon_type": "a",
+                "icon_index": 1180
+            },
+            {
+                "icon_url": "68.gif",
+                "icon_type": "a",
+                "icon_index": 1181
+            },
+            {
+                "icon_url": "69.gif",
+                "icon_type": "a",
+                "icon_index": 1182
+            },
+            {
+                "icon_url": "82.gif",
+                "icon_type": "a",
+                "icon_index": 1195
+            },
+            {
+                "icon_url": "81.gif",
+                "icon_type": "a",
+                "icon_index": 1194
+            },
+            {
+                "icon_url": "80.gif",
+                "icon_type": "a",
+                "icon_index": 1193
+            },
+            {
+                "icon_url": "79.gif",
+                "icon_type": "a",
+                "icon_index": 1192
+            },
+            {
+                "icon_url": "78.gif",
+                "icon_type": "a",
+                "icon_index": 1191
+            },
+            {
+                "icon_url": "77.gif",
+                "icon_type": "a",
+                "icon_index": 1190
+            },
+            {
+                "icon_url": "76.gif",
+                "icon_type": "a",
+                "icon_index": 1189
+            },
+            {
+                "icon_url": "75.gif",
+                "icon_type": "a",
+                "icon_index": 1188
+            },
+            {
+                "icon_url": "74.gif",
+                "icon_type": "a",
+                "icon_index": 1187
+            },
+            {
+                "icon_url": "73.gif",
+                "icon_type": "a",
+                "icon_index": 1186
+            },
+            {
+                "icon_url": "72.gif",
+                "icon_type": "a",
+                "icon_index": 1185
+            },
+            {
+                "icon_url": "71.gif",
+                "icon_type": "a",
+                "icon_index": 1184
+            },
+            {
+                "icon_url": "70.gif",
+                "icon_type": "a",
+                "icon_index": 1183
+            },
+            {
+                "icon_url": "53.gif",
+                "icon_type": "a",
+                "icon_index": 1166
+            },
+            {
+                "icon_url": "52.gif",
+                "icon_type": "a",
+                "icon_index": 1165
+            },
+            {
+                "icon_url": "35.gif",
+                "icon_type": "a",
+                "icon_index": 1148
+            },
+            {
+                "icon_url": "34.gif",
+                "icon_type": "a",
+                "icon_index": 1147
+            },
+            {
+                "icon_url": "33.gif",
+                "icon_type": "a",
+                "icon_index": 1146
+            },
+            {
+                "icon_url": "32.gif",
+                "icon_type": "a",
+                "icon_index": 1145
+            },
+            {
+                "icon_url": "31.gif",
+                "icon_type": "a",
+                "icon_index": 1144
+            },
+            {
+                "icon_url": "30.gif",
+                "icon_type": "a",
+                "icon_index": 1143
+            },
+            {
+                "icon_url": "29.gif",
+                "icon_type": "a",
+                "icon_index": 1142
+            },
+            {
+                "icon_url": "28.gif",
+                "icon_type": "a",
+                "icon_index": 1141
+            },
+            {
+                "icon_url": "27.gif",
+                "icon_type": "a",
+                "icon_index": 1140
+            },
+            {
+                "icon_url": "26.gif",
+                "icon_type": "a",
+                "icon_index": 1139
+            },
+            {
+                "icon_url": "25.gif",
+                "icon_type": "a",
+                "icon_index": 1138
+            },
+            {
+                "icon_url": "24.gif",
+                "icon_type": "a",
+                "icon_index": 1137
+            },
+            {
+                "icon_url": "23.gif",
+                "icon_type": "a",
+                "icon_index": 1136
+            },
+            {
+                "icon_url": "36.gif",
+                "icon_type": "a",
+                "icon_index": 1149
+            },
+            {
+                "icon_url": "37.gif",
+                "icon_type": "a",
+                "icon_index": 1150
+            },
+            {
+                "icon_url": "38.gif",
+                "icon_type": "a",
+                "icon_index": 1151
+            },
+            {
+                "icon_url": "51.gif",
+                "icon_type": "a",
+                "icon_index": 1164
+            },
+            {
+                "icon_url": "50.gif",
+                "icon_type": "a",
+                "icon_index": 1163
+            },
+            {
+                "icon_url": "49.gif",
+                "icon_type": "a",
+                "icon_index": 1162
+            },
+            {
+                "icon_url": "48.gif",
+                "icon_type": "a",
+                "icon_index": 1161
+            },
+            {
+                "icon_url": "47.gif",
+                "icon_type": "a",
+                "icon_index": 1160
+            },
+            {
+                "icon_url": "46.gif",
+                "icon_type": "a",
+                "icon_index": 1159
+            },
+            {
+                "icon_url": "45.gif",
+                "icon_type": "a",
+                "icon_index": 1158
+            },
+            {
+                "icon_url": "44.gif",
+                "icon_type": "a",
+                "icon_index": 1157
+            },
+            {
+                "icon_url": "43.gif",
+                "icon_type": "a",
+                "icon_index": 1156
+            },
+            {
+                "icon_url": "42.gif",
+                "icon_type": "a",
+                "icon_index": 1155
+            },
+            {
+                "icon_url": "41.gif",
+                "icon_type": "a",
+                "icon_index": 1154
+            },
+            {
+                "icon_url": "40.gif",
+                "icon_type": "a",
+                "icon_index": 1153
+            },
+            {
+                "icon_url": "39.gif",
+                "icon_type": "a",
+                "icon_index": 1152
+            },
+            {
+                "icon_url": "22.gif",
+                "icon_type": "a",
+                "icon_index": 1135
+            }
         ]
     },
     {
         "collection_name": "兔斯基",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/too/",
+        "base_url": "static/image/smiley/too/",
         "collections": [
-            "1.gif",
-            "2.gif",
-            "3.gif",
-            "4.gif",
-            "5.gif",
-            "6.gif",
-            "7.gif",
-            "8.gif",
-            "9.gif",
-            "10.gif",
-            "11.gif",
-            "12.gif",
-            "13.gif",
-            "14.gif",
-            "15.gif",
-            "16.gif",
-            "17.gif",
-            "18.gif",
-            "19.gif",
-            "20.gif",
-            "21.gif",
-            "22.gif",
-            "23.gif",
-            "24.gif",
-            "25.gif",
-            "26.gif",
-            "27.gif",
-            "28.gif",
-            "29.gif",
-            "30.gif",
-            "31.gif",
-            "32.gif",
-            "33.gif"
+            {
+                "icon_url": "1.gif",
+                "icon_type": "s",
+                "icon_index": 11
+            },
+            {
+                "icon_url": "19.gif",
+                "icon_type": "s",
+                "icon_index": 29
+            },
+            {
+                "icon_url": "20.gif",
+                "icon_type": "s",
+                "icon_index": 30
+            },
+            {
+                "icon_url": "21.gif",
+                "icon_type": "s",
+                "icon_index": 31
+            },
+            {
+                "icon_url": "22.gif",
+                "icon_type": "s",
+                "icon_index": 32
+            },
+            {
+                "icon_url": "23.gif",
+                "icon_type": "s",
+                "icon_index": 33
+            },
+            {
+                "icon_url": "24.gif",
+                "icon_type": "s",
+                "icon_index": 34
+            },
+            {
+                "icon_url": "25.gif",
+                "icon_type": "s",
+                "icon_index": 35
+            },
+            {
+                "icon_url": "26.gif",
+                "icon_type": "s",
+                "icon_index": 36
+            },
+            {
+                "icon_url": "27.gif",
+                "icon_type": "s",
+                "icon_index": 37
+            },
+            {
+                "icon_url": "28.gif",
+                "icon_type": "s",
+                "icon_index": 38
+            },
+            {
+                "icon_url": "30.gif",
+                "icon_type": "s",
+                "icon_index": 40
+            },
+            {
+                "icon_url": "29.gif",
+                "icon_type": "s",
+                "icon_index": 87
+            },
+            {
+                "icon_url": "31.gif",
+                "icon_type": "s",
+                "icon_index": 88
+            },
+            {
+                "icon_url": "32.gif",
+                "icon_type": "s",
+                "icon_index": 89
+            },
+            {
+                "icon_url": "18.gif",
+                "icon_type": "s",
+                "icon_index": 28
+            },
+            {
+                "icon_url": "17.gif",
+                "icon_type": "s",
+                "icon_index": 27
+            },
+            {
+                "icon_url": "16.gif",
+                "icon_type": "s",
+                "icon_index": 26
+            },
+            {
+                "icon_url": "2.gif",
+                "icon_type": "s",
+                "icon_index": 12
+            },
+            {
+                "icon_url": "3.gif",
+                "icon_type": "s",
+                "icon_index": 13
+            },
+            {
+                "icon_url": "4.gif",
+                "icon_type": "s",
+                "icon_index": 14
+            },
+            {
+                "icon_url": "5.gif",
+                "icon_type": "s",
+                "icon_index": 15
+            },
+            {
+                "icon_url": "6.gif",
+                "icon_type": "s",
+                "icon_index": 16
+            },
+            {
+                "icon_url": "7.gif",
+                "icon_type": "s",
+                "icon_index": 17
+            },
+            {
+                "icon_url": "8.gif",
+                "icon_type": "s",
+                "icon_index": 18
+            },
+            {
+                "icon_url": "9.gif",
+                "icon_type": "s",
+                "icon_index": 19
+            },
+            {
+                "icon_url": "10.gif",
+                "icon_type": "s",
+                "icon_index": 20
+            },
+            {
+                "icon_url": "11.gif",
+                "icon_type": "s",
+                "icon_index": 21
+            },
+            {
+                "icon_url": "12.gif",
+                "icon_type": "s",
+                "icon_index": 22
+            },
+            {
+                "icon_url": "13.gif",
+                "icon_type": "s",
+                "icon_index": 23
+            },
+            {
+                "icon_url": "14.gif",
+                "icon_type": "s",
+                "icon_index": 24
+            },
+            {
+                "icon_url": "15.gif",
+                "icon_type": "s",
+                "icon_index": 25
+            },
+            {
+                "icon_url": "33.gif",
+                "icon_type": "s",
+                "icon_index": 90
+            }
         ]
     },
     {
-        "collection_name": "暴走",
+        "collection_name": "洋葱头",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/bzmh/",
+        "base_url": "static/image/smiley/yang/",
         "collections": [
-            "bzmh00.gif",
-            "bzmh002.gif",
-            "bzmh003.gif",
-            "bzmh004.gif",
-            "bzmh005.gif",
-            "bzmh007.gif",
-            "bzmh008.gif",
-            "bzmh010.gif",
-            "bzmh012.gif",
-            "bzmh013.gif",
-            "bzmh017.gif",
-            "bzmh018.gif",
-            "bzmh019.gif",
-            "bzmh020.gif",
-            "bzmh021.gif",
-            "bzmh022.gif",
-            "bzmh023.gif",
-            "bzmh025.gif",
-            "bzmh026.gif",
-            "bzmh027.gif",
-            "bzmh028.gif",
-            "bzmh029.gif",
-            "bzmh032.gif",
-            "bzmh033.gif",
-            "bzmh035.gif",
-            "bzmh037.gif",
-            "bzmh039.gif",
-            "bzmh041.gif",
-            "bzmh042.gif",
-            "bzmh044.gif",
-            "bzmh047.gif",
-            "bzmh048.gif",
-            "bzmh052.gif",
-            "bzmh053.gif",
-            "bzmh057.gif",
-            "bzmh059.gif",
-            "bzmh060.gif",
-            "bzmh062.gif",
-            "bzmh066.gif",
-            "bzmh067.gif",
-            "bzmh069.gif",
-            "bzmh070.gif",
-            "bzmh074.gif",
-            "bzmh075.gif",
-            "bzmh077.gif",
-            "bzmh078.gif",
-            "bzmh079.gif",
-            "bzmh081.gif",
-            "bzmh084.gif",
-            "bzmh085.gif",
-            "bzmh086.gif",
-            "bzmh088.gif",
-            "bzmh091.gif",
-            "bzmh092.gif",
-            "bzmh098.gif",
-            "bzmh100.gif",
-            "bzmh101.gif",
-            "bzmh105.gif",
-            "bzmh108.gif",
-            "bzmh109.gif",
-            "bzmh110.gif",
-            "bzmh113.gif",
-            "bzmh116.gif",
-            "bzmh117.gif",
-            "bzmh118.gif",
-            "bzmh119.gif",
-            "bzmh120.gif",
-            "bzmh121.gif",
-            "bzmh123.gif",
-            "bzmh125.gif",
-            "bzmh127.gif",
-            "bzmh128.gif",
-            "bzmh129.gif",
-            "bzmh131.gif",
-            "bzmh132.gif",
-            "bzmh133.gif",
-            "bzmh135.gif",
-            "bzmh136.gif",
-            "bzmh138.gif",
-            "bzmh140.gif",
-            "bzmh142.gif",
-            "bzmh144.gif",
-            "bzmh145.gif",
-            "bzmh146.gif",
-            "bzmh147.gif",
-            "bzmh150.gif"
+            {
+                "icon_url": "203.gif",
+                "icon_type": "s",
+                "icon_index": 633
+            },
+            {
+                "icon_url": "40.gif",
+                "icon_type": "s",
+                "icon_index": 103
+            },
+            {
+                "icon_url": "39.gif",
+                "icon_type": "s",
+                "icon_index": 102
+            },
+            {
+                "icon_url": "38.gif",
+                "icon_type": "s",
+                "icon_index": 101
+            },
+            {
+                "icon_url": "34.gif",
+                "icon_type": "s",
+                "icon_index": 100
+            },
+            {
+                "icon_url": "28.gif",
+                "icon_type": "s",
+                "icon_index": 99
+            },
+            {
+                "icon_url": "27.gif",
+                "icon_type": "s",
+                "icon_index": 98
+            },
+            {
+                "icon_url": "26.gif",
+                "icon_type": "s",
+                "icon_index": 97
+            },
+            {
+                "icon_url": "25.gif",
+                "icon_type": "s",
+                "icon_index": 96
+            },
+            {
+                "icon_url": "22.gif",
+                "icon_type": "s",
+                "icon_index": 95
+            },
+            {
+                "icon_url": "20.gif",
+                "icon_type": "s",
+                "icon_index": 94
+            },
+            {
+                "icon_url": "10.gif",
+                "icon_type": "s",
+                "icon_index": 93
+            },
+            {
+                "icon_url": "8.gif",
+                "icon_type": "s",
+                "icon_index": 92
+            },
+            {
+                "icon_url": "4.gif",
+                "icon_type": "s",
+                "icon_index": 91
+            },
+            {
+                "icon_url": "69.gif",
+                "icon_type": "s",
+                "icon_index": 86
+            },
+            {
+                "icon_url": "68.gif",
+                "icon_type": "s",
+                "icon_index": 85
+            },
+            {
+                "icon_url": "66.gif",
+                "icon_type": "s",
+                "icon_index": 84
+            },
+            {
+                "icon_url": "41.gif",
+                "icon_type": "s",
+                "icon_index": 104
+            },
+            {
+                "icon_url": "42.gif",
+                "icon_type": "s",
+                "icon_index": 105
+            },
+            {
+                "icon_url": "202.gif",
+                "icon_type": "s",
+                "icon_index": 287
+            },
+            {
+                "icon_url": "201.gif",
+                "icon_type": "s",
+                "icon_index": 286
+            },
+            {
+                "icon_url": "70.gif",
+                "icon_type": "s",
+                "icon_index": 119
+            },
+            {
+                "icon_url": "67.gif",
+                "icon_type": "s",
+                "icon_index": 118
+            },
+            {
+                "icon_url": "64.gif",
+                "icon_type": "s",
+                "icon_index": 117
+            },
+            {
+                "icon_url": "63.gif",
+                "icon_type": "s",
+                "icon_index": 116
+            },
+            {
+                "icon_url": "62.gif",
+                "icon_type": "s",
+                "icon_index": 115
+            },
+            {
+                "icon_url": "61.gif",
+                "icon_type": "s",
+                "icon_index": 114
+            },
+            {
+                "icon_url": "60.gif",
+                "icon_type": "s",
+                "icon_index": 113
+            },
+            {
+                "icon_url": "58.gif",
+                "icon_type": "s",
+                "icon_index": 112
+            },
+            {
+                "icon_url": "57.gif",
+                "icon_type": "s",
+                "icon_index": 111
+            },
+            {
+                "icon_url": "56.gif",
+                "icon_type": "s",
+                "icon_index": 110
+            },
+            {
+                "icon_url": "50.gif",
+                "icon_type": "s",
+                "icon_index": 109
+            },
+            {
+                "icon_url": "49.gif",
+                "icon_type": "s",
+                "icon_index": 108
+            },
+            {
+                "icon_url": "44.gif",
+                "icon_type": "s",
+                "icon_index": 107
+            },
+            {
+                "icon_url": "43.gif",
+                "icon_type": "s",
+                "icon_index": 106
+            },
+            {
+                "icon_url": "65.gif",
+                "icon_type": "s",
+                "icon_index": 83
+            },
+            {
+                "icon_url": "59.gif",
+                "icon_type": "s",
+                "icon_index": 82
+            },
+            {
+                "icon_url": "21.gif",
+                "icon_type": "s",
+                "icon_index": 59
+            },
+            {
+                "icon_url": "19.gif",
+                "icon_type": "s",
+                "icon_index": 58
+            },
+            {
+                "icon_url": "18.gif",
+                "icon_type": "s",
+                "icon_index": 57
+            },
+            {
+                "icon_url": "17.gif",
+                "icon_type": "s",
+                "icon_index": 56
+            },
+            {
+                "icon_url": "16.gif",
+                "icon_type": "s",
+                "icon_index": 55
+            },
+            {
+                "icon_url": "15.gif",
+                "icon_type": "s",
+                "icon_index": 54
+            },
+            {
+                "icon_url": "14.gif",
+                "icon_type": "s",
+                "icon_index": 53
+            },
+            {
+                "icon_url": "13.gif",
+                "icon_type": "s",
+                "icon_index": 52
+            },
+            {
+                "icon_url": "12.gif",
+                "icon_type": "s",
+                "icon_index": 51
+            },
+            {
+                "icon_url": "11.gif",
+                "icon_type": "s",
+                "icon_index": 50
+            },
+            {
+                "icon_url": "9.gif",
+                "icon_type": "s",
+                "icon_index": 49
+            },
+            {
+                "icon_url": "7.gif",
+                "icon_type": "s",
+                "icon_index": 47
+            },
+            {
+                "icon_url": "6.gif",
+                "icon_type": "s",
+                "icon_index": 46
+            },
+            {
+                "icon_url": "5.gif",
+                "icon_type": "s",
+                "icon_index": 45
+            },
+            {
+                "icon_url": "3.gif",
+                "icon_type": "s",
+                "icon_index": 44
+            },
+            {
+                "icon_url": "2.gif",
+                "icon_type": "s",
+                "icon_index": 43
+            },
+            {
+                "icon_url": "23.gif",
+                "icon_type": "s",
+                "icon_index": 60
+            },
+            {
+                "icon_url": "24.gif",
+                "icon_type": "s",
+                "icon_index": 61
+            },
+            {
+                "icon_url": "55.gif",
+                "icon_type": "s",
+                "icon_index": 80
+            },
+            {
+                "icon_url": "53.gif",
+                "icon_type": "s",
+                "icon_index": 79
+            },
+            {
+                "icon_url": "52.gif",
+                "icon_type": "s",
+                "icon_index": 78
+            },
+            {
+                "icon_url": "51.gif",
+                "icon_type": "s",
+                "icon_index": 77
+            },
+            {
+                "icon_url": "48.gif",
+                "icon_type": "s",
+                "icon_index": 75
+            },
+            {
+                "icon_url": "47.gif",
+                "icon_type": "s",
+                "icon_index": 74
+            },
+            {
+                "icon_url": "46.gif",
+                "icon_type": "s",
+                "icon_index": 73
+            },
+            {
+                "icon_url": "45.gif",
+                "icon_type": "s",
+                "icon_index": 72
+            },
+            {
+                "icon_url": "37.gif",
+                "icon_type": "s",
+                "icon_index": 70
+            },
+            {
+                "icon_url": "36.gif",
+                "icon_type": "s",
+                "icon_index": 69
+            },
+            {
+                "icon_url": "35.gif",
+                "icon_type": "s",
+                "icon_index": 68
+            },
+            {
+                "icon_url": "33.gif",
+                "icon_type": "s",
+                "icon_index": 67
+            },
+            {
+                "icon_url": "32.gif",
+                "icon_type": "s",
+                "icon_index": 66
+            },
+            {
+                "icon_url": "31.gif",
+                "icon_type": "s",
+                "icon_index": 65
+            },
+            {
+                "icon_url": "30.gif",
+                "icon_type": "s",
+                "icon_index": 64
+            },
+            {
+                "icon_url": "29.gif",
+                "icon_type": "s",
+                "icon_index": 63
+            }
         ]
     },
     {
         "collection_name": "小蘑菇",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/mushroom/",
+        "base_url": "static/image/smiley/mushroom/",
         "collections": [
-            "001.gif",
-            "002.gif",
-            "003.gif",
-            "004.gif",
-            "005.gif",
-            "006.gif",
-            "007.gif",
-            "008.gif",
-            "009.gif",
-            "010.gif",
-            "011.gif",
-            "012.gif",
-            "013.gif",
-            "014.gif",
-            "015.gif",
-            "016.gif",
-            "017.gif",
-            "018.gif",
-            "019.gif",
-            "020.gif",
-            "021.gif",
-            "022.gif",
-            "023.gif",
-            "024.gif",
-            "025.gif",
-            "026.gif",
-            "027.gif",
-            "028.gif",
-            "029.gif",
-            "030.gif",
-            "031.gif",
-            "032.gif",
-            "033.gif",
-            "034.gif",
-            "035.gif",
-            "036.gif",
-            "037.gif",
-            "038.gif",
-            "039.gif",
-            "040.gif",
-            "041.gif",
-            "042.gif",
-            "043.gif",
-            "044.gif",
-            "045.gif",
-            "046.gif",
-            "047.gif",
-            "048.gif",
-            "049.gif",
-            "050.gif",
-            "051.gif",
-            "052.gif",
-            "053.gif",
-            "054.gif",
-            "055.gif",
-            "056.gif",
-            "057.gif",
-            "058.gif",
-            "059.gif",
-            "060.gif",
-            "061.gif",
-            "062.gif",
-            "063.gif",
-            "064.gif",
-            "065.gif",
-            "066.gif",
-            "067.gif",
-            "068.gif",
-            "069.gif",
-            "070.gif",
-            "071.gif",
-            "072.gif",
-            "073.gif",
-            "074.gif",
-            "075.gif",
-            "076.gif"
+            {
+                "icon_url": "076.gif",
+                "icon_type": "s",
+                "icon_index": 285
+            },
+            {
+                "icon_url": "056.gif",
+                "icon_type": "s",
+                "icon_index": 265
+            },
+            {
+                "icon_url": "055.gif",
+                "icon_type": "s",
+                "icon_index": 264
+            },
+            {
+                "icon_url": "054.gif",
+                "icon_type": "s",
+                "icon_index": 263
+            },
+            {
+                "icon_url": "053.gif",
+                "icon_type": "s",
+                "icon_index": 262
+            },
+            {
+                "icon_url": "052.gif",
+                "icon_type": "s",
+                "icon_index": 261
+            },
+            {
+                "icon_url": "051.gif",
+                "icon_type": "s",
+                "icon_index": 260
+            },
+            {
+                "icon_url": "050.gif",
+                "icon_type": "s",
+                "icon_index": 259
+            },
+            {
+                "icon_url": "049.gif",
+                "icon_type": "s",
+                "icon_index": 258
+            },
+            {
+                "icon_url": "048.gif",
+                "icon_type": "s",
+                "icon_index": 257
+            },
+            {
+                "icon_url": "047.gif",
+                "icon_type": "s",
+                "icon_index": 256
+            },
+            {
+                "icon_url": "046.gif",
+                "icon_type": "s",
+                "icon_index": 255
+            },
+            {
+                "icon_url": "045.gif",
+                "icon_type": "s",
+                "icon_index": 254
+            },
+            {
+                "icon_url": "044.gif",
+                "icon_type": "s",
+                "icon_index": 253
+            },
+            {
+                "icon_url": "043.gif",
+                "icon_type": "s",
+                "icon_index": 252
+            },
+            {
+                "icon_url": "042.gif",
+                "icon_type": "s",
+                "icon_index": 251
+            },
+            {
+                "icon_url": "041.gif",
+                "icon_type": "s",
+                "icon_index": 250
+            },
+            {
+                "icon_url": "040.gif",
+                "icon_type": "s",
+                "icon_index": 249
+            },
+            {
+                "icon_url": "057.gif",
+                "icon_type": "s",
+                "icon_index": 266
+            },
+            {
+                "icon_url": "058.gif",
+                "icon_type": "s",
+                "icon_index": 267
+            },
+            {
+                "icon_url": "075.gif",
+                "icon_type": "s",
+                "icon_index": 284
+            },
+            {
+                "icon_url": "074.gif",
+                "icon_type": "s",
+                "icon_index": 283
+            },
+            {
+                "icon_url": "073.gif",
+                "icon_type": "s",
+                "icon_index": 282
+            },
+            {
+                "icon_url": "072.gif",
+                "icon_type": "s",
+                "icon_index": 281
+            },
+            {
+                "icon_url": "071.gif",
+                "icon_type": "s",
+                "icon_index": 280
+            },
+            {
+                "icon_url": "070.gif",
+                "icon_type": "s",
+                "icon_index": 279
+            },
+            {
+                "icon_url": "069.gif",
+                "icon_type": "s",
+                "icon_index": 278
+            },
+            {
+                "icon_url": "068.gif",
+                "icon_type": "s",
+                "icon_index": 277
+            },
+            {
+                "icon_url": "067.gif",
+                "icon_type": "s",
+                "icon_index": 276
+            },
+            {
+                "icon_url": "066.gif",
+                "icon_type": "s",
+                "icon_index": 275
+            },
+            {
+                "icon_url": "065.gif",
+                "icon_type": "s",
+                "icon_index": 274
+            },
+            {
+                "icon_url": "064.gif",
+                "icon_type": "s",
+                "icon_index": 273
+            },
+            {
+                "icon_url": "063.gif",
+                "icon_type": "s",
+                "icon_index": 272
+            },
+            {
+                "icon_url": "062.gif",
+                "icon_type": "s",
+                "icon_index": 271
+            },
+            {
+                "icon_url": "061.gif",
+                "icon_type": "s",
+                "icon_index": 270
+            },
+            {
+                "icon_url": "060.gif",
+                "icon_type": "s",
+                "icon_index": 269
+            },
+            {
+                "icon_url": "059.gif",
+                "icon_type": "s",
+                "icon_index": 268
+            },
+            {
+                "icon_url": "039.gif",
+                "icon_type": "s",
+                "icon_index": 248
+            },
+            {
+                "icon_url": "038.gif",
+                "icon_type": "s",
+                "icon_index": 247
+            },
+            {
+                "icon_url": "018.gif",
+                "icon_type": "s",
+                "icon_index": 227
+            },
+            {
+                "icon_url": "017.gif",
+                "icon_type": "s",
+                "icon_index": 226
+            },
+            {
+                "icon_url": "016.gif",
+                "icon_type": "s",
+                "icon_index": 225
+            },
+            {
+                "icon_url": "015.gif",
+                "icon_type": "s",
+                "icon_index": 224
+            },
+            {
+                "icon_url": "014.gif",
+                "icon_type": "s",
+                "icon_index": 223
+            },
+            {
+                "icon_url": "013.gif",
+                "icon_type": "s",
+                "icon_index": 222
+            },
+            {
+                "icon_url": "012.gif",
+                "icon_type": "s",
+                "icon_index": 221
+            },
+            {
+                "icon_url": "011.gif",
+                "icon_type": "s",
+                "icon_index": 220
+            },
+            {
+                "icon_url": "010.gif",
+                "icon_type": "s",
+                "icon_index": 219
+            },
+            {
+                "icon_url": "009.gif",
+                "icon_type": "s",
+                "icon_index": 218
+            },
+            {
+                "icon_url": "008.gif",
+                "icon_type": "s",
+                "icon_index": 217
+            },
+            {
+                "icon_url": "007.gif",
+                "icon_type": "s",
+                "icon_index": 216
+            },
+            {
+                "icon_url": "006.gif",
+                "icon_type": "s",
+                "icon_index": 215
+            },
+            {
+                "icon_url": "005.gif",
+                "icon_type": "s",
+                "icon_index": 214
+            },
+            {
+                "icon_url": "004.gif",
+                "icon_type": "s",
+                "icon_index": 213
+            },
+            {
+                "icon_url": "003.gif",
+                "icon_type": "s",
+                "icon_index": 212
+            },
+            {
+                "icon_url": "002.gif",
+                "icon_type": "s",
+                "icon_index": 211
+            },
+            {
+                "icon_url": "019.gif",
+                "icon_type": "s",
+                "icon_index": 228
+            },
+            {
+                "icon_url": "020.gif",
+                "icon_type": "s",
+                "icon_index": 229
+            },
+            {
+                "icon_url": "037.gif",
+                "icon_type": "s",
+                "icon_index": 246
+            },
+            {
+                "icon_url": "036.gif",
+                "icon_type": "s",
+                "icon_index": 245
+            },
+            {
+                "icon_url": "035.gif",
+                "icon_type": "s",
+                "icon_index": 244
+            },
+            {
+                "icon_url": "034.gif",
+                "icon_type": "s",
+                "icon_index": 243
+            },
+            {
+                "icon_url": "033.gif",
+                "icon_type": "s",
+                "icon_index": 242
+            },
+            {
+                "icon_url": "032.gif",
+                "icon_type": "s",
+                "icon_index": 241
+            },
+            {
+                "icon_url": "031.gif",
+                "icon_type": "s",
+                "icon_index": 240
+            },
+            {
+                "icon_url": "030.gif",
+                "icon_type": "s",
+                "icon_index": 239
+            },
+            {
+                "icon_url": "029.gif",
+                "icon_type": "s",
+                "icon_index": 238
+            },
+            {
+                "icon_url": "028.gif",
+                "icon_type": "s",
+                "icon_index": 237
+            },
+            {
+                "icon_url": "027.gif",
+                "icon_type": "s",
+                "icon_index": 236
+            },
+            {
+                "icon_url": "026.gif",
+                "icon_type": "s",
+                "icon_index": 235
+            },
+            {
+                "icon_url": "025.gif",
+                "icon_type": "s",
+                "icon_index": 234
+            },
+            {
+                "icon_url": "024.gif",
+                "icon_type": "s",
+                "icon_index": 233
+            },
+            {
+                "icon_url": "023.gif",
+                "icon_type": "s",
+                "icon_index": 232
+            },
+            {
+                "icon_url": "022.gif",
+                "icon_type": "s",
+                "icon_index": 231
+            },
+            {
+                "icon_url": "021.gif",
+                "icon_type": "s",
+                "icon_index": 230
+            },
+            {
+                "icon_url": "001.gif",
+                "icon_type": "s",
+                "icon_index": 210
+            }
         ]
     },
     {
         "collection_name": "兔耳控",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/tuerkong/",
+        "base_url": "static/image/smiley/tuerkong/",
         "collections": [
-            "1.gif",
-            "2.gif",
-            "3.gif",
-            "4.gif",
-            "5.gif",
-            "6.gif",
-            "7.gif",
-            "8.gif",
-            "9.gif",
-            "10.gif",
-            "11.gif",
-            "12.gif",
-            "13.gif",
-            "14.gif",
-            "15.gif",
-            "16.gif",
-            "17.gif",
-            "18.gif",
-            "19.gif",
-            "20.gif",
-            "21.gif",
-            "22.gif",
-            "23.gif",
-            "24.gif",
-            "25.gif",
-            "26.gif",
-            "27.gif",
-            "28.gif",
-            "29.gif",
-            "30.gif",
-            "31.gif",
-            "32.gif",
-            "33.gif"
+            {
+                "icon_url": "1.gif",
+                "icon_type": "s",
+                "icon_index": 291
+            },
+            {
+                "icon_url": "19.gif",
+                "icon_type": "s",
+                "icon_index": 309
+            },
+            {
+                "icon_url": "20.gif",
+                "icon_type": "s",
+                "icon_index": 310
+            },
+            {
+                "icon_url": "21.gif",
+                "icon_type": "s",
+                "icon_index": 311
+            },
+            {
+                "icon_url": "22.gif",
+                "icon_type": "s",
+                "icon_index": 312
+            },
+            {
+                "icon_url": "23.gif",
+                "icon_type": "s",
+                "icon_index": 313
+            },
+            {
+                "icon_url": "24.gif",
+                "icon_type": "s",
+                "icon_index": 314
+            },
+            {
+                "icon_url": "25.gif",
+                "icon_type": "s",
+                "icon_index": 315
+            },
+            {
+                "icon_url": "26.gif",
+                "icon_type": "s",
+                "icon_index": 316
+            },
+            {
+                "icon_url": "27.gif",
+                "icon_type": "s",
+                "icon_index": 317
+            },
+            {
+                "icon_url": "28.gif",
+                "icon_type": "s",
+                "icon_index": 318
+            },
+            {
+                "icon_url": "29.gif",
+                "icon_type": "s",
+                "icon_index": 319
+            },
+            {
+                "icon_url": "30.gif",
+                "icon_type": "s",
+                "icon_index": 320
+            },
+            {
+                "icon_url": "31.gif",
+                "icon_type": "s",
+                "icon_index": 321
+            },
+            {
+                "icon_url": "32.gif",
+                "icon_type": "s",
+                "icon_index": 322
+            },
+            {
+                "icon_url": "18.gif",
+                "icon_type": "s",
+                "icon_index": 308
+            },
+            {
+                "icon_url": "17.gif",
+                "icon_type": "s",
+                "icon_index": 307
+            },
+            {
+                "icon_url": "16.gif",
+                "icon_type": "s",
+                "icon_index": 306
+            },
+            {
+                "icon_url": "2.gif",
+                "icon_type": "s",
+                "icon_index": 292
+            },
+            {
+                "icon_url": "3.gif",
+                "icon_type": "s",
+                "icon_index": 293
+            },
+            {
+                "icon_url": "4.gif",
+                "icon_type": "s",
+                "icon_index": 294
+            },
+            {
+                "icon_url": "5.gif",
+                "icon_type": "s",
+                "icon_index": 295
+            },
+            {
+                "icon_url": "6.gif",
+                "icon_type": "s",
+                "icon_index": 296
+            },
+            {
+                "icon_url": "7.gif",
+                "icon_type": "s",
+                "icon_index": 297
+            },
+            {
+                "icon_url": "8.gif",
+                "icon_type": "s",
+                "icon_index": 298
+            },
+            {
+                "icon_url": "9.gif",
+                "icon_type": "s",
+                "icon_index": 299
+            },
+            {
+                "icon_url": "10.gif",
+                "icon_type": "s",
+                "icon_index": 300
+            },
+            {
+                "icon_url": "11.gif",
+                "icon_type": "s",
+                "icon_index": 301
+            },
+            {
+                "icon_url": "12.gif",
+                "icon_type": "s",
+                "icon_index": 302
+            },
+            {
+                "icon_url": "13.gif",
+                "icon_type": "s",
+                "icon_index": 303
+            },
+            {
+                "icon_url": "14.gif",
+                "icon_type": "s",
+                "icon_index": 304
+            },
+            {
+                "icon_url": "15.gif",
+                "icon_type": "s",
+                "icon_index": 305
+            },
+            {
+                "icon_url": "33.gif",
+                "icon_type": "s",
+                "icon_index": 323
+            }
         ]
     },
     {
         "collection_name": "麻将脸",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/majiang/",
+        "base_url": "static/image/smiley/majiang/",
         "collections": [
-            "00.gif",
-            "01.gif",
-            "02.gif",
-            "03.gif",
-            "04.gif",
-            "05.gif",
-            "06.gif",
-            "07.gif",
-            "08.gif",
-            "09.gif",
-            "10.gif",
-            "11.gif",
-            "12.gif",
-            "13.gif",
-            "14.gif",
-            "15.gif",
-            "16.gif",
-            "17.gif",
-            "18.gif",
-            "19.gif",
-            "20.gif",
-            "21.gif",
-            "22.gif",
-            "23.gif",
-            "24.gif",
-            "25.gif",
-            "26.gif",
-            "27.gif",
-            "28.gif",
-            "29.gif",
-            "30.gif",
-            "31.gif",
-            "32.gif",
-            "33.gif",
-            "34.gif",
-            "35.gif",
-            "37.gif",
-            "38.gif",
-            "39.gif",
-            "40.gif",
-            "41.gif",
-            "42.gif",
-            "43.gif",
-            "44.gif",
-            "45.gif",
-            "46.gif",
-            "47.gif",
-            "48.gif",
-            "49.gif",
-            "50.gif",
-            "51.gif",
-            "52.gif",
-            "53.gif",
-            "54.gif",
-            "55.gif",
-            "56.gif",
-            "57.gif",
-            "58.gif",
-            "59.gif",
-            "60.gif",
-            "61.gif",
-            "66.gif",
-            "74.gif",
-            "75.gif",
-            "77.gif",
-            "79.gif",
-            "80.gif",
-            "81.gif",
-            "82.gif",
-            "84.gif",
-            "85.gif",
-            "86.gif",
-            "87.gif",
-            "88.gif",
-            "89.gif",
-            "90.gif",
-            "91.gif",
-            "92.gif",
-            "93.gif",
-            "94.jpg",
-            "95.gif",
-            "96.gif",
-            "97.gif",
-            "98.gif",
-            "99.gif",
-            "100.gif",
-            "101.gif",
-            "102.jpg",
-            "103.gif",
-            "104.gif",
-            "105.gif",
-            "106.gif",
-            "107.gif",
-            "108.gif",
-            "109.gif",
-            "110.gif",
-            "111.gif",
-            "112.gif",
-            "113.gif",
-            "114.gif",
-            "115.gif",
-            "116.gif",
-            "117.gif",
-            "118.gif",
-            "119.gif",
-            "120.gif",
-            "121.png",
-            "122.gif",
-            "123.gif",
-            "124.jpg",
-            "125.gif",
-            "126.gif",
-            "127.gif",
-            "128.gif",
-            "129.gif",
-            "130.gif",
-            "131.gif",
-            "132.gif",
-            "133.gif",
-            "134.gif",
-            "135.gif",
-            "136.gif",
-            "137.gif",
-            "138.gif",
-            "139.gif",
-            "140.gif",
-            "141.gif",
-            "142.gif",
-            "143.gif",
-            "144.gif",
-            "145.gif",
-            "146.gif",
-            "147.gif",
-            "148.gif",
-            "149.gif",
-            "150.gif",
-            "151.gif",
-            "152.gif",
-            "153.gif",
-            "154.gif",
-            "157.gif",
-            "158.jpg",
-            "159.jpg",
-            "160.gif",
-            "162.jpg",
-            "163.gif",
-            "164.gif",
-            "165.gif",
-            "166.gif",
-            "167.gif",
-            "170.gif",
-            "171.gif",
-            "172.gif",
-            "173.gif",
-            "174.gif",
-            "175.gif",
-            "176.gif",
-            "177.gif",
-            "178.gif",
-            "179.gif",
-            "180.gif",
-            "181.gif",
-            "183.gif",
-            "184.gif",
-            "185.gif",
-            "186.gif",
-            "187.gif",
-            "188.gif",
-            "189.gif",
-            "190.gif",
-            "191.gif",
-            "200.gif",
-            "201.gif"
+            {
+                "icon_url": "142.gif",
+                "icon_type": "s",
+                "icon_index": 458
+            },
+            {
+                "icon_url": "130.gif",
+                "icon_type": "s",
+                "icon_index": 446
+            },
+            {
+                "icon_url": "129.gif",
+                "icon_type": "s",
+                "icon_index": 445
+            },
+            {
+                "icon_url": "128.gif",
+                "icon_type": "s",
+                "icon_index": 444
+            },
+            {
+                "icon_url": "127.gif",
+                "icon_type": "s",
+                "icon_index": 443
+            },
+            {
+                "icon_url": "126.gif",
+                "icon_type": "s",
+                "icon_index": 442
+            },
+            {
+                "icon_url": "125.gif",
+                "icon_type": "s",
+                "icon_index": 441
+            },
+            {
+                "icon_url": "124.jpg",
+                "icon_type": "s",
+                "icon_index": 440
+            },
+            {
+                "icon_url": "123.gif",
+                "icon_type": "s",
+                "icon_index": 439
+            },
+            {
+                "icon_url": "122.gif",
+                "icon_type": "s",
+                "icon_index": 438
+            },
+            {
+                "icon_url": "131.gif",
+                "icon_type": "s",
+                "icon_index": 447
+            },
+            {
+                "icon_url": "132.gif",
+                "icon_type": "s",
+                "icon_index": 448
+            },
+            {
+                "icon_url": "141.gif",
+                "icon_type": "s",
+                "icon_index": 457
+            },
+            {
+                "icon_url": "140.gif",
+                "icon_type": "s",
+                "icon_index": 456
+            },
+            {
+                "icon_url": "139.gif",
+                "icon_type": "s",
+                "icon_index": 455
+            },
+            {
+                "icon_url": "138.gif",
+                "icon_type": "s",
+                "icon_index": 454
+            },
+            {
+                "icon_url": "137.gif",
+                "icon_type": "s",
+                "icon_index": 453
+            },
+            {
+                "icon_url": "136.gif",
+                "icon_type": "s",
+                "icon_index": 452
+            },
+            {
+                "icon_url": "135.gif",
+                "icon_type": "s",
+                "icon_index": 451
+            },
+            {
+                "icon_url": "134.gif",
+                "icon_type": "s",
+                "icon_index": 450
+            },
+            {
+                "icon_url": "133.gif",
+                "icon_type": "s",
+                "icon_index": 449
+            },
+            {
+                "icon_url": "121.png",
+                "icon_type": "s",
+                "icon_index": 437
+            },
+            {
+                "icon_url": "120.gif",
+                "icon_type": "s",
+                "icon_index": 436
+            },
+            {
+                "icon_url": "108.gif",
+                "icon_type": "s",
+                "icon_index": 424
+            },
+            {
+                "icon_url": "107.gif",
+                "icon_type": "s",
+                "icon_index": 423
+            },
+            {
+                "icon_url": "106.gif",
+                "icon_type": "s",
+                "icon_index": 422
+            },
+            {
+                "icon_url": "105.gif",
+                "icon_type": "s",
+                "icon_index": 421
+            },
+            {
+                "icon_url": "104.gif",
+                "icon_type": "s",
+                "icon_index": 420
+            },
+            {
+                "icon_url": "103.gif",
+                "icon_type": "s",
+                "icon_index": 419
+            },
+            {
+                "icon_url": "102.jpg",
+                "icon_type": "s",
+                "icon_index": 418
+            },
+            {
+                "icon_url": "101.gif",
+                "icon_type": "s",
+                "icon_index": 417
+            },
+            {
+                "icon_url": "100.gif",
+                "icon_type": "s",
+                "icon_index": 416
+            },
+            {
+                "icon_url": "109.gif",
+                "icon_type": "s",
+                "icon_index": 425
+            },
+            {
+                "icon_url": "110.gif",
+                "icon_type": "s",
+                "icon_index": 426
+            },
+            {
+                "icon_url": "119.gif",
+                "icon_type": "s",
+                "icon_index": 435
+            },
+            {
+                "icon_url": "118.gif",
+                "icon_type": "s",
+                "icon_index": 434
+            },
+            {
+                "icon_url": "117.gif",
+                "icon_type": "s",
+                "icon_index": 433
+            },
+            {
+                "icon_url": "116.gif",
+                "icon_type": "s",
+                "icon_index": 432
+            },
+            {
+                "icon_url": "115.gif",
+                "icon_type": "s",
+                "icon_index": 431
+            },
+            {
+                "icon_url": "114.gif",
+                "icon_type": "s",
+                "icon_index": 430
+            },
+            {
+                "icon_url": "113.gif",
+                "icon_type": "s",
+                "icon_index": 429
+            },
+            {
+                "icon_url": "112.gif",
+                "icon_type": "s",
+                "icon_index": 428
+            },
+            {
+                "icon_url": "111.gif",
+                "icon_type": "s",
+                "icon_index": 427
+            },
+            {
+                "icon_url": "156.jpg.gif",
+                "icon_type": "s",
+                "icon_index": 415
+            },
+            {
+                "icon_url": "143.gif",
+                "icon_type": "s",
+                "icon_index": 459
+            },
+            {
+                "icon_url": "201.gif",
+                "icon_type": "s",
+                "icon_index": 503
+            },
+            {
+                "icon_url": "180.gif",
+                "icon_type": "s",
+                "icon_index": 491
+            },
+            {
+                "icon_url": "179.gif",
+                "icon_type": "s",
+                "icon_index": 490
+            },
+            {
+                "icon_url": "178.gif",
+                "icon_type": "s",
+                "icon_index": 489
+            },
+            {
+                "icon_url": "177.gif",
+                "icon_type": "s",
+                "icon_index": 488
+            },
+            {
+                "icon_url": "176.gif",
+                "icon_type": "s",
+                "icon_index": 487
+            },
+            {
+                "icon_url": "175.gif",
+                "icon_type": "s",
+                "icon_index": 486
+            },
+            {
+                "icon_url": "174.gif",
+                "icon_type": "s",
+                "icon_index": 485
+            },
+            {
+                "icon_url": "173.gif",
+                "icon_type": "s",
+                "icon_index": 484
+            },
+            {
+                "icon_url": "172.gif",
+                "icon_type": "s",
+                "icon_index": 483
+            },
+            {
+                "icon_url": "181.gif",
+                "icon_type": "s",
+                "icon_index": 492
+            },
+            {
+                "icon_url": "183.gif",
+                "icon_type": "s",
+                "icon_index": 493
+            },
+            {
+                "icon_url": "200.gif",
+                "icon_type": "s",
+                "icon_index": 502
+            },
+            {
+                "icon_url": "191.gif",
+                "icon_type": "s",
+                "icon_index": 501
+            },
+            {
+                "icon_url": "190.gif",
+                "icon_type": "s",
+                "icon_index": 500
+            },
+            {
+                "icon_url": "189.gif",
+                "icon_type": "s",
+                "icon_index": 499
+            },
+            {
+                "icon_url": "188.gif",
+                "icon_type": "s",
+                "icon_index": 498
+            },
+            {
+                "icon_url": "187.gif",
+                "icon_type": "s",
+                "icon_index": 497
+            },
+            {
+                "icon_url": "186.gif",
+                "icon_type": "s",
+                "icon_index": 496
+            },
+            {
+                "icon_url": "185.gif",
+                "icon_type": "s",
+                "icon_index": 495
+            },
+            {
+                "icon_url": "184.gif",
+                "icon_type": "s",
+                "icon_index": 494
+            },
+            {
+                "icon_url": "171.gif",
+                "icon_type": "s",
+                "icon_index": 482
+            },
+            {
+                "icon_url": "170.gif",
+                "icon_type": "s",
+                "icon_index": 481
+            },
+            {
+                "icon_url": "153.gif",
+                "icon_type": "s",
+                "icon_index": 469
+            },
+            {
+                "icon_url": "152.gif",
+                "icon_type": "s",
+                "icon_index": 468
+            },
+            {
+                "icon_url": "151.gif",
+                "icon_type": "s",
+                "icon_index": 467
+            },
+            {
+                "icon_url": "150.gif",
+                "icon_type": "s",
+                "icon_index": 466
+            },
+            {
+                "icon_url": "149.gif",
+                "icon_type": "s",
+                "icon_index": 465
+            },
+            {
+                "icon_url": "148.gif",
+                "icon_type": "s",
+                "icon_index": 464
+            },
+            {
+                "icon_url": "147.gif",
+                "icon_type": "s",
+                "icon_index": 463
+            },
+            {
+                "icon_url": "146.gif",
+                "icon_type": "s",
+                "icon_index": 462
+            },
+            {
+                "icon_url": "145.gif",
+                "icon_type": "s",
+                "icon_index": 461
+            },
+            {
+                "icon_url": "154.gif",
+                "icon_type": "s",
+                "icon_index": 470
+            },
+            {
+                "icon_url": "157.gif",
+                "icon_type": "s",
+                "icon_index": 471
+            },
+            {
+                "icon_url": "167.gif",
+                "icon_type": "s",
+                "icon_index": 480
+            },
+            {
+                "icon_url": "166.gif",
+                "icon_type": "s",
+                "icon_index": 479
+            },
+            {
+                "icon_url": "165.gif",
+                "icon_type": "s",
+                "icon_index": 478
+            },
+            {
+                "icon_url": "164.gif",
+                "icon_type": "s",
+                "icon_index": 477
+            },
+            {
+                "icon_url": "163.gif",
+                "icon_type": "s",
+                "icon_index": 476
+            },
+            {
+                "icon_url": "162.jpg",
+                "icon_type": "s",
+                "icon_index": 475
+            },
+            {
+                "icon_url": "160.gif",
+                "icon_type": "s",
+                "icon_index": 474
+            },
+            {
+                "icon_url": "159.jpg",
+                "icon_type": "s",
+                "icon_index": 473
+            },
+            {
+                "icon_url": "158.jpg",
+                "icon_type": "s",
+                "icon_index": 472
+            },
+            {
+                "icon_url": "144.gif",
+                "icon_type": "s",
+                "icon_index": 460
+            },
+            {
+                "icon_url": "99.gif",
+                "icon_type": "s",
+                "icon_index": 414
+            },
+            {
+                "icon_url": "40.gif",
+                "icon_type": "s",
+                "icon_index": 368
+            },
+            {
+                "icon_url": "27.gif",
+                "icon_type": "s",
+                "icon_index": 356
+            },
+            {
+                "icon_url": "26.gif",
+                "icon_type": "s",
+                "icon_index": 355
+            },
+            {
+                "icon_url": "25.gif",
+                "icon_type": "s",
+                "icon_index": 354
+            },
+            {
+                "icon_url": "24.gif",
+                "icon_type": "s",
+                "icon_index": 353
+            },
+            {
+                "icon_url": "23.gif",
+                "icon_type": "s",
+                "icon_index": 352
+            },
+            {
+                "icon_url": "22.gif",
+                "icon_type": "s",
+                "icon_index": 351
+            },
+            {
+                "icon_url": "21.gif",
+                "icon_type": "s",
+                "icon_index": 350
+            },
+            {
+                "icon_url": "20.gif",
+                "icon_type": "s",
+                "icon_index": 349
+            },
+            {
+                "icon_url": "19.gif",
+                "icon_type": "s",
+                "icon_index": 348
+            },
+            {
+                "icon_url": "28.gif",
+                "icon_type": "s",
+                "icon_index": 357
+            },
+            {
+                "icon_url": "29.gif",
+                "icon_type": "s",
+                "icon_index": 358
+            },
+            {
+                "icon_url": "39.gif",
+                "icon_type": "s",
+                "icon_index": 367
+            },
+            {
+                "icon_url": "38.gif",
+                "icon_type": "s",
+                "icon_index": 366
+            },
+            {
+                "icon_url": "37.gif",
+                "icon_type": "s",
+                "icon_index": 365
+            },
+            {
+                "icon_url": "35.gif",
+                "icon_type": "s",
+                "icon_index": 364
+            },
+            {
+                "icon_url": "34.gif",
+                "icon_type": "s",
+                "icon_index": 363
+            },
+            {
+                "icon_url": "33.gif",
+                "icon_type": "s",
+                "icon_index": 362
+            },
+            {
+                "icon_url": "32.gif",
+                "icon_type": "s",
+                "icon_index": 361
+            },
+            {
+                "icon_url": "31.gif",
+                "icon_type": "s",
+                "icon_index": 360
+            },
+            {
+                "icon_url": "30.gif",
+                "icon_type": "s",
+                "icon_index": 359
+            },
+            {
+                "icon_url": "18.gif",
+                "icon_type": "s",
+                "icon_index": 347
+            },
+            {
+                "icon_url": "17.gif",
+                "icon_type": "s",
+                "icon_index": 346
+            },
+            {
+                "icon_url": "05.gif",
+                "icon_type": "s",
+                "icon_index": 334
+            },
+            {
+                "icon_url": "04.gif",
+                "icon_type": "s",
+                "icon_index": 333
+            },
+            {
+                "icon_url": "03.gif",
+                "icon_type": "s",
+                "icon_index": 332
+            },
+            {
+                "icon_url": "02.gif",
+                "icon_type": "s",
+                "icon_index": 331
+            },
+            {
+                "icon_url": "01.gif",
+                "icon_type": "s",
+                "icon_index": 330
+            },
+            {
+                "icon_url": "00.gif",
+                "icon_type": "s",
+                "icon_index": 329
+            },
+            {
+                "icon_url": "182.jpg.gif",
+                "icon_type": "s",
+                "icon_index": 328
+            },
+            {
+                "icon_url": "155.jpg.gif",
+                "icon_type": "s",
+                "icon_index": 327
+            },
+            {
+                "icon_url": "161.jpg.gif",
+                "icon_type": "s",
+                "icon_index": 326
+            },
+            {
+                "icon_url": "06.gif",
+                "icon_type": "s",
+                "icon_index": 335
+            },
+            {
+                "icon_url": "07.gif",
+                "icon_type": "s",
+                "icon_index": 336
+            },
+            {
+                "icon_url": "16.gif",
+                "icon_type": "s",
+                "icon_index": 345
+            },
+            {
+                "icon_url": "15.gif",
+                "icon_type": "s",
+                "icon_index": 344
+            },
+            {
+                "icon_url": "14.gif",
+                "icon_type": "s",
+                "icon_index": 343
+            },
+            {
+                "icon_url": "13.gif",
+                "icon_type": "s",
+                "icon_index": 342
+            },
+            {
+                "icon_url": "12.gif",
+                "icon_type": "s",
+                "icon_index": 341
+            },
+            {
+                "icon_url": "11.gif",
+                "icon_type": "s",
+                "icon_index": 340
+            },
+            {
+                "icon_url": "10.gif",
+                "icon_type": "s",
+                "icon_index": 339
+            },
+            {
+                "icon_url": "09.gif",
+                "icon_type": "s",
+                "icon_index": 338
+            },
+            {
+                "icon_url": "08.gif",
+                "icon_type": "s",
+                "icon_index": 337
+            },
+            {
+                "icon_url": "168.jpg.png",
+                "icon_type": "s",
+                "icon_index": 325
+            },
+            {
+                "icon_url": "41.gif",
+                "icon_type": "s",
+                "icon_index": 369
+            },
+            {
+                "icon_url": "98.gif",
+                "icon_type": "s",
+                "icon_index": 413
+            },
+            {
+                "icon_url": "86.gif",
+                "icon_type": "s",
+                "icon_index": 401
+            },
+            {
+                "icon_url": "85.gif",
+                "icon_type": "s",
+                "icon_index": 400
+            },
+            {
+                "icon_url": "84.gif",
+                "icon_type": "s",
+                "icon_index": 399
+            },
+            {
+                "icon_url": "82.gif",
+                "icon_type": "s",
+                "icon_index": 398
+            },
+            {
+                "icon_url": "81.gif",
+                "icon_type": "s",
+                "icon_index": 397
+            },
+            {
+                "icon_url": "80.gif",
+                "icon_type": "s",
+                "icon_index": 396
+            },
+            {
+                "icon_url": "79.gif",
+                "icon_type": "s",
+                "icon_index": 395
+            },
+            {
+                "icon_url": "77.gif",
+                "icon_type": "s",
+                "icon_index": 394
+            },
+            {
+                "icon_url": "75.gif",
+                "icon_type": "s",
+                "icon_index": 393
+            },
+            {
+                "icon_url": "87.gif",
+                "icon_type": "s",
+                "icon_index": 402
+            },
+            {
+                "icon_url": "88.gif",
+                "icon_type": "s",
+                "icon_index": 403
+            },
+            {
+                "icon_url": "97.gif",
+                "icon_type": "s",
+                "icon_index": 412
+            },
+            {
+                "icon_url": "96.gif",
+                "icon_type": "s",
+                "icon_index": 411
+            },
+            {
+                "icon_url": "95.gif",
+                "icon_type": "s",
+                "icon_index": 410
+            },
+            {
+                "icon_url": "94.jpg",
+                "icon_type": "s",
+                "icon_index": 409
+            },
+            {
+                "icon_url": "93.gif",
+                "icon_type": "s",
+                "icon_index": 408
+            },
+            {
+                "icon_url": "92.gif",
+                "icon_type": "s",
+                "icon_index": 407
+            },
+            {
+                "icon_url": "91.gif",
+                "icon_type": "s",
+                "icon_index": 406
+            },
+            {
+                "icon_url": "90.gif",
+                "icon_type": "s",
+                "icon_index": 405
+            },
+            {
+                "icon_url": "89.gif",
+                "icon_type": "s",
+                "icon_index": 404
+            },
+            {
+                "icon_url": "74.gif",
+                "icon_type": "s",
+                "icon_index": 392
+            },
+            {
+                "icon_url": "169.jpg.gif",
+                "icon_type": "s",
+                "icon_index": 391
+            },
+            {
+                "icon_url": "51.gif",
+                "icon_type": "s",
+                "icon_index": 379
+            },
+            {
+                "icon_url": "50.gif",
+                "icon_type": "s",
+                "icon_index": 378
+            },
+            {
+                "icon_url": "49.gif",
+                "icon_type": "s",
+                "icon_index": 377
+            },
+            {
+                "icon_url": "48.gif",
+                "icon_type": "s",
+                "icon_index": 376
+            },
+            {
+                "icon_url": "47.gif",
+                "icon_type": "s",
+                "icon_index": 375
+            },
+            {
+                "icon_url": "46.gif",
+                "icon_type": "s",
+                "icon_index": 374
+            },
+            {
+                "icon_url": "45.gif",
+                "icon_type": "s",
+                "icon_index": 373
+            },
+            {
+                "icon_url": "44.gif",
+                "icon_type": "s",
+                "icon_index": 372
+            },
+            {
+                "icon_url": "43.gif",
+                "icon_type": "s",
+                "icon_index": 371
+            },
+            {
+                "icon_url": "52.gif",
+                "icon_type": "s",
+                "icon_index": 380
+            },
+            {
+                "icon_url": "53.gif",
+                "icon_type": "s",
+                "icon_index": 381
+            },
+            {
+                "icon_url": "66.gif",
+                "icon_type": "s",
+                "icon_index": 390
+            },
+            {
+                "icon_url": "61.gif",
+                "icon_type": "s",
+                "icon_index": 389
+            },
+            {
+                "icon_url": "60.gif",
+                "icon_type": "s",
+                "icon_index": 388
+            },
+            {
+                "icon_url": "59.gif",
+                "icon_type": "s",
+                "icon_index": 387
+            },
+            {
+                "icon_url": "58.gif",
+                "icon_type": "s",
+                "icon_index": 386
+            },
+            {
+                "icon_url": "57.gif",
+                "icon_type": "s",
+                "icon_index": 385
+            },
+            {
+                "icon_url": "56.gif",
+                "icon_type": "s",
+                "icon_index": 384
+            },
+            {
+                "icon_url": "55.gif",
+                "icon_type": "s",
+                "icon_index": 383
+            },
+            {
+                "icon_url": "54.gif",
+                "icon_type": "s",
+                "icon_index": 382
+            },
+            {
+                "icon_url": "42.gif",
+                "icon_type": "s",
+                "icon_index": 370
+            }
+        ]
+    },
+    {
+        "collection_name": "蛋黄脸",
+        "collection_icon": "$r('sys.symbol.person')",
+        "base_url": "static/image/smiley/yellowface/",
+        "collections": [
+            {
+                "icon_url": "(17).gif",
+                "icon_type": "s",
+                "icon_index": 635
+            },
+            {
+                "icon_url": "(34).gif",
+                "icon_type": "s",
+                "icon_index": 653
+            },
+            {
+                "icon_url": "(35).gif",
+                "icon_type": "s",
+                "icon_index": 654
+            },
+            {
+                "icon_url": "(36).gif",
+                "icon_type": "s",
+                "icon_index": 655
+            },
+            {
+                "icon_url": "(37).gif",
+                "icon_type": "s",
+                "icon_index": 656
+            },
+            {
+                "icon_url": "(38).gif",
+                "icon_type": "s",
+                "icon_index": 657
+            },
+            {
+                "icon_url": "(7).gif",
+                "icon_type": "s",
+                "icon_index": 659
+            },
+            {
+                "icon_url": "(8).gif",
+                "icon_type": "s",
+                "icon_index": 660
+            },
+            {
+                "icon_url": "(9).gif",
+                "icon_type": "s",
+                "icon_index": 661
+            },
+            {
+                "icon_url": "(10).gif",
+                "icon_type": "s",
+                "icon_index": 662
+            },
+            {
+                "icon_url": "(11).gif",
+                "icon_type": "s",
+                "icon_index": 663
+            },
+            {
+                "icon_url": "(12).gif",
+                "icon_type": "s",
+                "icon_index": 664
+            },
+            {
+                "icon_url": "(13).gif",
+                "icon_type": "s",
+                "icon_index": 665
+            },
+            {
+                "icon_url": "(14).gif",
+                "icon_type": "s",
+                "icon_index": 666
+            },
+            {
+                "icon_url": "(15).gif",
+                "icon_type": "s",
+                "icon_index": 667
+            },
+            {
+                "icon_url": "(6).gif",
+                "icon_type": "s",
+                "icon_index": 658
+            },
+            {
+                "icon_url": "(33).gif",
+                "icon_type": "s",
+                "icon_index": 652
+            },
+            {
+                "icon_url": "(32).gif",
+                "icon_type": "s",
+                "icon_index": 651
+            },
+            {
+                "icon_url": "(18).gif",
+                "icon_type": "s",
+                "icon_index": 636
+            },
+            {
+                "icon_url": "(19).gif",
+                "icon_type": "s",
+                "icon_index": 637
+            },
+            {
+                "icon_url": "(20).gif",
+                "icon_type": "s",
+                "icon_index": 638
+            },
+            {
+                "icon_url": "1.gif",
+                "icon_type": "s",
+                "icon_index": 639
+            },
+            {
+                "icon_url": "(21).gif",
+                "icon_type": "s",
+                "icon_index": 640
+            },
+            {
+                "icon_url": "(22).gif",
+                "icon_type": "s",
+                "icon_index": 641
+            },
+            {
+                "icon_url": "(23).gif",
+                "icon_type": "s",
+                "icon_index": 642
+            },
+            {
+                "icon_url": "(24).gif",
+                "icon_type": "s",
+                "icon_index": 643
+            },
+            {
+                "icon_url": "(25).gif",
+                "icon_type": "s",
+                "icon_index": 644
+            },
+            {
+                "icon_url": "(26).gif",
+                "icon_type": "s",
+                "icon_index": 645
+            },
+            {
+                "icon_url": "(27).gif",
+                "icon_type": "s",
+                "icon_index": 646
+            },
+            {
+                "icon_url": "(28).gif",
+                "icon_type": "s",
+                "icon_index": 647
+            },
+            {
+                "icon_url": "(29).gif",
+                "icon_type": "s",
+                "icon_index": 648
+            },
+            {
+                "icon_url": "(30).gif",
+                "icon_type": "s",
+                "icon_index": 649
+            },
+            {
+                "icon_url": "(31).gif",
+                "icon_type": "s",
+                "icon_index": 650
+            },
+            {
+                "icon_url": "(16).gif",
+                "icon_type": "s",
+                "icon_index": 634
+            }
+        ]
+    },
+    {
+        "collection_name": "暴走",
+        "collection_icon": "$r('sys.symbol.person')",
+        "base_url": "static/image/smiley/bzmh/",
+        "collections": [
+            {
+                "icon_url": "bzmh070.gif",
+                "icon_type": "s",
+                "icon_index": 716
+            },
+            {
+                "icon_url": "bzmh098.gif",
+                "icon_type": "s",
+                "icon_index": 729
+            },
+            {
+                "icon_url": "bzmh00.gif",
+                "icon_type": "s",
+                "icon_index": 730
+            },
+            {
+                "icon_url": "bzmh100.gif",
+                "icon_type": "s",
+                "icon_index": 731
+            },
+            {
+                "icon_url": "bzmh101.gif",
+                "icon_type": "s",
+                "icon_index": 732
+            },
+            {
+                "icon_url": "bzmh105.gif",
+                "icon_type": "s",
+                "icon_index": 733
+            },
+            {
+                "icon_url": "bzmh108.gif",
+                "icon_type": "s",
+                "icon_index": 734
+            },
+            {
+                "icon_url": "bzmh109.gif",
+                "icon_type": "s",
+                "icon_index": 735
+            },
+            {
+                "icon_url": "bzmh110.gif",
+                "icon_type": "s",
+                "icon_index": 736
+            },
+            {
+                "icon_url": "bzmh113.gif",
+                "icon_type": "s",
+                "icon_index": 737
+            },
+            {
+                "icon_url": "bzmh092.gif",
+                "icon_type": "s",
+                "icon_index": 728
+            },
+            {
+                "icon_url": "bzmh091.gif",
+                "icon_type": "s",
+                "icon_index": 727
+            },
+            {
+                "icon_url": "bzmh088.gif",
+                "icon_type": "s",
+                "icon_index": 726
+            },
+            {
+                "icon_url": "bzmh074.gif",
+                "icon_type": "s",
+                "icon_index": 717
+            },
+            {
+                "icon_url": "bzmh075.gif",
+                "icon_type": "s",
+                "icon_index": 718
+            },
+            {
+                "icon_url": "bzmh077.gif",
+                "icon_type": "s",
+                "icon_index": 719
+            },
+            {
+                "icon_url": "bzmh078.gif",
+                "icon_type": "s",
+                "icon_index": 720
+            },
+            {
+                "icon_url": "bzmh079.gif",
+                "icon_type": "s",
+                "icon_index": 721
+            },
+            {
+                "icon_url": "bzmh081.gif",
+                "icon_type": "s",
+                "icon_index": 722
+            },
+            {
+                "icon_url": "bzmh084.gif",
+                "icon_type": "s",
+                "icon_index": 723
+            },
+            {
+                "icon_url": "bzmh085.gif",
+                "icon_type": "s",
+                "icon_index": 724
+            },
+            {
+                "icon_url": "bzmh086.gif",
+                "icon_type": "s",
+                "icon_index": 725
+            },
+            {
+                "icon_url": "bzmh116.gif",
+                "icon_type": "s",
+                "icon_index": 738
+            },
+            {
+                "icon_url": "bzmh117.gif",
+                "icon_type": "s",
+                "icon_index": 739
+            },
+            {
+                "icon_url": "bzmh135.gif",
+                "icon_type": "s",
+                "icon_index": 752
+            },
+            {
+                "icon_url": "bzmh136.gif",
+                "icon_type": "s",
+                "icon_index": 753
+            },
+            {
+                "icon_url": "bzmh138.gif",
+                "icon_type": "s",
+                "icon_index": 754
+            },
+            {
+                "icon_url": "bzmh140.gif",
+                "icon_type": "s",
+                "icon_index": 755
+            },
+            {
+                "icon_url": "bzmh142.gif",
+                "icon_type": "s",
+                "icon_index": 756
+            },
+            {
+                "icon_url": "bzmh144.gif",
+                "icon_type": "s",
+                "icon_index": 757
+            },
+            {
+                "icon_url": "bzmh145.gif",
+                "icon_type": "s",
+                "icon_index": 758
+            },
+            {
+                "icon_url": "bzmh146.gif",
+                "icon_type": "s",
+                "icon_index": 759
+            },
+            {
+                "icon_url": "bzmh147.gif",
+                "icon_type": "s",
+                "icon_index": 760
+            },
+            {
+                "icon_url": "bzmh133.gif",
+                "icon_type": "s",
+                "icon_index": 751
+            },
+            {
+                "icon_url": "bzmh132.gif",
+                "icon_type": "s",
+                "icon_index": 750
+            },
+            {
+                "icon_url": "bzmh131.gif",
+                "icon_type": "s",
+                "icon_index": 749
+            },
+            {
+                "icon_url": "bzmh118.gif",
+                "icon_type": "s",
+                "icon_index": 740
+            },
+            {
+                "icon_url": "bzmh119.gif",
+                "icon_type": "s",
+                "icon_index": 741
+            },
+            {
+                "icon_url": "bzmh120.gif",
+                "icon_type": "s",
+                "icon_index": 742
+            },
+            {
+                "icon_url": "bzmh121.gif",
+                "icon_type": "s",
+                "icon_index": 743
+            },
+            {
+                "icon_url": "bzmh123.gif",
+                "icon_type": "s",
+                "icon_index": 744
+            },
+            {
+                "icon_url": "bzmh125.gif",
+                "icon_type": "s",
+                "icon_index": 745
+            },
+            {
+                "icon_url": "bzmh127.gif",
+                "icon_type": "s",
+                "icon_index": 746
+            },
+            {
+                "icon_url": "bzmh128.gif",
+                "icon_type": "s",
+                "icon_index": 747
+            },
+            {
+                "icon_url": "bzmh129.gif",
+                "icon_type": "s",
+                "icon_index": 748
+            },
+            {
+                "icon_url": "bzmh150.gif",
+                "icon_type": "s",
+                "icon_index": 761
+            },
+            {
+                "icon_url": "bamh0.gif",
+                "icon_type": "s",
+                "icon_index": 670
+            },
+            {
+                "icon_url": "bzmh012.gif",
+                "icon_type": "s",
+                "icon_index": 683
+            },
+            {
+                "icon_url": "bzmh013.gif",
+                "icon_type": "s",
+                "icon_index": 684
+            },
+            {
+                "icon_url": "bzmh017.gif",
+                "icon_type": "s",
+                "icon_index": 685
+            },
+            {
+                "icon_url": "bzmh018.gif",
+                "icon_type": "s",
+                "icon_index": 686
+            },
+            {
+                "icon_url": "bzmh019.gif",
+                "icon_type": "s",
+                "icon_index": 687
+            },
+            {
+                "icon_url": "bzmh020.gif",
+                "icon_type": "s",
+                "icon_index": 688
+            },
+            {
+                "icon_url": "bzmh021.gif",
+                "icon_type": "s",
+                "icon_index": 689
+            },
+            {
+                "icon_url": "bzmh022.gif",
+                "icon_type": "s",
+                "icon_index": 690
+            },
+            {
+                "icon_url": "bzmh023.gif",
+                "icon_type": "s",
+                "icon_index": 691
+            },
+            {
+                "icon_url": "bzmh010.gif",
+                "icon_type": "s",
+                "icon_index": 682
+            },
+            {
+                "icon_url": "bzmh008.gif",
+                "icon_type": "s",
+                "icon_index": 681
+            },
+            {
+                "icon_url": "bzmh007.gif",
+                "icon_type": "s",
+                "icon_index": 680
+            },
+            {
+                "icon_url": "bamh10.gif",
+                "icon_type": "s",
+                "icon_index": 671
+            },
+            {
+                "icon_url": "bamh1.gif",
+                "icon_type": "s",
+                "icon_index": 672
+            },
+            {
+                "icon_url": "bamh3.gif",
+                "icon_type": "s",
+                "icon_index": 673
+            },
+            {
+                "icon_url": "bamh8.gif",
+                "icon_type": "s",
+                "icon_index": 674
+            },
+            {
+                "icon_url": "bamh9.gif",
+                "icon_type": "s",
+                "icon_index": 675
+            },
+            {
+                "icon_url": "bzmh002.gif",
+                "icon_type": "s",
+                "icon_index": 676
+            },
+            {
+                "icon_url": "bzmh003.gif",
+                "icon_type": "s",
+                "icon_index": 677
+            },
+            {
+                "icon_url": "bzmh004.gif",
+                "icon_type": "s",
+                "icon_index": 678
+            },
+            {
+                "icon_url": "bzmh005.gif",
+                "icon_type": "s",
+                "icon_index": 679
+            },
+            {
+                "icon_url": "bzmh025.gif",
+                "icon_type": "s",
+                "icon_index": 692
+            },
+            {
+                "icon_url": "bzmh026.gif",
+                "icon_type": "s",
+                "icon_index": 693
+            },
+            {
+                "icon_url": "bzmh048.gif",
+                "icon_type": "s",
+                "icon_index": 706
+            },
+            {
+                "icon_url": "bzmh052.gif",
+                "icon_type": "s",
+                "icon_index": 707
+            },
+            {
+                "icon_url": "bzmh053.gif",
+                "icon_type": "s",
+                "icon_index": 708
+            },
+            {
+                "icon_url": "bzmh057.gif",
+                "icon_type": "s",
+                "icon_index": 709
+            },
+            {
+                "icon_url": "bzmh059.gif",
+                "icon_type": "s",
+                "icon_index": 710
+            },
+            {
+                "icon_url": "bzmh060.gif",
+                "icon_type": "s",
+                "icon_index": 711
+            },
+            {
+                "icon_url": "bzmh062.gif",
+                "icon_type": "s",
+                "icon_index": 712
+            },
+            {
+                "icon_url": "bzmh066.gif",
+                "icon_type": "s",
+                "icon_index": 713
+            },
+            {
+                "icon_url": "bzmh067.gif",
+                "icon_type": "s",
+                "icon_index": 714
+            },
+            {
+                "icon_url": "bzmh047.gif",
+                "icon_type": "s",
+                "icon_index": 705
+            },
+            {
+                "icon_url": "bzmh044.gif",
+                "icon_type": "s",
+                "icon_index": 704
+            },
+            {
+                "icon_url": "bzmh042.gif",
+                "icon_type": "s",
+                "icon_index": 703
+            },
+            {
+                "icon_url": "bzmh027.gif",
+                "icon_type": "s",
+                "icon_index": 694
+            },
+            {
+                "icon_url": "bzmh028.gif",
+                "icon_type": "s",
+                "icon_index": 695
+            },
+            {
+                "icon_url": "bzmh029.gif",
+                "icon_type": "s",
+                "icon_index": 696
+            },
+            {
+                "icon_url": "bzmh032.gif",
+                "icon_type": "s",
+                "icon_index": 697
+            },
+            {
+                "icon_url": "bzmh033.gif",
+                "icon_type": "s",
+                "icon_index": 698
+            },
+            {
+                "icon_url": "bzmh035.gif",
+                "icon_type": "s",
+                "icon_index": 699
+            },
+            {
+                "icon_url": "bzmh037.gif",
+                "icon_type": "s",
+                "icon_index": 700
+            },
+            {
+                "icon_url": "bzmh039.gif",
+                "icon_type": "s",
+                "icon_index": 701
+            },
+            {
+                "icon_url": "bzmh041.gif",
+                "icon_type": "s",
+                "icon_index": 702
+            },
+            {
+                "icon_url": "bzmh069.gif",
+                "icon_type": "s",
+                "icon_index": 715
+            }
         ]
     },
     {
         "collection_name": "驴小毛",
         "collection_icon": "$r('sys.symbol.person')",
-        "base_url": "https://bbs.uestc.edu.cn/static/image/smiley/lu/",
+        "base_url": "static/image/smiley/lu/",
         "collections": [
-            "01.gif",
-            "02.gif",
-            "03.gif",
-            "04.gif",
-            "05.gif",
-            "06.gif",
-            "07.gif",
-            "08.gif",
-            "09.gif",
-            "10.gif",
-            "11.gif",
-            "12.gif",
-            "13.gif",
-            "14.gif",
-            "15.gif",
-            "16.gif",
-            "17.gif"
+            {
+                "icon_url": "01.gif",
+                "icon_type": "s",
+                "icon_index": 763
+            },
+            {
+                "icon_url": "16.gif",
+                "icon_type": "s",
+                "icon_index": 778
+            },
+            {
+                "icon_url": "15.gif",
+                "icon_type": "s",
+                "icon_index": 777
+            },
+            {
+                "icon_url": "14.gif",
+                "icon_type": "s",
+                "icon_index": 776
+            },
+            {
+                "icon_url": "13.gif",
+                "icon_type": "s",
+                "icon_index": 775
+            },
+            {
+                "icon_url": "12.gif",
+                "icon_type": "s",
+                "icon_index": 774
+            },
+            {
+                "icon_url": "11.gif",
+                "icon_type": "s",
+                "icon_index": 773
+            },
+            {
+                "icon_url": "10.gif",
+                "icon_type": "s",
+                "icon_index": 772
+            },
+            {
+                "icon_url": "09.gif",
+                "icon_type": "s",
+                "icon_index": 771
+            },
+            {
+                "icon_url": "08.gif",
+                "icon_type": "s",
+                "icon_index": 770
+            },
+            {
+                "icon_url": "07.gif",
+                "icon_type": "s",
+                "icon_index": 769
+            },
+            {
+                "icon_url": "06.gif",
+                "icon_type": "s",
+                "icon_index": 768
+            },
+            {
+                "icon_url": "05.gif",
+                "icon_type": "s",
+                "icon_index": 767
+            },
+            {
+                "icon_url": "04.gif",
+                "icon_type": "s",
+                "icon_index": 766
+            },
+            {
+                "icon_url": "03.gif",
+                "icon_type": "s",
+                "icon_index": 765
+            },
+            {
+                "icon_url": "02.gif",
+                "icon_type": "s",
+                "icon_index": 764
+            },
+            {
+                "icon_url": "17.gif",
+                "icon_type": "s",
+                "icon_index": 779
+            }
         ]
     }
 ]
