@@ -23,8 +23,15 @@ export struct FansUserItem {
   @Param recommendUser: InterestingUser | undefined = undefined;
   @Param type: FansUserItemType = FansUserItemType.LIST; // 卡片样式 或 列表样式
   @Param isShowDeleteButton: boolean = false;
+  @Param refreshTick: number = 0;
   @Param deleteFriends: () => void = () => {
   };
+
+  @Computed
+  get relativeTime(): string {
+    const _ = this.refreshTick;
+    return DateUtil.getRelativeTime(this.user.date);
+  }
 
   build() {
     Column() {
@@ -108,7 +115,7 @@ export struct FansUserItem {
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
 
-            Text(DateUtil.getRelativeTime(this.user.date))
+            Text(this.relativeTime)
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_tertiary'))
           }

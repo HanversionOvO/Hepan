@@ -87,6 +87,7 @@ export struct FansUserSection {
                     level: friend.level,
                     date: friend.last_visit
                   },
+                  refreshTick: this.vm.lastRefreshTime,
                   // 关键修改：只有当前是查看自己的主页时 (isMe)，才显示删除按钮
                   isShowDeleteButton: this.vm.isMe,
                   deleteFriends: () => {
@@ -108,7 +109,8 @@ export struct FansUserSection {
                     username: visitor.username,
                     avatar: visitor.avatar,
                     date: visitor.dateline
-                  }
+                  },
+                  refreshTick: this.vm.lastRefreshTime
                 })
               }
               .onClick(() => {

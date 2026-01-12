@@ -28,6 +28,7 @@ export class FansPageVM extends BaseVM {
   @Trace friendsList: UserFriends[] = [];
   @Trace visitorsList: RecentVisitor[] = [];
   @Trace recommendList: InterestingUser[] = [];
+  @Trace lastRefreshTime: number = 0;
   // === 分页与环境 ===
   @Trace currentFriendsPage: number = 1;
   @Trace hasMore: boolean = true;
@@ -93,6 +94,7 @@ export class FansPageVM extends BaseVM {
           this.uiState = UiState.SUCCESS;
         }
       }
+      this.lastRefreshTime = Date.now();
     } catch (error) {
       LogUtil.error(TAG, `Load data failed: ${JSON.stringify(error)}`);
       this.uiState = UiState.ERROR;
