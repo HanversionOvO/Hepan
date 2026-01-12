@@ -170,7 +170,9 @@ export struct TieContentView {
               CommentCard({
                 tieComment: comment,
                 authorID: this.vm.tieThread.author_id,
-                threadId: this.vm.tieThread.thread_id
+                threadId: this.vm.tieThread.thread_id,
+                highlightId: this.vm.highlightPostId,
+                highlightToken: this.vm.highlightToken
               })
                 .id(this.vm.getCommentComponentId(comment.post_id))
             }, (comment: TieRow) => comment.post_id.toString())

@@ -7,6 +7,48 @@ export struct CommentCard {
   @Param @Require tieComment: TieRow;
   @Param @Require authorID: number;
   @Param threadId: number = 0;
+  @Param highlightId: number = 0;
+  @Param highlightToken: number = 0;
+  @Local scaleVal: number = 1.0;
+  private lastHighlightToken: number = -1;
+
+  aboutToAppear(): void {
+    this.tryHighlight();
+  }
+
+  @Monitor('highlightToken')
+  onHighlightTokenChange(): void {
+    this.tryHighlight();
+  }
+
+  private tryHighlight(): void {
+    if (!this.highlightId || this.tieComment.post_id !== this.highlightId) {
+      return;
+    }
+    if (this.lastHighlightToken === this.highlightToken) {
+      return;
+    }
+    this.lastHighlightToken = this.highlightToken;
+    this.runPulseAnimation();
+  }
+
+  private runPulseAnimation(): void {
+    const pulseTimes = 3;
+    const scaleUp = 1.04;
+    const duration = CommonConstant.AnimationDurationFast;
+    let step = 0;
+    const animateStep = () => {
+      const isUp = step % 2 === 0;
+      animateTo({ duration: duration, curve: CommonConstant.AnimationCurveSpring }, () => {
+        this.scaleVal = isUp ? scaleUp : 1.0;
+      });
+      step += 1;
+      if (step < pulseTimes * 2) {
+        setTimeout(animateStep, duration + 30);
+      }
+    };
+    animateStep();
+  }
 
   private formatPostDate(timestamp: number): string {
     if (!timestamp) {
@@ -119,5 +161,6 @@ export struct CommentCard {
       top: CommonConstant.NormalContainerTBPadding,
       bottom: CommonConstant.NormalContainerTBPadding,
     })
+    .scale({ x: this.scaleVal, y: this.scaleVal })
   }
 }

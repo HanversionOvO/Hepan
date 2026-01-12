@@ -39,6 +39,8 @@ export class TieContentPageVM extends BaseVM {
   @Trace currentPage: number = 1;
   @Trace targetPid: string = '';
   @Trace targetFloor: number = 0;
+  @Trace highlightPostId: number = 0;
+  @Trace highlightToken: number = 0;
   @Trace commentLoadingState: UiState = UiState.LOADING;
   @Trace isLoadingMore: boolean = false;
   @Trace sortMethods: CustomTabItem[] = [
@@ -181,6 +183,8 @@ export class TieContentPageVM extends BaseVM {
       if (targetRow === this.tieTopic || targetRow.position <= 1) {
         this.scrollToTop();
       } else {
+        this.highlightPostId = targetRow.post_id;
+        this.highlightToken += 1;
         this.scrollToComment(targetRow.post_id);
       }
       this.hasScrolledToTarget = true;
