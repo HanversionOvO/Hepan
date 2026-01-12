@@ -1,9 +1,13 @@
 import {
-  CommonConstant, ForumTieSummary, RouterMap, RouterUtil, SearchUser, UserAvatarUtil
+  CommonConstant,
+  ForumTieSummary,
+  RouterMap,
+  RouterUtil,
+  SearchUser,
+  UserAvatarUtil
 } from 'base_common';
-import { StateLayout } from 'base_ui';
+import { buildTieCardKey, StateLayout, TieCard } from 'base_ui';
 import { SearchPageVM } from '../viewmodels/SearchPageVM';
-import { TieCard } from 'feature_content/src/main/ets/components/TieCard';
 
 @ComponentV2
 export struct ResultView {
@@ -50,7 +54,7 @@ export struct ResultView {
             })
         }
         .width(CommonConstant.FullPercent)
-      }, (item: ForumTieSummary) => item.thread_id.toString())
+      }, (item: ForumTieSummary) => buildTieCardKey(item))
     }
     .width(CommonConstant.FullPercent)
     .height(CommonConstant.FullPercent)

@@ -6,12 +6,11 @@ import {
   TransitionMap,
   UserAvatarUtil
 } from 'base_common';
-import { CustomFloatNavTitle, StateLayout } from 'base_ui';
+import { buildTieCardKey, CustomFloatNavTitle, StateLayout, TieCard } from 'base_ui';
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
 import { CollectionCard } from '../components/CollectionCard';
-import { TieCard } from '../components/TieCard';
 
 @ComponentV2
 export struct CollectionContentView {
@@ -288,7 +287,9 @@ export struct CollectionContentView {
           FlowItem() {
             TieCard({
               tie: tie,
-              forumName: tie.forum_name
+              forumName: tie.forum_name,
+              pubTimeLabel: ResUtil.getStringSync($r('app.string.TieView_card_pub_time')),
+              watermarkText: ResUtil.getStringSync($r('app.string.ContentPage_title'))
             })
               .id(this.vm.collection?.ctid.toString() + "_" + tie.thread_id.toString())
               .onClick(() => {
@@ -297,7 +298,7 @@ export struct CollectionContentView {
               })
           }
           .width(CommonConstant.FullPercent)
-        }, (item: ForumTieSummary) => item.thread_id.toString())
+        }, (item: ForumTieSummary) => buildTieCardKey(item))
       }
       .columnsTemplate('1fr '.repeat(this.vm.columns)
         .trim())

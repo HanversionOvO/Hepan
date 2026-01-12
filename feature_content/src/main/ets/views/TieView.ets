@@ -1,11 +1,11 @@
 import { CommonConstant, ForumTieSummary } from 'base_common';
 import {
-  CollapsibleCoordinator, CustomTabBar, FloatButton
+  buildTieCardKey, CollapsibleCoordinator, CustomTabBar, FloatButton, TieCard
 } from 'base_ui';
+import { ResUtil } from '@pura/harmony-utils';
 import { SortButton } from '../components/SortButton';
 import { SubCategoryButton } from '../components/SubCategoryButton';
 import { SubCategoryPanel } from '../components/SubCategoryPanel';
-import { TieCard } from '../components/TieCard';
 import { TieVM } from '../viewmodels/TieVM';
 
 const TAG = '[TieView]: ';
@@ -33,7 +33,9 @@ export struct TieView {
           FlowItem() {
             TieCard({
               tie: tie,
-              forumName: this.vm.getForumName(tie.forum_id)
+              forumName: this.vm.getForumName(tie.forum_id),
+              pubTimeLabel: ResUtil.getStringSync($r('app.string.TieView_card_pub_time')),
+              watermarkText: ResUtil.getStringSync($r('app.string.ContentPage_title'))
             })
               .id(tie.thread_id.toString())
               .onClick(() => {
@@ -41,7 +43,7 @@ export struct TieView {
               })
           }
           .width(CommonConstant.FullPercent)
-        }, (tie: ForumTieSummary) => tie.thread_id.toString())
+        }, (tie: ForumTieSummary) => buildTieCardKey(tie))
       }
       .width(CommonConstant.FullPercent)
       .layoutWeight(1)

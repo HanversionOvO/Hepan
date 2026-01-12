@@ -20,6 +20,8 @@ export { CustomFilePanel, CustomFilePanelItem } from './src/main/ets/components/
 
 export { CustomAtPanel } from './src/main/ets/components/CustomAtPanel';
 
+export { TieCard, buildTieCardKey } from './src/main/ets/components/TieCard';
+
 export { CollapsibleCoordinator } from './src/main/ets/components/CollapsibleCoordinator';
 
 export { CustomFloatNavTitle } from './src/main/ets/components/CustomFloatNavTitle';

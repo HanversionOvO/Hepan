@@ -1,10 +1,9 @@
 // feature_mine/src/main/ets/components/UserPostArea.ets
-import { AppUtil } from '@pura/harmony-utils';
+import { AppUtil, ResUtil } from '@pura/harmony-utils';
 import { CommonConstant, ForumTieSummary } from 'base_common';
-import { CustomTabBar, StateLayout } from 'base_ui';
+import { buildTieCardKey, CustomTabBar, StateLayout, TieCard } from 'base_ui';
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { MineTabVM } from '../viewmodels/MineTabVM';
-import { TieCard } from './TieCard';
 
 interface TieWithForumName {
   forum_name?: string;
@@ -49,7 +48,9 @@ struct UserPostList {
         FlowItem() {
           TieCard({
             tie: tie,
-            forumName: tie.forum_name || ''
+            forumName: tie.forum_name || '',
+            pubTimeLabel: ResUtil.getStringSync($r('app.string.TieCard_pub_time')),
+            watermarkText: ResUtil.getStringSync($r('app.string.TieCard_river'))
           })
             .id(this.vm.getUniqueId(tie.thread_id))
             .onClick(() => {
@@ -57,7 +58,7 @@ struct UserPostList {
             })
         }
         .width(CommonConstant.FullPercent)
-      }, (tie: ForumTieSummary) => this.vm.getUniqueId(tie.thread_id))
+      }, (tie: ForumTieSummary) => `${this.vm.getUniqueId(tie.thread_id)}_${buildTieCardKey(tie)}`)
 
       // 3. 底部占位符 (仅手机)
       ForEach(this.spacerArray, (_: number, i: number) => {
