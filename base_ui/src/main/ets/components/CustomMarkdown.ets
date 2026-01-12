@@ -221,12 +221,18 @@ export struct CustomMarkdown {
       return;
     }
 
-    const lines = normalizedText.split('\n');
+    const normalizedMarkdown = normalizedText.replace(/\r\n/g, '\n');
+    const lines = normalizedMarkdown.split('\n');
     let buffer = '';
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const trimmed = line.trim();
+      if (trimmed === '') {
+        this.flushTextBlock(buffer, results);
+        buffer = '';
+        continue;
+      }
       const trimmedStart = line.trimStart();
       const headingLevel = this.getHeadingLevel(trimmedStart);
       const taskItem = this.parseTaskLine(line);
@@ -276,10 +282,10 @@ export struct CustomMarkdown {
         continue;
       }
 
-      buffer += line;
-      if (i < lines.length - 1) {
-        buffer += '\n';
+      if (buffer.length > 0) {
+        buffer += ' ';
       }
+      buffer += trimmed;
     }
 
     this.flushTextBlock(buffer, results);
