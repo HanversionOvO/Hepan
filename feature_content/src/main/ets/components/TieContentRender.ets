@@ -254,7 +254,7 @@ export struct TieContentRender {
   }
 
   build() {
-    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+    Column() {
       if (this.displayMessage.length > 0) {
         CustomMarkdown({
           content: this.displayMessage,

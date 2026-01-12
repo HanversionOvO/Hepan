@@ -11,6 +11,8 @@ interface InlineSpan {
   isItalic?: boolean;
   isStrikethrough?: boolean;
   isUnderline?: boolean;
+  fontSize?: number;
+  fontFamily?: string;
   fontColor?: string;
   url?: string;
 }
@@ -185,7 +187,7 @@ export struct CustomMarkdown {
       return;
     }
 
-    const combinedRegex = /\[quote\]([\s\S]*?)\[\/quote\]|((?:^|\n)(?:>[^\n]*(?:\n|$))+)/g;
+    const combinedRegex = /\[quote\]([\s\S]*?)\[\/quote\]|\[i=s\]([\s\S]*?)\[\/i\]|((?:^|\n)(?:>[^\n]*(?:\n|$))+)/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
@@ -196,7 +198,9 @@ export struct CustomMarkdown {
       if (match[1]) {
         results.push(this.parseBBCodeQuote(match[1]));
       } else if (match[2]) {
-        results.push(this.parseMarkdownQuote(match[2]));
+        results.push(this.parseBBCodeQuote(match[2]));
+      } else if (match[3]) {
+        results.push(this.parseMarkdownQuote(match[3]));
       }
       lastIndex = combinedRegex.lastIndex;
     }
@@ -212,7 +216,12 @@ export struct CustomMarkdown {
       return;
     }
 
-    const lines = text.split('\n');
+    let normalizedText = text;
+    const lastSegment = results.length > 0 ? results[results.length - 1] : undefined;
+    if (lastSegment && lastSegment.type === 'quote') {
+      normalizedText = normalizedText.replace(/^\s*\n+/, '');
+    }
+    const lines = normalizedText.split('\n');
     let buffer = '';
 
     for (let i = 0; i < lines.length; i++) {
@@ -460,6 +469,39 @@ export struct CustomMarkdown {
     return '';
   }
 
+  private resolveBbCodeFontSize(value: string): number | undefined {
+    const normalized = value.trim();
+    if (!normalized) {
+      return undefined;
+    }
+    const numericValue = Number(normalized);
+    if (!Number.isFinite(numericValue)) {
+      return undefined;
+    }
+    if (numericValue >= 10) {
+      return numericValue;
+    }
+    if (numericValue <= 1) {
+      return this.textSize * 0.85;
+    }
+    if (numericValue === 2) {
+      return this.textSize * 0.95;
+    }
+    if (numericValue === 3) {
+      return this.textSize;
+    }
+    if (numericValue === 4) {
+      return this.textSize * 1.15;
+    }
+    if (numericValue === 5) {
+      return this.textSize * 1.3;
+    }
+    if (numericValue === 6) {
+      return this.textSize * 1.45;
+    }
+    return this.textSize * 1.6;
+  }
+
   private parseInlineSpans(text: string): InlineSpan[] {
     return this.useMarkDown ? this.parseMarkdownInlineSpans(text) : this.parseBBCodeInlineSpans(text);
   }
@@ -470,7 +512,7 @@ export struct CustomMarkdown {
       return spans;
     }
 
-    const tagRegex = /(\[(?:\/)?(?:b|i|u|url|color)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\]|\[[a-zA-Z0-9_]+:\d+\])/i;
+    const tagRegex = /(\[(?:\/)?(?:b|i|u|url|color|align|font|size|p)(?:=[^\]]*)?\]|\[mobcent_phiz=[^\]]*\]|\[[a-zA-Z0-9_]+:\d+\])/i;
     const parts = text.split(tagRegex);
 
     let boldCount = 0;
@@ -478,6 +520,8 @@ export struct CustomMarkdown {
     let underlineCount = 0;
     const colorStack: string[] = [];
     const urlStack: string[] = [];
+    const fontStack: string[] = [];
+    const sizeStack: number[] = [];
 
     for (let part of parts) {
       if (!part) {
@@ -520,6 +564,18 @@ export struct CustomMarkdown {
           colorStack.push(part.substring(7, part.length - 1));
         } else if (lowerPart === '[/color]') {
           colorStack.pop();
+        } else if (lowerPart.startsWith('[font=')) {
+          fontStack.push(part.substring(6, part.length - 1));
+        } else if (lowerPart === '[/font]') {
+          fontStack.pop();
+        } else if (lowerPart.startsWith('[size=')) {
+          const sizeValue = part.substring(6, part.length - 1);
+          const resolvedSize = this.resolveBbCodeFontSize(sizeValue);
+          if (resolvedSize) {
+            sizeStack.push(resolvedSize);
+          }
+        } else if (lowerPart === '[/size]') {
+          sizeStack.pop();
         } else if (lowerPart.startsWith('[url')) {
           if (lowerPart.includes('=')) {
             urlStack.push(part.substring(part.indexOf('=') + 1, part.length - 1));
@@ -540,6 +596,8 @@ export struct CustomMarkdown {
           isBold: boldCount > 0,
           isItalic: italicCount > 0,
           isUnderline: underlineCount > 0,
+          fontFamily: fontStack.length > 0 ? fontStack[fontStack.length - 1] : undefined,
+          fontSize: sizeStack.length > 0 ? sizeStack[sizeStack.length - 1] : undefined,
           fontColor: colorStack.length > 0 ? colorStack[colorStack.length - 1] : undefined,
           url: finalUrl
         });
@@ -714,7 +772,8 @@ export struct CustomMarkdown {
                       .verticalAlign(ImageSpanAlignment.CENTER)
                   } else {
                     Span(span.text)
-                      .fontSize(this.textSize)
+                      .fontSize(span.fontSize || this.textSize)
+                      .fontFamily(span.fontFamily || '')
                       .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
                       .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
                       .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
@@ -758,7 +817,8 @@ export struct CustomMarkdown {
                       .verticalAlign(ImageSpanAlignment.CENTER)
                   } else {
                     Span(span.text)
-                      .fontSize(this.textSize)
+                      .fontSize(span.fontSize || this.textSize)
+                      .fontFamily(span.fontFamily || '')
                       .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
                       .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
                       .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
@@ -779,7 +839,7 @@ export struct CustomMarkdown {
                   }
                 })
               }
-              .width(CommonConstant.FullPercent)
+              .layoutWeight(1)
               .wordBreak(WordBreak.BREAK_ALL)
             }
             .width(CommonConstant.FullPercent)
@@ -794,11 +854,12 @@ export struct CustomMarkdown {
                     .objectFit(ImageFit.Contain)
                     .verticalAlign(ImageSpanAlignment.CENTER)
                 } else {
-                  Span(span.text)
-                    .fontSize(this.textSize)
-                    .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
-                    .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
-                    .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
+                    Span(span.text)
+                      .fontSize(span.fontSize || this.textSize)
+                      .fontFamily(span.fontFamily || '')
+                      .fontColor(span.url ? this.hyperlinkTextColor : (span.fontColor || this.textColor))
+                      .fontWeight(span.isBold ? FontWeight.Bold : FontWeight.Normal)
+                      .fontStyle(span.isItalic ? FontStyle.Italic : FontStyle.Normal)
                     .decoration({
                       type: span.url
                         ? TextDecorationType.Underline
