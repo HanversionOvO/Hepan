@@ -15,10 +15,8 @@ export struct TieDetailComment {
   }
 
   syncState() {
-    const panel = this.vm.tieTopic?.extraPanel.find(item => item.type === 'support');
-    if (panel) {
-      this.isLiked = (panel.extParams.isHasRecommendAdd === 1);
-    }
+    this.isLiked = false;
+    this.isDisliked = false;
   }
 
   build() {
@@ -45,8 +43,9 @@ export struct TieDetailComment {
       .geometryTransition(TransitionMap.TieDetailComment)
       .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
       .onClick(() => {
-        if (this.vm.tieTopic?.topic_id) {
-          RouterUtil.pushPathByName("ReplyPage", { "threadId": this.vm.tieTopic.topic_id } as Record<string, Object>,
+        const threadId = this.vm.tieThread.thread_id || this.vm.tieSummary.thread_id;
+        if (threadId) {
+          RouterUtil.pushPathByName("ReplyPage", { "threadId": threadId } as Record<string, Object>,
             undefined, false);
         }
       })

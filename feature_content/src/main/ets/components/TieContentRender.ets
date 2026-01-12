@@ -1,73 +1,212 @@
-import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant } from 'base_common';
+import { AppUtil, ResUtil } from '@pura/harmony-utils';
+import { util } from '@kit.ArkTS';
+import resourceManager from '@ohos.resourceManager';
+import { AppPreferenceKeys, CommonConstant, PreferenceUtil, SummaryAttachments, UrlUtil } from 'base_common';
 import { CustomMarkdown, GlassButton } from 'base_ui';
 
-export interface ContentItem {
-  type: number;
-  infor: string;
-  url?: string;
-  desc?: string;
-  originalInfo?: string;
-  aid?: number;
+interface FaceItem {
+  icon_url: string;
+  icon_type: string;
+  icon_index: number;
+}
+
+interface FaceCollection {
+  base_url: string;
+  collections: FaceItem[];
 }
 
 @ComponentV2
 export struct TieContentRender {
-  @Param @Require contents: ContentItem[];
+  @Param @Require message: string;
+  @Param format: number = 0;
+  @Param attachments: SummaryAttachments[] = [];
   @Param textSize: number = CommonConstant.TextSizeNormal;
-  // 接收引用内容和用户名
-  @Param quoteContent: string = '';
-  @Param quoteUserName: string = '';
-  @Param isQuote: number = 0;
-  @Local displayItems: ContentItem[] = [];
-  @Local attachmentItems: ContentItem[] = [];
+  @Local displayMessage: string = '';
+  @Local attachmentItems: SummaryAttachments[] = [];
+  @Local baseUrl: string = CommonConstant.BASE_URL;
+  @Local isMarkdown: boolean = false;
+  private faceUrlMap: Map<string, string> = new Map();
+  private faceLoaded: boolean = false;
 
   aboutToAppear() {
-    this.processContents();
+    this.loadBaseUrl();
+    this.loadFaceData();
+    this.processMessage();
   }
 
-  @Monitor('contents', 'quoteContent', 'quoteUserName', 'isQuote')
+  @Monitor('message', 'format', 'attachments')
   onContentsChange() {
-    this.processContents();
+    this.processMessage();
   }
 
-  private processContents() {
-    if (!this.contents) {
-      this.displayItems = [];
-      this.attachmentItems = [];
+  private loadBaseUrl() {
+    const storedBaseUrl = PreferenceUtil.read<string>(AppPreferenceKeys.prefName, (pref) => {
+      return pref.getSync(AppPreferenceKeys.baseUrl, CommonConstant.BASE_URL) as string;
+    }, CommonConstant.BASE_URL);
+    this.baseUrl = storedBaseUrl ? storedBaseUrl : CommonConstant.BASE_URL;
+  }
+
+  private async loadFaceData() {
+    if (this.faceLoaded) {
       return;
     }
-
-    let tempItems: ContentItem[] = [];
-
-    if (this.isQuote === 1 && this.quoteContent && this.quoteContent.trim().length > 0) { // [!code ++] 修改判断逻辑
-      tempItems.push({
-        type: 6,
-        infor: this.quoteContent,
-        originalInfo: this.quoteUserName
-      });
-    }
-
-    this.contents.forEach(item => {
-      if (item.type === 5) {
-        return;
+    try {
+      const context = AppUtil.getContext();
+      const resManager: resourceManager.ResourceManager = context.resourceManager;
+      let content: Uint8Array;
+      try {
+        content = await resManager.getRawFileContent('new_faces.json');
+      } catch (error) {
+        try {
+          content = await resManager.getRawFileContent('faces_new.json');
+        } catch (innerError) {
+          content = await resManager.getRawFileContent('faces.json');
+        }
       }
-      tempItems.push({
-        type: item.type,
-        infor: item.infor,
-        url: item.url,
-        desc: item.desc,
-        originalInfo: item.originalInfo,
-        aid: item.aid
+      const textDecoder = util.TextDecoder.create('utf-8', { ignoreBOM: true });
+      const jsonString = textDecoder.decodeWithStream(content);
+      const data = JSON.parse(jsonString) as FaceCollection[];
+      data.forEach((collection) => {
+        const basePath = collection.base_url;
+        collection.collections.forEach((face) => {
+          const key = `${face.icon_type}:${face.icon_index}`;
+          const relativePath = UrlUtil.buildUrl(basePath, face.icon_url);
+          const fullUrl = UrlUtil.buildUrl(this.baseUrl, relativePath);
+          this.faceUrlMap.set(key, fullUrl);
+        });
       });
+      this.faceLoaded = true;
+      this.processMessage();
+    } catch (error) {
+      this.faceLoaded = true;
+    }
+  }
+
+  private processMessage() {
+    const rawMessage = this.message || '';
+    const attachments = this.attachments || [];
+    const attachmentMap: Map<number, SummaryAttachments> = new Map();
+    const attachmentItems: SummaryAttachments[] = [];
+    const attachmentSet: Set<number> = new Set();
+
+    attachments.forEach((attachment) => {
+      attachmentMap.set(attachment.attachment_id, attachment);
+      if (attachment.is_image !== 1) {
+        this.appendAttachment(attachment, attachmentItems, attachmentSet);
+      }
     });
 
-    this.displayItems = tempItems;
-    this.attachmentItems = this.contents.filter(item => item.type === 5);
+    this.isMarkdown = this.format === 2;
+    let processed = rawMessage;
+
+    if (attachmentMap.size > 0) {
+      processed = this.isMarkdown
+        ? this.processMarkdownMessage(processed, attachmentMap, attachmentItems, attachmentSet)
+        : this.processBbCodeMessage(processed, attachmentMap, attachmentItems, attachmentSet);
+    }
+
+    if (this.faceLoaded) {
+      processed = this.replaceEmojiTokens(processed);
+    }
+
+    this.displayMessage = processed.trim();
+    this.attachmentItems = attachmentItems;
+  }
+
+  private processMarkdownMessage(message: string, attachmentMap: Map<number, SummaryAttachments>,
+    attachmentItems: SummaryAttachments[], attachmentSet: Set<number>): string {
+    return message.replace(/\(a:(\d+)\)/g, (match: string, id: string) => {
+      const attachmentId = Number(id);
+      const attachment = attachmentMap.get(attachmentId);
+      if (!attachment) {
+        return match;
+      }
+      if (attachment.is_image === 1) {
+        const imageUrl = this.buildAttachmentImageUrl(attachment);
+        return imageUrl ? `(${imageUrl})` : match;
+      }
+      this.appendAttachment(attachment, attachmentItems, attachmentSet);
+      const downloadUrl = this.buildAttachmentDownloadUrl(attachment);
+      return downloadUrl ? `(${downloadUrl})` : match;
+    });
+  }
+
+  private processBbCodeMessage(message: string, attachmentMap: Map<number, SummaryAttachments>,
+    attachmentItems: SummaryAttachments[], attachmentSet: Set<number>): string {
+    return message.replace(/\[attach\](\d+)\[\/attach\]/g, (match: string, id: string) => {
+      const attachmentId = Number(id);
+      const attachment = attachmentMap.get(attachmentId);
+      if (!attachment) {
+        return '';
+      }
+      if (attachment.is_image === 1) {
+        const imageUrl = this.buildAttachmentImageUrl(attachment);
+        return imageUrl ? `[img]${imageUrl}[/img]` : '';
+      }
+      this.appendAttachment(attachment, attachmentItems, attachmentSet);
+      return '';
+    });
+  }
+
+  private replaceEmojiTokens(message: string): string {
+    if (this.isMarkdown) {
+      return message.replace(/!\[(\d+)\]\(([a-zA-Z0-9_]+)\)/g, (match: string, index: string, iconType: string) => {
+        const faceUrl = this.resolveFaceUrl(iconType, index);
+        return faceUrl ? `![${index}](${faceUrl})` : match;
+      });
+    }
+    return message.replace(/\[([a-zA-Z0-9_]+):(\d+)\]/g, (match: string, iconType: string, index: string) => {
+      const faceUrl = this.resolveFaceUrl(iconType, index);
+      return faceUrl ? `[mobcent_phiz=${faceUrl}]` : match;
+    });
+  }
+
+  private resolveFaceUrl(iconType: string, iconIndex: string): string {
+    const indexValue = Number(iconIndex);
+    if (!Number.isFinite(indexValue)) {
+      return '';
+    }
+    const key = `${iconType}:${indexValue}`;
+    return this.faceUrlMap.get(key) || '';
+  }
+
+  private appendAttachment(attachment: SummaryAttachments, list: SummaryAttachments[], tracker: Set<number>) {
+    if (!tracker.has(attachment.attachment_id)) {
+      tracker.add(attachment.attachment_id);
+      list.push(attachment);
+    }
+  }
+
+  private buildAttachmentImageUrl(attachment: SummaryAttachments): string {
+    const path = attachment.thumbnail_url || attachment.raw_url || attachment.download_url || attachment.path;
+    if (!path) {
+      return '';
+    }
+    return UrlUtil.buildUrl(this.baseUrl, path);
+  }
+
+  private buildAttachmentDownloadUrl(attachment: SummaryAttachments): string {
+    const path = attachment.download_url || attachment.raw_url || attachment.path;
+    if (!path) {
+      return '';
+    }
+    return UrlUtil.buildUrl(this.baseUrl, path);
+  }
+
+  private formatFileSize(size: number): string {
+    if (!size || size <= 0) {
+      return ResUtil.getStringSync($r('app.string.TieContentPage_unknown_size'));
+    }
+    const kb = size / 1024;
+    if (kb < 1024) {
+      return `${kb.toFixed(1)} KB`;
+    }
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
   }
 
   @Builder
-  AttachmentCard(item: ContentItem) {
+  AttachmentCard(item: SummaryAttachments) {
     Row() {
       Image($r('app.media.file_icon'))
         .width(CommonConstant.IconSizeLarge)
@@ -76,13 +215,13 @@ export struct TieContentRender {
         .margin({ right: CommonConstant.NormalContainerInnerPadding })
 
       Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Text(item.infor)
+        Text(item.filename || '')
           .fontSize(CommonConstant.TextSizeNormal)
           .fontColor($r('sys.color.font_primary'))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-        Text(item.desc || $r('app.string.TieContentPage_unknown_size'))
+        Text(this.formatFileSize(item.size))
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor($r('sys.color.font_tertiary'))
       }
@@ -94,8 +233,9 @@ export struct TieContentRender {
         innerFontSize: CommonConstant.TextSizeSmall
       })
         .onClick(() => {
-          if (item.url) {
-            // TODO: 下载附件逻辑
+          const url = this.buildAttachmentDownloadUrl(item);
+          if (url) {
+            // TODO: download attachment by url
           }
         })
     }
@@ -108,81 +248,13 @@ export struct TieContentRender {
 
   build() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-      ForEach(this.displayItems, (item: ContentItem, index: number) => {
-        if (item.type === 0) {
-          CustomMarkdown({
-            content: item.infor,
-            useParallel: false,
-            textSize: this.textSize
-          })
-        } else if (item.type === 1) {
-          Image(item.originalInfo || item.infor)
-            .width(CommonConstant.FullPercent)
-            .objectFit(ImageFit.Contain)
-            .borderRadius(CommonConstant.RadiusNormal)
-            .backgroundColor($r('app.color.second_window_background'))
-            .enableAnalyzer(true)
-
-        } else if (item.type === 4) {
-          Text(item.infor)
-            .fontSize(this.textSize)
-            .fontColor(CommonConstant.ThemeColor)
-            .decoration({
-              type: TextDecorationType.Underline,
-              color: CommonConstant.ThemeColor,
-              style: TextDecorationStyle.DASHED
-            })
-            .onClick(() => {
-              const targetUrl = item.url || item.infor;
-              // TODO: 链接点击
-            })
-            .padding({
-              top: CommonConstant.SmallContainerInnerPadding,
-              bottom: CommonConstant.SmallContainerInnerPadding
-            })
-
-        } else if (item.type === 3) {
-          // 音频
-          Row() {
-            Text($r('app.string.TieContentPage_music')).fontColor($r('sys.color.font_secondary'))
-          }
-          .width(CommonConstant.FullPercent)
-          .padding(CommonConstant.NormalContainerInnerPadding)
-          .backgroundColor($r('app.color.second_window_background'))
-
-        } else if (item.type === 6) {
-          // 引用/回复卡片渲染
-          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-            if (item.originalInfo && item.originalInfo.trim().length > 0) {
-              Row() {
-                Text(ResUtil.getStringSync($r('app.string.TieContentPage_reply')) + " ")
-                  .fontSize(CommonConstant.TextSizeSmall)
-                  .fontColor($r('sys.color.font_tertiary'))
-                Text(item.originalInfo)
-                  .fontSize(CommonConstant.TextSizeSmall)
-                  .fontColor($r('sys.color.font_primary'))
-                  .fontWeight(FontWeight.Bold)
-                Text(": ")
-                  .fontSize(CommonConstant.TextSizeSmall)
-                  .fontColor($r('sys.color.font_tertiary'))
-              }
-              .width(CommonConstant.FullPercent)
-            }
-
-            // 引用内容始终显示
-            Text(item.infor)
-              .fontSize(CommonConstant.TextSizeNormal)
-              .fontColor($r('sys.color.font_secondary'))
-              .maxLines(4)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-          }
-          .width(CommonConstant.FullPercent)
-          .padding(CommonConstant.NormalContainerInnerPadding)
-          .backgroundColor($r('app.color.second_window_background'))
-          .borderRadius(CommonConstant.RadiusNormal)
-          .alignItems(HorizontalAlign.Start)
-        }
-      })
+      if (this.displayMessage.length > 0) {
+        CustomMarkdown({
+          content: this.displayMessage,
+          useMarkDown: this.isMarkdown,
+          textSize: this.textSize
+        })
+      }
 
       if (this.attachmentItems.length > 0) {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -198,7 +270,7 @@ export struct TieContentRender {
             .fontColor($r('sys.color.font_secondary'))
             .width(CommonConstant.FullPercent)
 
-          ForEach(this.attachmentItems, (item: ContentItem) => {
+          ForEach(this.attachmentItems, (item: SummaryAttachments) => {
             this.AttachmentCard(item)
           })
         }

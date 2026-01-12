@@ -231,7 +231,7 @@ export struct PostPageImpl {
                 Column() {
                   CustomMarkdown({
                     content: this.vm.markdownContent,
-                    controller: this.vm.markdownController
+                    useMarkDown: true
                   })
                     .width(CommonConstant.FullPercent)
 

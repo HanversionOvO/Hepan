@@ -1,4 +1,4 @@
-import { CommonConstant, ForumDetailComment, ForumDetailReplyContent, TransitionMap, UiState } from 'base_common';
+import { CommonConstant, TieRow, TransitionMap, UiState } from 'base_common';
 import { CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -19,7 +19,7 @@ export struct TieContentView {
 
   @Builder
   TieTitle(color: ResourceColor, isNavBar: boolean) {
-    Text(this.vm.tieSummary?.subject)
+    Text(this.vm.tieThread.subject || this.vm.tieSummary?.subject || '')
       .fontSize(CommonConstant.TextSizeLarge)
       .fontColor(color)
       .fontWeight(FontWeight.Bold)
@@ -81,16 +81,18 @@ export struct TieContentView {
 
         UserInfoArea({ vm: this.vm })
 
-        if (this.vm.commentLoadingState === UiState.LOADING && !this.vm.tieTopic?.content) {
+        if (this.vm.commentLoadingState === UiState.LOADING && !this.vm.tieTopic?.message) {
           this.ArticleSkeleton()
-        } else if (this.vm.tieTopic?.content) {
+        } else if (this.vm.tieTopic?.message) {
           TieContentRender({
-            contents: this.vm.tieTopic.content as ForumDetailReplyContent[]
+            message: this.vm.tieTopic.message,
+            format: this.vm.tieTopic.format,
+            attachments: this.vm.tieTopic.attachments || []
           })
             .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
 
-        if (this.vm.tieTopic) {
+        if (this.vm.tieTopic?.post_id) {
           TieDetailFooter({ vm: this.vm })
         }
 
@@ -138,7 +140,7 @@ export struct TieContentView {
           }
         }) {
 
-          Text((this.vm.tieTopic?.replies ?? 0) + " " +
+          Text((this.vm.tieThread.replies ?? 0) + " " +
           ResUtil.getStringSync($r('app.string.TieContentPage_comment_num')))
             .fontSize(CommonConstant.TextSizeLarge)
             .fontWeight(FontWeight.Medium)
@@ -164,13 +166,13 @@ export struct TieContentView {
           uiState: this.vm.commentLoadingState
         }) {
           Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-            ForEach(this.vm.tieComments || [], (comment: ForumDetailComment) => {
+            ForEach(this.vm.tieComments || [], (comment: TieRow) => {
               CommentCard({
                 tieComment: comment,
-                authorID: this.vm.tieTopic?.user_id,
-                threadId: this.vm.tieTopic?.topic_id
+                authorID: this.vm.tieThread.author_id,
+                threadId: this.vm.tieThread.thread_id
               })
-            }, (comment: ForumDetailComment) => comment.reply_posts_id.toString())
+            }, (comment: TieRow) => comment.post_id.toString())
 
             Text("- THE END -")
               .width(CommonConstant.FullPercent)
@@ -250,7 +252,7 @@ export struct TieContentView {
                 }
               })
 
-              if (this.vm.isTabletView && this.vm.tieTopic) {
+              if (this.vm.isTabletView && this.vm.tieTopic?.post_id) {
                 TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
               }
             }
@@ -299,7 +301,7 @@ export struct TieContentView {
           }
         })
 
-        if (!this.vm.isTabletView && this.vm.tieTopic) {
+        if (!this.vm.isTabletView && this.vm.tieTopic?.post_id) {
           Column() {
             TieDetailComment({ vm: this.vm, sideNavWidth: this.sideNavWidth })
           }

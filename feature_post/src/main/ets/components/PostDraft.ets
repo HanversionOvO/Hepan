@@ -140,7 +140,8 @@ struct PostDraft {
         Scroll() {
           Column() {
             CustomMarkdown({
-              content: this.selectedDraft?.content || ""
+              content: this.selectedDraft?.content || "",
+              useMarkDown: true
             })
               .width(CommonConstant.FullPercent)
 

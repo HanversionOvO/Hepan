@@ -7,34 +7,53 @@ import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 export struct UserInfoArea {
   @Param @Require vm: TieContentPageVM;
 
+  private getAuthorId(): number {
+    return this.vm.tieThread.author_id || this.vm.tieSummary.author_id;
+  }
+
+  private getAuthorName(): string {
+    return this.vm.tieThread.author || this.vm.tieSummary.author || '';
+  }
+
+  private getDateline(): number {
+    return this.vm.tieThread.dateline || this.vm.tieSummary.dateline;
+  }
+
+  private hasAuthor(): boolean {
+    return this.getAuthorId() !== 0 || this.getAuthorName().length > 0;
+  }
+
   build() {
-    if (this.vm.tieSummary) {
-      Row() {
-        Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-          Image(UserAvatarUtil.getAvatarUrl(this.vm.tieSummary.author_id))
-            .width(CommonConstant.IconSizeLarge)
-            .height(CommonConstant.IconSizeLarge)
-            .borderRadius(CommonConstant.RadiusRound)
-          Column({ space: CommonConstant.SmallContainerInnerPadding }) {
-            Text(this.vm.tieSummary.author)
-              .fontSize(CommonConstant.TextSizeNormal)
-              .fontColor($r('sys.color.font_secondary'))
-              .fontWeight(FontWeight.Medium)
+    Column() {
+      if (this.hasAuthor()) {
+        Row() {
+          Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+            Image(UserAvatarUtil.getAvatarUrl(this.getAuthorId()))
+              .width(CommonConstant.IconSizeLarge)
+              .height(CommonConstant.IconSizeLarge)
+              .borderRadius(CommonConstant.RadiusRound)
+            Column({ space: CommonConstant.SmallContainerInnerPadding }) {
+              Text(this.getAuthorName())
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor($r('sys.color.font_secondary'))
+                .fontWeight(FontWeight.Medium)
 
-            Text(DateUtil.getFormatDateStr(this.vm.tieSummary.dateline))
-              .fontSize(CommonConstant.TextSizeTiny)
-              .fontColor($r('sys.color.font_tertiary'))
+              Text(DateUtil.getFormatDateStr(this.getDateline()))
+                .fontSize(CommonConstant.TextSizeTiny)
+                .fontColor($r('sys.color.font_tertiary'))
+            }
+            .alignItems(HorizontalAlign.Start)
           }
-          .alignItems(HorizontalAlign.Start)
-        }
 
-        GlassButton({
-          text: $r('app.string.TieContentPage_subscribe'),
-          innerFontSize: CommonConstant.TextSizeSmall
-        })
+          GlassButton({
+            text: $r('app.string.TieContentPage_subscribe'),
+            innerFontSize: CommonConstant.TextSizeSmall
+          })
+        }
+        .width(CommonConstant.FullPercent)
+        .justifyContent(FlexAlign.SpaceBetween)
       }
-      .width(CommonConstant.FullPercent)
-      .justifyContent(FlexAlign.SpaceBetween)
     }
+    .width(CommonConstant.FullPercent)
   }
 }

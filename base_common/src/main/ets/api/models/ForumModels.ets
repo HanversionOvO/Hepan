@@ -55,7 +55,49 @@ export class ForumDetails {
   @Trace thread_types: ThreadType[] = [];
   @Trace optional_thread_type: boolean = false;
   @Trace can_post_thread: boolean = false;
+  @Trace can_post_reply: boolean = false;
+  @Trace can_post_anonymously: boolean = false;
+  @Trace threads: number = 0;
+  @Trace posts: number = 0;
+  @Trace todayposts: number = 0;
+  @Trace yesterdayposts: number = 0;
+  @Trace latest_thread?: LatestThread | null;
+  @Trace moderators: string[] = [];
+  @Trace parents?: ForumParent[];
+  @Trace announcement: string = "";
+  @Trace announcement_format: string = "";
+  @Trace post_notice: ForumPostNotice = new ForumPostNotice();
+  @Trace post_notice_format: string = "";
+  @Trace live_thread_id: number = 0;
   @Trace children?: ForumCategory[];
+}
+
+@ObservedV2
+export class ForumParent {
+  @Trace fid: number = 0;
+  @Trace name: string = "";
+  @Trace hidden_home: boolean = false;
+  @Trace threads: number = 0;
+  @Trace posts: number = 0;
+  @Trace todayposts: number = 0;
+  @Trace yesterdayposts: number = 0;
+  @Trace latest_thread?: LatestThread | null;
+  @Trace moderators?: string[] | null;
+  @Trace children?: ForumParent[] | null;
+}
+
+@ObservedV2
+export class ForumPostNotice {
+  @Trace newthread: string = "";
+  @Trace newthread_mobile: string = "";
+  @Trace newthread_quick: string = "";
+  @Trace reply: string = "";
+  @Trace reply_mobile: string = "";
+  @Trace reply_quick: string = "";
+  @Trace reply_quick_mobile: string = "";
+  @Trace editthread: string = "";
+  @Trace editthread_mobile: string = "";
+  @Trace poll: string = "";
 }
 
 export interface ThreadType {
@@ -92,6 +134,7 @@ export interface SummaryAttachments {
   picid: number;
   thumbnail_url: string;
   raw_url: string;
+  download_url?: string;
 }
 
 @ObservedV2
@@ -139,6 +182,7 @@ export class TieThread {
   @Trace views: number = 0;
   @Trace replies: number = 0;
   @Trace display_order: number = 0;
+  @Trace digest: number = 0;
   @Trace is_rated: number = 0;
   @Trace special: number = 0;
   @Trace attachment: number = 0;
@@ -158,6 +202,43 @@ export class TieThread {
   @Trace max_position: number = 0;
   @Trace comments: number = 0;
   @Trace can_reply: boolean = false;
+  @Trace collections: TieCollection[] = [];
+  @Trace last_moderation: TieModeration = new TieModeration();
+}
+
+@ObservedV2
+export class TieCollectionLatestThread {
+  @Trace thread_id: number = 0;
+  @Trace subject: string = "";
+  @Trace dateline: number = 0;
+  @Trace lastpost_author: string = "";
+}
+
+@ObservedV2
+export class TieCollection {
+  @Trace collection_id: number = 0;
+  @Trace uid: number = 0;
+  @Trace username: string = "";
+  @Trace name: string = "";
+  @Trace dateline: number = 0;
+  @Trace follows: number = 0;
+  @Trace threads: number = 0;
+  @Trace comments: number = 0;
+  @Trace description: string = "";
+  @Trace last_update: number = 0;
+  @Trace average_rate: number = 0;
+  @Trace rates: number = 0;
+  @Trace latest_thread: TieCollectionLatestThread = new TieCollectionLatestThread();
+  @Trace last_visit: number = 0;
+  @Trace keyword: string = "";
+}
+
+@ObservedV2
+export class TieModeration {
+  @Trace uid: number = 0;
+  @Trace username: string = "";
+  @Trace dateline: number = 0;
+  @Trace action: string = "";
 }
 
 @ObservedV2

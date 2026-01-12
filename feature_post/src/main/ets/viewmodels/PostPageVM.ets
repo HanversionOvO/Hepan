@@ -1,4 +1,3 @@
-import { MarkdownController } from '@luvi/lv-markdown-in';
 import { AppUtil, LogUtil, ResUtil } from '@pura/harmony-utils';
 import {
   AttachmentApi,
@@ -75,7 +74,6 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
   @Trace isShowAt: boolean = false;
   @Trace isInsertImageMode: boolean = false;
   @Trace isShowDraft: boolean = false;
-  @Trace markdownController: MarkdownController = new MarkdownController();
   @Trace contentSelectionStart: number = 0;
   @Trace contentSelectionEnd: number = 0;
   @Trace markdownContent: string = '';

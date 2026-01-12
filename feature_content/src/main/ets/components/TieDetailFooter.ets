@@ -1,4 +1,4 @@
-import { ColorUtil, CommonConstant, ForumExtraPanel } from 'base_common';
+import { ColorUtil, CommonConstant } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @ComponentV2
@@ -38,10 +38,8 @@ export struct TieDetailFooter {
       .backgroundColor($r('app.color.second_window_background'))
 
       Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieTopic?.hits ?? 0)
-        this.FooterIcon($r('sys.symbol.heart'),
-          (this.vm.tieTopic?.extraPanel.find((item: ForumExtraPanel) => item.type === "support")
-          ?.extParams?.recommendAdd || 0).toString())
+        this.FooterIcon($r('sys.symbol.eye'), this.vm.tieThread.views ?? 0)
+        this.FooterIcon($r('sys.symbol.heart'), this.vm.tieTopic?.support ?? 0)
       }
     }
     .width(CommonConstant.FullPercent)
