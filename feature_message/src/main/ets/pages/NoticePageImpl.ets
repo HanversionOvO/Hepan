@@ -45,7 +45,7 @@ export struct NoticePageImpl {
                       })
                     }
                   }, (noticeCard: SystemNotification) => {
-                    return `${noticeCard.replied_date}_${noticeCard.user_id}_${noticeCard.type}`;
+                    return `${noticeCard.type}_${noticeCard.id}`;
                   })
                 } else {
                   ForEach(this.vm.messageCards, (messageCard: AnPNotification) => {

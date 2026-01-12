@@ -12,7 +12,7 @@ import {
   PmListBody,
   RecentMessage,
   SystemNotification,
-  SystemNotificationBody
+  SystemNotificationData
 } from './models/MessageModels';
 import { ToastUtil } from '../utils/ToastUtil';
 
@@ -37,6 +37,68 @@ export class MessageApi {
     const errorMsg = `${fallbackMessage}, errcode: ${errCode}`;
     LogUtil.warn(TAG, errorMsg);
     throw new Error(errorMsg);
+  }
+
+  private static readonly systemKinds: string[] = [
+    'friend',
+    'space',
+    'task',
+    'report',
+    'system',
+    'admin',
+    'app'
+  ];
+
+  private static formatHtmlMessage(html: string): string {
+    if (!html) {
+      return '';
+    }
+    let text = html;
+    text = text.replace(/<br\s*\/?>/gi, '\n');
+    text = text.replace(/<\/p>/gi, '\n');
+    text = text.replace(/<[^>]+>/g, '');
+    text = text.replace(/&nbsp;/gi, ' ');
+    text = text.replace(/&amp;/gi, '&');
+    text = text.replace(/&lt;/gi, '<');
+    text = text.replace(/&gt;/gi, '>');
+    text = text.replace(/&quot;/gi, '"');
+    text = text.replace(/&#39;/gi, '\'');
+    text = text.replace(/[ \t]+/g, ' ');
+    text = text.replace(/\n\s+/g, '\n');
+    return text.trim();
+  }
+
+  private static async getSystemNotificationByKind(kind: string, page: number): Promise<SystemNotification[]> {
+    const path = `/_/messages/notifications?kind=${kind}&page=${page}`;
+    const response = await ApiClient.getInstance().request<BaseResponse<SystemNotificationData>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true
+    });
+    const data = MessageApi.extractBaseData(response, 'Fetch system notification failed');
+    const rows = data.rows;
+    if (!rows || !Array.isArray(rows) || rows.length === 0) {
+      return [];
+    }
+    return rows.map((row) => {
+      const item = new SystemNotification();
+      item.id = row.id ?? 0;
+      item.user_id = row.user_id ?? 0;
+      item.type = row.type ?? '';
+      item.unread = Boolean(row.unread);
+      item.author_id = row.author_id ?? 0;
+      item.author = row.author ?? '';
+      item.html_message = row.html_message ?? '';
+      item.message = MessageApi.formatHtmlMessage(item.html_message);
+      item.dateline = row.dateline ?? 0;
+      item.from_id = row.from_id ?? 0;
+      item.from_id_type = row.from_id_type ?? '';
+      item.from_num = row.from_num ?? 0;
+      item.category = row.category ?? 0;
+      item.friend_note = row.friend_note ?? '';
+      return item;
+    });
   }
 
   public static async getMessageSummary(): Promise<MessageSummary> {
@@ -86,18 +148,27 @@ export class MessageApi {
     return Array.isArray(result.data.list) ? result.data.list : [];
   }
 
-  public static async getSystemNotification(page = 1, pagesize = 15): Promise<SystemNotification[]> {
-    const result =
-      await ApiClient.getInstance()
-        .requestLegacy<LegacyResponse<SystemNotificationBody>>('message', 'notifylistex', {
-          'type': 'system',
-          'page': page,
-          'pagesize': pagesize
-        });
-
-    MessageApi.ensureLegacySuccess(result, 'Fetch system notification failed');
-    const data = result.data.body?.data;
-    return Array.isArray(data) ? data : [];
+  public static async getSystemNotification(page = 1): Promise<SystemNotification[]> {
+    const tasks = MessageApi.systemKinds.map((kind) => MessageApi.getSystemNotificationByKind(kind, page));
+    const results = await Promise.allSettled(tasks);
+    const merged: SystemNotification[] = [];
+    let hasSuccess = false;
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        hasSuccess = true;
+        merged.push(...result.value);
+        return;
+      }
+      LogUtil.warn(TAG, `Fetch system notification failed for kind: ${MessageApi.systemKinds[index]}`);
+    });
+    if (!hasSuccess) {
+      throw new Error('Fetch system notification failed');
+    }
+    if (merged.length === 0) {
+      return [];
+    }
+    merged.sort((a, b) => b.dateline - a.dateline);
+    return merged;
   }
 
   public static async getChat(uid: number, start_time: number = 0, stop_time: number = 0,

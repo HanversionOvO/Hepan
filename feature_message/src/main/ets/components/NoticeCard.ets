@@ -59,7 +59,7 @@ export struct NoticeCard {
         // 头部：昵称/标题 + 时间
         Row() {
           if (this.systemMsg) {
-            Text(this.systemMsg.user_name)
+            Text(this.systemMsg.author)
               .fontSize(CommonConstant.TextSizeNormal)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('sys.color.font_primary'))
@@ -72,14 +72,14 @@ export struct NoticeCard {
               .layoutWeight(1)
           }
 
-          Text(DateUtil.getRelativeTime(Number(this.noticeCard.replied_date)))
+          Text(DateUtil.getRelativeTime(this.systemMsg ? this.systemMsg.dateline : Number(this.anpMsg?.replied_date ?? 0)))
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_tertiary'))
         }
         .width(CommonConstant.FullPercent)
 
         if (this.systemMsg) {
-          Text(this.systemMsg.note)
+          Text(this.systemMsg.message)
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor($r('sys.color.font_primary'))
             .textOverflow({ overflow: TextOverflow.Ellipsis })

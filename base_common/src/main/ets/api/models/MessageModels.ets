@@ -55,8 +55,11 @@ export interface PmListBody {
   pmList: PmListItem[];
 }
 
-export interface SystemNotificationBody {
-  data: SystemNotification[];
+export interface SystemNotificationData {
+  total: number;
+  page_size: number;
+  page: number;
+  rows: SystemNotification[];
 }
 
 @ObservedV2
@@ -124,14 +127,20 @@ export class AnPNotification {
 
 @ObservedV2
 export class SystemNotification {
-  @Trace replied_date: string = "";
+  @Trace id: number = 0;
+  @Trace user_id: number = 0;
   @Trace type: string = "";
-  @Trace icon: string = "";
-  @Trace user_name: string = "";
-  @Trace user_id: string = "";
-  @Trace mod: string = "";
-  @Trace note: string = "";
-  @Trace is_read: string = "";
+  @Trace unread: boolean = false;
+  @Trace author_id: number = 0;
+  @Trace author: string = "";
+  @Trace html_message: string = "";
+  @Trace message: string = "";
+  @Trace dateline: number = 0;
+  @Trace from_id: number = 0;
+  @Trace from_id_type: string = "";
+  @Trace from_num: number = 0;
+  @Trace category: number = 0;
+  @Trace friend_note: string = "";
 }
 
 @ObservedV2

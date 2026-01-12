@@ -25,6 +25,7 @@ export class NoticePageVM extends BaseVM {
   @Trace isRefreshingNotice: boolean = false;
   @Trace currentPage: number = 1;
   @Trace hasMore: boolean = true;
+  private isLoadingMore: boolean = false;
   @Trace messageCards: AnPNotification[] = [];
   @Trace noticeCards: SystemNotification[] = [];
 
@@ -41,7 +42,9 @@ export class NoticePageVM extends BaseVM {
       if (this.messageNotifyCard) {
         const type = this.messageNotifyCard.type;
         if (type === 'system') {
-          this.noticeCards = await MessageApi.getSystemNotification();
+          this.noticeCards = await MessageApi.getSystemNotification(this.currentPage);
+          this.messageCards = [];
+          this.hasMore = this.noticeCards.length > 0;
 
           if (this.noticeCards.length === 0) {
             this.uiState = UiState.EMPTY;
@@ -49,7 +52,8 @@ export class NoticePageVM extends BaseVM {
             this.uiState = UiState.SUCCESS;
           }
         } else {
-          this.messageCards = await MessageApi.getNotificationList(type)
+          this.messageCards = await MessageApi.getNotificationList(type);
+          this.noticeCards = [];
 
           if (this.messageCards.length === 0) {
             this.uiState = UiState.EMPTY;
@@ -68,19 +72,27 @@ export class NoticePageVM extends BaseVM {
 
   async refreshData() {
     this.currentPage = 1;
+    this.hasMore = true;
     await this.loadData(false);
   }
 
   async loadMore() {
+    if (this.isLoadingMore || !this.hasMore) {
+      return;
+    }
+    this.isLoadingMore = true;
     try {
       if (this.messageNotifyCard) {
         const type = this.messageNotifyCard.type;
         if (type === "system") {
-          const noticeCards: SystemNotification[] = await MessageApi.getSystemNotification(this.currentPage + 1);
+          const nextPage = this.currentPage + 1;
+          const noticeCards: SystemNotification[] = await MessageApi.getSystemNotification(nextPage);
 
           if (noticeCards.length > 0) {
             this.noticeCards = this.noticeCards.concat(noticeCards);
-            this.currentPage++;
+            this.currentPage = nextPage;
+          } else {
+            this.hasMore = false;
           }
         } else {
           const messageCards: AnPNotification[] = await MessageApi.getNotificationList(type, this.currentPage + 1);
@@ -93,6 +105,8 @@ export class NoticePageVM extends BaseVM {
       }
     } catch (error) {
       LogUtil.error(TAG, 'Load more failed');
+    } finally {
+      this.isLoadingMore = false;
     }
   }
 
