@@ -45,7 +45,6 @@ export struct FansUserSection {
     }) {
       StateLayout({
         uiState: this.vm.uiState,
-        emptyStr: $r('app.string.FansUserItem_no_friends'),
         onRetry: () => {
           this.vm.loadData(true);
         }

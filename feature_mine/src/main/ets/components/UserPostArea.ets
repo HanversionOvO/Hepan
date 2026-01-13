@@ -127,7 +127,6 @@ struct UserPostList {
     StateLayout({
       uiState: this.vm.uiState,
       onRetry: async (): Promise<void> => this.vm.loadMineData(true),
-      emptyStr: !this.isMe && this.vm.list.length === 0 ? $r('app.string.StateLayout_empty') : undefined,
       content: () => {
         this.renderList();
       }

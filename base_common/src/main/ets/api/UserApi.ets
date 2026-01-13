@@ -376,6 +376,10 @@ export class UserApi {
       includeCookie: true
     });
 
-    return UserApi.extractData(response, 'Fetch user favorites failed');
+    const data = UserApi.extractData(response, 'Fetch user favorites failed');
+    if (!data.rows) {
+      data.rows = [];
+    }
+    return data;
   }
 }
