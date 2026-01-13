@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.cer",
+          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BBBDAE993F2F400D10A932A99167BDA8488EADB1A76CABC90E0808C826E37336A6B87B5F71CE258",
-          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p7b",
+          "keyPassword": "0000001B8A73D9B41A2915CC0D2EB357649C013015B151ACD9295A01C12D748FE91E1FEC334CF1473333D8",
+          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p12",
-          "storePassword": "0000001B5B765B214EE704BC018A5B702C5D93EFEDC2F6B4AA85858DB2B5EE0FC5EDC2A647BF9CE9ABA1F9"
+          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p12",
+          "storePassword": "0000001B561338226572181EF2259690D7B234A46E70FD145E9531547BFDF6620053E8F198EAADDAFD4333"
         }
       }
     ],

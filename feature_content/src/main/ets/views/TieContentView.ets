@@ -101,18 +101,6 @@ export struct TieContentView {
           TieDetailFooter({ vm: this.vm })
         }
 
-        // TODO: 淘专辑收录
-        if (this.vm.tieThread.collections && this.vm.tieThread.collections.length > 0) {
-          Text($r('app.string.TieContentPage_collection'))
-            .fontSize(CommonConstant.TextSizeNormal)
-            .fontWeight(FontWeight.Medium)
-            .textAlign(TextAlign.Start)
-            .width(CommonConstant.FullPercent)
-
-          // 模仿userOtherCollections实现
-
-        }
-
         if (this.vm.isTabletView) {
           Column()
             .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerInnerPadding * 2 +
