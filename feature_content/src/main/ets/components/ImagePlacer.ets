@@ -1,11 +1,15 @@
-import { RandomUtil } from '@pura/harmony-utils';
-import { CommonConstant } from 'base_common';
+import { ColorUtil, CommonConstant } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @ComponentV2
 export struct ImagePlacer {
   @Param @Require vm: TieContentPageVM;
   @Param @Require swiperHeight: number;
+  @Param placeholderColor: string = CommonConstant.ThemeColor;
+
+  private getPlaceholderGradient(): LinearGradientOptions {
+    return ColorUtil.buildDiagonalGradient(this.placeholderColor);
+  }
 
   build() {
     Column({ space: CommonConstant.NormalContainerInnerPadding }) {
@@ -18,7 +22,8 @@ export struct ImagePlacer {
     .width(CommonConstant.FullPercent)
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Center)
-    .backgroundColor(RandomUtil.getRandomColor())
+    .backgroundColor(this.placeholderColor)
+    .linearGradient(this.getPlaceholderGradient())
     .height(this.swiperHeight)
   }
 }

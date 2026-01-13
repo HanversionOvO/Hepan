@@ -56,6 +56,27 @@ export struct TieCard {
     return UrlUtil.buildUrl(this.baseUrl, path);
   }
 
+  private getCoverSeed(): string | number {
+    if (this.tie.thread_id) {
+      return this.tie.thread_id;
+    }
+    if (this.tie.author_id) {
+      return this.tie.author_id;
+    }
+    if (this.tie.subject) {
+      return this.tie.subject;
+    }
+    return this.tie.summary || 'tie_card';
+  }
+
+  private getCoverBaseColor(): string {
+    return ColorUtil.getStableColor(this.getCoverSeed());
+  }
+
+  private getCoverGradient(): LinearGradientOptions {
+    return ColorUtil.buildDiagonalGradient(this.getCoverBaseColor());
+  }
+
   @Builder
   ViewsBadge() {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -111,7 +132,7 @@ export struct TieCard {
     if (this.getCoverUrl()) {
       Image(this.getCoverUrl())
         .width(CommonConstant.FullPercent)
-        .constraintSize({ maxHeight: this.maxCoverHeight })
+        .constraintSize({ minHeight: this.minCoverHeight, maxHeight: this.maxCoverHeight })
         .objectFit(ImageFit.Cover)
         .align(Alignment.Top)
     } else {
@@ -119,7 +140,8 @@ export struct TieCard {
         Column()
           .width(CommonConstant.FullPercent)
           .height(CommonConstant.FullPercent)
-          .backgroundColor(RandomUtil.getRandomColor())
+          .backgroundColor(this.getCoverBaseColor())
+          .linearGradient(this.getCoverGradient())
 
         if (this.watermarkText) {
           Text(this.watermarkText)

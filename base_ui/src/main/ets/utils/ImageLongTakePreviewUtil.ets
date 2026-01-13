@@ -33,6 +33,21 @@ export interface LongTakePreviewOptions {
    * 从预览页返回时的回调（通常用于恢复显示当前页面的原始组件）
    */
   onBackToFirstPage?: () => void;
+
+  /**
+   * 是否隐藏页码指示器，默认不隐藏
+   */
+  hideIndicator?: boolean;
+
+  /**
+   * 预览页底部按钮组
+   */
+  imageButtons?: ImageButtonOption[];
+}
+
+export interface ImageButtonOption {
+  buttonText: string;
+  buttonOnclick?: () => void;
 }
 
 /**
@@ -48,6 +63,8 @@ export class ImageLongTakePreviewUtil {
     param.componentId = options.componentId;
     param.imageList = options.imageList;
     param.selectedIndex = options.selectedIndex ?? 0;
+    param.hideIndicator = options.hideIndicator ?? false;
+    param.imageButtons = options.imageButtons ?? [];
 
     // 2. 封装返回回调
     param.onBackToFirstPage = () => {

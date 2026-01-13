@@ -9,7 +9,7 @@ export struct TieContentPageImpl {
 
   @Builder
   ContentBuilder() {
-    TieContentView({ vm: this.vm })
+    TieContentView({ vm: this.vm, placeholderColor: this.vm.placeholderColor })
   }
 
   build() {
@@ -44,6 +44,7 @@ export struct TieContentPageImpl {
         }
         if (params["tieSummary"]) {
           this.vm.tieSummary = params["tieSummary"] as ForumTieSummary;
+          this.vm.updatePlaceholderColor();
         }
 
         if (params["targetPid"]) {

@@ -1,5 +1,5 @@
 import { CommonConstant } from 'base_common';
-import { FloatButton, ImageLongTakeDelegate } from 'base_ui';
+import { FloatButton, ImageButtonOption, ImageLongTakeDelegate } from 'base_ui';
 
 // 页面构建函数，需要在 router_map.json 中注册
 @Builder
@@ -11,8 +11,10 @@ export function ImageLongTakePreviewPageBuilder() {
 export struct ImageLongTakePreviewPage {
   @Local componentId: string = '';
   @Local imageList: string[] = [];
+  @Local buttons: ImageButtonOption[] = [];
   @Local pageInfos: NavPathStack = new NavPathStack();
   @Local selectedIndex: number = 0;
+  @Local hideIndicator: boolean = false;
   @Local bgOpacity: number = 0;
   @Local bgBlurStyle: BlurStyle = BlurStyle.NONE;
   // 回调函数：通知上一个页面恢复显示（如果需要）
@@ -56,14 +58,19 @@ export struct ImageLongTakePreviewPage {
   }
 
   @Builder
-  FunctionButton() {
-    Button("test")
+  FunctionButton(imageButton: ImageButtonOption) {
+    Button(imageButton.buttonText)
       .fontSize(CommonConstant.TextSizeNormal)
       .fontWeight(FontWeight.Bold)
       .backgroundColor($r('app.color.glass_background'))
       .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
       .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
       .width(CommonConstant.FullPercent)
+      .onClick(() => {
+        if (imageButton.buttonOnclick) {
+          imageButton.buttonOnclick();
+        }
+      })
   }
 
   build() {
@@ -106,7 +113,11 @@ export struct ImageLongTakePreviewPage {
             .onClick(() => {
               this.backToFirstPage();
             })
-          this.Indicator()
+          if (!this.hideIndicator) {
+            this.Indicator()
+          } else {
+            Blank()
+          }
           FloatButton()
             .opacity(0)
         }
@@ -121,8 +132,9 @@ export struct ImageLongTakePreviewPage {
         .opacity(this.bgOpacity)
 
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-          this.FunctionButton()
-          this.FunctionButton()
+          ForEach(this.buttons, (imageButton: ImageButtonOption, index: number) => {
+            this.FunctionButton(imageButton);
+          }, (imageButton: ImageButtonOption, index: number) => index.toString())
         }
         .padding({
           left: CommonConstant.PageLRPadding,
@@ -151,6 +163,8 @@ export struct ImageLongTakePreviewPage {
         this.componentId = param.componentId as string;
         this.imageList = param.imageList as string[];
         this.selectedIndex = param.selectedIndex as number ?? 0;
+        this.hideIndicator = param.hideIndicator !== undefined ? param.hideIndicator as boolean : false;
+        this.buttons = (param.imageButtons as ImageButtonOption[]) ?? [];
         this.onBackToFirstPage = param.onBackToFirstPage as () => void ?? (() => {
         });
       }

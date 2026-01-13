@@ -1,6 +1,16 @@
 import { LogUtil } from '@pura/harmony-utils';
 
 const TAG = '[ColorUtil]: ';
+const DEFAULT_STABLE_COLORS: string[] = [
+  '#FFF28B82',
+  '#FFF6C177',
+  '#FF8FD1A6',
+  '#FF7FB8F6',
+  '#FFA3B6F8',
+  '#FFF0A1C0',
+  '#FF9FD9D3',
+  '#FFD3C28A'
+];
 
 /**
  * 颜色变体结果接口
@@ -24,6 +34,34 @@ class ARGB {
 }
 
 export class ColorUtil {
+  public static getStableColor(seed?: string | number, palette: string[] = DEFAULT_STABLE_COLORS): string {
+    if (!palette || palette.length === 0) {
+      return '#FFBDBDBD';
+    }
+    const key = seed === undefined || seed === null ? '' : String(seed);
+    if (!key) {
+      return palette[0];
+    }
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    }
+    return palette[hash % palette.length];
+  }
+
+  public static buildDiagonalGradient(
+    colorHex: string,
+    angle: number = 45,
+    lightAmount: number = 0.2,
+    darkAmount: number = 0.2
+  ): LinearGradientOptions {
+    const start = ColorUtil.lighten(colorHex, lightAmount);
+    const end = ColorUtil.darken(colorHex, darkAmount);
+    return {
+      angle,
+      colors: [[start, 0.0], [end, 1.0]]
+    };
+  }
   /**
    * 生成颜色的变体（浅色、深色、暗色）
    * lightLevel/darkLevel: 0~1，越大变化越明显

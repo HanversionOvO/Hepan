@@ -2,6 +2,7 @@ import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   BasicDataSource,
+  ColorUtil,
   CommonConstant,
   ForumApi,
   ForumDetails,
@@ -27,6 +28,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace tieSummary: ForumTieSummary = new ForumTieSummary();
   @Trace tieDetail: TieDetail = new TieDetail();
   @Trace tieThread: TieThread = new TieThread();
+  @Trace placeholderColor: string = CommonConstant.ThemeColor;
   @Trace forumInfo: ForumDetails = new ForumDetails();
   @Trace tieTopic: TieRow = new TieRow();
   @Trace tieComments: TieRow[] = [];
@@ -77,6 +79,11 @@ export class TieContentPageVM extends BaseVM {
     this.hasNext = true;
     this.isReachEnd = false;
     await this.loadData(false);
+  }
+
+  updatePlaceholderColor(seed?: number | string): void {
+    const fallbackSeed = seed ?? this.tieSummary.thread_id ?? this.tieThread.thread_id;
+    this.placeholderColor = ColorUtil.getStableColor(fallbackSeed);
   }
 
   getCommentComponentId(postId: number): string {
@@ -236,6 +243,7 @@ export class TieContentPageVM extends BaseVM {
     this.tieSummary.dateline = thread.dateline || this.tieSummary.dateline;
     this.tieSummary.replies = thread.replies || this.tieSummary.replies;
     this.tieSummary.views = thread.views || this.tieSummary.views;
+    this.updatePlaceholderColor(thread.thread_id);
   }
 
   private updatePaging(detail: TieDetail) {

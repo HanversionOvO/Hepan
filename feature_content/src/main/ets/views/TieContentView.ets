@@ -14,6 +14,7 @@ import { CommentCard } from '../components/CommentCard';
 @ComponentV2
 export struct TieContentView {
   @Param @Require vm: TieContentPageVM;
+  @Param placeholderColor: string = CommonConstant.ThemeColor;
   @Local sideNavWidth: number = 380;
   @Local swiperHeight: number = 300;
 
@@ -230,7 +231,11 @@ export struct TieContentView {
                   if (this.vm.tieSummary?.summary_attachments && this.vm.tieSummary.summary_attachments.length > 0) {
                     ImageSwiper({ vm: this.vm, swiperHeight: this.swiperHeight })
                   } else {
-                    ImagePlacer({ vm: this.vm, swiperHeight: this.swiperHeight })
+                    ImagePlacer({
+                      vm: this.vm,
+                      swiperHeight: this.swiperHeight,
+                      placeholderColor: this.placeholderColor
+                    })
                   }
                   this.TieDetailContent()
                 }

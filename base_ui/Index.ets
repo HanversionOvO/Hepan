@@ -28,6 +28,6 @@ export { CustomFloatNavTitle } from './src/main/ets/components/CustomFloatNavTit
 
 export { imagePreview } from './src/main/ets/components/ImagePreview';
 
-export { ImageLongTakePreviewUtil } from './src/main/ets/utils/ImageLongTakePreviewUtil';
+export { ImageLongTakePreviewUtil, ImageButtonOption } from './src/main/ets/utils/ImageLongTakePreviewUtil';
 
 export * from './src/main/ets/transitions/longtake/Index';
