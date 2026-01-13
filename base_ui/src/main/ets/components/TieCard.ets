@@ -56,6 +56,10 @@ export struct TieCard {
     return UrlUtil.buildUrl(this.baseUrl, path);
   }
 
+  private getAuthorAvatar(): ResourceStr {
+    return this.tie.author_id === 0 ? $r('app.media.anonymous') : UserAvatarUtil.getAvatarUrl(this.tie.author_id);
+  }
+
   private getCoverSeed(): string | number {
     if (this.tie.thread_id) {
       return this.tie.thread_id;
@@ -250,7 +254,7 @@ export struct TieCard {
 
         Row() {
           Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-            Image(UserAvatarUtil.getAvatarUrl(this.tie.author_id))
+            Image(this.getAuthorAvatar())
               .width(CommonConstant.IconSizeSmall)
               .height(CommonConstant.IconSizeSmall)
               .borderRadius(CommonConstant.RadiusRound)

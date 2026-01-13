@@ -23,6 +23,10 @@ export struct UserInfoArea {
     return this.getAuthorId() !== 0 || this.getAuthorName().length > 0;
   }
 
+  private getAuthorAvatar(): ResourceStr {
+    return this.getAuthorId() === 0 ? $r('app.media.anonymous') : UserAvatarUtil.getAvatarUrl(this.getAuthorId());
+  }
+
   private goToUserProfile(): void {
     const authorId = this.getAuthorId();
     if (authorId) {
@@ -35,7 +39,7 @@ export struct UserInfoArea {
       if (this.hasAuthor()) {
         Row() {
           Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-            Image(UserAvatarUtil.getAvatarUrl(this.getAuthorId()))
+            Image(this.getAuthorAvatar())
               .width(CommonConstant.IconSizeLarge)
               .height(CommonConstant.IconSizeLarge)
               .borderRadius(CommonConstant.RadiusRound)

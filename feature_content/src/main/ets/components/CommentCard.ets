@@ -99,6 +99,10 @@ export struct CommentCard {
     return content;
   }
 
+  private isAnonymousAuthor(): boolean {
+    return this.tieComment.author_id === 0;
+  }
+
   private goToUserProfile(): void {
     const authorId = this.tieComment.author_id;
     if (authorId) {
@@ -110,13 +114,13 @@ export struct CommentCard {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       Column() {
         Stack({ alignContent: Alignment.BottomEnd }) {
-          Image(UserAvatarUtil.getAvatarUrl(this.tieComment.author_id))
+          Image(this.isAnonymousAuthor() ? $r('app.media.anonymous') : UserAvatarUtil.getAvatarUrl(this.tieComment.author_id))
             .width(CommonConstant.IconSizeLarge)
             .height(CommonConstant.IconSizeLarge)
             .borderRadius(CommonConstant.RadiusRound)
             .objectFit(ImageFit.Cover)
 
-          if (this.authorID === this.tieComment.author_id) {
+          if (!this.isAnonymousAuthor() && this.authorID === this.tieComment.author_id) {
             Text($r('app.string.TieContentPage_comment_card_author'))
               .fontSize(CommonConstant.TextSizeUltraTiny)
               .fontColor($r('sys.color.font_on_primary'))
@@ -147,13 +151,15 @@ export struct CommentCard {
               this.goToUserProfile();
             })
 
-          Text(this.tieComment.author_details?.group_title || '')
-            .fontSize(CommonConstant.TextSizeTiny)
-            .fontColor($r('sys.color.font_tertiary'))
-            .fontWeight(FontWeight.Bold)
-            .backgroundColor($r('app.color.tetertiary_window_background'))
-            .padding(CommonConstant.SmallContainerInnerPadding / 2)
-            .borderRadius(CommonConstant.RadiusTiny)
+          if (!this.isAnonymousAuthor() && this.tieComment.author_details?.group_title) {
+            Text(this.tieComment.author_details.group_title)
+              .fontSize(CommonConstant.TextSizeTiny)
+              .fontColor($r('sys.color.font_tertiary'))
+              .fontWeight(FontWeight.Bold)
+              .backgroundColor($r('app.color.tetertiary_window_background'))
+              .padding(CommonConstant.SmallContainerInnerPadding / 2)
+              .borderRadius(CommonConstant.RadiusTiny)
+          }
         }
         .width(CommonConstant.FullPercent)
 
