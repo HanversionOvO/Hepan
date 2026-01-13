@@ -36,6 +36,9 @@ function parseChatContent(content: string): ChatSegment[] {
 @ComponentV2
 export struct ChatBubble {
   @Param @Require chat: Chat;
+  @Param imageComponentId: string = '';
+  @Param isImageHidden: boolean = false;
+  @Param onImageClick: () => void = () => {};
   @Local imageSize: number = 150;
 
   @Computed
@@ -52,6 +55,13 @@ export struct ChatBubble {
         .autoResize(true)
         .constraintSize({ maxHeight: this.imageSize * 1.5 })
         .backgroundColor($r('app.color.second_window_background'))
+        .geometryTransition(this.chat.content + this.imageComponentId)
+        .visibility(this.isImageHidden ? Visibility.Hidden : Visibility.Visible)
+        .onClick(() => {
+          if (this.onImageClick) {
+            this.onImageClick();
+          }
+        })
     } else {
       Text() {
         ForEach(parseChatContent(this.chat.content), (segment: ChatSegment, index: number) => {

@@ -166,7 +166,9 @@ export struct CommentCard {
         TieContentRender({
           message: this.tieComment.message,
           format: this.tieComment.format,
-          attachments: this.tieComment.attachments || []
+          attachments: this.tieComment.attachments || [],
+          enableImagePreview: true,
+          previewId: `tie_comment_${this.tieComment.post_id}`
         })
 
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {

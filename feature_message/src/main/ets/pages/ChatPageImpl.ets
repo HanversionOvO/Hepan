@@ -45,7 +45,12 @@ export struct ChatPageImpl {
           ForEach(this.vm.chats, (chat: Chat) => {
             ListItem() {
               ChatBubble({
-                chat: chat
+                chat: chat,
+                imageComponentId: this.vm.getImageComponentId(chat),
+                isImageHidden: this.vm.previewingImageMid === chat.mid,
+                onImageClick: () => {
+                  this.vm.showImagePreview(this.getUIContext(), chat);
+                }
               })
             }
           }, (chat: Chat) => `${chat.sender}_${chat.mid}_${chat.time}`)

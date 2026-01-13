@@ -21,6 +21,8 @@ export struct TieContentRender {
   @Param format: number = 0;
   @Param attachments: SummaryAttachments[] = [];
   @Param textSize: number = CommonConstant.TextSizeNormal;
+  @Param enableImagePreview: boolean = false;
+  @Param previewId: string = '';
   @Local displayMessage: string = '';
   @Local attachmentItems: SummaryAttachments[] = [];
   @Local baseUrl: string = CommonConstant.BASE_URL;
@@ -259,7 +261,9 @@ export struct TieContentRender {
         CustomMarkdown({
           content: this.displayMessage,
           useMarkDown: this.isMarkdown,
-          textSize: this.textSize
+          textSize: this.textSize,
+          enableImagePreview: this.enableImagePreview,
+          previewId: this.previewId
         })
       }
 

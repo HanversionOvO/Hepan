@@ -2,6 +2,7 @@ import { AppPreferenceKeys, CommonConstant, PreferenceUtil, UrlUtil } from 'base
 import { util } from '@kit.ArkTS';
 import { AppUtil } from '@pura/harmony-utils';
 import resourceManager from '@ohos.resourceManager';
+import { ImageLongTakePreviewUtil } from '../utils/ImageLongTakePreviewUtil';
 
 interface InlineSpan {
   type: 'text' | 'image';
@@ -61,14 +62,23 @@ export struct CustomMarkdown {
   @Param quoteBgColor: ResourceColor = $r('app.color.tetertiary_window_background');
   @Param hyperlinkTextColor: ResourceColor = CommonConstant.ThemeColor;
   @Param useMarkDown: boolean = true;
+  @Param enableImagePreview: boolean = false;
+  @Param previewId: string = '';
   @Local segments: BBSegment[] = [];
   @Local baseUrl: string = CommonConstant.BASE_URL;
+  @Local imageList: string[] = [];
+  @Local imageIndices: number[] = [];
+  @Local previewingImage: string = '';
+  @Local internalPreviewId: string = '';
   private faceRelativeMap: Map<string, string> = new Map();
   private faceLoaded: boolean = false;
 
   aboutToAppear(): void {
     this.loadBaseUrl();
     this.loadFaceData();
+    if (!this.internalPreviewId) {
+      this.internalPreviewId = `markdown_preview_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+    }
     this.parseContent();
   }
 
@@ -122,6 +132,8 @@ export struct CustomMarkdown {
   private parseContent() {
     if (!this.content) {
       this.segments = [];
+      this.imageList = [];
+      this.imageIndices = [];
       return;
     }
 
@@ -147,6 +159,20 @@ export struct CustomMarkdown {
     }
 
     this.segments = tempSegments;
+    const images: string[] = [];
+    const indices: number[] = [];
+    let imageIndex = 0;
+    tempSegments.forEach((segment) => {
+      if (segment.type === 'image' && segment.content) {
+        images.push(segment.content);
+        indices.push(imageIndex);
+        imageIndex += 1;
+      } else {
+        indices.push(-1);
+      }
+    });
+    this.imageList = images;
+    this.imageIndices = indices;
   }
 
   private parseBBCodeQuote(raw: string): BBSegment {
@@ -694,6 +720,30 @@ export struct CustomMarkdown {
     return UrlUtil.buildUrl(this.baseUrl, `/forum.php?mod=attachment&aid=${aid}`);
   }
 
+  private getPreviewId(): string {
+    return this.previewId || this.internalPreviewId;
+  }
+
+  private openImagePreview(imageUrl: string, index: number): void {
+    if (!this.enableImagePreview || !imageUrl) {
+      return;
+    }
+    const images = this.imageList.length > 0 ? this.imageList : [imageUrl];
+    const selectedIndex = index >= 0 ? index : Math.max(0, images.indexOf(imageUrl));
+    ImageLongTakePreviewUtil.show({
+      uiContext: this.getUIContext(),
+      componentId: this.getPreviewId(),
+      imageList: images,
+      selectedIndex: selectedIndex,
+      onShowAction: () => {
+        this.previewingImage = imageUrl;
+      },
+      onBackToFirstPage: () => {
+        this.previewingImage = '';
+      }
+    });
+  }
+
   private getHeadingFontSize(level: number): number {
     if (level <= 1) {
       return this.textSize * 1.6;
@@ -710,7 +760,7 @@ export struct CustomMarkdown {
   build() {
     Column() {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        ForEach(this.segments, (item: BBSegment) => {
+        ForEach(this.segments, (item: BBSegment, index: number) => {
           if (item.type === 'quote') {
             Column({ space: CommonConstant.SmallContainerInnerPadding }) {
               if (item.quoteTitle) {
@@ -737,6 +787,12 @@ export struct CustomMarkdown {
               .borderRadius(CommonConstant.RadiusNormal)
               .constraintSize({ maxHeight: 300 })
               .backgroundColor($r('app.color.tetertiary_window_background'))
+              .geometryTransition(item.content + this.getPreviewId())
+              .visibility(this.previewingImage === item.content ? Visibility.Hidden : Visibility.Visible)
+              .onClick(() => {
+                this.openImagePreview(item.content,
+                  index < this.imageIndices.length ? this.imageIndices[index] : -1);
+              })
 
           } else if (item.type === 'divider') {
             Divider()

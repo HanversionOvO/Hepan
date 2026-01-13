@@ -10,7 +10,7 @@ import {
   RouterUtil,
   StackEnum
 } from 'base_common';
-import { CustomFilePanelItem } from 'base_ui';
+import { CustomFilePanelItem, ImageLongTakePreviewUtil } from 'base_ui';
 import { PhotoHelper, PickerUtil } from '@pura/picker_utils';
 
 const TAG = '[ChatPageVM]: ';
@@ -27,6 +27,7 @@ export class ChatPageVM extends BaseVM {
   @Trace richEditorController: RichEditorController = new RichEditorController();
   @Trace chats: Chat[] = [];
   @Trace isUserOnline: boolean = false;
+  @Trace previewingImageMid: number = -1;
   @Trace filePanelItems: CustomFilePanelItem[] = [
     {
       title: $r('app.string.ChatPage_take_photo'), icon: $r('sys.symbol.camera'), onClick: async () => {
@@ -209,6 +210,29 @@ export class ChatPageVM extends BaseVM {
     } catch (e) {
       LogUtil.error(TAG, 'Select image failed: ' + JSON.stringify(e));
     }
+  }
+
+  getImageComponentId(chat: Chat): string {
+    return `chat_image_${chat.mid || chat.time || 0}`;
+  }
+
+  showImagePreview(uiContext: UIContext, chat: Chat): void {
+    if (!chat || chat.type !== 'image' || !chat.content) {
+      return;
+    }
+    const componentId = this.getImageComponentId(chat);
+    ImageLongTakePreviewUtil.show({
+      uiContext: uiContext,
+      componentId: componentId,
+      imageList: [chat.content],
+      selectedIndex: 0,
+      onShowAction: () => {
+        this.previewingImageMid = chat.mid;
+      },
+      onBackToFirstPage: () => {
+        this.previewingImageMid = -1;
+      }
+    });
   }
 
   toggleHeader(hide: boolean) {

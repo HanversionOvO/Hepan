@@ -88,7 +88,9 @@ export struct TieContentView {
           TieContentRender({
             message: this.vm.tieTopic.message,
             format: this.vm.tieTopic.format,
-            attachments: this.vm.tieTopic.attachments || []
+            attachments: this.vm.tieTopic.attachments || [],
+            enableImagePreview: true,
+            previewId: `tie_topic_${this.vm.tieTopic.post_id || this.vm.tieSummary.thread_id}`
           })
             .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
