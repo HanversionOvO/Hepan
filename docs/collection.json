@@ -1,0 +1,64 @@
+{
+    "status": 200,
+    "data": {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "total": 0,
+            "page_size": 20,
+            "page": 1
+        },
+        "user": {
+            "uid": 317323,
+            "username": "Mikann",
+            "new_pm_legacy": false,
+            "new_notification": 0,
+            "new_pm": 0,
+            "new_grouppm_legacy": false,
+            "settings_version": 0
+        },
+        "system": {
+            "settings_version": 11,
+            "client_version": 1
+        }
+    },
+    "headers": {
+        "connection": "keep-alive",
+        "content-length": "269",
+        "content-type": "application/json; charset=utf-8",
+        "date": "Tue, 13 Jan 2026 16:34:23 GMT",
+        "server": "none",
+        "strict-transport-security": "max-age=15768000",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "1; mode=block"
+    },
+    "cookies": [],
+    "raw": {
+        "responseCode": 200,
+        "cookies": "",
+        "header": {
+            "connection": "keep-alive",
+            "content-length": "269",
+            "content-type": "application/json; charset=utf-8",
+            "date": "Tue, 13 Jan 2026 16:34:23 GMT",
+            "server": "none",
+            "strict-transport-security": "max-age=15768000",
+            "x-frame-options": "SAMEORIGIN",
+            "x-xss-protection": "1; mode=block"
+        },
+        "result": "{\"code\":0,\"message\":\"success\",\"data\":{\"total\":0,\"page_size\":20,\"page\":1},\"user\":{\"uid\":317323,\"username\":\"Mikann\",\"new_pm_legacy\":false,\"new_notification\":0,\"new_pm\":0,\"new_grouppm_legacy\":false,\"settings_version\":0},\"system\":{\"settings_version\":11,\"client_version\":1}}",
+        "resultType": 0,
+        "performanceTiming": {
+            "dnsTiming": 0.04,
+            "firstReceiveTiming": 16.251,
+            "firstSendTiming": 0.23,
+            "redirectTiming": 0,
+            "responseBodyTiming": 46.24,
+            "responseHeaderTiming": 46.236,
+            "tcpTiming": 0,
+            "tlsTiming": 0,
+            "totalFinishTiming": 16.432,
+            "totalTiming": 59.775
+        }
+    }
+}

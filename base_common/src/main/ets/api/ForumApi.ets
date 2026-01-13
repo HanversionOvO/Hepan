@@ -14,7 +14,10 @@ import {
   PostCategoryItem,
   ReplyRequest,
   ReplyResponse,
+  TieFavoriteDeleteRequest,
+  TieFavoriteDeleteResult,
   TieFavoriteStatus,
+  TieFavoriteUpdateRequest,
   ThreadListResponse,
   TieDetail
 } from './models/ForumModels';
@@ -291,5 +294,71 @@ export class ForumApi {
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
+  }
+
+  public static async addTieFavorite(tid: number, request: TieFavoriteUpdateRequest): Promise<void> {
+    const path: string = `/_/thread/${tid}/favorite`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Object>>>({
+      path: path,
+      method: http.RequestMethod.PUT,
+      includeAuthorization: true,
+      includeCookie: true,
+      data: request
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return;
+    } else {
+      const errorMsg = response.data?.message || `Update favorite failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async removeTieFavorite(request: TieFavoriteDeleteRequest): Promise<number> {
+    const path: string = `/_/user/favorites/delete`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<TieFavoriteDeleteResult>>({
+      path: path,
+      method: http.RequestMethod.POST,
+      includeAuthorization: true,
+      includeCookie: true,
+      data: request
+    });
+
+    if (response.status === 200 && response.data.code === 0) {
+      return response.data.data?.deleted_count ?? 0;
+    } else {
+      const errorMsg = response.data?.message || `Delete favorite failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+
+  public static async addPersonalFavorite(tid: number): Promise<void> {
+    await ForumApi.addTieFavorite(tid, { personal_favorite: true });
+  }
+
+  public static async removePersonalFavorite(tid: number): Promise<number> {
+    return ForumApi.removeTieFavorite({
+      personal_favorite: true,
+      tid_list: [tid]
+    });
+  }
+
+  public static async addCollectionFavorite(tid: number, collectionId: number): Promise<void> {
+    await ForumApi.addTieFavorite(tid, {
+      personal_favorite: false,
+      collection_id: collectionId
+    });
+  }
+
+  public static async removeCollectionFavorite(tid: number, collectionId: number): Promise<number> {
+    return ForumApi.removeTieFavorite({
+      personal_favorite: false,
+      collection_id: collectionId,
+      tid_list: [tid]
+    });
   }
 }

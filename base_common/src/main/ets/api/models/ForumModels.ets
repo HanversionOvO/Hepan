@@ -248,6 +248,21 @@ export interface TiePublicFavorite {
   is_favorite?: boolean;
 }
 
+export interface TieFavoriteUpdateRequest {
+  personal_favorite: boolean;
+  collection_id?: number;
+}
+
+export interface TieFavoriteDeleteRequest {
+  personal_favorite: boolean;
+  collection_id?: number;
+  tid_list: number[];
+}
+
+export interface TieFavoriteDeleteResult {
+  deleted_count: number;
+}
+
 @ObservedV2
 export class TieModeration {
   @Trace uid: number = 0;

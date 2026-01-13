@@ -1,17 +1,12 @@
 // 负载
 {
-    "personal_favorite": true,
-    "tid_list": [
-        2431040
-    ]
+    "personal_favorite": true
 }
 // 响应
 {
     "code": 0,
     "message": "success",
-    "data": {
-        "deleted_count": 1
-    },
+    "data": {},
     "user": {
         "uid": 317323,
         "username": "Mikann",

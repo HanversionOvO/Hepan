@@ -10,9 +10,14 @@ export function tieCollectSheet(vm: TieContentPageVM) {
 struct TieCollectSheet {
   @Param @Require vm: TieContentPageVM;
   @Local collectionItems: TieCollectItem[] = [];
+  @Local isUpdating: boolean = false;
 
   async aboutToAppear() {
     const threadId = this.vm.tieThread.thread_id || this.vm.tieSummary.thread_id;
+    await this.refreshStatus(threadId);
+  }
+
+  private async refreshStatus(threadId: number): Promise<void> {
     if (!threadId) {
       return;
     }
@@ -21,6 +26,36 @@ struct TieCollectSheet {
       this.collectionItems = this.buildItems(status);
     } catch {
       this.collectionItems = this.buildItems();
+    }
+  }
+
+  private async toggleFavorite(item: TieCollectItem): Promise<void> {
+    if (this.isUpdating) {
+      return;
+    }
+    const threadId = this.vm.tieThread.thread_id || this.vm.tieSummary.thread_id;
+    if (!threadId) {
+      return;
+    }
+
+    this.isUpdating = true;
+    try {
+      if (item.isPersonal) {
+        if (item.isFavorite) {
+          await ForumApi.removePersonalFavorite(threadId);
+        } else {
+          await ForumApi.addPersonalFavorite(threadId);
+        }
+      } else if (item.collectionId > 0) {
+        if (item.isFavorite) {
+          await ForumApi.removeCollectionFavorite(threadId, item.collectionId);
+        } else {
+          await ForumApi.addCollectionFavorite(threadId, item.collectionId);
+        }
+      }
+      await this.refreshStatus(threadId);
+    } finally {
+      this.isUpdating = false;
     }
   }
 
@@ -95,6 +130,9 @@ struct TieCollectSheet {
     .width(CommonConstant.FullPercent)
     .alignItems(VerticalAlign.Center)
     .justifyContent(FlexAlign.SpaceBetween)
+    .onClick(() => {
+      this.toggleFavorite(item);
+    })
   }
 
   build() {

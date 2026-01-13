@@ -1,6 +1,7 @@
 // 负载
 {
-    "personal_favorite": true,
+    "personal_favorite": false,
+    "collection_id": 1159,
     "tid_list": [
         2431040
     ]
