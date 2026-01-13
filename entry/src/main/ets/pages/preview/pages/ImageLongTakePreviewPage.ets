@@ -133,6 +133,7 @@ export struct ImageLongTakePreviewPage {
         .position({
           bottom: CommonConstant.BottomBarHeight
         })
+        .opacity(this.bgOpacity)
       }
     }
     .mode(NavDestinationMode.DIALOG) // 设置为 Dialog 模式，背景透明
