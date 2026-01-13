@@ -239,3 +239,22 @@ export interface UserFavorite {
   dateline: number;
   thread_details: ForumTieSummary;
 }
+
+export interface UserFavoriteCollection {
+  collection_id: number;
+  uid: number;
+  username: string;
+  name: string;
+  dateline?: number;
+  follows: number;
+  threads: number;
+  comments: number;
+  description?: string;
+  last_update?: number;
+  keyword?: string;
+  is_owner?: boolean;
+}
+
+export interface UserFavoritesResponse extends PaginationData<UserFavorite> {
+  collections?: UserFavoriteCollection[];
+}

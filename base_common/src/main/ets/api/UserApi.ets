@@ -9,7 +9,7 @@ import {
   PaginationData,
   RecentVisitor,
   ThreadAuthorInfo,
-  UserFavorite,
+  UserFavoritesResponse,
   UserFriends,
   UserProfileData,
   UserReply,
@@ -366,10 +366,10 @@ export class UserApi {
   /**
    * 获取用户收藏 (仅限自己)
    */
-  public static async getUserFavorites(page: number): Promise<PaginationData<UserFavorite>> {
-    const path = `/_/user/me/favorites?page=${page}&collections=1&user_summary=0`;
+  public static async getUserFavorites(page: number, collections: number = 0): Promise<UserFavoritesResponse> {
+    const path = `/_/user/me/favorites?page=${page}&collections=${collections}&user_summary=0`;
 
-    const response = await ApiClient.getInstance().request<BaseResponse<PaginationData<UserFavorite>>>({
+    const response = await ApiClient.getInstance().request<BaseResponse<UserFavoritesResponse>>({
       path: path,
       method: http.RequestMethod.GET,
       includeAuthorization: true,

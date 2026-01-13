@@ -1,0 +1,97 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "total": 1,
+    "page_size": 20,
+    "page": 1,
+    "rows": [
+      {
+        "favorite_id": 655611,
+        "target_id": 2431040,
+        "target_type": "tid",
+        "title": "把帖子详情替换成新版API了",
+        "dateline": 1768230482,
+        "thread_details": {
+          "thread_id": 2431040,
+          "forum_id": 1024,
+          "type_id": 1437,
+          "author": "MikannQAQ",
+          "author_id": 307145,
+          "subject": "把帖子详情替换成新版API了",
+          "dateline": 1768227854,
+          "last_post": 1768305464,
+          "last_poster": "Mikann",
+          "views": 13,
+          "replies": 8,
+          "display_order": 0,
+          "is_rated": 0,
+          "special": 0,
+          "attachment": 2,
+          "is_moderated": 0,
+          "has_stick_reply": 0,
+          "is_closed": 0,
+          "recommends": 0,
+          "recommend_add": 0,
+          "recommend_sub": 0,
+          "heats": 1,
+          "status": 288,
+          "favorite_times": 1,
+          "share_times": 0,
+          "stamp": -1,
+          "icon": -1,
+          "cover": 0,
+          "max_position": 9,
+          "comments": 0,
+          "summary": "速度明显快很多，而且把原来不能解析度内容手搓了解析器，现在会根据Markdown...",
+          "summary_attachments": [
+            {
+              "attachment_id": 2703634,
+              "dateline": 1768227823,
+              "filename": "upload.jpg",
+              "size": 1609269,
+              "path": "/thumb/data/attachment/forum/202601/12/1c01tl_q5cy0fl6ncpiq2vkuhnft1eq.jpg?variant=original",
+              "description": "",
+              "price": 0,
+              "is_image": 1,
+              "width": 1316,
+              "thumb": false,
+              "picid": 0,
+              "thumbnail_url": "/thumb/data/attachment/forum/202601/12/1c01tl_q5cy0fl6ncpiq2vkuhnft1eq.jpg",
+              "raw_url": "/data/attachment/forum/202601/12/1c01tl_q5cy0fl6ncpiq2vkuhnft1eq.jpg"
+            },
+            {
+              "attachment_id": 2703635,
+              "dateline": 1768227825,
+              "filename": "upload.jpg",
+              "size": 1528604,
+              "path": "/thumb/data/attachment/forum/202601/12/1c02q7_t6in3it6bktybtr8d006hs8n.jpg?variant=original",
+              "description": "",
+              "price": 0,
+              "is_image": 1,
+              "width": 1316,
+              "thumb": false,
+              "picid": 0,
+              "thumbnail_url": "/thumb/data/attachment/forum/202601/12/1c02q7_t6in3it6bktybtr8d006hs8n.jpg",
+              "raw_url": "/data/attachment/forum/202601/12/1c02q7_t6in3it6bktybtr8d006hs8n.jpg"
+            }
+          ],
+          "forum_name": "开发者专区"
+        }
+      }
+    ]
+  },
+  "user": {
+    "uid": 317323,
+    "username": "Mikann",
+    "new_pm_legacy": false,
+    "new_notification": 0,
+    "new_pm": 0,
+    "new_grouppm_legacy": false,
+    "settings_version": 0
+  },
+  "system": {
+    "settings_version": 11,
+    "client_version": 1
+  }
+}

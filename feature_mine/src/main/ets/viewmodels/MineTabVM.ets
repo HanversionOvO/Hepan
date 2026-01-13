@@ -141,7 +141,7 @@ export class MineTabVM extends BaseVM {
       this.setUiState(UiState.EMPTY);
       return;
     }
-    const data = await UserApi.getUserFavorites(this.page);
+    const data = await UserApi.getUserFavorites(this.page, 0);
     const mappedFavs: ForumTieSummary[] = data.rows.map((fav) => fav.thread_details);
     this.handleResult(mappedFavs, refresh);
   }

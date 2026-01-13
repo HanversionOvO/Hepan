@@ -137,6 +137,10 @@
       "value": "收藏"
     },
     {
+      "name": "MinePage_mine_collection",
+      "value": "淘专辑"
+    },
+    {
       "name": "MinePage_medal_center",
       "value": "勋章中心"
     },

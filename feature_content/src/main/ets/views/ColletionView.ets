@@ -25,7 +25,7 @@ export struct CollectionView {
               .fontColor([CommonConstant.ThemeColor])
               .fontWeight(FontWeight.Bold)
 
-            Text("创建淘专辑")
+            Text($r('app.string.CollectionPage_create_collection'))
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor(CommonConstant.ThemeColor)
               .fontWeight(FontWeight.Bold)

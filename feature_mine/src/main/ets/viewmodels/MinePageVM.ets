@@ -14,6 +14,7 @@ import { FeatureCardModel } from '../components/FeatureCard';
 import { UserProfileMapping, UserProfileSheetItem } from '../components/UserProfileSheet';
 import { UserStatsModel } from '../components/UserStats';
 import { CustomTabItem } from 'base_ui';
+import { MineCollectionVM } from './MineCollectionVM';
 import { MineTabVM } from './MineTabVM';
 
 const TAG = '[MinePageVM]: ';
@@ -36,11 +37,13 @@ export class MinePageVM extends BaseVM {
   @Trace threadVM: MineTabVM = new MineTabVM('thread');
   @Trace replyVM: MineTabVM = new MineTabVM('reply');
   @Trace favVM: MineTabVM = new MineTabVM('fav');
+  @Trace collectionVM: MineCollectionVM = new MineCollectionVM();
 
   readonly userPostTabItems: CustomTabItem[] = [
     { label: $r('app.string.MinePage_mine_post'), icon: $r('sys.symbol.book_closed_right_left') },
     { label: $r('app.string.MinePage_mine_reply'), icon: $r('sys.symbol.message') },
-    { label: $r('app.string.MinePage_mine_star'), icon: $r('sys.symbol.star') }
+    { label: $r('app.string.MinePage_mine_star'), icon: $r('sys.symbol.star') },
+    { label: $r('app.string.MinePage_mine_collection'), icon: $r('sys.symbol.folder') }
   ];
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
@@ -75,12 +78,15 @@ export class MinePageVM extends BaseVM {
   }
 
   @Computed
-  get currentTabVM(): MineTabVM {
+  get currentTabVM(): MineTabVM | MineCollectionVM {
     if (this.currentUserPostTabIndex === 1) {
       return this.replyVM;
     }
     if (this.currentUserPostTabIndex === 2) {
       return this.favVM;
+    }
+    if (this.currentUserPostTabIndex === 3) {
+      return this.collectionVM;
     }
     return this.threadVM;
   }
@@ -94,6 +100,7 @@ export class MinePageVM extends BaseVM {
     this.threadVM.updateGridConfig(cols, min, max);
     this.replyVM.updateGridConfig(cols, min, max);
     this.favVM.updateGridConfig(cols, min, max);
+    this.collectionVM.updateGridConfigFromBreakpoint(this.breakPoint.currentBreakPoint);
   }
 
   init(uid: number | 'me'): void {
@@ -104,6 +111,7 @@ export class MinePageVM extends BaseVM {
     this.threadVM.init(uid);
     this.replyVM.init(uid);
     this.favVM.init(uid);
+    this.collectionVM.init(uid);
 
     if (!isSameUser) {
       this.currentUserPostTabIndex = 0;
@@ -168,7 +176,7 @@ export class MinePageVM extends BaseVM {
   }
 
   changeUserPostTab(index: number): void {
-    if (index < 0 || index > 2 || this.currentUserPostTabIndex === index) {
+    if (index < 0 || index > 3 || this.currentUserPostTabIndex === index) {
       return;
     }
     this.currentUserPostTabIndex = index;

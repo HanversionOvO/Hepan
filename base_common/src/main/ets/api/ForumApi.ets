@@ -272,4 +272,22 @@ export class ForumApi {
       throw new Error(errorMsg);
     }
   }
+
+  public static async collectTie(tid: number): Promise<void> {
+    const path: string = `/_/thread/${tid}/favorite`;
+
+    const response = await ApiClient.getInstance().request<BaseResponse<Record<string, Object>>>({
+      path: path,
+      method: http.RequestMethod.GET,
+      includeAuthorization: true,
+      includeCookie: true,
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+    } else {
+      const errorMsg = response.data?.message || `Fetch forum threads failed, status: ${response.status}`;
+      LogUtil.warn(TAG, errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
 }

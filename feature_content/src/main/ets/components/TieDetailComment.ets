@@ -1,5 +1,6 @@
 import { CommonConstant, RouterUtil, TransitionMap } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
+import { tieCollectSheet } from './TieCollectSheet';
 
 @ComponentV2
 export struct TieDetailComment {
@@ -74,6 +75,20 @@ export struct TieDetailComment {
         SymbolGlyph($r('sys.symbol.star'))
           .fontColor([$r('sys.color.font_tertiary')])
           .fontSize(CommonConstant.IconSizeSmall)
+          .onClick(async () => {
+            this.vm.isShowCollectSheet = true;
+          })
+          .bindSheet($$this.vm.isShowCollectSheet, tieCollectSheet(this.vm), {
+            showClose: true,
+            detents: [SheetSize.FIT_CONTENT],
+            enableOutsideInteractive: false,
+            preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+            backgroundColor: $r('app.color.glass_background'),
+            blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
+            title: {
+              title: $r('app.string.TieContentPage_collect_tie')
+            }
+          })
 
         SymbolGlyph(this.isDisliked ? $r('sys.symbol.hand_thumbsdown_fill') : $r('sys.symbol.hand_thumbsdown'))
           .fontColor(this.isDisliked ? [CommonConstant.InfoColor] : [$r('sys.color.font_tertiary')])

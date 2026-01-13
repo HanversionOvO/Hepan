@@ -1,8 +1,9 @@
 // feature_mine/src/main/ets/components/UserPostArea.ets
 import { AppUtil, ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, ForumTieSummary } from 'base_common';
-import { buildTieCardKey, CustomTabBar, StateLayout, TieCard } from 'base_ui';
+import { Collection, CommonConstant, ForumTieSummary } from 'base_common';
+import { buildTieCardKey, CollectionCard, CustomTabBar, StateLayout, TieCard } from 'base_ui';
 import { MinePageVM } from '../viewmodels/MinePageVM';
+import { MineCollectionVM } from '../viewmodels/MineCollectionVM';
 import { MineTabVM } from '../viewmodels/MineTabVM';
 
 interface TieWithForumName {
@@ -135,9 +136,125 @@ struct UserPostList {
 }
 
 @ComponentV2
+struct UserCollectionList {
+  @Param @Require vm: MineCollectionVM;
+  @Param @Require scroller: Scroller;
+  @Param isMe: boolean = false;
+
+  @Computed
+  get columnsTemplate(): string {
+    return '1fr '.repeat(this.vm.columns).trim();
+  }
+
+  @Computed
+  get spacerArray(): number[] {
+    return new Array(this.vm.columns).fill(0);
+  }
+
+  aboutToAppear(): void {
+    this.vm.ensureLoaded();
+  }
+
+  @Builder
+  renderList() {
+    WaterFlow({ scroller: this.scroller }) {
+      ForEach(this.spacerArray, (_: number, i: number) => {
+        FlowItem() {
+          Column().height(CommonConstant.IconSizeLarge)
+        }
+        .width(CommonConstant.FullPercent)
+      }, (_: number, i: number) => `collection_top_spacer_${this.vm.columns}_${i}`)
+
+      ForEach(this.vm.collections, (collection: Collection) => {
+        FlowItem() {
+          CollectionCard({
+            collection: collection
+          })
+            .id(this.vm.getUniqueId(collection.ctid))
+            .onClick(() => {
+              this.vm.enterDetailPage(collection.ctid, this.getUIContext(), collection);
+            })
+        }
+        .width(CommonConstant.FullPercent)
+      }, (collection: Collection) => `${this.vm.getUniqueId(collection.ctid)}_${collection.lastUpdate}_${collection.subscribe}_${collection.comment}`)
+
+      ForEach(this.spacerArray, (_: number, i: number) => {
+        FlowItem() {
+          Column()
+            .height(CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding)
+        }
+        .width(CommonConstant.FullPercent)
+      }, (_: number, i: number) => `collection_bottom_spacer_${this.vm.columns}_${i}`)
+    }
+    .padding({
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding
+    })
+    .width(CommonConstant.FullPercent)
+    .height(CommonConstant.FullPercent)
+    .columnsTemplate(this.columnsTemplate)
+    .columnsGap(CommonConstant.NormalContainerInnerPadding)
+    .rowsGap(CommonConstant.NormalContainerInnerPadding)
+    .scrollBar(BarState.Off)
+    .nestedScroll({
+      scrollForward: NestedScrollMode.PARENT_FIRST,
+      scrollBackward: NestedScrollMode.SELF_FIRST
+    })
+    .animation({
+      duration: CommonConstant.AnimationDurationNormal,
+      curve: CommonConstant.AnimationCurveSpring
+    })
+    .onReachEnd(() => {
+      this.vm.loadMineData(false);
+    })
+    .priorityGesture(
+      PinchGesture()
+        .onActionUpdate((event: GestureEvent) => {
+          if (this.vm.isScaling) {
+            return;
+          }
+          if (event.scale < 0.75 && this.vm.columns < this.vm.maxColumns) {
+            AppUtil.getUIContext().animateTo({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            }, () => {
+              this.vm.columns += 1;
+            });
+            this.vm.isScaling = true;
+          }
+
+          if (event.scale > 1.25 && this.vm.columns > this.vm.minColumns) {
+            animateTo({
+              duration: CommonConstant.AnimationDurationNormal,
+              curve: CommonConstant.AnimationCurveSpring
+            }, () => {
+              this.vm.columns -= 1;
+            });
+            this.vm.isScaling = true;
+          }
+        })
+        .onActionEnd(() => {
+          this.vm.isScaling = false;
+        })
+    )
+  }
+
+  build() {
+    StateLayout({
+      uiState: this.vm.uiState,
+      onRetry: async (): Promise<void> => this.vm.loadMineData(true),
+      emptyStr: !this.isMe && this.vm.collections.length === 0 ? $r('app.string.StateLayout_empty') : undefined,
+      content: () => {
+        this.renderList();
+      }
+    })
+  }
+}
+
+@ComponentV2
 export struct UserPostArea {
   @Param @Require vm: MinePageVM;
-  private listScrollers: Scroller[] = [new Scroller(), new Scroller(), new Scroller()];
+  private listScrollers: Scroller[] = [new Scroller(), new Scroller(), new Scroller(), new Scroller()];
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
@@ -162,6 +279,14 @@ export struct UserPostArea {
           UserPostList({
             vm: this.vm.favVM,
             scroller: this.listScrollers[2],
+            isMe: this.vm.isMe
+          })
+        }
+
+        TabContent() {
+          UserCollectionList({
+            vm: this.vm.collectionVM,
+            scroller: this.listScrollers[3],
             isMe: this.vm.isMe
           })
         }

@@ -10,22 +10,19 @@ import {
   ForumApi,
   ForumDetails,
   ForumTieSummary,
+  getComponentsInfo,
   RouterMap,
   RouterUtil,
   TieCollection,
   TieDetail,
   TieRow,
   TieThread,
-  UiState,
-  getComponentsInfo
+  UiState
 } from 'base_common';
+import { CustomTabItem, LongTakeAnimationProperties, LongTakeTransitionParam, NavTitleButtonModel } from 'base_ui';
 import {
-  CustomTabItem,
-  LongTakeAnimationProperties,
-  LongTakeTransitionParam,
-  NavTitleButtonModel
-} from 'base_ui';
-import { LoneTakeAnimationsTransition } from 'base_ui/src/main/ets/transitions/longtake/utils/LoneTakeAnimationsTransition';
+  LoneTakeAnimationsTransition
+} from 'base_ui/src/main/ets/transitions/longtake/utils/LoneTakeAnimationsTransition';
 
 const TAG = '[TieContentPageVM]: ';
 
@@ -48,6 +45,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace forumName: string = '';
   @Trace isSticky: boolean = false;
   @Trace isReachEnd: boolean = false;
+  @Trace isShowCollectSheet: boolean = false;
   @Trace hasNext: boolean = true;
   @Trace currentImageIndex: number = 0;
   @Trace currentSort: number = 0;

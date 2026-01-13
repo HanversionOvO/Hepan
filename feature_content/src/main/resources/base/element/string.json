@@ -125,6 +125,22 @@
       "value": "该贴被这些淘专辑收录"
     },
     {
+      "name": "TieContentPage_collect_tie",
+      "value": "收藏该贴至"
+    },
+    {
+      "name": "TieContentPage_personal_collection",
+      "value": "个人收藏夹"
+    },
+    {
+      "name": "TieContentPage_remove_collection",
+      "value": "移除"
+    },
+    {
+      "name": "TieContentPage_add_collection",
+      "value": "添加"
+    },
+    {
       "name": "ReplyPage_cancel",
       "value": "取消"
     },
