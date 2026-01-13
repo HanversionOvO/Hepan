@@ -141,7 +141,7 @@ struct TieCollectSheet {
         ForEach(this.collectionItems, (item: TieCollectItem) => {
           this.CollectionItem(item);
         }, (item: TieCollectItem) => {
-          return item.isPersonal ? 'personal_favorite' : `public_${item.collectionId}_${item.isFavorite}`;
+          return item.isPersonal ? `personal_${item.isFavorite}` : `public_${item.collectionId}_${item.isFavorite}`;
         })
       }
       .width(CommonConstant.FullPercent)
