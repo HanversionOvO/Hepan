@@ -1,5 +1,5 @@
 import { CommonConstant } from 'base_common';
-import { ImageLongTakeDelegate } from 'base_ui';
+import { FloatButton, ImageLongTakeDelegate } from 'base_ui';
 
 // 页面构建函数，需要在 router_map.json 中注册
 @Builder
@@ -36,6 +36,36 @@ export struct ImageLongTakePreviewPage {
     this.bgOpacity = clampScale;
   }
 
+  @Builder
+  Indicator() {
+    Row() {
+      Text(`${this.selectedIndex + 1}/${this.imageList.length}`)
+        .fontSize(CommonConstant.TextSizeSmall)
+        .fontWeight(FontWeight.Bold)
+    }
+    .height(CommonConstant.IconSizeLarge)
+    .alignItems(VerticalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding,
+      right: CommonConstant.SmallContainerLRPadding
+    })
+    .borderRadius(CommonConstant.RadiusRound)
+    .backgroundColor($r('app.color.glass_background'))
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+  }
+
+  @Builder
+  FunctionButton() {
+    Button("test")
+      .fontSize(CommonConstant.TextSizeNormal)
+      .fontWeight(FontWeight.Bold)
+      .backgroundColor($r('app.color.glass_background'))
+      .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+      .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.glass_border') })
+      .width(CommonConstant.FullPercent)
+  }
+
   build() {
     NavDestination() {
       Stack() {
@@ -69,6 +99,39 @@ export struct ImageLongTakePreviewPage {
         .loop(false) // 预览通常不循环，可视需求开启
         .onChange((index: number) => {
           this.selectedIndex = index;
+        })
+
+        Row() {
+          FloatButton({ isFloating: true, floatIcon: $r('sys.symbol.xmark') })
+            .onClick(() => {
+              this.backToFirstPage();
+            })
+          this.Indicator()
+          FloatButton()
+            .opacity(0)
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .width(CommonConstant.FullPercent)
+        .position({ top: 0 })
+        .padding({
+          top: CommonConstant.TopBarHeight,
+          left: CommonConstant.PageLRPadding,
+          right: CommonConstant.PageLRPadding
+        })
+        .opacity(this.bgOpacity)
+
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          this.FunctionButton()
+          this.FunctionButton()
+        }
+        .padding({
+          left: CommonConstant.PageLRPadding,
+          right: CommonConstant.PageLRPadding
+        })
+        .constraintSize({ maxWidth: 400 })
+        .width(CommonConstant.FullPercent)
+        .position({
+          bottom: CommonConstant.BottomBarHeight
         })
       }
     }

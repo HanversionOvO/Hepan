@@ -18,8 +18,6 @@ export struct ImageLongTakeDelegate {
   @Local imagePullingDownScale: number = 1;
   @Local imageTranslateX: number = 0;
   @Local imageTranslateY: number = 0;
-  @Local centerX: number = 0;
-  @Local centerY: number = 0;
   @Local maxOffsetX: number = 0;
   @Local minOffsetX: number = 0;
   @Local maxOffsetY: number = 0;
@@ -44,6 +42,19 @@ export struct ImageLongTakeDelegate {
   private imagePositionX: number = 0;
   private imagePositionY: number = 600;
   private imageShownScaleRate: number = 0.8;
+  private maxScale: number = 3;
+  private lastScale: number = 1;
+  private lastOffsetX: number = 0;
+  private lastOffsetY: number = 0;
+  private centerX: number = 0.5;
+  private centerY: number = 0.5;
+  private center: [number, number] = [0.5, 0.5];
+  private readonly defaultScaleValue: number = 1;
+  private componentWidth: number = 0;
+  private componentHeight: number = 0;
+  private imageWidthVp: number = 0;
+  private imageHeightVp: number = 0;
+  private panOnlyGesture: boolean = false;
   @Local imageWidth: number = 1260;
 
   @Monitor('imageWidth')
@@ -52,19 +63,8 @@ export struct ImageLongTakeDelegate {
   }
 
   private imageHeight: number = 1680;
-  private lastCenterX: number = 0;
-  private lastCenterY: number = 0;
   private startGestureOffsetX: number = 0;
   private startGestureOffsetY: number = 0;
-  private startGestureScale: number = 1;
-  private displayLeft: number = 0;
-  private displayTop: number = 0;
-  private displayRight: number = 1260;
-  private displayBottom: number = 2629;
-  private realDisplayBoundsLeft: number = 0;
-  private realDisplayBoundsTop: number = 0;
-  private realDisplayBoundsRight: number = 0;
-  private realDisplayBoundsBottom: number = 0;
   private firstStarted = true;
   @Event backToFirstPage: () => void = () => {
   };
@@ -83,10 +83,19 @@ export struct ImageLongTakeDelegate {
       }
       this.imageWidth = properties.windowRect.width * this.imageShownScaleRate;
       this.imageHeight = properties.windowRect.height * this.imageShownScaleRate;
-      this.displayLeft = 0;
-      this.displayTop = 0;
-      this.displayRight = properties.windowRect.width;
-      this.displayBottom = properties.windowRect.height;
+      this.componentWidth = this.getUIContext().px2vp(properties.windowRect.width);
+      this.componentHeight = this.getUIContext().px2vp(properties.windowRect.height);
+      this.imageWidthVp = this.getUIContext().px2vp(this.imageWidth);
+      this.imageHeightVp = this.getUIContext().px2vp(this.imageHeight);
+      const imageSize: window.Size = {
+        width: this.imageWidthVp,
+        height: this.imageHeightVp
+      };
+      const windowSize: window.Size = {
+        width: this.componentWidth,
+        height: this.componentHeight
+      };
+      this.maxScale = this.calcFitScaleRatio(imageSize, windowSize);
       this.updateExtremeOffset();
       this.updatePanDirection();
     });
@@ -103,37 +112,19 @@ export struct ImageLongTakeDelegate {
     }
 
     if (this.status === Status.IDLE) {
+      this.panOnlyGesture = false;
       this.disableGesture();
-      this.getUIContext().animateTo({
+      animateTo({
         duration: 200,
+        curve: Curve.Smooth,
         onFinish: () => {
           this.updatePanDirection();
+          this.gestureEnd();
           this.resumeGesture();
           this.onPullingScaleChange(1);
         },
       }, () => {
-        this.imagePullingDownScale = 1;
-        let leftTop = this.calculateLeftTopPoint();
-        let rightBottom = this.calculateRightBottomPoint();
-        let imageWidth = this.imageWidth * this.imageScale;
-        if (imageWidth < this.displayRight - this.displayLeft) {
-          this.centerX = 0;
-          this.imageTranslateX = 0;
-        } else if (leftTop[0] > this.displayLeft) {
-          this.imageTranslateX += (this.displayLeft - leftTop[0]);
-        } else if (rightBottom[0] < this.displayRight) {
-          this.imageTranslateX += (this.displayRight - rightBottom[0]);
-        }
-
-        let imageHeight = this.imageHeight * this.imageScale;
-        if (imageHeight < this.displayBottom - this.displayTop) {
-          this.centerY = 0;
-          this.imageTranslateY = 0;
-        } else if (leftTop[1] > this.displayTop) {
-          this.imageTranslateY += (this.displayTop - leftTop[1]);
-        } else if (rightBottom[1] < this.displayBottom) {
-          this.imageTranslateY += (this.displayBottom - rightBottom[1]);
-        }
+        this.settleImageBounds();
       })
     }
 
@@ -166,130 +157,79 @@ export struct ImageLongTakeDelegate {
   }
 
   calculateLeftTopPoint(): [number, number] {
-    let matrix = matrix4.identity()
-      .scale({
-        x: this.imageScale * this.imagePullingDownScale,
-        y: this.imageScale * this.imagePullingDownScale,
-        centerX: this.centerX,
-        centerY: this.centerY,
-      })
-      .translate({ x: this.imageTranslateX, y: this.imageTranslateY })
-    let leftTop = matrix.transformPoint([-this.imageWidth / 2, -this.imageHeight / 2]);
-    let leftTopPointX = leftTop[0] + this.imageWidth / 2 + this.imagePositionX;
-    let leftTopPointY = leftTop[1] + this.imageHeight / 2 + this.imagePositionY;
-    return [leftTopPointX, leftTopPointY];
+    let scaledWidth = this.imageWidthVp * this.imageScale;
+    let scaledHeight = this.imageHeightVp * this.imageScale;
+    let left = (this.componentWidth - scaledWidth) / 2 + this.imageTranslateX;
+    let top = (this.componentHeight - scaledHeight) / 2 + this.imageTranslateY;
+    return [left, top];
   }
 
   calculateRightBottomPoint(): [number, number] {
-    let matrix = matrix4.identity()
-      .scale({
-        x: this.imageScale * this.imagePullingDownScale,
-        y: this.imageScale * this.imagePullingDownScale,
-        centerX: this.centerX,
-        centerY: this.centerY,
-      })
-      .translate({
-        x: this.imageTranslateX,
-        y: this.imageTranslateY,
-      })
-    let rightBottom = matrix.transformPoint([this.imageWidth / 2, this.imageHeight / 2]);
-    let rightBottomPointX = rightBottom[0] + this.imageWidth / 2 + this.imagePositionX;
-    let rightBottomPointY = rightBottom[1] + this.imageHeight / 2 + this.imagePositionY;
-    return [rightBottomPointX, rightBottomPointY];
+    let scaledWidth = this.imageWidthVp * this.imageScale;
+    let scaledHeight = this.imageHeightVp * this.imageScale;
+    let leftTop = this.calculateLeftTopPoint();
+    return [leftTop[0] + scaledWidth, leftTop[1] + scaledHeight];
   }
 
-  updateCenter(gestureCenterPoint: [number, number]) {
-    this.lastCenterX = this.centerX;
-    this.lastCenterY = this.centerY;
-    let matrix = matrix4.identity()
-      .scale({
-        x: this.imageScale * this.imagePullingDownScale,
-        y: this.imageScale * this.imagePullingDownScale,
-        centerX: this.lastCenterX,
-        centerY: this.lastCenterY,
-      })
-      .translate({
-        x: this.imageTranslateX,
-        y: this.imageTranslateY,
-      })
-    let leftTop = matrix.transformPoint([-this.imageWidth / 2, -this.imageHeight / 2]);
-    let leftTopPointX = leftTop[0] + this.imageWidth / 2;
-    let leftTopPointY = leftTop[1] + this.imageHeight / 2;
-    this.centerX = (gestureCenterPoint[0] - leftTopPointX) / this.imageScale - this.imageWidth / 2;
-    this.centerY = (gestureCenterPoint[1] - leftTopPointY) / this.imageScale - this.imageHeight / 2;
-  }
-
-  updateTranslateAccordingToCenter() {
-    if (this.lastCenterX === this.centerX && this.lastCenterY === this.centerY) {
-      return;
-    }
-    let lastTranslateX = this.imageTranslateX;
-    let lastTranslateY = this.imageTranslateY;
-    let matrixOld = matrix4.identity()
-      .scale({
-        x: this.imageScale * this.imagePullingDownScale,
-        y: this.imageScale * this.imagePullingDownScale,
-        centerX: this.lastCenterX,
-        centerY: this.lastCenterY,
-      })
-      .translate({ x: lastTranslateX, y: lastTranslateY })
-    let matrixNew = matrix4.identity()
-      .scale({
-        x: this.imageScale * this.imagePullingDownScale,
-        y: this.imageScale * this.imagePullingDownScale,
-        centerX: this.centerX,
-        centerY: this.centerY,
-      })
-      .translate({
-        x: this.imageTranslateX,
-        y: this.imageTranslateY,
-      })
-    let leftTopOld = matrixOld.transformPoint([-this.imageWidth / 2, -this.imageHeight / 2]);
-    let leftTopNew = matrixNew.transformPoint([-this.imageWidth / 2, -this.imageHeight / 2]);
-    this.imageTranslateX += (leftTopOld[0] - leftTopNew[0]);
-    this.imageTranslateY += (leftTopOld[1] - leftTopNew[1]);
+  private evaluateCenter(centerX: number, centerY: number): [number, number] {
+    let imgDisplayWidth = this.imageWidthVp * this.lastScale;
+    let imgDisplayHeight = this.imageHeightVp * this.lastScale;
+    let imgX = (this.componentWidth - imgDisplayWidth) / 2 + this.lastOffsetX;
+    let imgY = (this.componentHeight - imgDisplayHeight) / 2 + this.lastOffsetY;
+    let cX = Math.max((centerX - imgX) / imgDisplayWidth, 0);
+    let cY = Math.max((centerY - imgY) / imgDisplayHeight, 0);
+    return [cX, cY];
   }
 
   updateExtremeOffset() {
-    let totalScale = this.imageScale * this.imagePullingDownScale;
-    let matrix = matrix4.identity()
-      .scale({
-        x: totalScale,
-        y: totalScale,
-        centerX: this.centerX,
-        centerY: this.centerY,
-      })
-
-    let p = matrix.transformPoint([-this.imageWidth / 2, -this.imageHeight / 2]);
-    let leftTopPointX = p[0] + this.imageWidth / 2 + this.imagePositionX;
-    let leftTopPointY = p[1] + this.imageHeight / 2 + this.imagePositionY;
-    let rightBottomPointX = leftTopPointX + this.imageWidth * totalScale;
-    let rightBottomPointY = leftTopPointY + this.imageHeight * totalScale;
-
-    this.realDisplayBoundsLeft = Math.max(this.displayLeft, leftTopPointX);
-    this.realDisplayBoundsRight = Math.min(this.displayRight, rightBottomPointX);
-    this.realDisplayBoundsTop = Math.max(this.displayTop, leftTopPointY);
-    this.realDisplayBoundsBottom = Math.min(this.displayBottom, rightBottomPointY);
-
-    this.minOffsetX = this.getUIContext().px2vp(this.realDisplayBoundsRight - rightBottomPointX);
-    this.maxOffsetX = this.getUIContext().px2vp(this.realDisplayBoundsLeft - leftTopPointX);
-    this.minOffsetY = this.getUIContext().px2vp(this.realDisplayBoundsBottom - rightBottomPointY);
-    this.maxOffsetY = this.getUIContext().px2vp(this.realDisplayBoundsTop - leftTopPointY);
+    let scaledWidth = this.imageWidthVp * this.imageScale;
+    let scaledHeight = this.imageHeightVp * this.imageScale;
+    if (scaledWidth > this.componentWidth) {
+      let maxXOffset = (scaledWidth - this.componentWidth) / 2;
+      this.maxOffsetX = maxXOffset;
+      this.minOffsetX = -maxXOffset;
+    } else {
+      this.maxOffsetX = 0;
+      this.minOffsetX = 0;
+    }
+    if (scaledHeight > this.componentHeight) {
+      let maxYOffset = (scaledHeight - this.componentHeight) / 2;
+      this.maxOffsetY = maxYOffset;
+      this.minOffsetY = -maxYOffset;
+    } else {
+      this.maxOffsetY = 0;
+      this.minOffsetY = 0;
+    }
   }
 
-  clamp(num: number, min: number, max: number): number {
-    return Math.min(Math.max(num, min), max)
+  private calcFitScaleRatio(imageSize: window.Size, windowSize: window.Size): number {
+    let ratio: number = 1.0;
+    if (windowSize.width > imageSize.width) {
+      ratio = windowSize.width / imageSize.width;
+    } else {
+      ratio = windowSize.height / imageSize.height;
+    }
+    return ratio + 0.5;
   }
 
   // 双击
   doubleClick() {
     this.getUIContext().animateTo({
       duration: CommonConstant.AnimationDurationNormal,
-      curve: Curve.FastOutSlowIn
+      curve: Curve.Smooth
     }, () => {
-      let scale = this.imageScale === 1 ? 2 : 1
-      this.imageScale = this.clamp(scale, +1, +(3 as number) + 1)
+      if (this.lastScale > this.defaultScaleValue) {
+        this.imageScale = this.defaultScaleValue;
+        this.offsetReset();
+        this.lastScale = this.defaultScaleValue;
+      } else {
+        this.imageScale = this.maxScale;
+        this.offsetReset();
+        this.lastScale = this.maxScale;
+      }
+      this.updateExtremeOffset();
     })
+    this.updatePanDirection();
   }
 
   // 单击
@@ -301,10 +241,10 @@ export struct ImageLongTakeDelegate {
     this.panDirection = PanDirection.Vertical;
     let leftTop = this.calculateLeftTopPoint();
     let rightBottom = this.calculateRightBottomPoint();
-    if (leftTop[0] < this.displayLeft - 1) {
+    if (leftTop[0] < -1) {
       this.panDirection = this.panDirection | PanDirection.Right;
     }
-    if (rightBottom[0] > this.displayRight + 1) {
+    if (rightBottom[0] > this.componentWidth + 1) {
       this.panDirection = this.panDirection | PanDirection.Left;
     }
   }
@@ -312,12 +252,92 @@ export struct ImageLongTakeDelegate {
   resetTransform(): void {
     this.imageTranslateX = 0;
     this.imageTranslateY = 0;
-    this.imageScale = 1;
+    this.imageScale = this.defaultScaleValue;
     this.imagePullingDownScale = 1;
-    this.centerX = 0;
-    this.centerY = 0;
+    this.centerX = 0.5;
+    this.centerY = 0.5;
+    this.lastScale = this.defaultScaleValue;
+    this.lastOffsetX = 0;
+    this.lastOffsetY = 0;
     this.updateExtremeOffset();
     this.onPullingScaleChange(1);
+  }
+
+  private settleImageBounds(): void {
+    this.imagePullingDownScale = 1;
+    this.updateExtremeOffset();
+    if (this.imageTranslateX > this.maxOffsetX) {
+      this.imageTranslateX = this.maxOffsetX;
+    } else if (this.imageTranslateX < this.minOffsetX) {
+      this.imageTranslateX = this.minOffsetX;
+    }
+    if (this.imageTranslateY > this.maxOffsetY) {
+      this.imageTranslateY = this.maxOffsetY;
+    } else if (this.imageTranslateY < this.minOffsetY) {
+      this.imageTranslateY = this.minOffsetY;
+    }
+    let scaledWidth = this.imageWidthVp * this.imageScale;
+    let scaledHeight = this.imageHeightVp * this.imageScale;
+    if (scaledWidth <= this.componentWidth) {
+      this.imageTranslateX = 0;
+    }
+    if (scaledHeight <= this.componentHeight) {
+      this.imageTranslateY = 0;
+    }
+  }
+
+  private pictureBoundaryRestriction(): void {
+    if (this.imageTranslateX > this.maxOffsetX) {
+      this.imageTranslateX = this.maxOffsetX;
+    } else if (this.imageTranslateX < this.minOffsetX) {
+      this.imageTranslateX = this.minOffsetX;
+    }
+    if (this.imageTranslateY > this.maxOffsetY) {
+      this.imageTranslateY = this.maxOffsetY;
+    } else if (this.imageTranslateY < this.minOffsetY) {
+      this.imageTranslateY = this.minOffsetY;
+    }
+    let scaledWidth = this.imageWidthVp * this.imageScale;
+    let scaledHeight = this.imageHeightVp * this.imageScale;
+    if (scaledWidth <= this.componentWidth) {
+      this.imageTranslateX = 0;
+    }
+    if (scaledHeight <= this.componentHeight) {
+      this.imageTranslateY = 0;
+    }
+  }
+
+  private onScale(scale: number, offX: number, offY: number): void {
+    if (this.lastScale * scale > this.maxScale) {
+      this.imageScale = this.maxScale;
+    } else if (this.lastScale * scale < this.defaultScaleValue) {
+      this.imageScale = this.defaultScaleValue;
+    } else {
+      this.imageScale = this.lastScale * scale;
+    }
+    if (this.lastScale * scale === this.maxScale) {
+      this.imageScale -= 0.001;
+    }
+    this.updateExtremeOffset();
+    if (this.imageScale < this.maxScale) {
+      this.imageTranslateY = (this.lastOffsetY + offY) +
+        (0.5 - this.centerY) * this.imageHeightVp * (1 - scale) * this.lastScale;
+      this.imageTranslateX = (this.lastOffsetX + offX) +
+        (0.5 - this.centerX) * this.imageWidthVp * (1 - scale) * this.lastScale;
+    }
+  }
+
+  private gestureEnd(): void {
+    this.lastScale = this.imageScale;
+    this.lastOffsetX = this.imageTranslateX;
+    this.lastOffsetY = this.imageTranslateY;
+  }
+
+  private offsetReset(): void {
+    this.imageTranslateX = 0;
+    this.imageTranslateY = 0;
+    this.lastOffsetX = 0;
+    this.lastOffsetY = 0;
   }
 
   cannotPan(): boolean {
@@ -332,8 +352,6 @@ export struct ImageLongTakeDelegate {
     this.photoListener.on('layout', () => {
       this.init();
     });
-    this.updateExtremeOffset();
-    this.updatePanDirection();
     this.getImageWidth()
   }
 
@@ -349,12 +367,10 @@ export struct ImageLongTakeDelegate {
             .scale({
               x: this.imageScale * this.imagePullingDownScale,
               y: this.imageScale * this.imagePullingDownScale,
-              centerX: this.centerX,
-              centerY: this.centerY,
             })
             .translate({
-              x: this.imageTranslateX,
-              y: this.imageTranslateY,
+              x: this.getUIContext().vp2px(this.imageTranslateX),
+              y: this.getUIContext().vp2px(this.imageTranslateY),
             }))
           .geometryTransition(this.newsId + this.imageUrl + this.componentId)
           .transition(TransitionEffect.OPACITY)
@@ -378,76 +394,56 @@ export struct ImageLongTakeDelegate {
         PinchGesture()
           .onActionStart((event: GestureEvent) => {
             this.status = Status.PINCHING;
-            this.updateCenter([this.getUIContext().vp2px(event.pinchCenterX),
-              this.getUIContext().vp2px(event.pinchCenterY)]);
-            this.updateTranslateAccordingToCenter();
-            this.startGestureScale = this.imageScale;
+            this.center = this.evaluateCenter(event.pinchCenterX, event.pinchCenterY);
+            this.centerX = 1 - this.center[0];
+            this.centerY = 1 - this.center[1];
             this.gestureCount++;
           })
           .onActionUpdate((event: GestureEvent) => {
-            this.imageScale = this.startGestureScale * event.scale;
-            this.updateExtremeOffset();
+            this.onScale(event.scale, event.offsetX, event.offsetY);
+            this.pictureBoundaryRestriction();
           })
           .onActionEnd(() => {
             this.status = Status.IDLE;
-            if (this.imageScale < 1) {
-              this.getUIContext().animateTo({ duration: 250, curve: Curve.EaseOut }, () => {
-                this.imageScale = 1;
-              })
+            if (this.imageScale <= this.defaultScaleValue) {
+              this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+                () => {
+                  this.imageScale = this.defaultScaleValue;
+                  this.offsetReset();
+                })
+            } else if (this.imageScale >= this.maxScale) {
+              this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+                () => {
+                  this.imageScale = this.maxScale;
+                })
             }
+            this.gestureEnd();
             this.gestureCount--;
           }),
         PanGesture({ direction: this.panDirection })
           .onActionStart((event: GestureEvent) => {
             this.panDirection = PanDirection.All;
             let leftTop = this.calculateLeftTopPoint();
-            if (leftTop[1] >= this.displayTop - 1 && this.status !== Status.PINCHING) {
+            if (leftTop[1] >= 0 && this.status !== Status.PINCHING) {
               this.status = Status.PAN_ONLY;
             }
-            if (this.status !== Status.PINCHING) {
-              let currentX: number = event.offsetX;
-              let currentY: number = event.offsetY;
-              if (event.fingerList[0] !== undefined) {
-                currentX = event.fingerList[0].globalX;
-                currentY = event.fingerList[0].globalY;
-              }
-              this.updateCenter([this.getUIContext().vp2px(currentX - this.imagePositionX),
-                this.getUIContext().vp2px(currentY) - this.imagePositionY]);
-              this.updateTranslateAccordingToCenter();
-              this.updateExtremeOffset();
-            }
-            this.startGestureOffsetX = this.getUIContext().px2vp(this.imageTranslateX);
-            this.startGestureOffsetY = this.getUIContext().px2vp(this.imageTranslateY);
+            this.panOnlyGesture = this.status === Status.PAN_ONLY;
+            this.startGestureOffsetX = this.imageTranslateX;
+            this.startGestureOffsetY = this.imageTranslateY;
             this.gestureCount++;
           })
           .onActionUpdate((event: GestureEvent) => {
             let offsetX = event.offsetX;
             let offsetY = event.offsetY;
             if (this.status === Status.PAN_ONLY) {
-              this.imageTranslateX = this.getUIContext().vp2px(this.startGestureOffsetX + offsetX);
-              this.imageTranslateY = this.getUIContext().vp2px(this.startGestureOffsetY + offsetY);
+              this.imageTranslateX = this.startGestureOffsetX + offsetX;
+              this.imageTranslateY = this.startGestureOffsetY + offsetY;
               this.imagePullingDownScale = 1 - Math.abs(event.offsetY) / this.getUIContext().px2vp(2720);
               this.onPullingScaleChange(this.imagePullingDownScale);
             }
             if (this.status !== Status.PAN_ONLY) {
-              if (offsetX + this.startGestureOffsetX > this.maxOffsetX) {
-                let distance = offsetX + this.startGestureOffsetX - this.maxOffsetX;
-                offsetX = this.maxOffsetX + distance * (1 - Math.exp(-distance / 300)) - this.startGestureOffsetX;
-              }
-              if (offsetX + this.startGestureOffsetX < this.minOffsetX) {
-                let distance = this.minOffsetX - (offsetX + this.startGestureOffsetX)
-                offsetX = this.minOffsetX - distance * (1 - Math.exp(-distance / 300)) - this.startGestureOffsetX;
-              }
-              if (offsetY + this.startGestureOffsetY > this.maxOffsetY) {
-                let distance = offsetY + this.startGestureOffsetY - this.maxOffsetY;
-                offsetY = this.maxOffsetY + distance * (1 - Math.exp(-distance / 300)) - this.startGestureOffsetY;
-              }
-              if (offsetY + this.startGestureOffsetY < this.minOffsetY) {
-                let distance = this.minOffsetY - (offsetY + this.startGestureOffsetY)
-                offsetY = this.minOffsetY - distance * (1 - Math.exp(-distance / 300)) - this.startGestureOffsetY;
-              }
-              this.imageTranslateX = this.getUIContext().vp2px(this.startGestureOffsetX + offsetX);
-              this.imageTranslateY = this.getUIContext().vp2px(this.startGestureOffsetY + offsetY);
+              this.onScale(1, offsetX, offsetY);
+              this.pictureBoundaryRestriction();
             }
           })
           .onActionEnd((event: GestureEvent) => {
@@ -458,6 +454,7 @@ export struct ImageLongTakeDelegate {
                 this.status = Status.IDLE;
               }
             }
+            this.gestureEnd();
             this.gestureCount--;
           }),
       ))

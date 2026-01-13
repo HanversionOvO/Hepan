@@ -1,19 +1,7 @@
 import { ComponentContent, PromptAction, window } from '@kit.ArkUI';
-import { clamp, CommonConstant, getComponentsInfo, getSizeByUnit } from 'base_common';
+import { CommonConstant, getComponentsInfo, getSizeByUnit } from 'base_common';
 
 type PreviewImgType = PixelMap | ResourceStr | DrawableDescriptor
-
-interface CenterLocation {
-  x: number;
-  y: number;
-}
-
-interface ScaleImageInfo {
-  width: number
-  height: number
-  localLeft: number
-  localTop: number
-}
 
 /**
  * 对齐方式
@@ -278,23 +266,27 @@ struct SwiperItem {
   @Local imgWidth: number = 0
   @Local imgHeight: number = 0
   @Local curScale: number = 1
-  @Local pinchValue: number = 1
   @Local offsetX: number = 0
   @Local offsetY: number = 0
   @Local startX: number = 0
   @Local startY: number = 0
-  @Local curX: number = 0
-  @Local curY: number = 0
   @Local offsetMaxX: number = 0
+  @Local offsetMinX: number = 0
   @Local offsetMaxY: number = 0
-  @Local imageRatio: number = 0
-  @Local isLongImage: boolean = false
+  @Local offsetMinY: number = 0
   @Local imgDraggable: boolean = true
   @Local isMoving: boolean = false
   private isImageMoved: boolean = false
   private isFingerMove: boolean = false
-  private longImageRatio: number = 2.6
-  private lastCenter: CenterLocation = { x: 0, y: 0 }
+  private lastScale: number = 1
+  private lastOffsetX: number = 0
+  private lastOffsetY: number = 0
+  private centerX: number = 0.5
+  private centerY: number = 0.5
+  private center: [number, number] = [0.5, 0.5]
+  private readonly defaultScaleValue: number = 1
+  private isDisableSwipe: boolean = false
+  private isArriveBoundary: boolean = false
   @Event onDisabledSwiper: (isDisabled: boolean) => void = () => {
   }
 
@@ -306,52 +298,124 @@ struct SwiperItem {
   // 初始化
   init(width: number, height: number) {
     let comInfo = getComponentsInfo(this.getUIContext(), 'PreviewImgContent')
-    let rootRatio = comInfo.height / comInfo.width
-    this.imgWidth = px2vp(width)
-    this.imgHeight = px2vp(height)
-    this.imageRatio = height / width
-    this.rootWidth = this.imgWidth
-    this.rootHeight = this.imgHeight
-
-    this.isLongImage = this.imageRatio > rootRatio && this.imageRatio >= this.longImageRatio
+    this.rootWidth = comInfo.width
+    this.rootHeight = comInfo.height
+    let originWidth = px2vp(width)
+    let originHeight = px2vp(height)
+    let widthRatio = this.rootWidth / originWidth
+    let heightRatio = this.rootHeight / originHeight
+    let scaleRatio = Math.min(widthRatio, heightRatio)
+    this.imgWidth = originWidth * scaleRatio
+    this.imgHeight = originHeight * scaleRatio
     this.imgDraggable = !this.params.onImgLongPress
-
-    this.setParams(1)
+    this.resetState()
   }
 
-  getCenter(fingers: FingerInfo[]): CenterLocation {
-    return {
-      x: (fingers[0].localX + fingers[1].localX) / 2,
-      y: (fingers[0].localY + fingers[1].localY) / 2,
+  private resetState(): void {
+    this.curScale = this.defaultScaleValue
+    this.lastScale = this.defaultScaleValue
+    this.offsetX = 0
+    this.offsetY = 0
+    this.lastOffsetX = 0
+    this.lastOffsetY = 0
+    this.evaluateOffsetRange()
+    this.isDisableSwipe = false
+    this.onDisabledSwiper(false)
+  }
+
+  private evaluateCenter(centerX: number, centerY: number): [number, number] {
+    let imgDisplayWidth = this.imgWidth * this.lastScale
+    let imgDisplayHeight = this.imgHeight * this.lastScale
+    let imgX = (this.rootWidth - imgDisplayWidth) / 2 + this.lastOffsetX
+    let imgY = (this.rootHeight - imgDisplayHeight) / 2 + this.lastOffsetY
+    let cX = Math.max((centerX - imgX) / imgDisplayWidth, 0)
+    let cY = Math.max((centerY - imgY) / imgDisplayHeight, 0)
+    return [cX, cY]
+  }
+
+  private evaluateOffsetRange(): void {
+    let scaledImageWidth = this.imgWidth * this.curScale
+    let scaledImageHeight = this.imgHeight * this.curScale
+    if (scaledImageWidth > this.rootWidth) {
+      let maxXOffset = (scaledImageWidth - this.rootWidth) / 2
+      this.offsetMaxX = maxXOffset
+      this.offsetMinX = -maxXOffset
+    } else {
+      this.offsetMaxX = 0
+      this.offsetMinX = 0
+    }
+    if (scaledImageHeight > this.rootHeight) {
+      let maxYOffset = (scaledImageHeight - this.rootHeight) / 2
+      this.offsetMaxY = maxYOffset
+      this.offsetMinY = -maxYOffset
+    } else {
+      this.offsetMaxY = 0
+      this.offsetMinY = 0
     }
   }
 
-  getMaxMoveX() {
-    if (this.imageRatio) {
-      const displayWidth = this.isLongImage ? this.imgWidth : this.rootWidth
-      return Math.max(0, (this.curScale * displayWidth - this.rootWidth) / 2)
+  private pictureBoundaryRestriction(): void {
+    if (this.offsetX > this.offsetMaxX) {
+      this.offsetX = this.offsetMaxX
+      this.isDisableSwipe = false
+      this.isArriveBoundary = true
+    } else if (this.offsetX < this.offsetMinX) {
+      this.offsetX = this.offsetMinX
+      this.isDisableSwipe = false
+      this.isArriveBoundary = true
     }
-    return 0
+    if (this.offsetY > this.offsetMaxY) {
+      this.offsetY = this.offsetMaxY
+    } else if (this.offsetY < this.offsetMinY) {
+      this.offsetY = this.offsetMinY
+    }
+    let scaledImageWidth = this.imgWidth * this.curScale
+    let scaledImageHeight = this.imgHeight * this.curScale
+    if (scaledImageWidth <= this.rootWidth) {
+      this.offsetX = 0
+    }
+    if (scaledImageHeight <= this.rootHeight) {
+      this.offsetY = 0
+    }
   }
 
-  getMaxMoveY() {
-    if (this.imageRatio) {
-      const displayHeight = this.isLongImage ? this.rootHeight : this.imgHeight
-      return Math.max(0, (this.curScale * displayHeight - this.rootHeight) / 2)
+  private onScale(scale: number, offX: number, offY: number): void {
+    const minScale = +(this.params.minScale as number)
+    const maxScale = +(this.params.maxScale as number)
+    if (this.lastScale * scale > maxScale) {
+      this.curScale = maxScale
+    } else if (this.lastScale * scale < minScale) {
+      this.curScale = minScale
+    } else {
+      this.curScale = this.lastScale * scale
     }
-    return 0
+    if (this.lastScale * scale === maxScale) {
+      this.curScale -= 0.001
+    }
+    this.evaluateOffsetRange()
+    if (this.curScale < maxScale) {
+      this.offsetY = (this.lastOffsetY + offY) +
+        (0.5 - this.centerY) * this.imgHeight * (1 - scale) * this.lastScale
+      this.offsetX = (this.lastOffsetX + offX) +
+        (0.5 - this.centerX) * this.imgWidth * (1 - scale) * this.lastScale
+    }
+    this.isArriveBoundary = false
+    if (!this.isArriveBoundary) {
+      this.isDisableSwipe = true
+    }
   }
 
-  // 获取缩放后图片信息
-  getScaleImageInfo(): ScaleImageInfo {
-    let scaleWidth = this.imgWidth * this.curScale
-    let scaleHeight = this.imgHeight * this.curScale
-    return {
-      width: scaleWidth,
-      height: scaleHeight,
-      localLeft: (this.rootWidth - scaleWidth) / 2,
-      localTop: (this.rootHeight - scaleHeight) / 2,
-    }
+  private gestureEnd(): void {
+    this.lastScale = this.curScale
+    this.lastOffsetX = this.offsetX
+    this.lastOffsetY = this.offsetY
+  }
+
+  private offsetReset(): void {
+    this.offsetX = 0
+    this.offsetY = 0
+    this.lastOffsetX = 0
+    this.lastOffsetY = 0
   }
 
   // 单击
@@ -371,9 +435,28 @@ struct SwiperItem {
     this.params?.onCloseExpand?.()
     if (!this.isFingerMove) {
       if (this.params.doubleScale) {
-        let scale = this.curScale === 1 ? 2 : 1
-        this.setParams(scale,
-          scale === 2 || this.isLongImage ? { x: fingers[0].localX, y: fingers[0].localY } : undefined)
+        const maxScale = +(this.params.maxScale as number)
+        this.center = this.evaluateCenter(fingers[0].localX, fingers[0].localY)
+        this.centerX = 1 - this.center[0]
+        this.centerY = 1 - this.center[1]
+        if (this.lastScale > this.defaultScaleValue) {
+          this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+            () => {
+              this.curScale = this.defaultScaleValue
+              this.offsetReset()
+            })
+          this.lastScale = this.defaultScaleValue
+          this.isDisableSwipe = false
+        } else {
+          this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+            () => {
+              this.curScale = maxScale
+              this.offsetReset()
+            })
+          this.lastScale = maxScale
+          this.isDisableSwipe = true
+        }
+        this.onDisabledSwiper(this.isDisableSwipe)
       } else {
         this.params.closeOnClickImage && this.params.hide()
       }
@@ -384,11 +467,9 @@ struct SwiperItem {
   onFingerMove(event: TouchEvent) {
     switch (event.type) {
       case TouchType.Down:
-        this.isMoving = this.curScale !== 1 || this.isLongImage
+        this.isMoving = this.curScale > this.defaultScaleValue || this.offsetMaxX !== 0 || this.offsetMaxY !== 0
         this.startX = event.touches[0].x
         this.startY = event.touches[0].y
-        this.curX = this.offsetX
-        this.curY = this.offsetY
         this.isImageMoved = false
         this.isFingerMove = false
         break
@@ -396,59 +477,32 @@ struct SwiperItem {
         let x = event.touches[0].x - this.startX
         let y = event.touches[0].y - this.startY
         this.isFingerMove = x !== 0 || y !== 0
-        let offsetX = this.curX + x
-        let offsetY = this.curY + y
-        let isDisabled = Math.abs(offsetX) <= this.offsetMaxX
-        this.onDisabledSwiper(isDisabled)
-        if (this.isMoving) {
-          if (Math.abs(offsetX) > this.offsetMaxX && !this.isImageMoved) {
-            this.isMoving = false
-            return
-          }
-          this.isImageMoved = true
-          this.offsetX = clamp(offsetX, -this.offsetMaxX, this.offsetMaxX)
-          this.offsetY = clamp(offsetY, -this.offsetMaxY, this.offsetMaxY)
+        if (!this.isMoving) {
+          return
         }
+        this.isImageMoved = true
+        this.onScale(1, x, y)
+        this.pictureBoundaryRestriction()
+        this.onDisabledSwiper(this.isDisableSwipe)
         break
       case TouchType.Up:
         this.isMoving = false
+        this.gestureEnd()
         break
-    }
-  }
-
-  // 设置参数
-  setParams(scale: number, lastCenter?: CenterLocation) {
-    scale = clamp(scale, +(this.params.minScale as number), +(this.params.maxScale as number) + 1)
-    if (scale !== this.curScale) {
-      const ratio = scale / this.curScale
-      this.curScale = scale
-      this.offsetMaxX = this.getMaxMoveX()
-      this.offsetMaxY = this.getMaxMoveY()
-      if (lastCenter) {
-        const imgInfo = this.getScaleImageInfo()
-        const moveX = this.offsetX - (lastCenter.x - imgInfo.localLeft - imgInfo.width / 2) * (ratio - 1)
-        const moveY = this.offsetY - (lastCenter.y - imgInfo.localTop - imgInfo.height / 2) * (ratio - 1)
-
-        this.offsetX = clamp(moveX, -this.offsetMaxX, this.offsetMaxX)
-        this.offsetY = clamp(moveY, -this.offsetMaxY, this.offsetMaxY)
-      } else {
-        this.offsetX = 0
-        this.offsetY = 0
-      }
     }
   }
 
   // 重置
   @Monitor('active')
   reset() {
-    this.setParams(1)
+    this.resetState()
   }
 
   build() {
     Row() {
       Image(this.url)
-        .width(this.isLongImage ? '' : '100%')
-        .height(this.isLongImage ? '100%' : '')
+        .width(this.imgWidth > 0 ? this.imgWidth : '100%')
+        .height(this.imgHeight > 0 ? this.imgHeight : '100%')
         .objectFit(ImageFit.Contain)
         .scale({ x: this.curScale, y: this.curScale, z: 1 })
         .translate({ x: this.offsetX, y: this.offsetY, z: 0 })
@@ -485,24 +539,39 @@ struct SwiperItem {
         }),
         // 缩放
         PinchGesture({ fingers: 2 })
-          .onActionStart(() => {
+          .onActionStart((event: GestureEvent) => {
             this.params?.onCloseExpand?.()
-            this.pinchValue = this.curScale
+            this.center = this.evaluateCenter(event.pinchCenterX, event.pinchCenterY)
+            this.centerX = 1 - this.center[0]
+            this.centerY = 1 - this.center[1]
           })
           .onActionUpdate((event: GestureEvent) => {
-            let scale = Number((this.pinchValue * event.scale).toFixed(1))
-            let lastCenter = this.getCenter(event.fingerList)
-            this.lastCenter = lastCenter
             this.isMoving = false
-            this.onDisabledSwiper(true)
-            this.setParams(scale, lastCenter)
+            this.onScale(event.scale, event.offsetX, event.offsetY)
+            this.pictureBoundaryRestriction()
+            if (this.curScale > this.defaultScaleValue) {
+              this.isDisableSwipe = true
+            }
+            this.onDisabledSwiper(this.isDisableSwipe)
           })
           .onActionEnd(() => {
             const maxZoom = +(this.params.maxScale as number)
-            if (this.curScale > maxZoom) {
-              this.setParams(maxZoom, this.lastCenter)
+            if (this.curScale <= this.defaultScaleValue) {
+              this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+                () => {
+                  this.curScale = this.defaultScaleValue
+                  this.offsetReset()
+                })
+              this.isDisableSwipe = false
+            } else if (this.curScale >= maxZoom) {
+              this.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal, curve: Curve.Smooth },
+                () => {
+                  this.curScale = maxZoom
+                })
+              this.isDisableSwipe = true
             }
-            this.pinchValue = Math.min(this.curScale, maxZoom)
+            this.gestureEnd()
+            this.onDisabledSwiper(this.isDisableSwipe)
           }),
       ),
     )
