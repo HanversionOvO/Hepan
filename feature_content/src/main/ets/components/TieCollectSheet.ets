@@ -1,4 +1,4 @@
-import { CommonConstant, ForumApi } from 'base_common';
+import { CommonConstant, ForumApi, TieFavoriteStatus, TiePublicFavorite } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @Builder
@@ -9,40 +9,81 @@ export function tieCollectSheet(vm: TieContentPageVM) {
 @ComponentV2
 struct TieCollectSheet {
   @Param @Require vm: TieContentPageVM;
-
-  // TODO: 这里需要初始化收藏列表 @Local xxx
+  @Local collectionItems: TieCollectItem[] = [];
 
   async aboutToAppear() {
-    await ForumApi.collectTie(this.vm.tieThread.thread_id);
+    const threadId = this.vm.tieThread.thread_id || this.vm.tieSummary.thread_id;
+    if (!threadId) {
+      return;
+    }
+    try {
+      const status = await ForumApi.getTieFavoriteStatus(threadId);
+      this.collectionItems = this.buildItems(status);
+    } catch {
+      this.collectionItems = this.buildItems();
+    }
+  }
+
+  private buildItems(status?: TieFavoriteStatus): TieCollectItem[] {
+    const items: TieCollectItem[] = [];
+    const personalFavorite = status?.is_personal_favorite === true;
+    items.push(new TieCollectItem({
+      isPersonal: true,
+      isFavorite: personalFavorite
+    }));
+
+    const publicFavorites: TiePublicFavorite[] = status?.public_favorites || [];
+    publicFavorites.forEach((favorite) => {
+      items.push(new TieCollectItem({
+        isPersonal: false,
+        isFavorite: favorite.is_favorite === true,
+        collectionId: favorite.collection_id,
+        name: favorite.name || '',
+        description: favorite.description || ''
+      }));
+    });
+    return items;
   }
 
   @Builder
-  CollectionItem(isFavorite: boolean, isPersonal: boolean) {
+  CollectionItem(item: TieCollectItem) {
     Row() {
-      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-        SymbolGlyph(isPersonal ? $r('sys.symbol.person') : $r('sys.symbol.bookshelf'))
-          .fontSize(CommonConstant.TextSizeLarge)
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        SymbolGlyph(item.isPersonal ? $r('sys.symbol.person') : $r('sys.symbol.bookshelf'))
+          .fontColor([CommonConstant.ThemeColor])
+          .fontSize(CommonConstant.IconSizeNormal)
           .padding(CommonConstant.NormalContainerInnerPadding)
           .borderRadius(CommonConstant.RadiusNormal)
           .border({
-            width: CommonConstant.BorderSizeNormal,
+            width: CommonConstant.BorderSizeLarge,
             color: $r('sys.color.font_tertiary'),
             style: BorderStyle.Dashed
           })
 
-        Text(isPersonal ? $r('app.string.TieContentPage_personal_collection') : "//TODO: 这里放name")
+        Text(item.isPersonal ? $r('app.string.TieContentPage_personal_collection') : item.name)
           .fontSize(CommonConstant.TextSizeNormal)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .layoutWeight(1)
+          .width(0)
       }
+      .layoutWeight(1)
+      .alignItems(VerticalAlign.Center)
+      .constraintSize({ minWidth: 0 })
 
       Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-        Text(isFavorite ? $r('app.string.TieContentPage_remove_collection') :
+        Text(item.isFavorite ? $r('app.string.TieContentPage_remove_collection') :
           $r('app.string.TieContentPage_add_collection'))
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor($r('sys.color.font_secondary'))
+          .fontWeight(FontWeight.Bold)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-        SymbolGlyph(isFavorite ? $r('sys.symbol.minus') : $r('sys.symbol.plus'))
+        SymbolGlyph(item.isFavorite ? $r('sys.symbol.minus') : $r('sys.symbol.plus'))
           .fontSize(CommonConstant.TextSizeSmall)
           .fontColor([$r('sys.color.font_secondary')])
+          .fontWeight(FontWeight.Bold)
       }
     }
     .padding({
@@ -52,20 +93,55 @@ struct TieCollectSheet {
       bottom: CommonConstant.NormalContainerTBPadding
     })
     .width(CommonConstant.FullPercent)
+    .alignItems(VerticalAlign.Center)
     .justifyContent(FlexAlign.SpaceBetween)
   }
 
   build() {
     Column() {
-      // TODO: 这里实现收藏列表
+      Column() {
+        ForEach(this.collectionItems, (item: TieCollectItem) => {
+          this.CollectionItem(item);
+        }, (item: TieCollectItem) => {
+          return item.isPersonal ? 'personal_favorite' : `public_${item.collectionId}_${item.isFavorite}`;
+        })
+      }
+      .width(CommonConstant.FullPercent)
+      .borderRadius(CommonConstant.RadiusNormal)
+      .backgroundColor($r('app.color.start_window_background'))
     }
     .width(CommonConstant.FullPercent)
-    .borderRadius(CommonConstant.RadiusNormal)
     .padding({
       left: CommonConstant.NormalContainerLRPadding,
       right: CommonConstant.NormalContainerLRPadding,
       bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
     })
-    .backgroundColor($r('app.color.start_window_background'))
+  }
+}
+
+interface TieCollectItemOptions {
+  isPersonal: boolean;
+  isFavorite: boolean;
+  collectionId?: number;
+  name?: string;
+  description?: string;
+}
+
+@ObservedV2
+class TieCollectItem {
+  @Trace isPersonal: boolean = false;
+  @Trace isFavorite: boolean = false;
+  @Trace collectionId: number = 0;
+  @Trace name: string = '';
+  @Trace description: string = '';
+
+  constructor(options?: TieCollectItemOptions) {
+    if (options) {
+      this.isPersonal = options.isPersonal ?? this.isPersonal;
+      this.isFavorite = options.isFavorite ?? this.isFavorite;
+      this.collectionId = options.collectionId ?? this.collectionId;
+      this.name = options.name ?? this.name;
+      this.description = options.description ?? this.description;
+    }
   }
 }
