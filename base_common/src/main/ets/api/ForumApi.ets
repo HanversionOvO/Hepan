@@ -170,8 +170,11 @@ export class ForumApi {
     }
   }
 
-  public static async getForumDetail(tid: number, page: number = 1): Promise<TieDetail> {
-    const path: string = `/_/post/list?thread_id=${tid}&page=${page}&thread_details=1&forum_details=1`
+  public static async getForumDetail(tid: number, page: number = 1, orderType?: number): Promise<TieDetail> {
+    let path: string = `/_/post/list?thread_id=${tid}&page=${page}&thread_details=1&forum_details=1`;
+    if (orderType !== undefined && orderType !== null) {
+      path += `&order_type=${orderType}`;
+    }
 
     const response = await ApiClient.getInstance().request<BaseResponse<TieDetail>>({
       path: path,

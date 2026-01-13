@@ -232,6 +232,10 @@ export class TieContentPageVM extends BaseVM {
     return result;
   }
 
+  private getOrderType(): number | undefined {
+    return this.currentSort === 1 ? 1 : undefined;
+  }
+
   private updateSummaryFromThread(thread: TieThread) {
     if (!thread || !thread.thread_id) {
       return;
@@ -273,7 +277,11 @@ export class TieContentPageVM extends BaseVM {
     }
 
     try {
-      const detail: TieDetail = await ForumApi.getForumDetail(this.tieSummary.thread_id, this.currentPage);
+      const detail: TieDetail = await ForumApi.getForumDetail(
+        this.tieSummary.thread_id,
+        this.currentPage,
+        this.getOrderType()
+      );
       this.tieDetail = detail;
       this.tieThread = detail.thread || new TieThread();
       this.forumInfo = detail.forum || new ForumDetails();
