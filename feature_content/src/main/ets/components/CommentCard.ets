@@ -1,5 +1,5 @@
 import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant, DateUtil, RouterUtil, TieRow, UserAvatarUtil } from 'base_common';
+import { CommonConstant, DateUtil, RouterMap, RouterUtil, TieRow, UserAvatarUtil } from 'base_common';
 import { TieContentRender } from './TieContentRender';
 
 @ComponentV2
@@ -64,6 +64,48 @@ export struct CommentCard {
     return `${y}-${m}-${d} ${h}:${min}`;
   }
 
+  private stripMarkdownQuote(message: string): string {
+    const lines = message.replace(/\r\n/g, '\n').split('\n');
+    let index = 0;
+    while (index < lines.length && lines[index].trim().startsWith('>')) {
+      index += 1;
+    }
+    while (index < lines.length && lines[index].trim() === '') {
+      index += 1;
+    }
+    return lines.slice(index).join('\n');
+  }
+
+  private stripBbcodeQuote(message: string): string {
+    let content = message;
+    const quoteRegex = /\[quote(?:=[^\]]*)?][\s\S]*?\[\/quote]/i;
+    while (quoteRegex.test(content)) {
+      content = content.replace(quoteRegex, '');
+    }
+    return content;
+  }
+
+  private buildQuoteContent(): string {
+    const rawMessage = this.tieComment.message || '';
+    if (!rawMessage) {
+      return '';
+    }
+    const format = this.tieComment.format ?? 0;
+    let content = format === 2 ? this.stripMarkdownQuote(rawMessage) : this.stripBbcodeQuote(rawMessage);
+    content = content.replace(/\r\n/g, '\n').replace(/\s+/g, ' ').trim();
+    if (content.length > 40) {
+      content = content.slice(0, 40) + '...';
+    }
+    return content;
+  }
+
+  private goToUserProfile(): void {
+    const authorId = this.tieComment.author_id;
+    if (authorId) {
+      RouterUtil.pushPathByName(RouterMap.USER_PROFILE, authorId);
+    }
+  }
+
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
       Column() {
@@ -88,6 +130,9 @@ export struct CommentCard {
               })
           }
         }
+        .onClick(() => {
+          this.goToUserProfile();
+        })
       }
       .width(CommonConstant.IconSizeLarge)
       .alignItems(HorizontalAlign.Start)
@@ -98,6 +143,9 @@ export struct CommentCard {
             .fontSize(CommonConstant.TextSizeSmall)
             .fontColor($r('sys.color.font_primary'))
             .fontWeight(FontWeight.Bold)
+            .onClick(() => {
+              this.goToUserProfile();
+            })
 
           Text(this.tieComment.author_details?.group_title || '')
             .fontSize(CommonConstant.TextSizeTiny)
@@ -128,7 +176,7 @@ export struct CommentCard {
             .onClick(() => {
               if (this.threadId && this.threadId !== 0) {
                 const replyDate = this.formatPostDate(this.tieComment.dateline);
-                const quoteContent = this.tieComment.message || '';
+                const quoteContent = this.buildQuoteContent();
 
                 RouterUtil.pushPathByName("ReplyPage", {
                   "threadId": this.threadId,

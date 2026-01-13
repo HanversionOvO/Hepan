@@ -1,5 +1,5 @@
 import { DateUtil } from '@pura/harmony-utils';
-import { CommonConstant, UserAvatarUtil } from 'base_common';
+import { CommonConstant, RouterMap, RouterUtil, UserAvatarUtil } from 'base_common';
 import { GlassButton } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
@@ -23,6 +23,13 @@ export struct UserInfoArea {
     return this.getAuthorId() !== 0 || this.getAuthorName().length > 0;
   }
 
+  private goToUserProfile(): void {
+    const authorId = this.getAuthorId();
+    if (authorId) {
+      RouterUtil.pushPathByName(RouterMap.USER_PROFILE, authorId);
+    }
+  }
+
   build() {
     Column() {
       if (this.hasAuthor()) {
@@ -44,6 +51,9 @@ export struct UserInfoArea {
             }
             .alignItems(HorizontalAlign.Start)
           }
+          .onClick(() => {
+            this.goToUserProfile();
+          })
 
           GlassButton({
             text: $r('app.string.TieContentPage_subscribe'),
