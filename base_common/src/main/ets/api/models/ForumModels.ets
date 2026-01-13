@@ -233,6 +233,21 @@ export class TieCollection {
   @Trace keyword: string = "";
 }
 
+export interface TieFavoriteStatus {
+  is_personal_favorite?: boolean;
+  public_favorites?: TiePublicFavorite[];
+}
+
+export interface TiePublicFavorite {
+  collection_id: number;
+  owner_uid: number;
+  username: string;
+  name: string;
+  description?: string;
+  is_owner?: boolean;
+  is_favorite?: boolean;
+}
+
 @ObservedV2
 export class TieModeration {
   @Trace uid: number = 0;

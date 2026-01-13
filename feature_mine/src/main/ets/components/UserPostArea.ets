@@ -176,7 +176,8 @@ struct UserCollectionList {
             })
         }
         .width(CommonConstant.FullPercent)
-      }, (collection: Collection) => `${this.vm.getUniqueId(collection.ctid)}_${collection.lastUpdate}_${collection.subscribe}_${collection.comment}`)
+      },
+        (collection: Collection) => `${this.vm.getUniqueId(collection.ctid)}_${collection.lastUpdate}_${collection.subscribe}_${collection.comment}`)
 
       ForEach(this.spacerArray, (_: number, i: number) => {
         FlowItem() {
@@ -243,7 +244,6 @@ struct UserCollectionList {
     StateLayout({
       uiState: this.vm.uiState,
       onRetry: async (): Promise<void> => this.vm.loadMineData(true),
-      emptyStr: !this.isMe && this.vm.collections.length === 0 ? $r('app.string.StateLayout_empty') : undefined,
       content: () => {
         this.renderList();
       }
