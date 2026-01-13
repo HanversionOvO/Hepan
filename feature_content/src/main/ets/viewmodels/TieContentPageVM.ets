@@ -2,18 +2,30 @@ import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   BasicDataSource,
+  Collection,
+  CollectionUser,
   ColorUtil,
   CommonConstant,
+  DateUtil,
   ForumApi,
   ForumDetails,
   ForumTieSummary,
+  RouterMap,
+  RouterUtil,
+  TieCollection,
   TieDetail,
   TieRow,
   TieThread,
   UiState,
   getComponentsInfo
 } from 'base_common';
-import { CustomTabItem, LongTakeAnimationProperties, NavTitleButtonModel } from 'base_ui';
+import {
+  CustomTabItem,
+  LongTakeAnimationProperties,
+  LongTakeTransitionParam,
+  NavTitleButtonModel
+} from 'base_ui';
+import { LoneTakeAnimationsTransition } from 'base_ui/src/main/ets/transitions/longtake/utils/LoneTakeAnimationsTransition';
 
 const TAG = '[TieContentPageVM]: ';
 
@@ -28,6 +40,7 @@ export class TieContentPageVM extends BaseVM {
   @Trace tieSummary: ForumTieSummary = new ForumTieSummary();
   @Trace tieDetail: TieDetail = new TieDetail();
   @Trace tieThread: TieThread = new TieThread();
+  @Trace threadCollections: Collection[] = [];
   @Trace placeholderColor: string = CommonConstant.ThemeColor;
   @Trace forumInfo: ForumDetails = new ForumDetails();
   @Trace tieTopic: TieRow = new TieRow();
@@ -236,6 +249,36 @@ export class TieContentPageVM extends BaseVM {
     return this.currentSort === 1 ? 1 : undefined;
   }
 
+  private convertThreadCollections(collections: TieCollection[]): Collection[] {
+    const result: Collection[] = [];
+    const seen = new Set<number>();
+    collections.forEach((item) => {
+      if (!item || !item.collection_id || seen.has(item.collection_id)) {
+        return;
+      }
+      seen.add(item.collection_id);
+      const collection = new Collection();
+      collection.ctid = item.collection_id;
+      collection.title = item.name || '';
+      collection.collection_nums = item.threads || 0;
+      collection.subscribe = item.follows || 0;
+      collection.comment = item.comments || 0;
+      collection.description = item.description || '';
+      collection.lastUpdate = item.last_update ? DateUtil.getRelativeTime(item.last_update) : '';
+      const creator = new CollectionUser();
+      creator.uid = item.uid || 0;
+      creator.username = item.username || '';
+      collection.creator = creator;
+      collection.tags = item.keyword ? item.keyword.split(/[\s,，]+/).filter(Boolean) : [];
+      result.push(collection);
+    });
+    return result;
+  }
+
+  updateThreadCollections(thread: TieThread): void {
+    this.threadCollections = this.convertThreadCollections(thread?.collections || []);
+  }
+
   private updateSummaryFromThread(thread: TieThread) {
     if (!thread || !thread.thread_id) {
       return;
@@ -248,6 +291,7 @@ export class TieContentPageVM extends BaseVM {
     this.tieSummary.replies = thread.replies || this.tieSummary.replies;
     this.tieSummary.views = thread.views || this.tieSummary.views;
     this.updatePlaceholderColor(thread.thread_id);
+    this.updateThreadCollections(thread);
   }
 
   private updatePaging(detail: TieDetail) {
@@ -259,6 +303,17 @@ export class TieContentPageVM extends BaseVM {
     } else {
       this.hasNext = false;
     }
+  }
+
+  enterCollectionDetailPage(componentId: string, context: UIContext, collection: Collection): void {
+    const transitionParam: LongTakeTransitionParam | undefined =
+      LoneTakeAnimationsTransition.generateLongTakeParam(context, componentId, CommonConstant.RadiusLarge);
+    const params: Record<string, Object> = {};
+    params["collection"] = collection;
+    if (transitionParam) {
+      params["transition"] = transitionParam;
+    }
+    RouterUtil.pushPathByName(RouterMap.COLLECTION_CONTENT_PAGE, params);
   }
 
   async loadData(isLoadMore: boolean = false) {
@@ -284,6 +339,7 @@ export class TieContentPageVM extends BaseVM {
       );
       this.tieDetail = detail;
       this.tieThread = detail.thread || new TieThread();
+      this.updateThreadCollections(this.tieThread);
       this.forumInfo = detail.forum || new ForumDetails();
       if (this.forumInfo.name) {
         this.forumName = this.forumInfo.name;

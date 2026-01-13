@@ -121,6 +121,10 @@
       "value": "只看楼主"
     },
     {
+      "name": "TieContentPage_collection",
+      "value": "该贴被这些淘专辑收录"
+    },
+    {
       "name": "ReplyPage_cancel",
       "value": "取消"
     },

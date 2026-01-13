@@ -6,11 +6,10 @@ import {
   TransitionMap,
   UserAvatarUtil
 } from 'base_common';
-import { buildTieCardKey, CustomFloatNavTitle, StateLayout, TieCard } from 'base_ui';
+import { buildTieCardKey, CollectionCard, CustomFloatNavTitle, StateLayout, TieCard } from 'base_ui';
 import { CollectionContentPageVM } from '../viewmodels/CollectionContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ResUtil } from '@pura/harmony-utils';
-import { CollectionCard } from '../components/CollectionCard';
 
 @ComponentV2
 export struct CollectionContentView {

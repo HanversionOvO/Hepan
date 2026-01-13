@@ -1,6 +1,5 @@
 import { Collection, CommonConstant } from 'base_common';
-import { CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
-import { CollectionCard } from '../components/CollectionCard';
+import { CollectionCard, CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
 import { collectionCreateSheetBuilder } from '../components/CollectionCreateSheet';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 

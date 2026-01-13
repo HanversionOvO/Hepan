@@ -22,6 +22,8 @@ export { CustomAtPanel } from './src/main/ets/components/CustomAtPanel';
 
 export { TieCard, buildTieCardKey } from './src/main/ets/components/TieCard';
 
+export { CollectionCard } from './src/main/ets/components/CollectionCard';
+
 export { CollapsibleCoordinator } from './src/main/ets/components/CollapsibleCoordinator';
 
 export { CustomFloatNavTitle } from './src/main/ets/components/CustomFloatNavTitle';

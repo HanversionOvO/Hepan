@@ -1,5 +1,5 @@
-import { CommonConstant, TieRow, TransitionMap, UiState } from 'base_common';
-import { CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
+import { Collection, CommonConstant, TieRow, TransitionMap, UiState } from 'base_common';
+import { CollectionCard, CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
 import { ImageSwiper } from '../components/ImageSwiper';
@@ -82,6 +82,8 @@ export struct TieContentView {
 
         UserInfoArea({ vm: this.vm })
 
+        this.ThreadCollections()
+
         if (this.vm.commentLoadingState === UiState.LOADING && !this.vm.tieTopic?.message) {
           this.ArticleSkeleton()
         } else if (this.vm.tieTopic?.message) {
@@ -99,6 +101,18 @@ export struct TieContentView {
           TieDetailFooter({ vm: this.vm })
         }
 
+        // TODO: 淘专辑收录
+        if (this.vm.tieThread.collections && this.vm.tieThread.collections.length > 0) {
+          Text($r('app.string.TieContentPage_collection'))
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Medium)
+            .textAlign(TextAlign.Start)
+            .width(CommonConstant.FullPercent)
+
+          // 模仿userOtherCollections实现
+
+        }
+
         if (this.vm.isTabletView) {
           Column()
             .height(CommonConstant.IconSizeLarge + CommonConstant.SmallContainerInnerPadding * 2 +
@@ -112,6 +126,40 @@ export struct TieContentView {
       })
     }
     .width(CommonConstant.FullPercent)
+  }
+
+  @Builder
+  ThreadCollections() {
+    if (this.vm.threadCollections.length > 0) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+        Text($r('app.string.TieContentPage_collection'))
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontWeight(FontWeight.Medium)
+          .width(CommonConstant.FullPercent)
+          .textAlign(TextAlign.Start)
+
+        Swiper() {
+          ForEach(this.vm.threadCollections, (collection: Collection) => {
+            Column() {
+              CollectionCard({ collection: collection })
+                .id(`${this.vm.tieSummary.thread_id}_${collection.ctid}`)
+            }
+            .width(CommonConstant.FullPercent)
+            .onClick(() => {
+              this.vm.enterCollectionDetailPage(`${this.vm.tieSummary.thread_id}_${collection.ctid}`,
+                this.getUIContext(), collection);
+            })
+          }, (collection: Collection) => collection.ctid.toString())
+        }
+        .width(CommonConstant.FullPercent)
+        .autoPlay(true)
+        .loop(true)
+        .itemSpace(CommonConstant.NormalContainerInnerPadding)
+        .indicator(false)
+        .effectMode(EdgeEffect.Spring)
+      }
+      .width(CommonConstant.FullPercent)
+    }
   }
 
   @Builder

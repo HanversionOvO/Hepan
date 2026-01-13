@@ -202,7 +202,7 @@ export class TieThread {
   @Trace max_position: number = 0;
   @Trace comments: number = 0;
   @Trace can_reply: boolean = false;
-  @Trace collections: TieCollection[] = [];
+  @Trace collections?: TieCollection[];
   @Trace last_moderation: TieModeration = new TieModeration();
 }
 
