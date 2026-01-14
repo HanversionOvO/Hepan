@@ -53,5 +53,7 @@ export struct MessageCard {
     .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusLarge)
     .justifyContent(FlexAlign.SpaceBetween)
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 }

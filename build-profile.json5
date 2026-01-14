@@ -5,13 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.cer",
+          "certpath": "C:/Users/hanve/.ohos/config/default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B8A73D9B41A2915CC0D2EB357649C013015B151ACD9295A01C12D748FE91E1FEC334CF1473333D8",
-          "profile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p7b",
+          "keyPassword": "0000001B93B211BB8FA2B6D9AAAF3733574A1AD6FB90BBDF3B34AC407334ADDF14AAEA21E936A1EC352BFF",
+          "profile": "C:/Users/hanve/.ohos/config/default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\hanve\\.ohos\\config\\default_Hepan_K8FwAGyiPqza3_LsvzePjyYDWY-tbr320G46oYN1TNc=.p12",
-          "storePassword": "0000001B561338226572181EF2259690D7B234A46E70FD145E9531547BFDF6620053E8F198EAADDAFD4333"
+          "storeFile": "C:/Users/hanve/.ohos/config/default_Hepan_-cR7uRQ_Xcmrc9djaLb4X6DwijgI3DknO7-kS0IFcPY=.p12",
+          "storePassword": "0000001B350FF77F646C4F5D82676BA71F7721DFB590137F769932408F5A2F1F518DE58152F0D38F1F3B4B"
+        }
+      },
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:/Environment/HUAWEI/Key/Hepan.cer",
+          "keyAlias": "mikannqaq",
+          "keyPassword": "00000018A2980982163C8A0A2065C91A8B13F29A3DDB87B2DFAA48BA2F3B4E1EDF0BDC15B88C084D",
+          "profile": "C:/Environment/HUAWEI/Key/HepanRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:/Environment/HUAWEI/Key/p12.p12",
+          "storePassword": "000000183B4C506C492D21A83ADFCD5E648F3BAE815E9378FE75B7E56FABDFE5347F84C9EC831263"
         }
       }
     ],
@@ -37,6 +50,21 @@
       },
       {
         "name": "release"
+      }
+    ],
+    "capabilities": [
+      {
+        "bundleName": "com.mikannqaq.uestc.river",
+        "config": [
+          {
+            "name": "Push Kit",
+            "capability": "com.huawei.service.push.base_service"
+          },
+          {
+            "name": "Safety Detect",
+            "capability": "com.huawei.service.device_security.safety_detect"
+          }
+        ]
       }
     ]
   },

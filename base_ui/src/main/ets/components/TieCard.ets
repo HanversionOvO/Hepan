@@ -112,7 +112,7 @@ export struct TieCard {
         SymbolGlyph($r('sys.symbol.pin_fill'))
           .fontSize(CommonConstant.TextSizeTiny)
           .fontColor([$r('sys.color.font_on_primary')])
-        Text($r('app.string.ReplyPage_pinned'))
+        Text($r('app.string.TieCard_pinned'))
           .fontSize(CommonConstant.TextSizeTiny)
           .fontColor($r('sys.color.font_on_primary'))
           .fontWeight(FontWeight.Medium)
@@ -300,18 +300,11 @@ export struct TieCard {
     .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusLarge)
     .clip(true)
-    .scale({ x: this.scaleVal, y: this.scaleVal })
     .animation({
       duration: CommonConstant.AnimationDurationNormal,
       curve: CommonConstant.AnimationCurveSpring
     })
-    .onTouch((e) => {
-      if (e.type === TouchType.Down) {
-        this.scaleVal = 0.95;
-      } else if (e.type === TouchType.Up || e.type === TouchType.Cancel) {
-        this.scaleVal = 1.0;
-      }
-    })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 
   formatNumber(num: number): string {

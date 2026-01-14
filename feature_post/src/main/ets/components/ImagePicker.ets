@@ -96,6 +96,8 @@ export struct ImagePicker {
                 })
               }
             }
+            .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+            .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
           }
         }, (img: PostImageModel, index: number) => img.localUri + index.toString())
 
@@ -132,10 +134,8 @@ export struct ImagePicker {
             .onClick(() => {
               this.vm.selectImage();
             })
-            .animation({
-              curve: CommonConstant.AnimationCurveSpring,
-              duration: CommonConstant.AnimationDurationNormal
-            })
+            .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+            .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
             .border({
               width: CommonConstant.BorderSizeLarge,
               color: $r('sys.color.font_secondary'),

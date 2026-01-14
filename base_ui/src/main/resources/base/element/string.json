@@ -39,6 +39,10 @@
     {
       "name": "CustomAtPanel_uid",
       "value": "河畔ID"
+    },
+    {
+      "name": "TieCard_pinned",
+      "value": "置顶"
     }
   ]
 }

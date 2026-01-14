@@ -16,6 +16,8 @@ export struct HomeNavBar {
   @Param @Require vm: HomePageVM;
   @Local NavBarItemPadding: number = CommonConstant.SmallContainerInnerPadding;
   @Local NavBarItemOffset: number = this.NavBarItemPadding;
+  @Local navRectScale: number = 1.0;
+  private scaleTimer: number = -1;
 
   @Computed
   get navBarTransition(): TransitionEffect {
@@ -96,13 +98,36 @@ export struct HomeNavBar {
   }
 
   private runChangeNavAnimation(index: number) {
-    AppUtil.getUIContext().animateTo({
+    const uiContext = AppUtil.getUIContext();
+    uiContext.animateTo({
       curve: CommonConstant.AnimationCurveSpring,
       duration: CommonConstant.AnimationDurationNormal
     }, () => {
       this.vm.changeNavBar(index);
       this.calculateOffset(index);
     })
+
+    if (this.scaleTimer !== -1) {
+      clearTimeout(this.scaleTimer);
+      this.scaleTimer = -1;
+    }
+
+    uiContext.animateTo({
+      curve: Curve.EaseIn,
+      duration: CommonConstant.AnimationDurationFast
+    }, () => {
+      this.navRectScale = 0.85;
+    })
+
+    this.scaleTimer = setTimeout(() => {
+      uiContext.animateTo({
+        curve: CommonConstant.AnimationCurveSpring,
+        duration: CommonConstant.AnimationDurationNormal
+      }, () => {
+        this.navRectScale = 1.0;
+      })
+      this.scaleTimer = -1;
+    }, CommonConstant.AnimationDurationFast);
   }
 
   build() {
@@ -115,6 +140,7 @@ export struct HomeNavBar {
           .width(this.navRectWidth)
           .height(this.navRectHeight)
           .fill(CommonConstant.ThemeColor)
+          .scale({ x: this.navRectScale, y: this.navRectScale })
           .margin({
             top: this.vm.isTabletView ? (this.NavBarItemOffset + this.vm.window.windowTopPadding) : 0,
             bottom: this.navRectMarginBottom,
@@ -148,6 +174,8 @@ export struct HomeNavBar {
             .onClick(() => {
               this.runChangeNavAnimation(index);
             })
+            .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+            .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
           })
         }
         .margin({

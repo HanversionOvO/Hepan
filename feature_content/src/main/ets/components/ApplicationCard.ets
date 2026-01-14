@@ -84,5 +84,7 @@ export struct ApplicationCard {
     })
     .alignItems(VerticalAlign.Top)
     .backgroundColor($r('app.color.second_window_background'))
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 }

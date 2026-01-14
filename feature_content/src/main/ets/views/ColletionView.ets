@@ -1,5 +1,5 @@
 import { Collection, CommonConstant } from 'base_common';
-import { CollectionCard, CollapsibleCoordinator, CustomTabBar, FloatButton } from 'base_ui';
+import { CollapsibleCoordinator, CollectionCard, CustomTabBar, FloatButton } from 'base_ui';
 import { collectionCreateSheetBuilder } from '../components/CollectionCreateSheet';
 import { CollectionVM } from '../viewmodels/CollectionVM';
 
@@ -44,6 +44,8 @@ export struct CollectionView {
           .onClick(() => {
             this.vm.isShowCollectionCreateSheet = true;
           })
+          .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+          .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
           .bindSheet($$this.vm.isShowCollectionCreateSheet, collectionCreateSheetBuilder(this.vm), {
             showClose: true,
             detents: [SheetSize.FIT_CONTENT],

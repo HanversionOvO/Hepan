@@ -173,10 +173,6 @@
       "value": "回复成功"
     },
     {
-      "name": "ReplyPage_pinned",
-      "value": "置顶"
-    },
-    {
       "name": "CollectionView_create_time",
       "value": "创建时间"
     },

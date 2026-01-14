@@ -35,8 +35,7 @@ export struct FloatButton {
     .backgroundBlurStyle(this.buttonBlur)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .animation({
-      duration: CommonConstant.AnimationDurationNormal
-    })
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 }

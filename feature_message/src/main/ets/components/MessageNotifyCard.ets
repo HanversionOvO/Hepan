@@ -1,4 +1,4 @@
-import { CommonConstant, TransitionMap } from 'base_common';
+import { CommonConstant } from 'base_common';
 import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
 @ObservedV2
@@ -62,6 +62,8 @@ export struct MessageNotifyCard {
     .onClick(() => {
       messageCardModel.onCardClick();
     })
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 
   build() {

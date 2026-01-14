@@ -1,4 +1,4 @@
-import { CommonConstant } from "base_common";
+import { CommonConstant } from 'base_common';
 
 @ComponentV2
 export struct GlassButton {
@@ -40,14 +40,7 @@ export struct GlassButton {
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
     .border({ width: CommonConstant.BorderSizeSmall, color: $r('app.color.glass_border') })
     .borderRadius(CommonConstant.RadiusRound)
-    .scale({ x: this.scaleValue, y: this.scaleValue })
-    .onTouch((event: TouchEvent): void => {
-      if (event.type === TouchType.Down && this.enablePressedDownAnimation) {
-        this.scaleValue = CommonConstant.PressedDownScaleNormal;
-      } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-        this.scaleValue = 1;
-      }
-    })
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 }
