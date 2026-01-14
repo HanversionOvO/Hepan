@@ -48,7 +48,7 @@ export struct PostPageImpl {
             detents: [SheetSize.LARGE],
             enableOutsideInteractive: false,
             preferType: SheetType.CENTER,
-            backgroundColor: $r('app.color.glass_background'),
+            backgroundColor: $r('app.color.start_window_background'),
             blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
             title: {
               title: $r('app.string.PostPage_draft_title')

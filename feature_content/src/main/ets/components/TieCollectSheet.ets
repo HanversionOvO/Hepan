@@ -146,7 +146,7 @@ struct TieCollectSheet {
       }
       .width(CommonConstant.FullPercent)
       .borderRadius(CommonConstant.RadiusNormal)
-      .backgroundColor($r('app.color.start_window_background'))
+      .backgroundColor($r('app.color.second_window_background'))
     }
     .width(CommonConstant.FullPercent)
     .padding({

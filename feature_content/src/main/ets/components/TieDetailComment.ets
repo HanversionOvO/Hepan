@@ -83,7 +83,7 @@ export struct TieDetailComment {
             detents: [SheetSize.FIT_CONTENT],
             enableOutsideInteractive: false,
             preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
-            backgroundColor: $r('app.color.glass_background'),
+            backgroundColor: $r('app.color.start_window_background'),
             blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
             title: {
               title: $r('app.string.TieContentPage_collect_tie')
