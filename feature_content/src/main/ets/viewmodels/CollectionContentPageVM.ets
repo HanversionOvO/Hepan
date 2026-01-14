@@ -6,12 +6,14 @@ import {
   CollectionApi,
   CollectionDetail,
   CollectionFollowResult,
+  CollectionRemoveResult,
   CommonConstant,
   ForumDetailResponse,
   ForumTieSummary,
   RouterMap,
   RouterUtil,
   SummaryAttachments,
+  ToastUtil,
   UiState
 } from 'base_common';
 import {
@@ -22,7 +24,7 @@ import {
 } from 'base_ui';
 import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
 import { curves } from '@kit.ArkUI';
-import { LogUtil } from '@pura/harmony-utils';
+import { LogUtil, ResUtil } from '@pura/harmony-utils';
 
 const TAG = '[CollectionContentPageVM]: ';
 
@@ -78,6 +80,7 @@ export class CollectionContentPageVM extends BaseVM {
         this.tieLoadingState = UiState.LOADING;
 
         this.collectionDetail = await CollectionApi.getCollectionDetail(this.collection.ctid);
+        this.updateTitleButtons();
 
         const detailTies = this.collectionDetail.ties || [];
         const newTies = detailTies.map(t => this.convertDetailToSummary(t));
@@ -126,6 +129,11 @@ export class CollectionContentPageVM extends BaseVM {
     try {
       // 获取详情（带分页）
       const detail = await CollectionApi.getCollectionDetail(this.collection.ctid, this.page);
+      if (this.page === 1) {
+        this.collectionDetail.canDelete = detail.canDelete;
+        this.collectionDetail.deleteFormhash = detail.deleteFormhash;
+        this.updateTitleButtons();
+      }
 
       // 将详情数据转换为摘要数据
       const newTies = detail.ties?.map(t => this.convertDetailToSummary(t)) || [];
@@ -154,6 +162,39 @@ export class CollectionContentPageVM extends BaseVM {
       }
     } finally {
       this.isCollectionRefreshing = false; // 停止下拉刷新动画
+    }
+  }
+
+  private updateTitleButtons(): void {
+    const buttons: NavTitleButtonModel[] = [];
+    if (this.collectionDetail?.canDelete) {
+      buttons.push({
+        icon: $r('sys.symbol.trash'),
+        onClick: () => {
+          const title = this.collection?.title?.trim();
+          const message =
+            title ? `${ResUtil.getStringSync($r('app.string.CollectionPage_is_delete'))} ${title}` : '是否删除该淘专辑';
+          ToastUtil.showWarn(message, true, undefined, () => {
+            this.removeCollection();
+          });
+        }
+      });
+    }
+    this.titleButtons = buttons;
+  }
+
+  private async removeCollection(): Promise<void> {
+    const formhash = this.collectionDetail.deleteFormhash || this.collectionDetail.formhash;
+    if (!formhash) {
+      return;
+    }
+
+    const result: CollectionRemoveResult = await CollectionApi.removeCollection(this.collection.ctid, formhash);
+    if (result.success) {
+      ToastUtil.showLightSuccess(`${ResUtil.getStringSync($r('app.string.CollectionPage_delete_success'))}${this.collection.title}`);
+      RouterUtil.pop();
+    } else if (result.message) {
+      ToastUtil.showLightError(result.message);
     }
   }
 

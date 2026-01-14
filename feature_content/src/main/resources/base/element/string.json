@@ -141,6 +141,22 @@
       "value": "添加"
     },
     {
+      "name": "TieContentPage_add_personal_collection_success",
+      "value": "成功添加至个人收藏"
+    },
+    {
+      "name": "TieContentPage_remove_personal_collection_success",
+      "value": "个人收藏移除成功"
+    },
+    {
+      "name": "TieContentPage_add_collection_success",
+      "value": "成功添加至"
+    },
+    {
+      "name": "TieContentPage_remove_collection_success",
+      "value": "移除成功"
+    },
+    {
       "name": "ReplyPage_cancel",
       "value": "取消"
     },
@@ -247,6 +263,14 @@
     {
       "name": "CollectionPage_collection_create_success",
       "value": "创建淘专辑成功"
+    },
+    {
+      "name": "CollectionPage_is_delete",
+      "value": "是否删除"
+    },
+    {
+      "name": "CollectionPage_delete_success",
+      "value": "成功删除"
     },
     {
       "name": "ApplicationPage_Water",

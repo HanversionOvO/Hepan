@@ -169,7 +169,7 @@ export class CollectionVM extends BaseVM {
       const result = await CollectionApi.createCollection(title, hash, description, tags);
       if (result) {
         this.isShowCollectionCreateSheet = false;
-        ToastUtil.showSuccess($r('app.string.CollectionPage_collection_create_success'))
+        ToastUtil.showLightSuccess($r('app.string.CollectionPage_collection_create_success'))
       }
     } catch (e) {
       LogUtil.error(TAG, 'Create collection failed', JSON.stringify(e));

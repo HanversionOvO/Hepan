@@ -34,6 +34,11 @@ export interface CollectionFollowResult {
   message: string;
 }
 
+export interface CollectionRemoveResult {
+  success: boolean;
+  message: string;
+}
+
 /**
  * 用户信息模型
  */
@@ -72,6 +77,8 @@ export class CollectionDetail {
   @Trace rate: number = 0;
   @Trace isFollow?: boolean;
   @Trace formhash: string = '';
+  @Trace canDelete: boolean = false;
+  @Trace deleteFormhash: string = '';
   @Trace newSubsUser: CollectionUser[] = [];
   @Trace userMoreCollections: Collection[] = [];
   @Trace ties: ForumDetailResponse[] = [];

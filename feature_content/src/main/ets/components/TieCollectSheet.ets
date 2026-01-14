@@ -1,4 +1,5 @@
-import { CommonConstant, ForumApi, TieFavoriteStatus, TiePublicFavorite } from 'base_common';
+import { ResUtil } from '@pura/harmony-utils';
+import { CommonConstant, ForumApi, TieFavoriteStatus, TiePublicFavorite, ToastUtil } from 'base_common';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 
 @Builder
@@ -43,14 +44,18 @@ struct TieCollectSheet {
       if (item.isPersonal) {
         if (item.isFavorite) {
           await ForumApi.removePersonalFavorite(threadId);
+          ToastUtil.showLightSuccess($r('app.string.TieContentPage_remove_personal_collection_success'))
         } else {
           await ForumApi.addPersonalFavorite(threadId);
+          ToastUtil.showLightSuccess($r('app.string.TieContentPage_add_personal_collection_success'))
         }
       } else if (item.collectionId > 0) {
         if (item.isFavorite) {
           await ForumApi.removeCollectionFavorite(threadId, item.collectionId);
+          ToastUtil.showLightSuccess(`${ResUtil.getStringSync($r('app.string.TieContentPage_remove_collection_success'))}${item.name}`)
         } else {
           await ForumApi.addCollectionFavorite(threadId, item.collectionId);
+          ToastUtil.showLightSuccess(`${item.name}${ResUtil.getStringSync($r('app.string.TieContentPage_add_collection_success'))}`)
         }
       }
       await this.refreshStatus(threadId);

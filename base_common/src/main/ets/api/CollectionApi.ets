@@ -7,6 +7,7 @@ import {
   Collection,
   CollectionDetail,
   CollectionFollowResult,
+  CollectionRemoveResult,
   CollectionSortOrder,
   CollectionUser
 } from './models/CollectionModels';
@@ -200,6 +201,8 @@ export class CollectionApi {
       detail.ties = [];
       detail.isFollow = false;
       detail.formhash = '';
+      detail.canDelete = false;
+      detail.deleteFormhash = '';
 
       const scripts = DomUtils.getElementsByTagName('script', doc.children);
       for (const script of scripts) {
@@ -238,6 +241,26 @@ export class CollectionApi {
           if (match) {
             detail.rate = parseInt(match[1]);
           }
+        }
+      }
+
+      const deleteLink = DomUtils.findOne((elem) => {
+        if (elem.tagName !== 'a') {
+          return false;
+        }
+        const cls = elem.attribs && elem.attribs['class'];
+        if (!cls || !cls.includes('xi2')) {
+          return false;
+        }
+        return DomUtils.textContent(elem).trim() === '删除';
+      }, doc.children, true);
+
+      if (deleteLink) {
+        detail.canDelete = true;
+        const href = deleteLink.attribs['href'] || '';
+        const hashMatch = href.match(/formhash=([a-zA-Z0-9]+)/);
+        if (hashMatch) {
+          detail.deleteFormhash = hashMatch[1];
         }
       }
 
@@ -409,6 +432,45 @@ export class CollectionApi {
 
     } catch (e) {
       LogUtil.error(TAG, 'toggleFollow failed', JSON.stringify(e));
+      return { success: false, message: '网络错误' };
+    }
+  }
+
+  public static async removeCollection(ctid: number, formhash: string): Promise<CollectionRemoveResult> {
+    try {
+      const params: Record<string, string | number> = {
+        'mod': 'collection',
+        'action': 'edit',
+        'op': 'remove',
+        'ctid': ctid,
+        'formhash': formhash
+      };
+
+      const doc: Document = await ApiClient.getInstance().requestHtml('forum.php', params);
+
+      const info = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_info'));
+      }, doc.children, true);
+
+      if (info) {
+        const msgNode = DomUtils.findOne((elem) => elem.tagName === 'p', info.children, true);
+        const messageText = (msgNode ? DomUtils.textContent(msgNode) : DomUtils.textContent(info)).trim();
+        const success = messageText.includes('删除淘专辑成功');
+        return { success, message: messageText || '操作成功' };
+      }
+
+      const error = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_error'));
+      }, doc.children, true);
+
+      if (error) {
+        const messageText = DomUtils.textContent(error).trim();
+        return { success: false, message: messageText || '操作失败' };
+      }
+
+      return { success: false, message: '请求异常' };
+    } catch (e) {
+      LogUtil.error(TAG, 'removeCollection failed', JSON.stringify(e));
       return { success: false, message: '网络错误' };
     }
   }
