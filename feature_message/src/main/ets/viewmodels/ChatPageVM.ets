@@ -28,6 +28,7 @@ export class ChatPageVM extends BaseVM {
   @Trace chats: Chat[] = [];
   @Trace isUserOnline: boolean = false;
   @Trace previewingImageMid: number = -1;
+  @Trace stackName: StackEnum = StackEnum.MESSAGE;
   @Trace filePanelItems: CustomFilePanelItem[] = [
     {
       title: $r('app.string.ChatPage_take_photo'), icon: $r('sys.symbol.camera'), onClick: async () => {
@@ -247,7 +248,7 @@ export class ChatPageVM extends BaseVM {
     AppUtil.getUIContext()
       .animateTo({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal },
         () => {
-          RouterUtil.pop(undefined, false, StackEnum.MESSAGE);
+          RouterUtil.pop(undefined, false, this.stackName);
         })
   }
 }

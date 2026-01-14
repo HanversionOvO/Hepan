@@ -1,4 +1,5 @@
 import { LegacyResponse } from '../ApiClient';
+import { StackEnum } from '../../utils/RouterUtil';
 
 // 2. 修改：RecentMessage 类使用该接口
 @ObservedV2
@@ -45,6 +46,12 @@ export class PostSummary {
 
 export interface MessageListBody {
   list: RecentMessage[];
+}
+
+@ObservedV2
+export class ChatPageRouteParam {
+  @Trace message: RecentMessage = new RecentMessage();
+  @Trace stackName: StackEnum = StackEnum.MESSAGE;
 }
 
 export interface MessageDeleteResult {

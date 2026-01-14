@@ -1,4 +1,4 @@
-import { Chat, CommonConstant, RecentMessage } from 'base_common';
+import { Chat, ChatPageRouteParam, CommonConstant, RecentMessage, StackEnum } from 'base_common';
 import { CustomFacePanel, CustomFilePanel, FloatButton } from 'base_ui';
 import { ChatBottomBar } from '../components/ChatBottomBar';
 import { ChatBubble } from '../components/ChatBubble';
@@ -223,9 +223,16 @@ export struct ChatPageImpl {
     .hideTitleBar(true)
     .backgroundColor($r('app.color.start_window_background'))
     .onReady(async (context: NavDestinationContext) => {
-      const params = context.pathInfo.param as RecentMessage;
+      const params = context.pathInfo.param as RecentMessage | ChatPageRouteParam;
       if (params) {
-        this.vm.recentMessage = params;
+        const routeParam = params as ChatPageRouteParam;
+        if (routeParam && routeParam.message) {
+          this.vm.recentMessage = routeParam.message;
+          this.vm.stackName = routeParam.stackName ?? StackEnum.MESSAGE;
+        } else {
+          this.vm.recentMessage = params as RecentMessage;
+          this.vm.stackName = StackEnum.MESSAGE;
+        }
         await this.vm.startMessage();
       }
 

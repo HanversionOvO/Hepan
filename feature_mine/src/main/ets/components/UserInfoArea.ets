@@ -1,6 +1,17 @@
 ﻿import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
-import { CommonConstant, ToastUtil, UserApi, UserAvatarUtil } from 'base_common';
+import {
+  ChatPageRouteParam,
+  CommonConstant,
+  MessageManager,
+  RecentMessage,
+  RouterMap,
+  RouterUtil,
+  StackEnum,
+  ToastUtil,
+  UserApi,
+  UserAvatarUtil
+} from 'base_common';
 import { PasteboardUtil, ResUtil } from '@pura/harmony-utils';
 import { GlassButton, ImageLongTakePreviewUtil } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
@@ -63,6 +74,37 @@ export struct UserInfoArea {
     } else {
       ToastUtil.showLightError('删除好友失败');
     }
+  }
+
+  private async openChat(): Promise<void> {
+    const summary = this.vm.user?.user_summary;
+    if (!summary || !summary.uid) {
+      return;
+    }
+    const uid = summary.uid;
+    const userName = summary.username?.trim() || '';
+    const manager = MessageManager.getInstance();
+    let existing = manager.findConversation(uid);
+    if (!existing) {
+      await manager.refreshMessageList();
+      existing = manager.findConversation(uid);
+    }
+    let targetMessage: RecentMessage;
+    if (existing) {
+      targetMessage = existing;
+    } else {
+      const message = new RecentMessage();
+      message.toUserId = uid;
+      message.toUserName = userName;
+      message.toUserAvatar = UserAvatarUtil.getAvatarUrl(uid);
+      message.toUserIsBlack = '0';
+      targetMessage = message;
+    }
+
+    const routeParam = new ChatPageRouteParam();
+    routeParam.message = targetMessage;
+    routeParam.stackName = StackEnum.MAIN;
+    RouterUtil.pushPathByName(RouterMap.CHAT_PAGE, routeParam, undefined, true, StackEnum.MAIN);
   }
 
   @Builder
@@ -225,6 +267,9 @@ export struct UserInfoArea {
                 innerFontColor: $r('sys.color.font_on_primary'),
                 innerFontSize: CommonConstant.TextSizeSmall
               })
+                .onClick(() => {
+                  void this.openChat();
+                })
             }
           }
         }

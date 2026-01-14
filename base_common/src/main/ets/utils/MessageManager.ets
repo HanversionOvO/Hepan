@@ -251,6 +251,14 @@ export class MessageManager {
     }
   }
 
+  public findConversation(uid: number): RecentMessage | null {
+    if (!uid) {
+      return null;
+    }
+    const match = this.messageList.find(item => item.toUserId === uid);
+    return match ?? null;
+  }
+
   private notifyListeners(summary: NewMessagesSummary): void {
     this.listeners.forEach(listener => listener(summary));
   }
