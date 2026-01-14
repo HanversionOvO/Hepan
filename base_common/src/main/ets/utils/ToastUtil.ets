@@ -5,10 +5,12 @@ import { ComponentContent } from '@kit.ArkUI';
 import { LottieView } from '@ohos/lottie-turbo';
 
 const TAG = '[ToastUtil]: ';
+const LIGHT_TOAST_VISIBLE_KEY = 'lightToastVisible';
 
 export enum ToastShowType {
   OPEN,
-  LOADING // [新增]
+  LOADING, // [新增]
+  LIGHT
 }
 
 export enum ToastState {
@@ -29,6 +31,7 @@ export interface ToastOptions {
 }
 
 export interface ToastParams {
+  type: ToastShowType;
   state: ToastState;
   message: ResourceStr;
   isShowConfirm: boolean;
@@ -47,21 +50,62 @@ interface ToastIcon {
   color: ResourceColor;
 }
 
+@Component
+struct LightToastView {
+  @StorageLink(LIGHT_TOAST_VISIBLE_KEY) isVisible: boolean = false;
+  public params: ToastParams = {
+    type: ToastShowType.LIGHT,
+    state: ToastState.INFO,
+    message: '',
+    isShowConfirm: false
+  };
+
+  build() {
+    Row({ space: CommonConstant.NormalContainerInnerPadding / 2 }) {
+      SymbolGlyph(ToastUtil.getIcon(this.params.state).icon)
+        .fontSize(CommonConstant.TextSizeTiny)
+        .fontWeight(FontWeight.Bolder)
+        .fontColor([$r('sys.color.font_on_primary')])
+        .borderRadius(CommonConstant.RadiusRound)
+        .padding(CommonConstant.SmallContainerInnerPadding)
+        .backgroundColor(ToastUtil.getIcon(this.params.state).color)
+
+      Text(this.params.message)
+        .fontSize(CommonConstant.TextSizeSmall)
+        .fontColor($r('sys.color.font_primary'))
+        .fontWeight(FontWeight.Bold)
+    }
+    .padding({
+      left: CommonConstant.SmallContainerLRPadding,
+      right: CommonConstant.SmallContainerLRPadding,
+      top: CommonConstant.SmallContainerTBPadding,
+      bottom: CommonConstant.SmallContainerTBPadding
+    })
+    .borderRadius(CommonConstant.RadiusNormal)
+    .backgroundColor($r('app.color.start_window_background'))
+    .alignItems(VerticalAlign.Center)
+    .shadow(ShadowStyle.OUTER_DEFAULT_MD)
+    .translate({ x: 0, y: this.isVisible ? 0 : 20 })
+    .scale({ x: this.isVisible ? 1 : 0.9, y: this.isVisible ? 1 : 0.9 })
+    .opacity(this.isVisible ? 1 : 0)
+    .animation({ curve: CommonConstant.AnimationCurveSpring, duration: CommonConstant.AnimationDurationNormal })
+    .hitTestBehavior(HitTestMode.None)
+  }
+}
+
 @Builder
 function CommonToastBuilder(params: ToastParams) {
-  // [关键修改] 针对 LOADING 状态使用完全独立的布局结构
-  if (params.state === ToastState.LOADING) {
+  if (params.type === ToastShowType.LIGHT) {
+    LightToastView({ params })
+  } else if (params.state === ToastState.LOADING) {
     Column() {
-      // 1. Lottie 动画区域
       LottieView({
-        lottieId: 'toast_loading', // 唯一的 ID
-        path: $rawfile('loading_lottie.json'), // 确保该文件在 base_common 的 rawfile 中
-        // 默认 autoPlay: true, loop: true
+        lottieId: 'toast_loading',
+        path: $rawfile('loading_lottie.json')
       })
-        .width(120) // 调整 Lottie 大小
+        .width(120)
         .height(120)
 
-      // 2. 文字区域
       if (params.message) {
         Text(params.message)
           .fontSize(CommonConstant.TextSizeNormal)
@@ -73,25 +117,21 @@ function CommonToastBuilder(params: ToastParams) {
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
     }
-    .width(160) // [需求] 固定宽度
-    .height(160) // [需求] 固定高度
-    .justifyContent(FlexAlign.Center) // [需求] 内容居中
-    .backgroundColor($r('sys.color.comp_background_primary')) // 背景色
+    .width(160)
+    .height(160)
+    .justifyContent(FlexAlign.Center)
+    .backgroundColor($r('sys.color.comp_background_primary'))
     .borderRadius(CommonConstant.RadiusLarge)
-    .shadow(ShadowStyle.OUTER_DEFAULT_MD) // 可选：添加一点阴影增加层次感
+    .shadow(ShadowStyle.OUTER_DEFAULT_MD)
   } else {
-    // ================= 原有逻辑 (非 Loading 状态) =================
     Column() {
-      // 1. 顶部图标区域 (Header)
       Stack({ alignContent: Alignment.Center }) {
-        // 背景层
         Column()
           .width('100%')
           .height('100%')
           .backgroundColor(ToastUtil.getIcon(params.state).color)
           .opacity(0.2)
 
-        // 图标层
         SymbolGlyph(ToastUtil.getIcon(params.state).icon)
           .fontSize(24)
           .fontColor([ToastUtil.getIcon(params.state).color])
@@ -104,7 +144,6 @@ function CommonToastBuilder(params: ToastParams) {
       .height(96)
       .flexShrink(0)
 
-      // 2. 内容区域
       Scroll() {
         Column({ space: CommonConstant.NormalContainerInnerPadding }) {
           if (params.title) {
@@ -133,7 +172,6 @@ function CommonToastBuilder(params: ToastParams) {
       .constraintSize({ maxHeight: '60%' })
       .edgeEffect(EdgeEffect.Spring)
 
-      // 3. 按钮区域
       Row({ space: CommonConstant.LargeContainerInnerPadding }) {
         ToastButton({
           bgColor: $r('sys.color.font_on_tertiary'),
@@ -201,6 +239,8 @@ struct ToastButton {
 export class ToastUtil {
   private static toastShare: ToastUtil;
   private infoList: ToastModel[] = [];
+  private lightTimerId: number = -1;
+  private lightCloseTimerId: number = -1;
 
   static shareInstance(): ToastUtil {
     if (!ToastUtil.toastShare) {
@@ -235,8 +275,12 @@ export class ToastUtil {
     }
 
     const type = options?.type ?? ToastShowType.OPEN;
-    const state = options?.state ?? ToastState.INFO;
+    let state = options?.state ?? ToastState.INFO;
     const isShowConfirm = options?.isShowConfirm ?? false;
+
+    if (type === ToastShowType.LIGHT && state === ToastState.LOADING) {
+      state = ToastState.INFO;
+    }
 
     const safeOnCancel = () => {
       ToastUtil.closeToast(type);
@@ -253,6 +297,7 @@ export class ToastUtil {
     };
 
     const params: ToastParams = {
+      type: type,
       state: state,
       message: message,
       isShowConfirm: isShowConfirm,
@@ -264,32 +309,94 @@ export class ToastUtil {
     const componentContent = new ComponentContent(uiContext, WrappedToastBuilder, params);
 
     const prompt = uiContext.getPromptAction();
-    prompt.openCustomDialog(componentContent, {
-      alignment: DialogAlignment.Center,
-      autoCancel: false, // Loading 也不允许点击背景关闭
-      onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
-        if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-          ToastUtil.closeToast(type);
-        }
+    if (type === ToastShowType.LIGHT) {
+      ToastUtil.closeToast(ToastShowType.LIGHT, true);
+      const instance = ToastUtil.shareInstance();
+      if (instance.lightTimerId !== -1) {
+        clearTimeout(instance.lightTimerId);
+        instance.lightTimerId = -1;
       }
-    }).catch((err: Error) => {
-      LogUtil.error(TAG, `openCustomDialog failed. message=${err.message}`);
-    });
+      if (instance.lightCloseTimerId !== -1) {
+        clearTimeout(instance.lightCloseTimerId);
+        instance.lightCloseTimerId = -1;
+      }
+      AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      prompt.openCustomDialog(componentContent, {
+        alignment: DialogAlignment.Bottom,
+        offset: { dx: 0, dy: -CommonConstant.BottomBarHeight },
+        isModal: false,
+        maskColor: Color.Transparent,
+        autoCancel: false,
+        onDidAppear: () => {
+          AppStorage.set(LIGHT_TOAST_VISIBLE_KEY, true);
+        },
+        onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+          if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+            ToastUtil.closeToast(type);
+          }
+        }
+      }).catch((err: Error) => {
+        LogUtil.error(TAG, `openCustomDialog failed. message=${err.message}`);
+      });
+    } else {
+      prompt.openCustomDialog(componentContent, {
+        alignment: DialogAlignment.Center,
+        autoCancel: false, // Loading 也不允许点击背景关闭
+        onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
+          if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+            ToastUtil.closeToast(type);
+          }
+        }
+      }).catch((err: Error) => {
+        LogUtil.error(TAG, `openCustomDialog failed. message=${err.message}`);
+      });
+    }
 
     const info: ToastModel = {
       com: componentContent,
       popType: type
     };
     ToastUtil.shareInstance().infoList.push(info);
+
+    if (type === ToastShowType.LIGHT) {
+      const instance = ToastUtil.shareInstance();
+      const delay = CommonConstant.AnimationDurationNormal + 4000;
+      instance.lightTimerId = setTimeout(() => {
+        ToastUtil.closeToast(ToastShowType.LIGHT);
+        instance.lightTimerId = -1;
+      }, delay);
+    }
   }
 
-  static closeToast(type: ToastShowType = ToastShowType.OPEN): void {
+  static closeToast(type: ToastShowType = ToastShowType.OPEN, immediate: boolean = false): void {
     const uiContext = AppUtil.getUIContext();
     if (!uiContext) {
       return;
     }
 
     const instance = ToastUtil.shareInstance();
+    if (type === ToastShowType.LIGHT && !immediate) {
+      AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      if (instance.lightCloseTimerId !== -1) {
+        clearTimeout(instance.lightCloseTimerId);
+      }
+      instance.lightCloseTimerId = setTimeout(() => {
+        ToastUtil.closeToast(type, true);
+        instance.lightCloseTimerId = -1;
+      }, CommonConstant.AnimationDurationNormal);
+      return;
+    }
+    if (type === ToastShowType.LIGHT) {
+      AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      if (instance.lightCloseTimerId !== -1) {
+        clearTimeout(instance.lightCloseTimerId);
+        instance.lightCloseTimerId = -1;
+      }
+      if (instance.lightTimerId !== -1) {
+        clearTimeout(instance.lightTimerId);
+        instance.lightTimerId = -1;
+      }
+    }
     // 查找对应类型的 Toast
     const index = instance.infoList.map(item => item.popType).lastIndexOf(type);
 
@@ -362,5 +469,28 @@ export class ToastUtil {
   // [新增] 快捷关闭 Loading
   static hideLoading() {
     ToastUtil.closeToast(ToastShowType.LOADING);
+  }
+
+  static showLight(message: ResourceStr, state: ToastState = ToastState.INFO) {
+    ToastUtil.showToast(message, {
+      type: ToastShowType.LIGHT,
+      state: state
+    });
+  }
+
+  static showLightSuccess(message: ResourceStr) {
+    ToastUtil.showLight(message, ToastState.SUCCESS);
+  }
+
+  static showLightError(message: ResourceStr) {
+    ToastUtil.showLight(message, ToastState.ERROR);
+  }
+
+  static showLightWarn(message: ResourceStr) {
+    ToastUtil.showLight(message, ToastState.WARNING);
+  }
+
+  static showLightInfo(message: ResourceStr) {
+    ToastUtil.showLight(message, ToastState.INFO);
   }
 }
