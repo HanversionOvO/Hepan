@@ -462,9 +462,10 @@ export class ToastUtil {
           }, 50);
         },
         onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
-          if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
-            ToastUtil.closeToast(type);
+          if (dismissDialogAction.reason === DismissReason.PRESS_BACK) {
+            return;
           }
+          ToastUtil.closeToast(type);
         }
       }).catch((err: Error) => {
         LogUtil.error(TAG, `openCustomDialog failed. message=${err.message}`);
