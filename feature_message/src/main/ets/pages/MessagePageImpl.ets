@@ -45,6 +45,17 @@ export struct MessagePageImpl {
   }
 
   @Builder
+  MessageNotifyHeader() {
+    Column() {
+      MessageNotifyCard({
+        vm: this.vm
+      })
+    }
+    .width(CommonConstant.FullPercent)
+    .margin({ bottom: CommonConstant.NormalContainerInnerPadding })
+  }
+
+  @Builder
   build() {
     Navigation(RouterUtil.getStack(StackEnum.MESSAGE)) {
       Stack({ alignContent: Alignment.Top }) {
@@ -61,38 +72,31 @@ export struct MessagePageImpl {
             }
 
             Refresh({ refreshing: $$this.vm.isRefreshingMessage }) {
-              Grid(this.vm.messagePageScroller) {
-                GridItem() {
-                  MessageNotifyCard({
-                    vm: this.vm
-                  })
-                }
-                .columnStart(0)
-                .columnEnd(this.gridLanes - 1)
-
-                ForEach(this.vm.messages, (message: RecentMessage, index: number) => {
-                  GridItem() {
+              List({ space: CommonConstant.NormalContainerInnerPadding }) {
+                ListItemGroup({
+                  header: this.MessageNotifyHeader,
+                  space: CommonConstant.NormalContainerInnerPadding
+                }) {
+                  ForEach(this.vm.messages, (message: RecentMessage, index: number) => {
                     MessageCard({
                       vm: this.vm,
-                      message: message
-                    })
-                      .onClick(() => {
+                      message: message,
+                      onCardClick: () => {
                         this.vm.pushToChatPage(index);
-                      })
-                  }
-                }, (item: RecentMessage) => `${item.plid}_${item.lastDateline}_${item.isNew}`)
+                      }
+                    })
+                  }, (item: RecentMessage) => `${item.plid}_${item.lastDateline}_${item.isNew}`)
+                }
 
-                GridItem()
-                  .height(this.vm.isTabletView ?
-                    this.vm.window.windowBottomPadding :
-                    CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
-                    CommonConstant.NormalContainerTBPadding)
-                  .columnStart(0)
-                  .columnEnd(this.gridLanes - 1)
+                ListItem() {
+                  Column()
+                    .height(this.vm.isTabletView ?
+                      this.vm.window.windowBottomPadding :
+                      CommonConstant.BottomBarHeight + this.vm.window.windowBottomPadding +
+                      CommonConstant.NormalContainerTBPadding)
+                }
               }
-              .columnsTemplate('1fr '.repeat(this.gridLanes))
-              .columnsGap(CommonConstant.NormalContainerInnerPadding)
-              .rowsGap(CommonConstant.NormalContainerInnerPadding)
+              .lanes(this.gridLanes, CommonConstant.NormalContainerInnerPadding)
               .width(CommonConstant.FullPercent)
               .height(CommonConstant.FullPercent)
               .scrollBar(BarState.Off)
