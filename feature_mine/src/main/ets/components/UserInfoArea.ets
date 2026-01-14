@@ -1,7 +1,7 @@
 import { MinePageVM } from '../viewmodels/MinePageVM';
-import { LengthMetrics } from '@kit.ArkUI';
-import { CommonConstant, UserAvatarUtil } from 'base_common';
-import { ResUtil } from '@pura/harmony-utils';
+import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
+import { CommonConstant, ToastUtil, UserAvatarUtil } from 'base_common';
+import { PasteboardUtil, ResUtil } from '@pura/harmony-utils';
 import { GlassButton, ImageLongTakePreviewUtil } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
@@ -19,6 +19,21 @@ export struct UserInfoArea {
   @Computed
   get avatarTransitionId(): string {
     return `user_avatar_${this.vm.user?.user_summary?.uid || 'default'}`;
+  }
+
+  @Builder
+  UidCopyMenu() {
+    Menu() {
+      MenuItem({
+        symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.hand_cut_and_paste')),
+        content: $r('app.string.MinePage_copy_uid')
+      })
+        .onClick(() => {
+          PasteboardUtil.setDataTextSync(this.vm.user?.user_summary?.uid.toString() || "")
+          ToastUtil.showLightSuccess($r('app.string.CommonToast_copy_success'))
+        })
+    }
+    .font({ size: CommonConstant.TextSizeNormal })
   }
 
   build() {
@@ -74,6 +89,11 @@ export struct UserInfoArea {
             Text(`${ResUtil.getStringSync($r('app.string.MinePage_uid'))}: ${this.vm.user?.user_summary?.uid}`)
               .fontSize(CommonConstant.TextSizeSmall)
               .fontColor($r('sys.color.font_on_primary'))
+              .bindContextMenu(this.UidCopyMenu, ResponseType.LongPress,
+                {
+                  preview: MenuPreviewMode.IMAGE,
+                  previewAnimationOptions: { scale: [0.8, 1.0] },
+                })
           }
           .alignItems(HorizontalAlign.Start)
         }

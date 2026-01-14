@@ -6,6 +6,8 @@ import { LottieView } from '@ohos/lottie-turbo';
 
 const TAG = '[ToastUtil]: ';
 const LIGHT_TOAST_VISIBLE_KEY = 'lightToastVisible';
+const LIGHT_TOAST_PROGRESS_KEY = 'lightToastProgress';
+const LIGHT_TOAST_DURATION = 4000;
 
 export enum ToastShowType {
   OPEN,
@@ -53,6 +55,10 @@ interface ToastIcon {
 @Component
 struct LightToastView {
   @StorageLink(LIGHT_TOAST_VISIBLE_KEY) isVisible: boolean = false;
+  @StorageLink(LIGHT_TOAST_PROGRESS_KEY) progress: number = 100;
+  @State private ringWidth: number = 0;
+  @State private ringHeight: number = 0;
+  @State private ringPathLength: number = 0;
   public params: ToastParams = {
     type: ToastShowType.LIGHT,
     state: ToastState.INFO,
@@ -60,31 +66,138 @@ struct LightToastView {
     isShowConfirm: false
   };
 
-  build() {
-    Row({ space: CommonConstant.NormalContainerInnerPadding / 2 }) {
-      SymbolGlyph(ToastUtil.getIcon(this.params.state).icon)
-        .fontSize(CommonConstant.TextSizeTiny)
-        .fontWeight(FontWeight.Bolder)
-        .fontColor([$r('sys.color.font_on_primary')])
-        .borderRadius(CommonConstant.RadiusRound)
-        .padding(CommonConstant.SmallContainerInnerPadding)
-        .backgroundColor(ToastUtil.getIcon(this.params.state).color)
-
-      Text(this.params.message)
-        .fontSize(CommonConstant.TextSizeSmall)
-        .fontColor($r('sys.color.font_primary'))
-        .fontWeight(FontWeight.Bold)
+  private toNumber(value: Length): number {
+    if (typeof value === 'number') {
+      return value;
     }
-    .padding({
-      left: CommonConstant.SmallContainerLRPadding,
-      right: CommonConstant.SmallContainerLRPadding,
-      top: CommonConstant.SmallContainerTBPadding,
-      bottom: CommonConstant.SmallContainerTBPadding
-    })
-    .borderRadius(CommonConstant.RadiusNormal)
-    .backgroundColor($r('app.color.start_window_background'))
-    .alignItems(VerticalAlign.Center)
-    .shadow(ShadowStyle.OUTER_DEFAULT_MD)
+    if (typeof value === 'string') {
+      const parsed = Number.parseFloat(value);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
+  }
+
+  private updateRingSize(width: Length, height: Length): void {
+    const padding = this.getRingPadding();
+    const nextWidth = this.toNumber(width) + padding * 2;
+    const nextHeight = this.toNumber(height) + padding * 2;
+    if (this.ringWidth !== nextWidth || this.ringHeight !== nextHeight) {
+      this.ringWidth = nextWidth;
+      this.ringHeight = nextHeight;
+    }
+    this.updateRingMetrics();
+  }
+
+  private getStrokeWidth(): number {
+    return CommonConstant.BorderSizeLarge;
+  }
+
+  private getRingRadius(): number {
+    return CommonConstant.RadiusNormal;
+  }
+
+  private getRingPadding(): number {
+    return this.getStrokeWidth() / 2;
+  }
+
+  private getInnerRingWidth(): number {
+    const width = this.ringWidth - this.getStrokeWidth();
+    return width > 0 ? width : 0;
+  }
+
+  private getInnerRingHeight(): number {
+    const height = this.ringHeight - this.getStrokeWidth();
+    return height > 0 ? height : 0;
+  }
+
+  private getInnerRingRadius(): number {
+    const inset = this.getStrokeWidth() / 2;
+    const maxRadius = Math.min(this.getInnerRingWidth(), this.getInnerRingHeight()) / 2;
+    const radius = this.getRingRadius() - inset;
+    return Math.max(0, Math.min(maxRadius, radius));
+  }
+
+  private updateRingMetrics(): void {
+    if (this.ringWidth <= 0 || this.ringHeight <= 0) {
+      this.ringPathLength = 0;
+      return;
+    }
+
+    const width = this.getInnerRingWidth();
+    const height = this.getInnerRingHeight();
+    const radius = this.getInnerRingRadius();
+    const straight = Math.max(0, 2 * (width + height - 4 * radius));
+    const curved = 2 * Math.PI * radius;
+    this.ringPathLength = Math.max(0, straight + curved);
+  }
+
+  private getRingDashArray(): Array<number> {
+    if (this.ringPathLength <= 0) {
+      return [0, 0];
+    }
+    const ratio = Math.max(0, Math.min(1, this.progress / 100));
+    const dashLength = this.ringPathLength * ratio;
+    return [dashLength, this.ringPathLength];
+  }
+
+  private getRingDashOffset(): number {
+    return 0;
+  }
+
+  build() {
+    Stack({ alignContent: Alignment.Center }) {
+      Row({ space: CommonConstant.NormalContainerInnerPadding / 2 }) {
+        SymbolGlyph(ToastUtil.getIcon(this.params.state).icon)
+          .fontSize(CommonConstant.TextSizeTiny)
+          .fontWeight(FontWeight.Bolder)
+          .fontColor([$r('sys.color.font_on_primary')])
+          .borderRadius(CommonConstant.RadiusRound)
+          .padding(CommonConstant.SmallContainerInnerPadding)
+          .backgroundColor(ToastUtil.getIcon(this.params.state).color)
+
+        Text(this.params.message)
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_primary'))
+          .fontWeight(FontWeight.Bold)
+      }
+      .padding({
+        left: CommonConstant.SmallContainerLRPadding,
+        right: CommonConstant.SmallContainerLRPadding,
+        top: CommonConstant.SmallContainerTBPadding,
+        bottom: CommonConstant.SmallContainerTBPadding
+      })
+      .borderRadius(CommonConstant.RadiusNormal)
+      .backgroundColor($r('app.color.start_window_background'))
+      .alignItems(VerticalAlign.Center)
+      .shadow(ShadowStyle.OUTER_DEFAULT_MD)
+      .onAreaChange((_oldArea, newArea) => {
+        this.updateRingSize(newArea.width, newArea.height);
+      })
+
+      if (this.ringPathLength > 0) {
+        Shape() {
+          Rect({
+            width: this.getInnerRingWidth(),
+            height: this.getInnerRingHeight(),
+            radius: this.getInnerRingRadius()
+          })
+            .stroke(ToastUtil.getIcon(this.params.state).color)
+            .strokeWidth(this.getStrokeWidth())
+            .strokeLineCap(LineCapStyle.Round)
+            .strokeLineJoin(LineJoinStyle.Round)
+            .fill(Color.Transparent)
+            .strokeDashArray(this.getRingDashArray())
+            .strokeDashOffset(this.getRingDashOffset())
+            .position({ x: this.getStrokeWidth() / 2, y: this.getStrokeWidth() / 2 })
+        }
+        .width(this.ringWidth)
+        .height(this.ringHeight)
+        .zIndex(2)
+        .hitTestBehavior(HitTestMode.None)
+      }
+    }
+    .width(this.ringWidth > 0 ? this.ringWidth : undefined)
+    .height(this.ringHeight > 0 ? this.ringHeight : undefined)
     .translate({ x: 0, y: this.isVisible ? 0 : 20 })
     .scale({ x: this.isVisible ? 1 : 0.9, y: this.isVisible ? 1 : 0.9 })
     .opacity(this.isVisible ? 1 : 0)
@@ -241,6 +354,7 @@ export class ToastUtil {
   private infoList: ToastModel[] = [];
   private lightTimerId: number = -1;
   private lightCloseTimerId: number = -1;
+  private lightProgressTimerId: number = -1;
 
   static shareInstance(): ToastUtil {
     if (!ToastUtil.toastShare) {
@@ -320,7 +434,12 @@ export class ToastUtil {
         clearTimeout(instance.lightCloseTimerId);
         instance.lightCloseTimerId = -1;
       }
+      if (instance.lightProgressTimerId !== -1) {
+        clearInterval(instance.lightProgressTimerId);
+        instance.lightProgressTimerId = -1;
+      }
       AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      AppStorage.setOrCreate(LIGHT_TOAST_PROGRESS_KEY, 100);
       prompt.openCustomDialog(componentContent, {
         alignment: DialogAlignment.Bottom,
         offset: { dx: 0, dy: -CommonConstant.BottomBarHeight },
@@ -329,6 +448,18 @@ export class ToastUtil {
         autoCancel: false,
         onDidAppear: () => {
           AppStorage.set(LIGHT_TOAST_VISIBLE_KEY, true);
+          AppStorage.set(LIGHT_TOAST_PROGRESS_KEY, 100);
+          const startTime = Date.now();
+          instance.lightProgressTimerId = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, LIGHT_TOAST_DURATION - elapsed);
+            const progress = (remaining / LIGHT_TOAST_DURATION) * 100;
+            AppStorage.set(LIGHT_TOAST_PROGRESS_KEY, progress);
+            if (remaining <= 0 && instance.lightProgressTimerId !== -1) {
+              clearInterval(instance.lightProgressTimerId);
+              instance.lightProgressTimerId = -1;
+            }
+          }, 50);
         },
         onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
           if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
@@ -360,7 +491,7 @@ export class ToastUtil {
 
     if (type === ToastShowType.LIGHT) {
       const instance = ToastUtil.shareInstance();
-      const delay = CommonConstant.AnimationDurationNormal + 4000;
+      const delay = CommonConstant.AnimationDurationNormal + LIGHT_TOAST_DURATION;
       instance.lightTimerId = setTimeout(() => {
         ToastUtil.closeToast(ToastShowType.LIGHT);
         instance.lightTimerId = -1;
@@ -377,6 +508,11 @@ export class ToastUtil {
     const instance = ToastUtil.shareInstance();
     if (type === ToastShowType.LIGHT && !immediate) {
       AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      AppStorage.setOrCreate(LIGHT_TOAST_PROGRESS_KEY, 0);
+      if (instance.lightProgressTimerId !== -1) {
+        clearInterval(instance.lightProgressTimerId);
+        instance.lightProgressTimerId = -1;
+      }
       if (instance.lightCloseTimerId !== -1) {
         clearTimeout(instance.lightCloseTimerId);
       }
@@ -388,6 +524,11 @@ export class ToastUtil {
     }
     if (type === ToastShowType.LIGHT) {
       AppStorage.setOrCreate(LIGHT_TOAST_VISIBLE_KEY, false);
+      AppStorage.setOrCreate(LIGHT_TOAST_PROGRESS_KEY, 0);
+      if (instance.lightProgressTimerId !== -1) {
+        clearInterval(instance.lightProgressTimerId);
+        instance.lightProgressTimerId = -1;
+      }
       if (instance.lightCloseTimerId !== -1) {
         clearTimeout(instance.lightCloseTimerId);
         instance.lightCloseTimerId = -1;

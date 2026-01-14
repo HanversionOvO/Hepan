@@ -7,6 +7,7 @@ import {
   Medal,
   RouterMap,
   RouterUtil,
+  ToastUtil,
   UserApi,
   UserProfileData
 } from 'base_common';
@@ -33,12 +34,10 @@ export class MinePageVM extends BaseVM {
   @Trace user: UserProfileData = createEmptyUserProfileData();
   @Trace userStats: UserStatsModel[] = [];
   @Trace featureCards: FeatureCardModel[] = [];
-
   @Trace threadVM: MineTabVM = new MineTabVM('thread');
   @Trace replyVM: MineTabVM = new MineTabVM('reply');
   @Trace favVM: MineTabVM = new MineTabVM('fav');
   @Trace collectionVM: MineCollectionVM = new MineCollectionVM();
-
   readonly userPostTabItems: CustomTabItem[] = [
     { label: $r('app.string.MinePage_mine_post'), icon: $r('sys.symbol.book_closed_right_left') },
     { label: $r('app.string.MinePage_mine_reply'), icon: $r('sys.symbol.message') },
@@ -47,7 +46,6 @@ export class MinePageVM extends BaseVM {
   ];
   @Trace currentUserPostTabIndex: number = 0;
   @Trace uid: number | 'me' = 'me';
-
   private defaultColumnsConfig: BreakpointType<number> = new BreakpointType<number>({
     sm: 2,
     md: 3,
@@ -66,7 +64,6 @@ export class MinePageVM extends BaseVM {
     lg: 5,
     xl: 6
   });
-
   private initialized: boolean = false;
   private isLoadingBase: boolean = false;
   private isLoadingMedals: boolean = false;
@@ -270,6 +267,7 @@ export class MinePageVM extends BaseVM {
     if (result) {
       this.isShowSignatureSheet = false;
       await this.loadUserProfile();
+      ToastUtil.showLightSuccess($r('app.string.MinePage_change_sig_success'))
     }
   }
 

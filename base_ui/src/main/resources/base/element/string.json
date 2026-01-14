@@ -1,6 +1,10 @@
 {
   "string": [
     {
+      "name": "CommonToast_copy_success",
+      "value": "复制成功"
+    },
+    {
       "name": "CommonToast_cancel",
       "value": "取消"
     },

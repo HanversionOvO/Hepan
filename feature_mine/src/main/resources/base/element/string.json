@@ -165,6 +165,14 @@
       "value": "已获取"
     },
     {
+      "name": "MinePage_copy_uid",
+      "value": "复制UID"
+    },
+    {
+      "name": "MinePage_change_sig_success",
+      "value": "修改签名成功"
+    },
+    {
       "name": "FansPage_Title",
       "value": "好友与访客"
     },
