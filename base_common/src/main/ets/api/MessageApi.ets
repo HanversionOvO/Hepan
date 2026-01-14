@@ -1,4 +1,6 @@
 ﻿import { ApiClient, ApiResponse, LegacyResponse } from './ApiClient';
+import { Document, DomUtils } from '@ohos/htmlparser2';
+import { Element } from 'domhandler';
 import { BaseResponse } from './models/UserModels';
 import { http } from '@kit.NetworkKit';
 import { LogUtil } from '@pura/harmony-utils';
@@ -6,6 +8,7 @@ import {
   AnPNotification,
   Chat,
   ChatSendContent,
+  MessageDeleteResult,
   MessageListBody,
   MessageSummary,
   NotificationResponse,
@@ -91,6 +94,13 @@ export class MessageApi {
     text = text.replace(/[ \t]+/g, ' ');
     text = text.replace(/\n\s+/g, '\n');
     return text.trim();
+  }
+
+  private static extractAlertMessage(container: Element): string {
+    const msgNode = DomUtils.findOne((elem) => elem.tagName === 'p', container.children, true);
+    const html = DomUtils.getOuterHTML(msgNode ?? container);
+    const withoutScript = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+    return MessageApi.formatHtmlMessage(withoutScript);
   }
 
   private static async getSystemNotificationByKind(kind: string, page: number): Promise<SystemNotification[]> {
@@ -263,7 +273,80 @@ export class MessageApi {
     }
     const errorMsg = `Send message failed, errcode: ${result.data.errcode}`;
     LogUtil.warn(TAG, errorMsg);
-    ToastUtil.showError(result.data.errcode);
+    ToastUtil.showLightError(result.data.errcode);
     throw new Error(errorMsg);
+  }
+
+  public static async getPmDeleteFormhash(): Promise<string> {
+    try {
+      const params: Record<string, string> = {
+        'mod': 'spacecp',
+        'ac': 'pm',
+        'op': 'delete',
+        'folder': ''
+      };
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params);
+      const input = DomUtils.findOne((elem) => {
+        return elem.tagName === 'input' && elem.attribs && elem.attribs['name'] === 'formhash';
+      }, doc.children, true);
+      if (input && input.attribs && input.attribs['value']) {
+        return input.attribs['value'];
+      }
+      LogUtil.warn(TAG, 'getPmDeleteFormhash: formhash input not found');
+      return '';
+    } catch (e) {
+      LogUtil.error(TAG, 'getPmDeleteFormhash failed', JSON.stringify(e));
+      return '';
+    }
+  }
+
+  public static async deleteChatMessage(uid: number, formhash: string): Promise<MessageDeleteResult> {
+    try {
+      const params: Record<string, string | number | boolean> = {
+        'mod': 'spacecp',
+        'ac': 'pm',
+        'op': 'delete',
+        'folder': '',
+        'deletepm_deluid[]': uid,
+        'deletepmsubmit_btn': true,
+        'deletesubmit': true,
+        'formhash': formhash
+      };
+
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params, http.RequestMethod.POST);
+
+      const messageBox = DomUtils.getElementById('messagetext', doc);
+      if (messageBox) {
+        const messageClass = messageBox.attribs ? messageBox.attribs['class'] : '';
+        const messageParagraph = DomUtils.findOne((elem) => elem.tagName === 'p', messageBox.children, true);
+        if (messageParagraph) {
+          const messageText = MessageApi.extractAlertMessage(messageParagraph);
+          return { success: true, message: messageText };
+        }
+      }
+
+      const alertError = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_error'));
+      }, doc.children, true);
+
+      if (alertError) {
+        const messageText = MessageApi.extractAlertMessage(alertError);
+        return { success: false, message: messageText };
+      }
+
+      const alertInfo = DomUtils.findOne((elem) => {
+        return !!(elem.attribs && elem.attribs['class'] && elem.attribs['class'].includes('alert_info'));
+      }, doc.children, true);
+
+      if (alertInfo) {
+        const messageText = MessageApi.extractAlertMessage(alertInfo);
+        return { success: true, message: messageText };
+      }
+
+      return { success: false, message: '' };
+    } catch (e) {
+      LogUtil.error(TAG, 'deleteChatMessage failed', JSON.stringify(e));
+      return { success: false, message: '' };
+    }
   }
 }

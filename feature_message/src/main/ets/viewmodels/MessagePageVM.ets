@@ -2,12 +2,14 @@ import { AppUtil } from '@pura/harmony-utils';
 import {
   BaseVM,
   CommonConstant,
+  MessageApi,
   MessageManager,
   NewMessagesSummary,
   RecentMessage,
   RouterMap,
   RouterUtil,
-  StackEnum
+  StackEnum,
+  ToastUtil
 } from 'base_common';
 import { NavTitleButtonModel } from 'base_ui';
 import { MessageNotifyCardItem } from '../components/MessageNotifyCard';
@@ -59,6 +61,7 @@ export class MessagePageVM extends BaseVM {
   ];
   @Trace messages: RecentMessage[] = [];
   private isListening: boolean = false;
+  private deleteFormhash: string = '';
   private messageListListener = (list: RecentMessage[]) => {
     this.messages = [...list];
   };
@@ -132,6 +135,31 @@ export class MessagePageVM extends BaseVM {
 
   async loadMore() {
     await MessageManager.getInstance().loadNextPage();
+  }
+
+  async deleteConversation(message: RecentMessage): Promise<void> {
+    if (!message || !message.toUserId) {
+      return;
+    }
+
+    let formhash = this.deleteFormhash;
+    if (!formhash) {
+      formhash = await MessageApi.getPmDeleteFormhash();
+      this.deleteFormhash = formhash;
+    }
+
+    if (!formhash) {
+      ToastUtil.showLightError('无法删除：formhash 为空');
+      return;
+    }
+
+    const result = await MessageApi.deleteChatMessage(message.toUserId, formhash);
+    if (result.success) {
+      MessageManager.getInstance().removeConversation(message.toUserId);
+      ToastUtil.showLightSuccess(`已删除与 ${message.toUserName} 的聊天消息`);
+    } else {
+      ToastUtil.showLightError(result.message || '删除失败');
+    }
   }
 
   toggleHeader(hide: boolean) {

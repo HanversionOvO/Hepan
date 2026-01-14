@@ -240,6 +240,17 @@ export class MessageManager {
     this.messageListListeners = this.messageListListeners.filter(l => l !== listener);
   }
 
+  public removeConversation(uid: number): void {
+    if (!uid) {
+      return;
+    }
+    const nextList = this.messageList.filter(item => item.toUserId !== uid);
+    if (nextList.length !== this.messageList.length) {
+      this.messageList = nextList;
+      this.notifyMessageListListeners(this.messageList);
+    }
+  }
+
   private notifyListeners(summary: NewMessagesSummary): void {
     this.listeners.forEach(listener => listener(summary));
   }

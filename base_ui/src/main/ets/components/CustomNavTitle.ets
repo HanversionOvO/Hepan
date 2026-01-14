@@ -37,6 +37,8 @@ export struct CustomNavTitle {
       navTitleButtonModel.onClick();
     })
     .geometryTransition(navTitleButtonModel.geometryID ?? undefined)
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
 
   build() {

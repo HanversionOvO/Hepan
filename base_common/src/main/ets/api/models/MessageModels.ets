@@ -47,6 +47,11 @@ export interface MessageListBody {
   list: RecentMessage[];
 }
 
+export interface MessageDeleteResult {
+  success: boolean;
+  message: string;
+}
+
 export interface PmListItem {
   msgList: Chat[];
 }
