@@ -43,6 +43,9 @@ export struct NoticePageImpl {
                         vm: this.vm,
                         noticeCard: noticeCard
                       })
+                        .onClick(() => {
+                          this.vm.handleSystemNoticeClick(noticeCard);
+                        })
                     }
                   }, (noticeCard: SystemNotification) => {
                     return `${noticeCard.type}_${noticeCard.id}`;

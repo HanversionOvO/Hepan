@@ -54,6 +54,7 @@ export interface UserSummary {
   replies: number;
   digests: number;
   views: number;
+  friend_status?: string;
 }
 
 /**
@@ -73,8 +74,10 @@ export interface RecentVisitor {
 export interface UserProfileData {
   // ???? (? user_summary=1 ???)
   user_summary?: UserSummary;
+
   // ???? (? visitors=1 ???)
   recent_visitors?: RecentVisitor[];
+
   // ??????
   email?: string; // ??????????
   register_time?: number; // ?????

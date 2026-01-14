@@ -21,6 +21,11 @@ import { ToastUtil } from '../utils/ToastUtil';
 
 const TAG = '[MessageApi]: ';
 
+interface AlertMessage {
+  type: 'error' | 'info';
+  message: string;
+}
+
 export class MessageApi {
   private static extractBaseData<T>(response: ApiResponse<BaseResponse<T>>, fallbackMessage: string): T {
     if (response.status === 200 && response.data.code === 0 &&
@@ -101,6 +106,38 @@ export class MessageApi {
     const html = DomUtils.getOuterHTML(msgNode ?? container);
     const withoutScript = html.replace(/<script[\s\S]*?<\/script>/gi, '');
     return MessageApi.formatHtmlMessage(withoutScript);
+  }
+
+  private static parseAlertMessage(doc: Document): AlertMessage | null {
+    const messageBox = DomUtils.getElementById('messagetext', doc);
+    if (!messageBox) {
+      return null;
+    }
+    const messageClass = messageBox.attribs ? messageBox.attribs['class'] : '';
+    const messageText = MessageApi.extractAlertMessage(messageBox);
+    if (messageClass && messageClass.includes('alert_error')) {
+      return { type: 'error', message: messageText };
+    }
+    if (messageClass && messageClass.includes('alert_info')) {
+      return { type: 'info', message: messageText };
+    }
+    return null;
+  }
+
+  private static findFriendFormhash(doc: Document, uid: number): string {
+    const formId = `addratifyform_${uid}`;
+    const form = DomUtils.findOne((elem) => {
+      if (!elem.attribs || elem.tagName !== 'form') {
+        return false;
+      }
+      const id = elem.attribs['id'] || '';
+      const action = elem.attribs['action'] || '';
+      return id === formId || (action.includes('ac=friend') && action.includes('op=add'));
+    }, doc.children, true);
+    const input = DomUtils.findOne((elem) => {
+      return elem.tagName === 'input' && elem.attribs && elem.attribs['name'] === 'formhash';
+    }, form ? form.children : doc.children, true);
+    return input && input.attribs ? input.attribs['value'] || '' : '';
   }
 
   private static async getSystemNotificationByKind(kind: string, page: number): Promise<SystemNotification[]> {
@@ -347,6 +384,66 @@ export class MessageApi {
     } catch (e) {
       LogUtil.error(TAG, 'deleteChatMessage failed', JSON.stringify(e));
       return { success: false, message: '' };
+    }
+  }
+
+  public static async getFriendRequestFormhash(uid: number): Promise<string> {
+    try {
+      const params: Record<string, string | number> = {
+        'mod': 'spacecp',
+        'ac': 'friend',
+        'op': 'add',
+        'uid': uid,
+        'from': 'notice'
+      };
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params);
+      const alert = MessageApi.parseAlertMessage(doc);
+      if (alert && alert.type === 'error') {
+        throw new Error(alert.message || '请求失败');
+      }
+      const formhash = MessageApi.findFriendFormhash(doc, uid);
+      if (!formhash) {
+        throw new Error('formhash 为空');
+      }
+      return formhash;
+    } catch (e) {
+      LogUtil.error(TAG, 'getFriendRequestFormhash failed', JSON.stringify(e));
+      if (e instanceof Error) {
+        throw e;
+      }
+      throw new Error('获取 formhash 失败');
+    }
+  }
+
+  public static async approveFriendRequest(uid: number, formhash: string): Promise<void> {
+    try {
+      const params: Record<string, string | number | boolean> = {
+        'mod': 'spacecp',
+        'ac': 'friend',
+        'op': 'add',
+        'uid': uid,
+        'referer': 'https://bbs.uestc.edu.cn/messages/system',
+        'add2submit': true,
+        'from': 'notice',
+        'formhash': formhash,
+        'gid': 1,
+        'add2submit_btn': true
+      };
+      const doc: Document = await ApiClient.getInstance().requestHtml('home.php', params, http.RequestMethod.POST);
+      const alert = MessageApi.parseAlertMessage(doc);
+      if (alert && alert.type === 'error') {
+        throw new Error(alert.message || '添加好友失败');
+      }
+      if (alert && alert.type === 'info') {
+        return;
+      }
+      throw new Error('添加好友失败');
+    } catch (e) {
+      LogUtil.error(TAG, 'approveFriendRequest failed', JSON.stringify(e));
+      if (e instanceof Error) {
+        throw e;
+      }
+      throw new Error('添加好友失败');
     }
   }
 }

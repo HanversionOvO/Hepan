@@ -1,13 +1,13 @@
-import { MinePageVM } from '../viewmodels/MinePageVM';
+﻿import { MinePageVM } from '../viewmodels/MinePageVM';
 import { LengthMetrics, SymbolGlyphModifier } from '@kit.ArkUI';
-import { CommonConstant, ToastUtil, UserAvatarUtil } from 'base_common';
+import { CommonConstant, ToastUtil, UserApi, UserAvatarUtil } from 'base_common';
 import { PasteboardUtil, ResUtil } from '@pura/harmony-utils';
 import { GlassButton, ImageLongTakePreviewUtil } from 'base_ui';
 import { UserStats, UserStatsModel } from './UserStats';
 import { CardType, FeatureCard, FeatureCardModel } from './FeatureCard';
 import { signatureSheetBuilder } from './SignatureSheet';
 import { userProfileSheetBuilder } from './UserProfileSheet';
-import { userMedalSheetBuilder } from './UserMedalSheet'; // 新增
+import { userMedalSheetBuilder } from './UserMedalSheet';
 
 @ComponentV2
 export struct UserInfoArea {
@@ -19,6 +19,50 @@ export struct UserInfoArea {
   @Computed
   get avatarTransitionId(): string {
     return `user_avatar_${this.vm.user?.user_summary?.uid || 'default'}`;
+  }
+
+  private async addFriend(): Promise<void> {
+    const summary = this.vm.user?.user_summary;
+    if (!summary || !summary.uid) {
+      return;
+    }
+
+    const userName = summary.username?.trim() || '';
+    try {
+      const result = await UserApi.addFriend(summary.uid, '');
+      summary.friend_status = result.friend_status;
+      const message = userName ? `已向 ${userName} 发送添加好友请求` : '已发送添加好友请求';
+      ToastUtil.showLightSuccess(message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '添加好友失败';
+      ToastUtil.showLightError(errorMessage);
+    }
+  }
+
+  private confirmDeleteFriend(): void {
+    const summary = this.vm.user?.user_summary;
+    if (!summary || !summary.uid) {
+      return;
+    }
+    const userName = summary.username?.trim();
+    const message = userName ? `是否删除好友 ${userName}` : '是否删除好友';
+    ToastUtil.showWarn(message, true, undefined, () => {
+      void this.deleteFriend(summary.uid, userName || '');
+    });
+  }
+
+  private async deleteFriend(uid: number, userName: string): Promise<void> {
+    const result = await UserApi.deleteFriend(uid);
+    if (result) {
+      if (this.vm.user?.user_summary) {
+        this.vm.user.user_summary.friend_status = undefined;
+      }
+      const successMessage = userName ? `成功删除好友 ${userName}` : '成功删除好友';
+      ToastUtil.showLightSuccess(successMessage);
+      void this.vm.onRefreshAll();
+    } else {
+      ToastUtil.showLightError('删除好友失败');
+    }
   }
 
   @Builder
@@ -150,10 +194,38 @@ export struct UserInfoArea {
                 }
               })
 
-            GlassButton({
-              symbol: $r('sys.symbol.gearshape'),
-              innerFontColor: $r('sys.color.font_on_primary'),
-            })
+            if (this.vm.isMe) {
+              GlassButton({
+                symbol: $r('sys.symbol.gearshape'),
+                innerFontColor: $r('sys.color.font_on_primary'),
+              })
+            } else {
+              if (this.vm.user?.user_summary?.friend_status === 'friend') {
+                GlassButton({
+                  symbol: $r('sys.symbol.person_badge_xmark_fill'),
+                  innerFontColor: $r('sys.color.font_on_primary'),
+                  innerFontSize: CommonConstant.TextSizeSmall
+                })
+                  .onClick(() => {
+                    this.confirmDeleteFriend();
+                  })
+              } else if (!this.vm.user?.user_summary?.friend_status) {
+                GlassButton({
+                  symbol: $r('sys.symbol.person_badge_plus'),
+                  innerFontColor: $r('sys.color.font_on_primary'),
+                  innerFontSize: CommonConstant.TextSizeSmall
+                })
+                  .onClick(() => {
+                    void this.addFriend();
+                  })
+              }
+
+              GlassButton({
+                symbol: $r('sys.symbol.message'),
+                innerFontColor: $r('sys.color.font_on_primary'),
+                innerFontSize: CommonConstant.TextSizeSmall
+              })
+            }
           }
         }
         .width(CommonConstant.FullPercent)
@@ -176,18 +248,17 @@ export struct UserInfoArea {
           })
         })
       }
-      // 新增：将勋章 Sheet 绑定到功能卡片区域的 Row 上
-      // 只要 isShowMedalSheet 变为 true，这里就会弹出 sheet
+      // 将勋章 Sheet 绑定到功能卡片区域
       .bindSheet($$this.vm.isShowMedalSheet, userMedalSheetBuilder(this.vm), {
         showClose: true,
-        detents: [SheetSize.MEDIUM, SheetSize.LARGE], // 支持中等和全屏高度
+        detents: [SheetSize.MEDIUM, SheetSize.LARGE],
         enableOutsideInteractive: false,
         preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
         scrollSizeMode: ScrollSizeMode.CONTINUOUS,
         backgroundColor: $r('app.color.start_window_background'),
         blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
         title: {
-          title: $r('app.string.MinePage_medal_center') // 确保 string.json 中有这个 key，或者使用 Resource
+          title: $r('app.string.MinePage_medal_center')
         }
       })
     }

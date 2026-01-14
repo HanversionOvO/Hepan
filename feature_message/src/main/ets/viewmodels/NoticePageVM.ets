@@ -9,6 +9,7 @@ import {
   RouterUtil,
   StackEnum,
   SystemNotification,
+  ToastUtil,
   UiState
 } from 'base_common';
 import { LongTakeTransitionOptions } from 'base_ui/src/main/ets/transitions/longtake/utils/Options';
@@ -124,6 +125,29 @@ export class NoticePageVM extends BaseVM {
         () => {
           RouterUtil.pop(undefined, false, StackEnum.MESSAGE);
         })
+  }
+
+  handleSystemNoticeClick(notice: SystemNotification): void {
+    const type = notice.type ? notice.type.toLowerCase() : '';
+    if (type !== 'system.friend' && type !== 'friend' && !type.endsWith('.friend')) {
+      return;
+    }
+    const uid = notice.author_id || notice.from_id;
+    if (!uid) {
+      ToastUtil.showLightError('无法获取用户ID');
+      return;
+    }
+    const userName = notice.author && notice.author.trim().length > 0 ? notice.author.trim() : '该用户';
+    ToastUtil.showWarn(`是否同意${userName}的好友申请`, true, undefined, async () => {
+      try {
+        const formhash = await MessageApi.getFriendRequestFormhash(uid);
+        await MessageApi.approveFriendRequest(uid, formhash);
+        ToastUtil.showLightSuccess(`成功添加${userName}为好友`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '添加好友失败';
+        ToastUtil.showLightError(errorMessage);
+      }
+    });
   }
 
   private extractPidFromUrl(url: string): string {

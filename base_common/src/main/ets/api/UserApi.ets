@@ -1,5 +1,7 @@
 import { ApiClient, ApiResponse, LegacyResponse } from './ApiClient';
 import {
+  AddFriendRequest,
+  AddFriendResult,
   BaseResponse,
   FriendUser,
   InterestingUser,
@@ -257,6 +259,31 @@ export class UserApi {
       LogUtil.warn(TAG, errorMsg);
       throw new Error(errorMsg);
     }
+  }
+
+  // 添加好友
+  public static async addFriend(uid: number, message: string = ''): Promise<AddFriendResult> {
+    const path = `/_/user/friend`;
+    const payload: AddFriendRequest = {
+      uid: uid,
+      message: message
+    };
+
+    const response = await ApiClient.getInstance().request<BaseResponse<AddFriendResult>>({
+      path: path,
+      method: http.RequestMethod.PUT,
+      includeAuthorization: true,
+      includeCookie: true,
+      data: payload
+    });
+
+    if (response.status === 200 && response.data.code === 0 && response.data.data) {
+      return response.data.data;
+    }
+
+    const errorMsg = response.data?.message || `Add friend failed, status: ${response.status}`;
+    LogUtil.warn(TAG, errorMsg);
+    throw new Error(errorMsg);
   }
 
   // 获取勋章

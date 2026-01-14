@@ -1,4 +1,4 @@
-import { CommonConstant, DateUtil, RecentMessage, ToastUtil, UserAvatarUtil } from 'base_common';
+﻿import { CommonConstant, DateUtil, RecentMessage, ToastUtil, UserAvatarUtil } from 'base_common';
 import { MessagePageVM } from '../viewmodels/MessagePageVM';
 
 @ComponentV2

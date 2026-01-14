@@ -1,5 +1,4 @@
-// feature_mine/src/main/ets/components/UserProfileView.ets
-import { CommonConstant } from 'base_common';
+﻿import { CommonConstant } from 'base_common';
 import { MinePageVM } from '../viewmodels/MinePageVM';
 import { StickyNavBar } from './StickyNavBar';
 import { UserInfoArea } from './UserInfoArea';
@@ -13,7 +12,7 @@ export struct UserProfileView {
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
-      // 1. 背景层
+      // 背景层
       Image("https://gips2.baidu.com/it/u=2055042668,1190219470&fm=3028&app=3028&f=JPEG&fmt=auto?w=960&h=1280")
         .width(CommonConstant.FullPercent)
         .height(CommonConstant.FullPercent)

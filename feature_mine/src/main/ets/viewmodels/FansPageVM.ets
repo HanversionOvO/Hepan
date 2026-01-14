@@ -132,7 +132,7 @@ export class FansPageVM extends BaseVM {
         const result: boolean = await UserApi.deleteFriend(uid);
 
         if (result) {
-          ToastUtil.showSuccess(`${ResUtil.getStringSync($r('app.string.FansUserItem_delete_friend_success'))} ${username}`)
+          ToastUtil.showLightSuccess(`${ResUtil.getStringSync($r('app.string.FansUserItem_delete_friend_success'))} ${username}`)
           await this.refreshFansPage();
         }
       });
