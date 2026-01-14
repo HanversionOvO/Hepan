@@ -107,7 +107,7 @@ struct CollectionCreateSheet {
         .backgroundColor(CommonConstant.ThemeColor)
         .onClick(async () => {
           if (this.title === "") {
-            ToastUtil.showWarn($r('app.string.CollectionPage_collection_input_title'))
+            ToastUtil.showLightWarn($r('app.string.CollectionPage_collection_input_title'))
             return;
           }
 
