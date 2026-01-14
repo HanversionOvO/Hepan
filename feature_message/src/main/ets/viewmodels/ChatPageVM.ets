@@ -76,13 +76,13 @@ export class ChatPageVM extends BaseVM {
   }
 
   async checkNewMessage() {
-    if (!this.recentMessage || this.chats.length === 0) {
+    if (!this.recentMessage) {
       return;
     }
 
     try {
-      const lastMsg = this.chats[this.chats.length - 1];
-      const startTime = Number(lastMsg.time);
+      const lastMsg = this.chats.length > 0 ? this.chats[this.chats.length - 1] : null;
+      const startTime = lastMsg ? Number(lastMsg.time) : 0;
 
       const newChats = await MessageApi.getChat(this.recentMessage.toUserId, startTime, 0, 10);
 
@@ -159,7 +159,11 @@ export class ChatPageVM extends BaseVM {
 
   async sendMessage(msg: ChatSendContent) {
     if (this.recentMessage) {
-      await MessageApi.sendMessage(this.recentMessage.toUserId, msg, this.recentMessage.plid, this.recentMessage.pmid)
+      try {
+        await MessageApi.sendMessage(this.recentMessage.toUserId, msg, this.recentMessage.plid, this.recentMessage.pmid);
+      } catch (e) {
+        LogUtil.error(TAG, 'Send message failed: ' + JSON.stringify(e));
+      }
     }
   }
 

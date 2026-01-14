@@ -259,6 +259,21 @@ export class MessageManager {
     return match ?? null;
   }
 
+  public upsertConversation(message: RecentMessage): void {
+    if (!message || !message.toUserId) {
+      return;
+    }
+    const updated = new RecentMessage(message);
+    const nextList = [...this.messageList];
+    const index = nextList.findIndex(item => item.toUserId === message.toUserId);
+    if (index !== -1) {
+      nextList.splice(index, 1);
+    }
+    nextList.unshift(updated);
+    this.messageList = nextList;
+    this.notifyMessageListListeners(this.messageList);
+  }
+
   private notifyListeners(summary: NewMessagesSummary): void {
     this.listeners.forEach(listener => listener(summary));
   }
