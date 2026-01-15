@@ -268,7 +268,7 @@ export class TieThread {
   @Trace can_reply: boolean = false;
   @Trace collections?: TieCollection[];
   @Trace last_moderation: TieModeration = new TieModeration();
-  @Trace poll?: Record<string, Object>;
+  @Trace poll?: TiePoll;
 }
 
 @ObservedV2
