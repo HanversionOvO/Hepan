@@ -152,28 +152,36 @@ struct VoteSheet {
                 .fontSize(CommonConstant.TextSizeNormal)
             }
 
-            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
               SymbolGlyph($r('sys.symbol.minus'))
-                .fontSize(CommonConstant.TextSizeNormal)
+                .fontSize(CommonConstant.TextSizeSmall)
                 .fontColor([this.vm.canDecVoteChoice() ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary')])
                 .onClick(() => {
                   if (this.vm.canDecVoteChoice()) {
                     this.vm.updateVoteMaxChoices(this.vm.vote.max_choices - 1);
                   }
                 })
+                .backgroundColor($r('app.color.start_window_background'))
+                .borderRadius(CommonConstant.RadiusRound)
+                .padding(CommonConstant.SmallContainerInnerPadding)
 
               Text(`${this.vm.vote.max_choices}`)
                 .fontSize(CommonConstant.TextSizeNormal)
 
               SymbolGlyph($r('sys.symbol.plus'))
-                .fontSize(CommonConstant.TextSizeNormal)
+                .fontSize(CommonConstant.TextSizeSmall)
                 .fontColor([this.vm.canIncVoteChoice() ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary')])
                 .onClick(() => {
                   if (this.vm.canIncVoteChoice()) {
                     this.vm.updateVoteMaxChoices(this.vm.vote.max_choices + 1);
                   }
                 })
+                .backgroundColor($r('app.color.start_window_background'))
+                .borderRadius(CommonConstant.RadiusRound)
+                .padding(CommonConstant.SmallContainerInnerPadding)
             }
+            .borderRadius(CommonConstant.RadiusRound)
+            .border({ width: CommonConstant.BorderSizeNormal, color: $r('app.color.start_window_background') })
           }
           .justifyContent(FlexAlign.SpaceBetween)
           .width(CommonConstant.FullPercent)
