@@ -103,27 +103,10 @@
     {
       "name": "PostPage_draft_no_title_content",
       "value": "标题和内容不能同时为空"
-    },
-    {
-      "name": "PostPage_insert_link",
-      "value": "????"
     },
     {
-      "name": "PostPage_insert_image_link",
-      "value": "??????"
-    },
-    {
-      "name": "PostPage_link_text_placeholder",
-      "value": "????"
-    },
-    {
-      "name": "PostPage_link_url_placeholder",
-      "value": "https://"
-    },
-    {
-      "name": "PostPage_image_alt_placeholder",
-      "value": "??"
+      "name": "PostPage_enable_anonymous",
+      "value": "匿名发帖"
     }
-
   ]
 }

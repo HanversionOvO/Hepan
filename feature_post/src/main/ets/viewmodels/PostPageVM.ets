@@ -52,6 +52,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     }
     }
   ];
+  @Trace isAnonymous: boolean = false; // 启用匿名发帖
   // === 分类选择相关状态 ===
   @Trace isCategoryExpanded: boolean = false; // 是否展开板块选择器
   @Trace leftPanelIndex: number = 0; // 左侧大区列表的选中索引

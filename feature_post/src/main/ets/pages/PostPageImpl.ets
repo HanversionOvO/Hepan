@@ -7,6 +7,7 @@ import { RichTextToolBar } from '../components/RichTextToolBar'
 import { PostPageVM } from '../viewmodels/PostPageVM'
 import { KeyboardAvoidMode } from '@kit.ArkUI'
 import { postDraftBuilder } from '../components/PostDraft'
+import { PostOption } from '../components/PostOption'
 
 const TAG = '[PostPageImpl]: ';
 
@@ -74,6 +75,8 @@ export struct PostPageImpl {
                       duration: CommonConstant.AnimationDurationNormal
                     })
                   )
+
+                PostOption({ vm: this.vm })
               }
 
               Column() {
