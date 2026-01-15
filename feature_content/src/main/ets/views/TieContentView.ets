@@ -97,6 +97,8 @@ export struct TieContentView {
             .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
 
+        this.VotePanel()
+
         if (this.vm.tieTopic?.post_id) {
           TieDetailFooter({ vm: this.vm })
         }
@@ -117,14 +119,94 @@ export struct TieContentView {
   }
 
   @Builder
+  VoteOption() {
+    Row() {
+      Text("这是一个选项")
+        .fontSize(CommonConstant.TextSizeNormal)
+    }
+    .borderRadius(CommonConstant.RadiusNormal)
+    .backgroundColor($r('app.color.start_window_background'))
+    .padding({
+      left: CommonConstant.NormalContainerLRPadding,
+      right: CommonConstant.NormalContainerLRPadding,
+      top: CommonConstant.NormalContainerTBPadding,
+      bottom: CommonConstant.NormalContainerTBPadding
+    })
+    .width(CommonConstant.FullPercent)
+    .justifyContent(FlexAlign.Start)
+    .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal })
+    .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
+  }
+
+  @Builder
+  VotePanel() {
+    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        SymbolGlyph($r('sys.symbol.data'))
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontWeight(FontWeight.Medium)
+          .fontColor([CommonConstant.ThemeColor])
+
+        Text(`${this.vm.tieSummary.author} ${ResUtil.getStringSync($r('app.string.TieContentPage_vote_title'))}`)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontWeight(FontWeight.Medium)
+          .layoutWeight(1)
+
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          SymbolGlyph($r('sys.symbol.clock'))
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor([$r('sys.color.font_tertiary')])
+
+          Text("3天")
+            .fontSize(CommonConstant.TextSizeTiny)
+            .fontColor($r('sys.color.font_tertiary'))
+        }
+      }
+      .width(CommonConstant.FullPercent)
+      .justifyContent(FlexAlign.Start)
+
+      Text("快来一起参与投票吧！")
+        .fontSize(CommonConstant.TextSizeSmall)
+        .fontColor($r('sys.color.font_secondary'))
+        .width(CommonConstant.FullPercent)
+        .textAlign(TextAlign.Start)
+
+      this.VoteOption()
+
+      this.VoteOption()
+    }
+    .width(CommonConstant.FullPercent)
+    .backgroundColor($r('app.color.second_window_background'))
+    .borderRadius(CommonConstant.RadiusNormal)
+    .padding({
+      left: CommonConstant.NormalContainerLRPadding,
+      right: CommonConstant.NormalContainerLRPadding,
+      top: CommonConstant.NormalContainerTBPadding,
+      bottom: CommonConstant.NormalContainerTBPadding
+    })
+  }
+
+  @Builder
   ThreadCollections() {
     if (this.vm.threadCollections.length > 0) {
       Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-        Text($r('app.string.TieContentPage_collection'))
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontWeight(FontWeight.Medium)
-          .width(CommonConstant.FullPercent)
-          .textAlign(TextAlign.Start)
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          SymbolGlyph($r('sys.symbol.collection_panel'))
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Medium)
+            .fontColor([CommonConstant.ThemeColor])
+
+          Text($r('app.string.TieContentPage_collection'))
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Medium)
+        }
+        .width(CommonConstant.FullPercent)
+        .justifyContent(FlexAlign.Start)
+        .padding({
+          top: CommonConstant.NormalContainerInnerPadding,
+          left: CommonConstant.NormalContainerInnerPadding,
+          right: CommonConstant.NormalContainerInnerPadding
+        })
 
         Swiper() {
           ForEach(this.vm.threadCollections, (collection: Collection) => {
@@ -146,6 +228,8 @@ export struct TieContentView {
         .indicator(false)
         .effectMode(EdgeEffect.Spring)
       }
+      .backgroundColor($r('app.color.second_window_background'))
+      .borderRadius(CommonConstant.RadiusNormal)
       .width(CommonConstant.FullPercent)
     }
   }

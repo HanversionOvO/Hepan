@@ -157,6 +157,10 @@
       "value": "移除成功"
     },
     {
+      "name": "TieContentPage_vote_title",
+      "value": "发起了投票"
+    },
+    {
       "name": "ReplyPage_cancel",
       "value": "取消"
     },
