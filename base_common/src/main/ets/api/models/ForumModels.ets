@@ -123,10 +123,23 @@ export class PoolOption {
 @ObservedV2
 export class NewThreadPool {
   @Trace max_choices: number = 0;
-  @Trace visible: boolean = false;
-  @Trace show_voters: boolean = true;
+  @Trace visible: boolean = true;
+  @Trace show_voters: boolean = false;
   @Trace expiration: number = 0;
   @Trace options: PoolOption[] = [];
+}
+
+export class PoolOptionPayload {
+  text: string = '';
+}
+
+export class NewThreadPollPayload {
+  max_choices: number = 0;
+  visible: boolean = false;
+  show_voters: boolean = false;
+  expiration: number = 0;
+  is_image: boolean = false;
+  options: PoolOptionPayload[] = [];
 }
 
 export interface ThreadType {
@@ -143,7 +156,7 @@ export interface NewThreadRequest {
   usesig: number;
   is_anonymous: boolean;
   attachments?: UploadedFile[];
-  poll?: NewThreadPool;
+  poll?: NewThreadPollPayload;
 }
 
 export interface NewThreadResponse {

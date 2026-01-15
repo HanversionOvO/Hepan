@@ -9,7 +9,9 @@ import {
   InputOverlayVisibilityEvent,
   NewThreadPool,
   NewThreadRequest,
+  NewThreadPollPayload,
   PoolOption,
+  PoolOptionPayload,
   PostCategoryGroup,
   PostCategoryItem,
   ThreadType,
@@ -487,6 +489,22 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     this.contentSelectionEnd = Math.max(0, end);
   }
 
+  private buildPollPayload(): NewThreadPollPayload {
+    const options: PoolOptionPayload[] = this.vote.options.map((option: PoolOption) => {
+      const payload = new PoolOptionPayload();
+      payload.text = option.text.trim();
+      return payload;
+    });
+    const payload = new NewThreadPollPayload();
+    payload.max_choices = this.vote.max_choices;
+    payload.visible = this.vote.visible;
+    payload.show_voters = this.vote.show_voters;
+    payload.expiration = this.vote.expiration;
+    payload.is_image = false;
+    payload.options = options;
+    return payload;
+  }
+
   private getVoteChoiceMin(): number {
     return this.vote.options.length > 0 ? 1 : 0;
   }
@@ -638,6 +656,17 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
       return;
     }
 
+    let allowPoll: boolean = this.vote.options.length > 1;
+    if (allowPoll) {
+      const hasEmptyOption = this.vote.options.some((option: PoolOption) => {
+        return !option.text || option.text.trim().length === 0;
+      });
+      if (hasEmptyOption) {
+        ToastUtil.showLightWarn('投票选项不能为空');
+        allowPoll = false;
+      }
+    }
+
     // 2. 显示 Loading
     ToastUtil.showLoading($r('app.string.PostPage_publishing'));
 
@@ -677,10 +706,10 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
 
       const forumId = this.isAnonymous ? this.anonymousForumId : this.selectedForumId;
       const typeId = this.isAnonymous ? this.anonymousTypeId : this.selectedTypeId;
-      let poll: NewThreadPool | undefined = undefined;
-      if (this.vote.options.length > 1) {
+      let poll: NewThreadPollPayload | undefined = undefined;
+      if (allowPoll) {
         this.normalizeVoteMaxChoices();
-        poll = this.vote;
+        poll = this.buildPollPayload();
       }
       const request: NewThreadRequest = {
         forum_id: forumId,

@@ -14,12 +14,12 @@ import {
   PostCategoryItem,
   ReplyRequest,
   ReplyResponse,
+  ThreadListResponse,
+  TieDetail,
   TieFavoriteDeleteRequest,
   TieFavoriteDeleteResult,
   TieFavoriteStatus,
-  TieFavoriteUpdateRequest,
-  ThreadListResponse,
-  TieDetail
+  TieFavoriteUpdateRequest
 } from './models/ForumModels';
 import { ToastUtil } from '../utils/ToastUtil';
 
