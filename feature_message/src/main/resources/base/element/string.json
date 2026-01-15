@@ -43,6 +43,14 @@
     {
       "name": "ChatPage_select_image",
       "value": "选择照片"
+    },
+    {
+      "name": "ChatPage_copy_text",
+      "value": "复制文本"
+    },
+    {
+      "name": "ChatPage_save_image",
+      "value": "保存图片"
     }
   ]
 }

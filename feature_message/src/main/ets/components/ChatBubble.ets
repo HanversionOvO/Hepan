@@ -1,4 +1,6 @@
-import { Chat, CommonConstant, DateUtil, StorageManager, UserAvatarUtil } from 'base_common';
+import { Chat, CommonConstant, DateUtil, StorageManager, ToastUtil, UserAvatarUtil } from 'base_common';
+import { SymbolGlyphModifier } from '@kit.ArkUI';
+import { PasteboardUtil } from '@pura/harmony-utils';
 
 @ObservedV2
 class ChatSegment {
@@ -38,12 +40,38 @@ export struct ChatBubble {
   @Param @Require chat: Chat;
   @Param imageComponentId: string = '';
   @Param isImageHidden: boolean = false;
-  @Param onImageClick: () => void = () => {};
+  @Param onImageClick: () => void = () => {
+  };
   @Local imageSize: number = 150;
 
   @Computed
   get isMe(): boolean {
     return this.chat.sender === StorageManager.authModel?.uid;
+  }
+
+  @Builder
+  TextCopyMenu() {
+    Menu() {
+      if (this.chat.type === "text") {
+        MenuItem({
+          symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.hand_cut_and_paste')),
+          content: $r('app.string.ChatPage_copy_text')
+        })
+          .onClick(() => {
+            PasteboardUtil.setDataTextSync(this.chat.content)
+            ToastUtil.showLightSuccess($r('app.string.CommonToast_copy_success'))
+          })
+      } else {
+        MenuItem({
+          symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.hand_cut_and_paste')),
+          content: $r('app.string.ChatPage_save_image')
+        })
+          .onClick(() => {
+            // 保存图片逻辑
+          })
+      }
+    }
+    .font({ size: CommonConstant.TextSizeNormal })
   }
 
   @Builder
@@ -62,6 +90,7 @@ export struct ChatBubble {
             this.onImageClick();
           }
         })
+        .draggable(false)
     } else {
       Text() {
         ForEach(parseChatContent(this.chat.content), (segment: ChatSegment, index: number) => {
@@ -108,6 +137,11 @@ export struct ChatBubble {
             bottomRight: CommonConstant.RadiusUltraLarge
           })
           .constraintSize({ maxWidth: CommonConstant.AboveHalfPercent })
+          .bindContextMenu(this.TextCopyMenu, ResponseType.LongPress,
+            {
+              preview: MenuPreviewMode.IMAGE,
+              previewAnimationOptions: { scale: [0.8, 1.0] },
+            })
 
           Image(UserAvatarUtil.getAvatarUrl(this.chat.sender))
             .width(CommonConstant.IconSizeLarge)
@@ -137,6 +171,11 @@ export struct ChatBubble {
             bottomRight: CommonConstant.RadiusUltraLarge
           })
           .constraintSize({ maxWidth: CommonConstant.AboveHalfPercent })
+          .bindContextMenu(this.TextCopyMenu, ResponseType.LongPress,
+            {
+              preview: MenuPreviewMode.IMAGE,
+              previewAnimationOptions: { scale: [0.8, 1.0] },
+            })
 
           Blank()
         }

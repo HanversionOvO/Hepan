@@ -49,6 +49,20 @@ export class AtUser {
 }
 
 @ObservedV2
+export class ReplyCreditInfo {
+  @Trace max_single_credits: number = 0;
+  @Trace max_total_credits: number = 0;
+  @Trace remaining_credits: number = 0;
+  @Trace tax_rate: number = 0;
+}
+
+@ObservedV2
+export class ReplyCredit {
+  @Trace allowed_credits: string[] = [];
+  @Trace details: Record<string, Object> = {};
+}
+
+@ObservedV2
 export class ForumDetails {
   @Trace fid: number = 0;
   @Trace name: string = "";
@@ -70,6 +84,7 @@ export class ForumDetails {
   @Trace post_notice_format: string = "";
   @Trace live_thread_id: number = 0;
   @Trace children?: ForumCategory[];
+  @Trace reply_credit?: Object;
 }
 
 @ObservedV2
