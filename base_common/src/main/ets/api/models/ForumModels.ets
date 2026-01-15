@@ -127,6 +127,7 @@ export interface NewThreadRequest {
   message: string;
   format: number;
   usesig: number;
+  is_anonymous: boolean;
   attachments?: UploadedFile[];
 }
 

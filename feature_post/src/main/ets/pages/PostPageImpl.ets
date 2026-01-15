@@ -77,6 +77,14 @@ export struct PostPageImpl {
                   )
 
                 PostOption({ vm: this.vm })
+                  .transition(TransitionEffect.OPACITY
+                    .combine(TransitionEffect.translate({ y: -10 }))
+                    .combine(TransitionEffect.scale({ y: 0.98 }))
+                    .animation({
+                      curve: CommonConstant.AnimationCurveSpring,
+                      duration: CommonConstant.AnimationDurationNormal
+                    })
+                  )
               }
 
               Column() {

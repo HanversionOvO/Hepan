@@ -25,6 +25,11 @@ import { IImagePickerVM } from '../components/ImagePicker';
 const TAG = '[PostPageVM]: ';
 const BASE_URL = 'https://bbs.uestc.edu.cn';
 
+interface AnonymousForumResult {
+  groupIndex: number;
+  item: PostCategoryItem;
+}
+
 @ObservedV2
 export class PostImageModel {
   @Trace localUri: string = '';
@@ -53,6 +58,9 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     }
   ];
   @Trace isAnonymous: boolean = false; // 启用匿名发帖
+  private readonly anonymousForumId: number = 371;
+  private readonly anonymousTypeId: number = 1121;
+  private isApplyingAnonymous: boolean = false;
   // === 分类选择相关状态 ===
   @Trace isCategoryExpanded: boolean = false; // 是否展开板块选择器
   @Trace leftPanelIndex: number = 0; // 左侧大区列表的选中索引
@@ -184,9 +192,61 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
         });
   }
 
-  // 选中具体板块
-  async onForumSelected(item: PostCategoryItem, targetTypeId?: number) {
-    if (this.selectedForumId === item.fid) {
+  async setAnonymous(isOn: boolean): Promise<void> {
+    if (!isOn) {
+      this.isAnonymous = false;
+      return;
+    }
+    this.isAnonymous = true;
+    this.isApplyingAnonymous = true;
+    try {
+      await this.applyAnonymousSelection();
+    } finally {
+      this.isApplyingAnonymous = false;
+    }
+    this.validateAnonymousSelection();
+  }
+
+  private async applyAnonymousSelection(): Promise<void> {
+    if (!this.categories || this.categories.length === 0) {
+      return;
+    }
+    const result = this.findForumItem(this.anonymousForumId);
+    if (!result) {
+      return;
+    }
+    this.leftPanelIndex = result.groupIndex;
+    await this.onForumSelected(result.item, this.anonymousTypeId, true);
+  }
+
+  private findForumItem(fid: number): AnonymousForumResult | null {
+    for (let i = 0; i < this.categories.length; i++) {
+      const group = this.categories[i];
+      if (group.children && group.children.length > 0) {
+        const target = group.children.find(child => child.fid === fid);
+        if (target) {
+          const result: AnonymousForumResult = { groupIndex: i, item: target };
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
+  private validateAnonymousSelection(): void {
+    if (!this.isAnonymous || this.isApplyingAnonymous) {
+      return;
+    }
+    if (!this.categories || this.categories.length === 0) {
+      return;
+    }
+    if (this.selectedForumId !== this.anonymousForumId || this.selectedTypeId !== this.anonymousTypeId) {
+      this.isAnonymous = false;
+    }
+  }
+
+  async onForumSelected(item: PostCategoryItem, targetTypeId?: number, force: boolean = false) {
+    if (!force && this.selectedForumId === item.fid) {
       this.toggleCategoryExpand();
       return;
     }
@@ -227,11 +287,13 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
       LogUtil.error(TAG, 'Fetch forum details failed:', e);
       this.typesStatus = UiState.ERROR;
     }
+    this.validateAnonymousSelection();
   }
 
   onTypeSelected(type: ThreadType) {
     this.selectedTypeId = type.type_id;
     this.selectedTypeName = type.name;
+    this.validateAnonymousSelection();
   }
 
   async startPostPage() {
@@ -240,6 +302,13 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
       this.categories = await ForumApi.getPostCategories();
       if (this.categories.length > 0) {
         this.categoriesStatus = UiState.SUCCESS;
+
+        if (this.isAnonymous) {
+          await this.setAnonymous(true);
+          if (this.isAnonymous) {
+            return;
+          }
+        }
 
         let isDefaultFound = false;
 
@@ -465,26 +534,26 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
   async publishThread() {
     // 1. 校验输入
     if (this.selectedForumId === 0) {
-      ToastUtil.showError($r('app.string.PostPage_choose_forum_first'));
+      ToastUtil.showLightWarn($r('app.string.PostPage_choose_forum_first'));
       return;
     }
     if (this.selectedTypeId === 0 && this.threadTypes.length > 0) {
-      ToastUtil.showError($r('app.string.PostPage_choose_category_first'));
+      ToastUtil.showLightWarn($r('app.string.PostPage_choose_category_first'));
       return;
     }
     if (!this.postTitle || this.postTitle.trim().length === 0) {
-      ToastUtil.showError($r('app.string.PostPage_input_title'));
+      ToastUtil.showLightWarn($r('app.string.PostPage_input_title'));
       return;
     }
     if (!this.markdownContent || this.markdownContent.trim().length === 0) {
-      ToastUtil.showError($r('app.string.PostPage_input_content'));
+      ToastUtil.showLightWarn($r('app.string.PostPage_input_content'));
       return;
     }
 
     // 检查图片是否还在上传中
     const isUploading = this.uploadedImages.some(img => img.isLoading);
     if (isUploading) {
-      ToastUtil.showInfo($r('app.string.PostPage_photo_uploading'));
+      ToastUtil.showLightWarn($r('app.string.PostPage_photo_uploading'));
       return;
     }
 
@@ -525,13 +594,16 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
         }
       });
 
+      const forumId = this.isAnonymous ? this.anonymousForumId : this.selectedForumId;
+      const typeId = this.isAnonymous ? this.anonymousTypeId : this.selectedTypeId;
       const request: NewThreadRequest = {
-        forum_id: this.selectedForumId,
-        type_id: this.selectedTypeId,
+        forum_id: forumId,
+        type_id: typeId,
         subject: this.postTitle,
         message: finalMessage,
         format: 2,
         usesig: 1,
+        is_anonymous: this.isAnonymous,
         attachments: attachments
       };
 

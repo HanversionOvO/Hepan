@@ -55,7 +55,7 @@ export struct PostOption {
       .selectedColor(CommonConstant.ThemeColor)
       .onChange((isOn: boolean) => {
         AppUtil.getUIContext().animateTo({ duration: CommonConstant.AnimationDurationNormal }, () => {
-          this.vm.isAnonymous = isOn;
+          void this.vm.setAnonymous(isOn);
         })
       })
       .padding({
