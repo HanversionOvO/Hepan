@@ -107,6 +107,14 @@
     {
       "name": "PostPage_enable_anonymous",
       "value": "匿名发帖"
+    },
+    {
+      "name": "PostPage_insert_vote",
+      "value": "插入投票"
+    },
+    {
+      "name": "PostPage_post_water",
+      "value": "散水"
     }
   ]
 }
