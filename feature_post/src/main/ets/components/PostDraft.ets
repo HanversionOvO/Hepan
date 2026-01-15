@@ -144,6 +144,7 @@ struct PostDraft {
               useMarkDown: true
             })
               .width(CommonConstant.FullPercent)
+              .padding({ left: CommonConstant.PageLRPadding, right: CommonConstant.PageLRPadding })
 
             Column()
               .height(this.vm.isTabletView ? CommonConstant.NormalContainerTBPadding + CommonConstant.IconSizeLarge :
