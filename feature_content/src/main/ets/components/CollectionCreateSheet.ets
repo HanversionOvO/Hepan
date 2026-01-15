@@ -64,6 +64,7 @@ struct CollectionCreateSheet {
             .placeholderFont({ size: CommonConstant.TextSizeLarge, weight: FontWeight.Bold })
             .fontWeight(FontWeight.Bold)
             .fontSize(CommonConstant.TextSizeLarge)
+            .borderRadius(0)
             .caretColor(CommonConstant.ThemeColor)
             .backgroundColor(Color.Transparent)
             .padding(0)
@@ -90,6 +91,7 @@ struct CollectionCreateSheet {
             bottomLeft: CommonConstant.RadiusLarge,
             bottomRight: CommonConstant.RadiusLarge
           })
+          .fontSize(CommonConstant.TextSizeNormal)
           .placeholderFont({ size: CommonConstant.TextSizeNormal })
           .height(CommonConstant.TextInputSizeNormal)
           .padding({
