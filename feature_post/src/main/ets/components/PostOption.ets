@@ -8,7 +8,7 @@ export struct PostOption {
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-      Toggle({ type: ToggleType.Button }) {
+      Toggle({ type: ToggleType.Button, isOn: this.vm.isAnonymous }) {
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
           SymbolGlyph($r('sys.symbol.security_shield'))
             .fontSize(CommonConstant.TextSizeSmall)
