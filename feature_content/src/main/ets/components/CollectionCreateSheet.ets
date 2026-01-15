@@ -153,7 +153,6 @@ struct CollectionCreateSheet {
       Button($r('app.string.CollectionPage_create_collection'))
         .width(CommonConstant.FullPercent)
         .fontSize(CommonConstant.TextSizeNormal)
-        .borderRadius(CommonConstant.RadiusSmall)
         .fontColor($r('sys.color.font_on_primary'))
         .backgroundColor(CommonConstant.ThemeColor)
         .onClick(async () => {
