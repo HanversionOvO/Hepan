@@ -213,6 +213,26 @@ export class TieDetail {
 }
 
 @ObservedV2
+export class TiePoll {
+  @Trace show_voters: boolean = false;
+  @Trace multiple: boolean = false;
+  @Trace visible: boolean = false;
+  @Trace max_choices: number = 0;
+  @Trace is_image: boolean = false;
+  @Trace expiration: number = 0;
+  @Trace voter_count: number = 0;
+}
+
+@ObservedV2
+export class TiePollOption {
+  @Trace id: number = 0;
+  @Trace votes: number = 0;
+  @Trace display_order: number = 0;
+  @Trace text: string = "";
+  @Trace options: TiePollOption[] = [];
+}
+
+@ObservedV2
 export class TieThread {
   @Trace thread_id: number = 0;
   @Trace forum_id: number = 0;
@@ -248,6 +268,7 @@ export class TieThread {
   @Trace can_reply: boolean = false;
   @Trace collections?: TieCollection[];
   @Trace last_moderation: TieModeration = new TieModeration();
+  @Trace poll?: Record<string, Object>;
 }
 
 @ObservedV2
