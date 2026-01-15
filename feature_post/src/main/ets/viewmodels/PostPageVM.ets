@@ -746,5 +746,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     this.contentSelectionStart = 0;
     this.contentSelectionEnd = 0;
     this.uploadedImages = [];
+    this.vote = new NewThreadPool();
+    this.isShowVote = false;
   }
 }
