@@ -52,7 +52,7 @@ struct VoteSheet {
   build() {
     Column({ space: CommonConstant.LargeContainerInnerPadding }) {
       Column({ space: CommonConstant.SmallContainerTBPadding }) {
-        this.Segment("投票选项")
+        this.Segment($r('app.string.PostPage_vote_item_title'))
 
         this.VoteItem(0, () => {
         })
@@ -65,7 +65,7 @@ struct VoteSheet {
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor([CommonConstant.ThemeColor])
 
-          Text("添加选项")
+          Text($r('app.string.PostPage_vote_item_insert'))
             .fontSize(CommonConstant.TextSizeNormal)
             .fontColor(CommonConstant.ThemeColor)
         }

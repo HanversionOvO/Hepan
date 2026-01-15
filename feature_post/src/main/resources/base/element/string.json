@@ -117,6 +117,14 @@
       "value": "选项"
     },
     {
+      "name": "PostPage_vote_item_title",
+      "value": "投票选项"
+    },
+    {
+      "name": "PostPage_vote_item_insert",
+      "value": "插入选项"
+    },
+    {
       "name": "PostPage_post_water",
       "value": "散水"
     }
