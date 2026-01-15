@@ -254,11 +254,15 @@
     },
     {
       "name": "CollectionPage_collection_desc",
-      "value": "淘专辑简介"
+      "value": "描述一下你的淘专辑吧~(可选)"
     },
     {
       "name": "CollectionPage_collection_tags",
-      "value": "添加标签"
+      "value": "专辑标签"
+    },
+    {
+      "name": "CollectionPage_collection_tags_desc",
+      "value": "回车新建标签"
     },
     {
       "name": "CollectionPage_collection_create_success",
