@@ -1,4 +1,4 @@
-import { Collection, CommonConstant, TiePollOption, TieRow, TransitionMap, UiState } from 'base_common';
+import { Collection, ColorUtil, CommonConstant, TiePollOption, TieRow, TransitionMap, UiState } from 'base_common';
 import { CollectionCard, CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -122,11 +122,22 @@ export struct TieContentView {
 
   @Builder
   VoteOption(option: TiePollOption, showResult: boolean) {
-    Stack() {
+    Stack({ alignContent: Alignment.Top }) {
+      if (showResult) {
+        Row()
+          .width(`${this.vm.getPollOptionPercent(option)}%`)
+          .height(CommonConstant.FullPercent)
+          .backgroundColor(
+            this.vm.isPollOptionSelected(option) ? ColorUtil.opacity(CommonConstant.ThemeColor) :
+              ColorUtil.opacity(CommonConstant.InfoColor)
+          )
+          .borderRadius(CommonConstant.RadiusNormal)
+      }
+
       Row({ space: CommonConstant.SmallContainerInnerPadding }) {
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
           if (this.vm.isPollOptionSelected(option)) {
-            SymbolGlyph($r('sys.symbol.checkmark'))
+            SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
               .fontSize(CommonConstant.TextSizeNormal)
               .fontColor([CommonConstant.ThemeColor])
           }
@@ -155,18 +166,11 @@ export struct TieContentView {
       .padding({
         left: CommonConstant.NormalContainerLRPadding,
         right: CommonConstant.NormalContainerLRPadding,
-        top: CommonConstant.NormalContainerTBPadding,
-        bottom: CommonConstant.NormalContainerTBPadding
       })
-
-      if (showResult) {
-        Progress({ value: this.vm.getPollOptionPercent(option) })
-          .color(this.vm.isPollOptionSelected(option) ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary'))
-          .style({ strokeWidth: CommonConstant.FullPercent })
-      }
     }
+    .alignContent(Alignment.Start)
+    .height(CommonConstant.NormalContainerTBPadding * 2 + CommonConstant.TextSizeNormal)
     .borderRadius(CommonConstant.RadiusNormal)
-    .clip(true)
     .backgroundColor($r('app.color.start_window_background'))
     .border({
       width: this.vm.isPollOptionSelected(option) ? CommonConstant.BorderSizeNormal : 0,
