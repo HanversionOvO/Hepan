@@ -1,19 +1,20 @@
 import { AppUtil } from '@pura/harmony-utils';
 import { CommonConstant } from 'base_common';
 import { PostPageVM } from '../viewmodels/PostPageVM';
+import { voteSheetBuilder } from './VoteSheet';
 
 @ComponentV2
-export struct PostOption {
-  @Param @Require vm: PostPageVM;
+struct ActionButton {
+  @Param @Require icon: Resource;
+  @Param @Require label: ResourceStr;
 
-  @Builder
-  actionButton(icon: Resource, label: ResourceStr, onClick: () => void) {
+  build() {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-      SymbolGlyph(icon)
+      SymbolGlyph(this.icon)
         .fontSize(CommonConstant.TextSizeSmall)
         .fontColor([$r('sys.color.font_tertiary')])
 
-      Text(label)
+      Text(this.label)
         .fontSize(CommonConstant.TextSizeSmall)
         .fontColor($r('sys.color.font_tertiary'))
     }
@@ -25,19 +26,39 @@ export struct PostOption {
       bottom: CommonConstant.SmallContainerTBPadding / 2
     })
     .borderRadius(CommonConstant.RadiusRound)
-    .onClick(() => {
-      onClick();
-    })
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
     .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
+}
+
+@ComponentV2
+export struct PostOption {
+  @Param @Require vm: PostPageVM;
 
   build() {
     Row({ space: CommonConstant.NormalContainerInnerPadding }) {
-      this.actionButton($r('sys.symbol.data'), $r('app.string.PostPage_insert_vote'), () => {
+      ActionButton({
+        icon: $r('sys.symbol.data'),
+        label: $r('app.string.PostPage_insert_vote'),
       })
+        .onClick(() => {
+          this.vm.isShowVote = true;
+        })
+        .bindSheet($$this.vm.isShowVote, voteSheetBuilder(this.vm), {
+          showClose: true,
+          detents: [SheetSize.FIT_CONTENT],
+          enableOutsideInteractive: false,
+          preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
+          backgroundColor: $r('app.color.start_window_background'),
+          blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
+          title: {
+            title: $r('app.string.PostPage_insert_vote')
+          }
+        })
 
-      this.actionButton($r('sys.symbol.drop'), $r('app.string.PostPage_post_water'), () => {
+      ActionButton({
+        icon: $r('sys.symbol.drop'),
+        label: $r('app.string.PostPage_post_water'),
       })
 
       Toggle({ type: ToggleType.Button, isOn: this.vm.isAnonymous }) {

@@ -61,6 +61,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
   private readonly anonymousForumId: number = 371;
   private readonly anonymousTypeId: number = 1121;
   private isApplyingAnonymous: boolean = false;
+  @Trace isShowVote: boolean = false;
   // === 分类选择相关状态 ===
   @Trace isCategoryExpanded: boolean = false; // 是否展开板块选择器
   @Trace leftPanelIndex: number = 0; // 左侧大区列表的选中索引
