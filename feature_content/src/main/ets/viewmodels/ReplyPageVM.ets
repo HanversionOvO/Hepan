@@ -147,7 +147,7 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
 
   async sendReply(): Promise<boolean> {
     if (!this.replyContent.trim()) {
-      ToastUtil.showInfo($r('app.string.ReplyPage_please_input'));
+      ToastUtil.showLightWarn($r('app.string.ReplyPage_please_input'));
       return false;
     }
 
@@ -192,7 +192,7 @@ export class ReplyPageVM extends BaseVM implements IImagePickerVM {
     try {
       await ForumApi.reply(request);
       ToastUtil.hideLoading();
-      ToastUtil.showSuccess($r('app.string.ReplyPage_reply_success'));
+      ToastUtil.showLightSuccess($r('app.string.ReplyPage_reply_success'));
       this.isSendSuccess = true;
       return true;
     } catch (e) {

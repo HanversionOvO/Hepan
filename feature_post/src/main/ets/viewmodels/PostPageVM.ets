@@ -539,7 +539,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
 
       // 5. 成功处理
       ToastUtil.hideLoading();
-      ToastUtil.showSuccess($r('app.string.PostPage_publish_success'));
+      ToastUtil.showLightSuccess($r('app.string.PostPage_publish_success'));
 
       // 清除内容
       this.clearPage();
