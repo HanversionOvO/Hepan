@@ -131,7 +131,6 @@ export struct TieContentView {
             this.vm.isPollOptionSelected(option) ? ColorUtil.opacity(CommonConstant.ThemeColor) :
               ColorUtil.opacity(CommonConstant.InfoColor)
           )
-          .borderRadius(CommonConstant.RadiusNormal)
       }
 
       Row({ space: CommonConstant.SmallContainerInnerPadding }) {
@@ -171,6 +170,7 @@ export struct TieContentView {
     .alignContent(Alignment.Start)
     .height(CommonConstant.NormalContainerTBPadding * 2 + CommonConstant.TextSizeNormal)
     .borderRadius(CommonConstant.RadiusNormal)
+    .clip(true)
     .backgroundColor($r('app.color.start_window_background'))
     .border({
       width: this.vm.isPollOptionSelected(option) ? CommonConstant.BorderSizeNormal : 0,
@@ -299,7 +299,7 @@ export struct TieContentView {
           Divider()
             .color($r('sys.color.font_tertiary'))
             .opacity(0.3)
-            .strokeWidth(CommonConstant.BorderSizeLarge)
+            .strokeWidth(CommonConstant.BorderSizeNormal)
             .margin({
               top: CommonConstant.NormalContainerInnerPadding,
               bottom: CommonConstant.NormalContainerInnerPadding
