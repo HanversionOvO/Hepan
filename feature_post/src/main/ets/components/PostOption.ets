@@ -7,18 +7,20 @@ import { voteSheetBuilder } from './VoteSheet';
 struct ActionButton {
   @Param @Require icon: Resource;
   @Param @Require label: ResourceStr;
+  @Param labelColor: ResourceColor = $r('sys.color.font_tertiary');
+  @Param bgColor: ResourceColor = $r('app.color.second_window_background');
 
   build() {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
       SymbolGlyph(this.icon)
         .fontSize(CommonConstant.TextSizeSmall)
-        .fontColor([$r('sys.color.font_tertiary')])
+        .fontColor([this.labelColor])
 
       Text(this.label)
         .fontSize(CommonConstant.TextSizeSmall)
-        .fontColor($r('sys.color.font_tertiary'))
+        .fontColor(this.labelColor)
     }
-    .backgroundColor($r('app.color.second_window_background'))
+    .backgroundColor(this.bgColor)
     .padding({
       left: CommonConstant.SmallContainerLRPadding / 2,
       right: CommonConstant.SmallContainerLRPadding / 2,
@@ -40,6 +42,8 @@ export struct PostOption {
       ActionButton({
         icon: $r('sys.symbol.data'),
         label: $r('app.string.PostPage_insert_vote'),
+        labelColor: this.vm.vote.options.length > 1 ? $r('sys.color.font_on_primary') : $r('sys.color.font_tertiary'),
+        bgColor: this.vm.vote.options.length > 1 ? CommonConstant.ThemeColor : $r('app.color.second_window_background')
       })
         .onClick(() => {
           this.vm.isShowVote = true;

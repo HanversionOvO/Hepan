@@ -127,6 +127,30 @@
     {
       "name": "PostPage_post_water",
       "value": "散水"
+    },
+    {
+      "name": "PostPage_vote_option_title",
+      "value": "投票设置"
+    },
+    {
+      "name": "PostPage_vote_show_result",
+      "value": "投票结果公开"
+    },
+    {
+      "name": "PostPage_vote_show_voter",
+      "value": "投票者公开"
+    },
+    {
+      "name": "PostPage_vote_max_choices",
+      "value": "投票可选数"
+    },
+    {
+      "name": "PostPage_vote_time",
+      "value": "投票截止时间"
+    },
+    {
+      "name": "PostPage_vote_delete",
+      "value": "删除投票"
     }
   ]
 }

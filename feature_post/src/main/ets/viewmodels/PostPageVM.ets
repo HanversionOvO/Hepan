@@ -7,7 +7,9 @@ import {
   ForumApi,
   InputOverlayStore,
   InputOverlayVisibilityEvent,
+  NewThreadPool,
   NewThreadRequest,
+  PoolOption,
   PostCategoryGroup,
   PostCategoryItem,
   ThreadType,
@@ -62,6 +64,7 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
   private readonly anonymousTypeId: number = 1121;
   private isApplyingAnonymous: boolean = false;
   @Trace isShowVote: boolean = false;
+  @Trace vote: NewThreadPool = new NewThreadPool();
   // === 分类选择相关状态 ===
   @Trace isCategoryExpanded: boolean = false; // 是否展开板块选择器
   @Trace leftPanelIndex: number = 0; // 左侧大区列表的选中索引
@@ -169,9 +172,9 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
     }
     },
     {
-      icon: $r('sys.symbol.link'), onClick: () => {
-      this.isInsertImageMode = false;
-    }
+      icon: $r('sys.symbol.link'),
+      onClick: () => {
+      }
     }
   ];
 
@@ -426,9 +429,86 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
       this.isShowFace || this.isShowAt || this.isInputtingWithKeyboard);
   }
 
+  addVoteOption(): void {
+    const option = new PoolOption();
+    option.text = '';
+    this.vote.options.push(option);
+    this.normalizeVoteMaxChoices();
+  }
+
+  removeVoteOption(index: number): void {
+    if (index < 0 || index >= this.vote.options.length) {
+      return;
+    }
+    this.vote.options.splice(index, 1);
+    this.normalizeVoteMaxChoices();
+  }
+
+  clearVote(): void {
+    this.vote = new NewThreadPool();
+    this.isShowVote = false;
+  }
+
+  setVoteVisible(isVisible: boolean): void {
+    this.vote.visible = isVisible;
+  }
+
+  setVoteShowVoters(isVisible: boolean): void {
+    this.vote.show_voters = isVisible;
+  }
+
+  updateVoteMaxChoices(value: number): void {
+    const bounded = this.clampVoteChoices(value);
+    this.vote.max_choices = bounded;
+  }
+
+  normalizeVoteMaxChoices(): void {
+    this.vote.max_choices = this.clampVoteChoices(this.vote.max_choices);
+  }
+
+  canIncVoteChoice(): boolean {
+    const max = this.getVoteChoiceMax();
+    return this.vote.max_choices < max;
+  }
+
+  canDecVoteChoice(): boolean {
+    const min = this.getVoteChoiceMin();
+    return this.vote.max_choices > min;
+  }
+
+  updateVoteExpiration(date: Date): void {
+    const diffMs = date.getTime() - Date.now();
+    const seconds = Math.max(0, Math.floor(diffMs / 1000));
+    this.vote.expiration = seconds;
+  }
+
   updateContentSelection(start: number, end: number) {
     this.contentSelectionStart = Math.max(0, start);
     this.contentSelectionEnd = Math.max(0, end);
+  }
+
+  private getVoteChoiceMin(): number {
+    return this.vote.options.length > 0 ? 1 : 0;
+  }
+
+  private getVoteChoiceMax(): number {
+    const count = this.vote.options.length;
+    return count > 0 ? count : 0;
+  }
+
+  private clampVoteChoices(value: number): number {
+    const min = this.getVoteChoiceMin();
+    const max = this.getVoteChoiceMax();
+    if (max === 0) {
+      return 0;
+    }
+    if (value < min) {
+      return min;
+    }
+    if (value > max) {
+      return max;
+    }
+    return value;
   }
 
   private insertTextAtCursor(text: string) {
@@ -597,6 +677,11 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
 
       const forumId = this.isAnonymous ? this.anonymousForumId : this.selectedForumId;
       const typeId = this.isAnonymous ? this.anonymousTypeId : this.selectedTypeId;
+      let poll: NewThreadPool | undefined = undefined;
+      if (this.vote.options.length > 1) {
+        this.normalizeVoteMaxChoices();
+        poll = this.vote;
+      }
       const request: NewThreadRequest = {
         forum_id: forumId,
         type_id: typeId,
@@ -605,7 +690,8 @@ export class PostPageVM extends BaseVM implements IImagePickerVM {
         format: 2,
         usesig: 1,
         is_anonymous: this.isAnonymous,
-        attachments: attachments
+        attachments: attachments,
+        poll: poll
       };
 
       // 4. 调用接口

@@ -1,5 +1,5 @@
 import { ResUtil } from '@pura/harmony-utils';
-import { CommonConstant } from 'base_common';
+import { CommonConstant, PoolOption } from 'base_common';
 import { PostPageVM } from '../viewmodels/PostPageVM';
 
 @Builder
@@ -8,9 +8,38 @@ export function voteSheetBuilder(vm: PostPageVM) {
 }
 
 @ComponentV2
+struct VoteOption {
+  @Param @Require icon: Resource;
+  @Param @Require label: ResourceStr;
+  @Param @Require isCheck: boolean;
+  @Param @Require onChange: (isOn: boolean) => void;
+
+  build() {
+    Row() {
+      Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+        SymbolGlyph(this.icon)
+          .fontSize(CommonConstant.TextSizeNormal)
+          .fontColor([CommonConstant.ThemeColor])
+
+        Text(this.label)
+          .fontSize(CommonConstant.TextSizeNormal)
+      }
+
+      Toggle({ type: ToggleType.Switch, isOn: this.isCheck })
+        .selectedColor(CommonConstant.ThemeColor)
+        .onChange((isOn: boolean) => {
+          this.onChange(isOn);
+        })
+    }
+    .width(CommonConstant.FullPercent)
+    .width(CommonConstant.FullPercent)
+    .justifyContent(FlexAlign.SpaceBetween)
+  }
+}
+
+@ComponentV2
 struct VoteSheet {
   @Param @Require vm: PostPageVM;
-  @Local isShowDelete: boolean = true;
 
   @Builder
   Segment(label: ResourceStr) {
@@ -22,9 +51,12 @@ struct VoteSheet {
   }
 
   @Builder
-  VoteItem(index: number, deleteVoteItem: () => void) {
+  VoteItem(option: PoolOption, index: number, deleteVoteItem: () => void) {
     Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-      TextInput({ placeholder: `${ResUtil.getStringSync($r('app.string.PostPage_vote_item'))} ${index + 1}` })
+      TextInput({
+        placeholder: `${ResUtil.getStringSync($r('app.string.PostPage_vote_item'))} ${index + 1}`,
+        text: option.text
+      })
         .fontSize(CommonConstant.TextSizeNormal)
         .backgroundColor(Color.Transparent)
         .placeholderFont({ size: CommonConstant.TextSizeNormal })
@@ -33,10 +65,16 @@ struct VoteSheet {
         .borderRadius(0)
         .layoutWeight(1)
         .padding(0)
+        .onChange((text: string) => {
+          option.text = text;
+        })
 
       SymbolGlyph($r('sys.symbol.trash'))
         .fontSize(CommonConstant.TextSizeNormal)
         .fontColor([$r('sys.color.font_secondary')])
+        .onClick(() => {
+          deleteVoteItem();
+        })
     }
     .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusSmall)
@@ -54,11 +92,11 @@ struct VoteSheet {
       Column({ space: CommonConstant.SmallContainerTBPadding }) {
         this.Segment($r('app.string.PostPage_vote_item_title'))
 
-        this.VoteItem(0, () => {
-        })
-
-        this.VoteItem(1, () => {
-        })
+        ForEach(this.vm.vote.options, (option: PoolOption, index: number) => {
+          this.VoteItem(option, index, () => {
+            this.vm.removeVoteOption(index);
+          })
+        }, (_option: PoolOption, index: number) => index.toString())
 
         Row({ space: CommonConstant.NormalContainerInnerPadding }) {
           SymbolGlyph($r('sys.symbol.plus'))
@@ -74,14 +112,121 @@ struct VoteSheet {
         .padding(CommonConstant.NormalContainerInnerPadding)
         .borderRadius(CommonConstant.RadiusSmall)
         .border({ width: CommonConstant.BorderSizeLarge, color: CommonConstant.ThemeColor, style: BorderStyle.Dashed })
+        .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveSpring })
+        .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
+        .onClick(() => {
+          this.vm.addVoteOption();
+        })
       }
       .width(CommonConstant.FullPercent)
+
+      Column({ space: CommonConstant.SmallContainerTBPadding }) {
+        this.Segment($r('app.string.PostPage_vote_option_title'))
+
+        Column({ space: CommonConstant.NormalContainerInnerPadding }) {
+          VoteOption({
+            icon: $r('sys.symbol.checkmark_cart'),
+            label: $r('app.string.PostPage_vote_show_result'),
+            isCheck: this.vm.vote.visible,
+            onChange: (isOn: boolean) => {
+              this.vm.setVoteVisible(isOn);
+            }
+          })
+
+          VoteOption({
+            icon: $r('sys.symbol.visibility'),
+            label: $r('app.string.PostPage_vote_show_voter'),
+            isCheck: this.vm.vote.show_voters,
+            onChange: (isOn: boolean) => {
+              this.vm.setVoteShowVoters(isOn);
+            }
+          })
+
+          Row() {
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+              SymbolGlyph($r('sys.symbol.checkmark'))
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor([CommonConstant.ThemeColor])
+
+              Text($r('app.string.PostPage_vote_max_choices'))
+                .fontSize(CommonConstant.TextSizeNormal)
+            }
+
+            Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+              SymbolGlyph($r('sys.symbol.minus'))
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor([this.vm.canDecVoteChoice() ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary')])
+                .onClick(() => {
+                  if (this.vm.canDecVoteChoice()) {
+                    this.vm.updateVoteMaxChoices(this.vm.vote.max_choices - 1);
+                  }
+                })
+
+              Text(`${this.vm.vote.max_choices}`)
+                .fontSize(CommonConstant.TextSizeNormal)
+
+              SymbolGlyph($r('sys.symbol.plus'))
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor([this.vm.canIncVoteChoice() ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary')])
+                .onClick(() => {
+                  if (this.vm.canIncVoteChoice()) {
+                    this.vm.updateVoteMaxChoices(this.vm.vote.max_choices + 1);
+                  }
+                })
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .width(CommonConstant.FullPercent)
+
+          Row() {
+            Row({ space: CommonConstant.NormalContainerInnerPadding }) {
+              SymbolGlyph($r('sys.symbol.calendar'))
+                .fontSize(CommonConstant.TextSizeNormal)
+                .fontColor([CommonConstant.ThemeColor])
+
+              Text($r('app.string.PostPage_vote_time'))
+                .fontSize(CommonConstant.TextSizeNormal)
+            }
+
+            CalendarPicker()
+              .textStyle({ font: { size: CommonConstant.TextSizeSmall } })
+              .onChange((date: Date) => {
+                this.vm.updateVoteExpiration(date);
+              })
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .width(CommonConstant.FullPercent)
+        }
+        .padding({
+          top: CommonConstant.NormalContainerTBPadding,
+          bottom: CommonConstant.NormalContainerTBPadding,
+          left: CommonConstant.NormalContainerLRPadding,
+          right: CommonConstant.NormalContainerLRPadding
+        })
+        .width(CommonConstant.FullPercent)
+        .backgroundColor($r('app.color.second_window_background'))
+        .borderRadius(CommonConstant.RadiusNormal)
+      }
+      .width(CommonConstant.FullPercent)
+
+      Button($r('app.string.PostPage_vote_delete'))
+        .fontSize(CommonConstant.TextSizeNormal)
+        .fontColor($r('sys.color.font_on_primary'))
+        .backgroundColor(CommonConstant.ThemeColor)
+        .borderRadius(CommonConstant.RadiusSmall)
+        .width(CommonConstant.FullPercent)
+        .onClick(() => {
+          this.vm.clearVote();
+        })
     }
     .width(CommonConstant.FullPercent)
     .padding({
       left: CommonConstant.NormalContainerLRPadding,
       right: CommonConstant.NormalContainerLRPadding,
       bottom: this.vm.window.windowBottomPadding + CommonConstant.NormalContainerTBPadding
+    })
+    .onAppear(() => {
+      this.vm.normalizeVoteMaxChoices();
     })
   }
 }

@@ -115,6 +115,20 @@ export class ForumPostNotice {
   @Trace poll: string = "";
 }
 
+@ObservedV2
+export class PoolOption {
+  @Trace text: string = "";
+}
+
+@ObservedV2
+export class NewThreadPool {
+  @Trace max_choices: number = 0;
+  @Trace visible: boolean = false;
+  @Trace show_voters: boolean = true;
+  @Trace expiration: number = 0;
+  @Trace options: PoolOption[] = [];
+}
+
 export interface ThreadType {
   type_id: number;
   name: string;
@@ -129,6 +143,7 @@ export interface NewThreadRequest {
   usesig: number;
   is_anonymous: boolean;
   attachments?: UploadedFile[];
+  poll?: NewThreadPool;
 }
 
 export interface NewThreadResponse {
