@@ -433,6 +433,51 @@ export class TieContentPageVM extends BaseVM {
     return !!poll && !!poll.selected_options && poll.selected_options.length > 0;
   }
 
+  shouldShowPollResult(): boolean {
+    return this.hasVoted() || this.isPollEnded();
+  }
+
+  getPollTotalVotes(): number {
+    const poll = this.getTiePoll();
+    if (!poll) {
+      return 0;
+    }
+    let totalVotes = 0;
+    (poll.options || []).forEach((option) => {
+      const votes = Number(option?.votes);
+      if (Number.isFinite(votes)) {
+        totalVotes += votes;
+      }
+    });
+    if (totalVotes > 0) {
+      return totalVotes;
+    }
+    const voterCount = Number(poll.voter_count);
+    return Number.isFinite(voterCount) ? voterCount : 0;
+  }
+
+  getPollOptionVotes(option: TiePollOption): number {
+    const votes = Number(option?.votes);
+    return Number.isFinite(votes) ? votes : 0;
+  }
+
+  getPollOptionPercent(option: TiePollOption): number {
+    const totalVotes = this.getPollTotalVotes();
+    if (totalVotes <= 0) {
+      return 0;
+    }
+    const votes = this.getPollOptionVotes(option);
+    return Math.round((votes / totalVotes) * 100);
+  }
+
+  isPollOptionSelected(option: TiePollOption): boolean {
+    const poll = this.getTiePoll();
+    if (!poll || !poll.selected_options || poll.selected_options.length === 0) {
+      return false;
+    }
+    return poll.selected_options.includes(option.id);
+  }
+
   isPollEnded(): boolean {
     const poll = this.getTiePoll();
     if (!poll) {

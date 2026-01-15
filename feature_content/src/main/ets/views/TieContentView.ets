@@ -121,21 +121,58 @@ export struct TieContentView {
   }
 
   @Builder
-  VoteOption(option: TiePollOption) {
-    Row() {
-      Text(option.text || '')
-        .fontSize(CommonConstant.TextSizeNormal)
+  VoteOption(option: TiePollOption, showResult: boolean) {
+    Stack() {
+      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+        Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+          if (this.vm.isPollOptionSelected(option)) {
+            SymbolGlyph($r('sys.symbol.checkmark'))
+              .fontSize(CommonConstant.TextSizeNormal)
+              .fontColor([CommonConstant.ThemeColor])
+          }
+
+          Text(option.text || '')
+            .fontSize(CommonConstant.TextSizeNormal)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.MARQUEE })
+        }
+        .layoutWeight(1)
+
+        if (showResult) {
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+            Text(`${this.vm.getPollOptionVotes(option)}票`)
+              .fontSize(CommonConstant.TextSizeTiny)
+              .fontColor($r('sys.color.font_tertiary'))
+
+            Text(`${this.vm.getPollOptionPercent(option)}%`)
+              .fontSize(CommonConstant.TextSizeTiny)
+              .fontColor($r('sys.color.font_tertiary'))
+          }
+        }
+      }
+      .width(CommonConstant.FullPercent)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({
+        left: CommonConstant.NormalContainerLRPadding,
+        right: CommonConstant.NormalContainerLRPadding,
+        top: CommonConstant.NormalContainerTBPadding,
+        bottom: CommonConstant.NormalContainerTBPadding
+      })
+
+      if (showResult) {
+        Progress({ value: this.vm.getPollOptionPercent(option) })
+          .color(this.vm.isPollOptionSelected(option) ? CommonConstant.ThemeColor : $r('sys.color.font_tertiary'))
+          .style({ strokeWidth: CommonConstant.FullPercent })
+      }
     }
     .borderRadius(CommonConstant.RadiusNormal)
+    .clip(true)
     .backgroundColor($r('app.color.start_window_background'))
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding
+    .border({
+      width: this.vm.isPollOptionSelected(option) ? CommonConstant.BorderSizeNormal : 0,
+      color: CommonConstant.ThemeColor
     })
     .width(CommonConstant.FullPercent)
-    .justifyContent(FlexAlign.Start)
     .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal })
     .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
   }
@@ -175,7 +212,7 @@ export struct TieContentView {
           .textAlign(TextAlign.Start)
 
         ForEach(this.vm.getTiePollOptions(), (option: TiePollOption, index: number) => {
-          this.VoteOption(option)
+          this.VoteOption(option, this.vm.shouldShowPollResult())
         }, (_option: TiePollOption, index: number) => index.toString())
 
         if (!this.vm.isPollEnded()) {
