@@ -49,8 +49,6 @@ export struct PostOption {
           detents: [SheetSize.FIT_CONTENT],
           enableOutsideInteractive: false,
           preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
-          backgroundColor: $r('app.color.start_window_background'),
-          blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
           title: {
             title: $r('app.string.PostPage_insert_vote')
           }

@@ -1,5 +1,5 @@
-import { MinePageVM } from "../viewmodels/MinePageVM";
-import { CommonConstant } from "base_common";
+import { MinePageVM } from '../viewmodels/MinePageVM';
+import { CommonConstant } from 'base_common';
 
 export interface UserProfileSheetItem {
   title: ResourceStr;
@@ -14,7 +14,7 @@ export interface UserProfileMapping {
 
 @Builder
 export function userProfileSheetBuilder(vm: MinePageVM) {
-  UserProfileSheet({vm});
+  UserProfileSheet({ vm });
 }
 
 @ComponentV2
@@ -43,10 +43,10 @@ struct UserProfileSheet {
     .padding(CommonConstant.NormalContainerLRPadding)
     .backgroundColor($r('app.color.second_window_background'))
   }
-  
+
   build() {
     Column() {
-    List() {
+      List() {
         ForEach(this.userProfileFiltered, (item: UserProfileSheetItem, index: number) => {
           ListItem() {
             this.userInfoItem(index, item.title, item.value.toString())
@@ -63,10 +63,10 @@ struct UserProfileSheet {
       .borderRadius(CommonConstant.RadiusNormal)
       .scrollBar(BarState.Off)
     }
-          .padding({
-        left: CommonConstant.PageLRPadding,
-        right: CommonConstant.PageLRPadding,
-        bottom: CommonConstant.PageLRPadding
-      })
+    .padding({
+      left: CommonConstant.PageLRPadding,
+      right: CommonConstant.PageLRPadding,
+      bottom: CommonConstant.PageLRPadding
+    })
   }
 }

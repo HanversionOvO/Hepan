@@ -201,8 +201,6 @@ export struct UserInfoArea {
             detents: [SheetSize.FIT_CONTENT],
             enableOutsideInteractive: false,
             preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
-            backgroundColor: $r('app.color.start_window_background'),
-            blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
             title: {
               title: $r('app.string.MinePage_edit_sig')
             }
@@ -229,8 +227,6 @@ export struct UserInfoArea {
                 detents: [SheetSize.FIT_CONTENT],
                 enableOutsideInteractive: false,
                 preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
-                backgroundColor: $r('app.color.start_window_background'),
-                blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
                 title: {
                   title: $r('app.string.MinePage_user_profile')
                 }
@@ -300,8 +296,6 @@ export struct UserInfoArea {
         enableOutsideInteractive: false,
         preferType: this.vm.isTabletView ? SheetType.CENTER : SheetType.BOTTOM,
         scrollSizeMode: ScrollSizeMode.CONTINUOUS,
-        backgroundColor: $r('app.color.start_window_background'),
-        blurStyle: BlurStyle.BACKGROUND_ULTRA_THICK,
         title: {
           title: $r('app.string.MinePage_medal_center')
         }

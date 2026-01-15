@@ -1,19 +1,22 @@
-import { MinePageVM } from "../viewmodels/MinePageVM";
+import { MinePageVM } from '../viewmodels/MinePageVM';
 import { CommonConstant } from 'base_common';
 
 @Builder
 export function signatureSheetBuilder(vm: MinePageVM) {
-  SignatureSheet({vm})
+  SignatureSheet({ vm })
 }
 
 @ComponentV2
 struct SignatureSheet {
   @Param @Require vm: MinePageVM
   @Local signature: ResourceStr = "";
-  
+
   build() {
-        Column({ space: CommonConstant.LargeContainerInnerPadding }) {
-      TextArea({ placeholder: this.vm.user?.signature || $r('app.string.MinePage_signature_placeHolder'), text:$$this.signature })
+    Column({ space: CommonConstant.LargeContainerInnerPadding }) {
+      TextArea({
+        placeholder: this.vm.user?.signature || $r('app.string.MinePage_signature_placeHolder'),
+        text: $$this.signature
+      })
         .height(CommonConstant.TextInputSizeNormal)
         .width(CommonConstant.FullPercent)
         .borderRadius(CommonConstant.RadiusNormal)

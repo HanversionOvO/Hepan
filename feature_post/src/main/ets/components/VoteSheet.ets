@@ -38,7 +38,7 @@ struct VoteSheet {
         .fontSize(CommonConstant.TextSizeNormal)
         .fontColor([$r('sys.color.font_secondary')])
     }
-    .backgroundColor($r('app.color.glass_background'))
+    .backgroundColor($r('app.color.second_window_background'))
     .borderRadius(CommonConstant.RadiusSmall)
     .padding({
       left: CommonConstant.SmallContainerLRPadding,

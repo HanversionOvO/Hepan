@@ -79,7 +79,7 @@ struct CollectionCreateSheet {
           top: CommonConstant.NormalContainerTBPadding,
           bottom: CommonConstant.NormalContainerTBPadding
         })
-        .backgroundColor($r('app.color.glass_background'))
+        .backgroundColor($r('app.color.second_window_background'))
         .borderRadius({
           topLeft: CommonConstant.RadiusLarge,
           topRight: CommonConstant.RadiusLarge
@@ -101,7 +101,7 @@ struct CollectionCreateSheet {
             bottom: CommonConstant.NormalContainerTBPadding
           })
           .caretColor(CommonConstant.ThemeColor)
-          .backgroundColor($r('app.color.glass_background'))
+          .backgroundColor($r('app.color.second_window_background'))
           .onChange((value: string) => {
             this.desc = value;
           })
@@ -140,7 +140,7 @@ struct CollectionCreateSheet {
             })
             .placeholderFont({ size: CommonConstant.TextSizeSmall })
             .fontSize(CommonConstant.TextSizeSmall)
-            .backgroundColor($r('app.color.glass_background'))
+            .backgroundColor($r('app.color.second_window_background'))
             .caretColor(CommonConstant.ThemeColor)
             .flexGrow(1)
             .width(0)
