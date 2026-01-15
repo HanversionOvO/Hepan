@@ -136,13 +136,12 @@ struct CollectionCreateSheet {
             .onSubmit(() => {
               this.addTag();
             })
-            .placeholderFont({ size: CommonConstant.TextSizeNormal })
-            .fontSize(CommonConstant.TextSizeNormal)
+            .placeholderFont({ size: CommonConstant.TextSizeSmall })
+            .fontSize(CommonConstant.TextSizeSmall)
             .backgroundColor($r('app.color.glass_background'))
             .caretColor(CommonConstant.ThemeColor)
             .flexGrow(1)
-            .width("auto")
-            .layoutWeight(1)
+            .width(0)
             .padding({
               top: 0,
               bottom: 0,
