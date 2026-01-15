@@ -1,0 +1,204 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "total": 1,
+    "page_size": 20,
+    "page": 1,
+    "thread": {
+      "thread_id": 2432415,
+      "forum_id": 1024,
+      "type_id": 1437,
+      "author": "Mikann",
+      "author_id": 317323,
+      "subject": "携带投票信息",
+      "dateline": 1768476741,
+      "last_post": 1768476741,
+      "last_poster": "Mikann",
+      "views": 0,
+      "replies": 0,
+      "display_order": 0,
+      "is_rated": 0,
+      "special": 1,
+      "attachment": 0,
+      "is_moderated": 0,
+      "has_stick_reply": 0,
+      "is_closed": 0,
+      "recommends": 0,
+      "recommend_add": 0,
+      "recommend_sub": 0,
+      "heats": 0,
+      "status": 32,
+      "favorite_times": 0,
+      "share_times": 0,
+      "stamp": -1,
+      "icon": -1,
+      "cover": 0,
+      "max_position": 1,
+      "comments": 0,
+      "can_reply": true,
+      "poll": {
+        "show_voters": false,
+        "multiple": false,
+        "visible": true,
+        "max_choices": 1,
+        "is_image": false,
+        "expiration": 1768735940,
+        "voter_count": 1,
+        "options": [
+          {
+            "id": 151126,
+            "votes": 1,
+            "display_order": 0,
+            "text": "1"
+          },
+          {
+            "id": 151127,
+            "votes": 0,
+            "display_order": 0,
+            "text": "2"
+          }
+        ],
+        "selected_options": [151126]
+      }
+    },
+    "forum": {
+      "fid": 1024,
+      "name": "开发者专区",
+      "can_post_thread": true,
+      "can_post_reply": true,
+      "can_post_anonymously": false,
+      "threads": 52,
+      "posts": 531,
+      "todayposts": 7,
+      "yesterdayposts": 7,
+      "latest_thread": null,
+      "moderators": [],
+      "parents": [
+        {
+          "fid": 138,
+          "name": "清水议会",
+          "hidden_home": false,
+          "threads": 0,
+          "posts": 0,
+          "todayposts": 0,
+          "yesterdayposts": 0,
+          "latest_thread": null,
+          "moderators": null,
+          "children": null
+        },
+        {
+          "fid": 1,
+          "name": "站务管理",
+          "hidden_home": false,
+          "threads": 0,
+          "posts": 0,
+          "todayposts": 0,
+          "yesterdayposts": 0,
+          "latest_thread": null,
+          "moderators": null,
+          "children": null
+        }
+      ],
+      "thread_types": [
+        {
+          "type_id": 1437,
+          "name": "TEST"
+        },
+        {
+          "type_id": 1442,
+          "name": "BUG"
+        },
+        {
+          "type_id": 1439,
+          "name": "求助"
+        },
+        {
+          "type_id": 1440,
+          "name": "讨论"
+        },
+        {
+          "type_id": 1441,
+          "name": "感想"
+        },
+        {
+          "type_id": 1438,
+          "name": "公告",
+          "moderators_only": true
+        }
+      ],
+      "optional_thread_type": false,
+      "announcement": "",
+      "announcement_format": "html",
+      "post_notice": {
+        "newthread": "[size=3][b][color=red]【温馨提示】请勿重复发帖、一帖发多区。[/color][/b][/size]",
+        "newthread_mobile": "",
+        "newthread_quick": "",
+        "reply": "[size=3][b][color=red]除水手之家外其他版块禁止回复灌水无意义内容或纯表情。请注意时间，不要挖坟。[/color][/b][/size]",
+        "reply_mobile": "",
+        "reply_quick": "",
+        "reply_quick_mobile": "",
+        "editthread": "",
+        "editthread_mobile": "",
+        "poll": ""
+      },
+      "post_notice_format": "bbcode",
+      "live_thread_id": 0
+    },
+    "rows": [
+      {
+        "post_id": 41624472,
+        "forum_id": 1024,
+        "thread_id": 2432415,
+        "position": 1,
+        "is_first": 1,
+        "subject": "携带投票信息",
+        "support": 0,
+        "oppose": 0,
+        "message": "1",
+        "dateline": 1768476741,
+        "format": 2,
+        "usesig": 1,
+        "smileyoff": 0,
+        "parseurloff": 0,
+        "status": 0,
+        "author": "Mikann",
+        "author_id": 317323,
+        "author_details": {
+          "group_id": 26,
+          "level_id": 2,
+          "group_title": "虾米 (Lv.2)",
+          "group_subtitle": "",
+          "group_icon": "data/attachment/common/45/common_9_usergroup_icon.gif",
+          "ext_credits": {
+            "威望": 0,
+            "水滴": 74
+          },
+          "posts": 119,
+          "digests": 0,
+          "medals": null,
+          "signature": "Happy developing everyday!",
+          "signature_format": "html",
+          "custom_title": "",
+          "online_time": 60,
+          "last_visit": 1768477266,
+          "credits": 72,
+          "register_time": 1762308476
+        }
+      }
+    ]
+  },
+  "user": {
+    "uid": 317323,
+    "username": "Mikann",
+    "new_pm_legacy": false,
+    "new_notification": 0,
+    "new_pm": 0,
+    "new_grouppm_legacy": false,
+    "settings_version": 0
+  },
+  "system": {
+    "settings_version": 11,
+    "client_version": 1
+  }
+}

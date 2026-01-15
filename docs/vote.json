@@ -1,0 +1,41 @@
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "show_voters": false,
+    "multiple": false,
+    "visible": true,
+    "max_choices": 1,
+    "is_image": false,
+    "expiration": 1768735940,
+    "voter_count": 3,
+    "options": [
+      {
+        "id": 151126,
+        "votes": 2,
+        "display_order": 0,
+        "text": "1"
+      },
+      {
+        "id": 151127,
+        "votes": 1,
+        "display_order": 0,
+        "text": "2"
+      }
+    ],
+    "selected_options": [151127]
+  },
+  "user": {
+    "uid": 307145,
+    "username": "MikannQAQ",
+    "new_pm_legacy": false,
+    "new_notification": 0,
+    "new_pm": 0,
+    "new_grouppm_legacy": false,
+    "settings_version": 0
+  },
+  "system": {
+    "settings_version": 11,
+    "client_version": 1
+  }
+}
