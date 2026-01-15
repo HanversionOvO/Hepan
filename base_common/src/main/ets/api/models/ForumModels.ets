@@ -221,6 +221,8 @@ export class TiePoll {
   @Trace is_image: boolean = false;
   @Trace expiration: number = 0;
   @Trace voter_count: number = 0;
+  @Trace options: TiePollOption[] = [];
+  @Trace selected_options: number[] = [];
 }
 
 @ObservedV2
@@ -229,7 +231,6 @@ export class TiePollOption {
   @Trace votes: number = 0;
   @Trace display_order: number = 0;
   @Trace text: string = "";
-  @Trace options: TiePollOption[] = [];
 }
 
 @ObservedV2

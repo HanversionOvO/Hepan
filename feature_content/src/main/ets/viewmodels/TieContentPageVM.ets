@@ -15,6 +15,8 @@ import {
   RouterUtil,
   TieCollection,
   TieDetail,
+  TiePoll,
+  TiePollOption,
   TieRow,
   TieThread,
   UiState
@@ -410,6 +412,64 @@ export class TieContentPageVM extends BaseVM {
         LogUtil.error(TAG, `Support tie failed: ${JSON.stringify(error)}`);
       }
     }
+  }
+
+  getTiePoll(): TiePoll | null {
+    return this.tieThread?.poll ?? null;
+  }
+
+  getTiePollOptions(): TiePollOption[] {
+    const poll = this.getTiePoll();
+    return poll?.options ?? [];
+  }
+
+  hasTiePoll(): boolean {
+    const poll = this.getTiePoll();
+    return !!poll && !!poll.options && poll.options.length > 0;
+  }
+
+  hasVoted(): boolean {
+    const poll = this.getTiePoll();
+    return !!poll && !!poll.selected_options && poll.selected_options.length > 0;
+  }
+
+  isPollEnded(): boolean {
+    const poll = this.getTiePoll();
+    if (!poll) {
+      return false;
+    }
+    const expiration = Number(poll.expiration);
+    if (!Number.isFinite(expiration) || expiration <= 0) {
+      return false;
+    }
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    return expiration <= nowSeconds;
+  }
+
+  getPollTimeText(): string {
+    if (this.isPollEnded()) {
+      return '已结束';
+    }
+    const poll = this.getTiePoll();
+    if (!poll) {
+      return '';
+    }
+    const expiration = Number(poll.expiration);
+    if (!Number.isFinite(expiration) || expiration <= 0) {
+      return '';
+    }
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const remainingSeconds = Math.max(0, expiration - nowSeconds);
+    const days = Math.ceil(remainingSeconds / 86400);
+    return `${days}天`;
+  }
+
+  getPollDescription(): string {
+    return this.isPollEnded() ? '来晚了一步，投票已经结束了~' : '快来一起参与投票吧！';
+  }
+
+  getPollButtonText(): string {
+    return this.hasVoted() ? '您已经参与过投票' : '立即投票';
   }
 
   handleScroll(swiperHeight: number) {

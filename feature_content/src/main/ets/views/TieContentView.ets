@@ -1,4 +1,4 @@
-import { Collection, CommonConstant, TieRow, TransitionMap, UiState } from 'base_common';
+import { Collection, CommonConstant, TiePollOption, TieRow, TransitionMap, UiState } from 'base_common';
 import { CollectionCard, CustomFloatNavTitle, CustomTabBar, StateLayout } from 'base_ui';
 import { TieContentPageVM } from '../viewmodels/TieContentPageVM';
 import { LengthMetrics } from '@kit.ArkUI';
@@ -97,7 +97,9 @@ export struct TieContentView {
             .transition(TransitionEffect.OPACITY.animation({ duration: CommonConstant.AnimationDurationNormal }))
         }
 
-        this.VotePanel()
+        if (this.vm.hasTiePoll()) {
+          this.VotePanel()
+        }
 
         if (this.vm.tieTopic?.post_id) {
           TieDetailFooter({ vm: this.vm })
@@ -119,9 +121,9 @@ export struct TieContentView {
   }
 
   @Builder
-  VoteOption() {
+  VoteOption(option: TiePollOption) {
     Row() {
-      Text("这是一个选项")
+      Text(option.text || '')
         .fontSize(CommonConstant.TextSizeNormal)
     }
     .borderRadius(CommonConstant.RadiusNormal)
@@ -140,50 +142,64 @@ export struct TieContentView {
 
   @Builder
   VotePanel() {
-    Column({ space: CommonConstant.NormalContainerInnerPadding }) {
-      Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-        SymbolGlyph($r('sys.symbol.data'))
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontWeight(FontWeight.Medium)
-          .fontColor([CommonConstant.ThemeColor])
-
-        Text(`${this.vm.tieSummary.author} ${ResUtil.getStringSync($r('app.string.TieContentPage_vote_title'))}`)
-          .fontSize(CommonConstant.TextSizeNormal)
-          .fontWeight(FontWeight.Medium)
-          .layoutWeight(1)
-
+    if (this.vm.hasTiePoll()) {
+      Column({ space: CommonConstant.NormalContainerInnerPadding }) {
         Row({ space: CommonConstant.SmallContainerInnerPadding }) {
-          SymbolGlyph($r('sys.symbol.clock'))
-            .fontSize(CommonConstant.TextSizeTiny)
-            .fontColor([$r('sys.color.font_tertiary')])
+          SymbolGlyph($r('sys.symbol.data'))
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Medium)
+            .fontColor([CommonConstant.ThemeColor])
 
-          Text("3天")
-            .fontSize(CommonConstant.TextSizeTiny)
-            .fontColor($r('sys.color.font_tertiary'))
+          Text(`${this.vm.tieSummary.author} ${ResUtil.getStringSync($r('app.string.TieContentPage_vote_title'))}`)
+            .fontSize(CommonConstant.TextSizeNormal)
+            .fontWeight(FontWeight.Medium)
+            .layoutWeight(1)
+
+          Row({ space: CommonConstant.SmallContainerInnerPadding }) {
+            SymbolGlyph($r('sys.symbol.clock'))
+              .fontSize(CommonConstant.TextSizeTiny)
+              .fontColor([$r('sys.color.font_tertiary')])
+
+            Text(this.vm.getPollTimeText())
+              .fontSize(CommonConstant.TextSizeTiny)
+              .fontColor($r('sys.color.font_tertiary'))
+          }
+        }
+        .width(CommonConstant.FullPercent)
+        .justifyContent(FlexAlign.Start)
+
+        Text(this.vm.getPollDescription())
+          .fontSize(CommonConstant.TextSizeSmall)
+          .fontColor($r('sys.color.font_secondary'))
+          .width(CommonConstant.FullPercent)
+          .textAlign(TextAlign.Start)
+
+        ForEach(this.vm.getTiePollOptions(), (option: TiePollOption, index: number) => {
+          this.VoteOption(option)
+        }, (_option: TiePollOption, index: number) => index.toString())
+
+        if (!this.vm.isPollEnded()) {
+          Button(this.vm.getPollButtonText())
+            .fontSize(CommonConstant.TextSizeNormal)
+            .borderRadius(CommonConstant.RadiusSmall)
+            .fontColor($r('sys.color.font_on_primary'))
+            .backgroundColor(CommonConstant.ThemeColor)
+            .enabled(!this.vm.hasVoted())
+            .width(CommonConstant.FullPercent)
+            .animation({ duration: CommonConstant.AnimationDurationNormal, curve: CommonConstant.AnimationCurveNormal })
+            .clickEffect({ level: ClickEffectLevel.MIDDLE, scale: 0.85 })
         }
       }
       .width(CommonConstant.FullPercent)
-      .justifyContent(FlexAlign.Start)
-
-      Text("快来一起参与投票吧！")
-        .fontSize(CommonConstant.TextSizeSmall)
-        .fontColor($r('sys.color.font_secondary'))
-        .width(CommonConstant.FullPercent)
-        .textAlign(TextAlign.Start)
-
-      this.VoteOption()
-
-      this.VoteOption()
+      .backgroundColor($r('app.color.second_window_background'))
+      .borderRadius(CommonConstant.RadiusNormal)
+      .padding({
+        left: CommonConstant.NormalContainerLRPadding,
+        right: CommonConstant.NormalContainerLRPadding,
+        top: CommonConstant.NormalContainerTBPadding,
+        bottom: CommonConstant.NormalContainerTBPadding
+      })
     }
-    .width(CommonConstant.FullPercent)
-    .backgroundColor($r('app.color.second_window_background'))
-    .borderRadius(CommonConstant.RadiusNormal)
-    .padding({
-      left: CommonConstant.NormalContainerLRPadding,
-      right: CommonConstant.NormalContainerLRPadding,
-      top: CommonConstant.NormalContainerTBPadding,
-      bottom: CommonConstant.NormalContainerTBPadding
-    })
   }
 
   @Builder
